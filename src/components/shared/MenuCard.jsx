@@ -8,7 +8,7 @@ export default function MenuCard({ image, title, vendor, rating, price }) {
         <img
           src={image}
           alt={title}
-          className="h-[260px] w-full object-cover transition duration-300 group-hover:scale-105"
+          className="h-[140px] md:h-[260px] w-full object-cover transition duration-300 group-hover:scale-105"
         />
       </div>
 

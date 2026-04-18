@@ -29,38 +29,54 @@ const createDefaultOtherFilters = () => ({
   distance: "Any distance",
 });
 
+const FILTER_LABELS = {
+  sort: "Sort by",
+  rating: "Ratings",
+  dietary: "Dietary options",
+  offer: "Offer",
+  pricing: "Pricing",
+  other: "Other Filters",
+};
+
 const FILTER_BAR_VARIANTS = {
   default: {
     containerClassName:
-      "relative mt-5 flex items-center gap-2",
+      "relative mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-2",
     chipsWrapperClassName:
-      "flex min-w-0 flex-1 items-center gap-2",
+      "grid w-full grid-cols-2 gap-2 lg:flex lg:min-w-0 lg:flex-1 lg:items-center lg:gap-2",
+    chipContainerClassName: "relative min-w-0 lg:flex-1",
+    chipButtonClassName:
+      "type-subpara inline-flex h-10 w-full items-center justify-between gap-2 rounded-full border px-3 font-semibold transition lg:px-4",
     inactiveChipClassName: "border-[#ddd5cc] bg-white text-[#666666]",
     applyButtonClassName:
-      "type-h6 cursor-pointer inline-flex h-10 shrink-0 items-center rounded-full bg-[#c96b33] px-8 text-white transition hover:bg-[#b85e2a]",
+      "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-6 text-white transition hover:bg-[#b85e2a] lg:w-auto lg:shrink-0 lg:px-8",
   },
   preview: {
     containerClassName:
-      "mt-5 flex flex-wrap items-center gap-2 sm:flex-nowrap sm:justify-between",
+      "mt-5 flex flex-col gap-3 lg:flex-wrap lg:flex-row lg:items-center lg:justify-between lg:gap-2",
     chipsWrapperClassName:
-      "grid w-full grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2",
+      "grid w-full grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center lg:gap-2",
+    chipContainerClassName: "relative min-w-0",
+    chipButtonClassName:
+      "type-subpara inline-flex h-10 w-full items-center justify-between gap-2 rounded-full border px-3 font-semibold transition lg:w-auto lg:min-w-[132px] lg:px-4",
     inactiveChipClassName: "border-[#bdbdbd] bg-white text-[#666666]",
     applyButtonClassName:
-      "type-h6 inline-flex h-8 shrink-0 items-center rounded-full bg-[#c96b33] px-5 text-white hover:bg-[#b85e2a]",
+      "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-5 text-white transition hover:bg-[#b85e2a] sm:w-auto sm:self-end lg:h-8",
   },
 };
 
 function FilterDropdown({ minWidthClassName, children, onClear }) {
   return (
     <div
-      className={`absolute left-0 top-[calc(100%+12px)] z-30 rounded-[12px] border border-[#d9d9d9] bg-white p-2 shadow-[0_12px_26px_rgba(0,0,0,0.16)] ${minWidthClassName}`}
+      className={`absolute left-0 top-[calc(100%+12px)] z-30 w-full max-w-[min(20rem,calc(100vw-2rem))] rounded-[12px] border border-[#d9d9d9] bg-white p-2 shadow-[0_12px_26px_rgba(0,0,0,0.16)] sm:w-auto ${minWidthClassName}`}
     >
       <span className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 border-l border-t border-[#d9d9d9] bg-white" />
       <div className="space-y-1">{children}</div>
       <div className="mt-2 flex justify-end">
         <button
+          type="button"
           onClick={onClear}
-          className="type-paara cursor-pointer rounded-[6px] border border-[#bcbcbc] px-2 py-1 text-black"
+          className="type-para cursor-pointer rounded-[6px] border border-[#bcbcbc] px-2 py-1 text-black"
         >
           Clear filter
         </button>
@@ -121,7 +137,7 @@ function InlineSelectDropdown({
 
       {isOpen ? (
         <div
-          className={`absolute left-0 z-20 w-[250px] rounded-[8px] border border-[#d9d9d9] bg-white p-1 shadow-[0_12px_26px_rgba(0,0,0,0.16)] ${menuPositionClassName}`}
+          className={`absolute left-0 z-20 w-full max-w-[min(16rem,calc(100vw-3rem))] rounded-[8px] border border-[#d9d9d9] bg-white p-1 shadow-[0_12px_26px_rgba(0,0,0,0.16)] sm:w-[250px] ${menuPositionClassName}`}
         >
           {options.map((option) => {
             const isSelected = option === value;
@@ -163,8 +179,8 @@ function OtherFiltersModal({ otherFilters, setOtherFilters, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/10 px-4">
-      <div className="w-full max-w-[440px] rounded-[12px] border border-[#d9d9d9] bg-white p-3 shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/10 px-4 py-6">
+      <div className="max-h-full w-full max-w-[440px] overflow-y-auto rounded-[12px] border border-[#d9d9d9] bg-white p-3 shadow-[0_18px_40px_rgba(0,0,0,0.2)] sm:p-4">
         <h1 className="type-h3 mb-3 text-black">Other Filters</h1>
         <div className="space-y-3">
           <label className="flex items-start gap-2  ">
@@ -232,7 +248,7 @@ function OtherFiltersModal({ otherFilters, setOtherFilters, onClose }) {
             />
           </div>
 
-          <div className=" pt-10">
+          <div className="pt-6 sm:pt-10">
             <h4 className="type-h4 mb-3 text-black">Delivery filters</h4>
 
             <div className="space-y-3">
@@ -272,8 +288,9 @@ function OtherFiltersModal({ otherFilters, setOtherFilters, onClose }) {
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-1">
+          <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
             <button
+              type="button"
               onClick={() => {
                 setOtherFilters(createDefaultOtherFilters());
                 onClose();
@@ -283,6 +300,7 @@ function OtherFiltersModal({ otherFilters, setOtherFilters, onClose }) {
               Clear filter
             </button>
             <button
+              type="button"
               onClick={onClose}
               className="type-para cursor-pointer rounded-[6px] bg-[#CF3A00] px-2 py-1 text-white"
             >
@@ -339,15 +357,6 @@ export default function BrowseFilterBar({
       ].filter(Boolean).length,
     [otherFilters],
   );
-
-  const chipLabels = {
-    sort: "Sort by",
-    rating: "Ratings",
-    dietary: "Dietary options",
-    offer: "Offer",
-    pricing: "Pricing",
-    other: "Other Filters",
-  };
 
   const selectedFilterChips = useMemo(() => {
     const chips = [];
@@ -537,10 +546,11 @@ export default function BrowseFilterBar({
                 (chip.key === "other" && otherFilterCount > 0);
 
               return (
-                <div key={chip.key} className="relative min-w-0 flex-1">
+                <div key={chip.key} className={styles.chipContainerClassName}>
                   <button
+                    type="button"
                     onClick={() => handleChipClick(chip.key)}
-                    className={`type-subpara font-semibold cursor-pointer inline-flex h-10 w-full items-center justify-between gap-2 rounded-full border px-3 text-[30px] font-medium transition xl:px-4 ${
+                    className={`${styles.chipButtonClassName} ${
                       isActive  
                         ? "border-[#CF3A00] bg-[#fff1eb] text-[#CF3A00]"
                         : styles.inactiveChipClassName
@@ -553,7 +563,7 @@ export default function BrowseFilterBar({
                     </span>
 
                     <span className="truncate">
-                      {chipLabels[chip.key] ?? chip.label}
+                      {FILTER_LABELS[chip.key] ?? chip.label}
                     </span>
 
                     {isDropdownChip ? (
@@ -572,6 +582,7 @@ export default function BrowseFilterBar({
                       {sortByOptions.map((option) => (
                         <button
                           key={option}
+                          type="button"
                           onClick={() => {
                             setSelectedSort(option);
                             setOpenDropdown(null);
@@ -595,6 +606,7 @@ export default function BrowseFilterBar({
                       {ratingOptions.map((option, index) => (
                         <button
                           key={option}
+                          type="button"
                           onClick={() => {
                             setSelectedRating(option);
                             setOpenDropdown(null);
@@ -625,6 +637,7 @@ export default function BrowseFilterBar({
                         return (
                           <button
                             key={option}
+                            type="button"
                             onClick={() =>
                               toggleMultiSelect(setSelectedDietary, option)
                             }
@@ -652,6 +665,7 @@ export default function BrowseFilterBar({
                         return (
                           <button
                             key={option}
+                            type="button"
                             onClick={() =>
                               toggleMultiSelect(setSelectedOffers, option)
                             }
@@ -676,6 +690,7 @@ export default function BrowseFilterBar({
                       {pricingOptions.map((option) => (
                         <button
                           key={option}
+                          type="button"
                           onClick={() => {
                             setSelectedPricing(option);
                             setOpenDropdown(null);
@@ -692,7 +707,9 @@ export default function BrowseFilterBar({
             })}
           </div>
 
-          <button className={styles.applyButtonClassName}>Apply</button>
+          <button type="button" className={styles.applyButtonClassName}>
+            Apply
+          </button>
         </div>
 
         {selectedFilterChips.length > 0 ? (

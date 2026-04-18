@@ -22,7 +22,7 @@ export default function FoodBrowsePreviewSection() {
     activeTab === "occasion" ? moreOccasionOptions : moreFoodTypeOptions;
 
   return (
-    <section className="overflow-x-clip bg-white px-8 py-6 sm:px-10 lg:px-20">
+    <section className="overflow-x-clip bg-white px-4 py-6 sm:px-8 lg:px-20">
       <div className="relative mx-auto w-full max-w-7xl">
         <BrowseTabs gapless showCenterDivider />
 

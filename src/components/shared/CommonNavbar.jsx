@@ -107,7 +107,7 @@ export default function CommonNavbar() {
   };
 
   return (
-    <header className="sticky top-0 px-10 z-40 bg-white">
+    <header className="sticky top-0 px-6 md:px-10 z-40 bg-white">
       <div className=" grid w-full  grid-cols-[auto_1fr_auto] items-center gap-3 px-2 py-1">
         <Link to="/" className="mt-2 shrink-0">
           <img

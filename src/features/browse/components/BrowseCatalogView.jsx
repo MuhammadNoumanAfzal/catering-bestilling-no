@@ -33,7 +33,7 @@ export default function BrowseCatalogView({
   );
 
   return (
-    <section className="w-full px-20 py-12 ">
+    <section className="w-full px-6 md:px-20 py-12 ">
       <div className="mx-auto w-full max-w-7xl">
         <BrowseTabs />
         <BrowseCategoryStrip
