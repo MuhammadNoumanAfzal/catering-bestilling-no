@@ -5,7 +5,7 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-[#fbf8f5]">
       <img
-        src="/home/heroBg.jpg"
+        src="/home/heroBg.webp"
         alt=""
         className="absolute inset-0 h-full w-full object-cover opacity-20"
       />
@@ -53,8 +53,11 @@ export default function HeroSection() {
           <div className="flex w-full items-center justify-center">
             <div className="relative w-full">
               <img
-                src="/home/home-hero.png"
+                src="/home/home-hero.webp"
                 alt="Home hero"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="h-[320px] w-full object-contain sm:h-[420px] lg:h-[560px]"
               />
             </div>

@@ -132,7 +132,8 @@ export default function CommonNavbar() {
                 >
                   <FiMapPin
                     className={`text-[14px] ${
-                      openDropdown === "city" || selectedFilters.city !== "Bergen"
+                      openDropdown === "city" ||
+                      selectedFilters.city !== "Bergen"
                         ? "text-[#CF3A00]"
                         : "text-[#8f8f8f]"
                     }`}
@@ -140,7 +141,8 @@ export default function CommonNavbar() {
                   <span className="text-[16px]">{selectedFilters.city}</span>
                   <FiChevronDown
                     className={`pl-14 text-[10px] ${
-                      openDropdown === "city" || selectedFilters.city !== "Bergen"
+                      openDropdown === "city" ||
+                      selectedFilters.city !== "Bergen"
                         ? "text-[#CF3A00]"
                         : "text-[#8f8f8f]"
                     }`}
@@ -234,7 +236,9 @@ export default function CommonNavbar() {
                 />
               ) : null}
 
-              {openDropdown && openDropdown !== "delivery" && openDropdown !== "event" ? (
+              {openDropdown &&
+              openDropdown !== "delivery" &&
+              openDropdown !== "event" ? (
                 <div className="absolute left-0 top-[calc(100%+8px)] z-50 min-w-[220px] rounded-2xl border border-[#ece7df] bg-white p-2 shadow-lg">
                   {dropdownOptions[openDropdown].map((option) => (
                     <button

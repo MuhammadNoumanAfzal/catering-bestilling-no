@@ -2,7 +2,7 @@ export const popularVendors = [
   {
     id: 1,
     name: "The Queen's Kebab",
-    image: "/home/v.jpg",
+    image: "/home/v.webp",
     rating: 4.9,
     deliveryTime: "10-35 minutes",
     deliveryFee: "35 NOK Delivery fee",
@@ -11,7 +11,7 @@ export const popularVendors = [
   {
     id: 2,
     name: "Flint's Grill",
-    image: "/home/hero1.jpg",
+    image: "/home/hero1.webp",
     rating: 3.9,
     deliveryTime: "10-30 minutes",
     deliveryFee: "30 NOK Delivery fee",
@@ -20,7 +20,7 @@ export const popularVendors = [
   {
     id: 3,
     name: "Brobekk Grill & Pizza",
-    image: "/home/hero2.jpg",
+    image: "/home/hero2.webp",
     rating: 4.0,
     deliveryTime: "10-40 minutes",
     deliveryFee: "0 NOK Delivery fee",
@@ -29,7 +29,7 @@ export const popularVendors = [
   {
     id: 4,
     name: "McDonald's Main Street",
-    image: "/home/hero3.jpg",
+    image: "/home/hero3.webp",
     rating: 3.9,
     deliveryTime: "10-45 minutes",
     deliveryFee: "40 NOK Delivery fee",
@@ -38,7 +38,7 @@ export const popularVendors = [
   {
     id: 5,
     name: "Talormade Bispevika",
-    image: "/home/v.jpg",
+    image: "/home/v.webp",
     rating: 4.0,
     deliveryTime: "10-25 minutes",
     deliveryFee: "20 NOK Delivery fee",
@@ -47,7 +47,7 @@ export const popularVendors = [
   {
     id: 6,
     name: "Eckers Frogner",
-    image: "/home/hero1.jpg",
+    image: "/home/hero1.webp",
     rating: 3.5,
     deliveryTime: "10-30 minutes",
     deliveryFee: "45 NOK Delivery fee",
@@ -59,7 +59,7 @@ export const featuredVendors = [
   {
     id: 7,
     name: "Nordic Lunch House",
-    image: "/home/hero2.jpg",
+    image: "/home/hero2.webp",
     rating: 4.8,
     deliveryTime: "15-30 minutes",
     deliveryFee: "29 NOK Delivery fee",
@@ -68,7 +68,7 @@ export const featuredVendors = [
   {
     id: 8,
     name: "Urban Salad Kitchen",
-    image: "/home/v.jpg",
+    image: "/home/v.webp",
     rating: 4.7,
     deliveryTime: "15-25 minutes",
     deliveryFee: "32 NOK Delivery fee",
@@ -77,7 +77,7 @@ export const featuredVendors = [
   {
     id: 9,
     name: "Pizza Corner",
-    image: "/home/hero3.jpg",
+    image: "/home/hero3.webp",
     rating: 4.6,
     deliveryTime: "20-35 minutes",
     deliveryFee: "38 NOK Delivery fee",
@@ -86,7 +86,7 @@ export const featuredVendors = [
   {
     id: 10,
     name: "Morning Bite Cafe",
-    image: "/home/hero1.jpg",
+    image: "/home/hero1.webp",
     rating: 4.5,
     deliveryTime: "15-20 minutes",
     deliveryFee: "25 NOK Delivery fee",
@@ -95,7 +95,7 @@ export const featuredVendors = [
   {
     id: 11,
     name: "Oslo Wrap House",
-    image: "/home/hero2.jpg",
+    image: "/home/hero2.webp",
     rating: 4.4,
     deliveryTime: "20-30 minutes",
     deliveryFee: "35 NOK Delivery fee",
@@ -104,7 +104,7 @@ export const featuredVendors = [
   {
     id: 12,
     name: "Golden Fork Kitchen",
-    image: "/home/v.jpg",
+    image: "/home/v.webp",
     rating: 4.3,
     deliveryTime: "20-40 minutes",
     deliveryFee: "39 NOK Delivery fee",
@@ -117,7 +117,7 @@ export const popularProducts = [
     id: 1,
     slug: "max-egertorget-burger-box",
     name: "Max - Egertorget",
-    image: "/home/hero1.jpg",
+    image: "/home/hero1.webp",
     rating: 3.9,
     deliveryTime: "10-45 minutes",
     deliveryFee: "20 NOK Delivery fee",
@@ -127,7 +127,7 @@ export const popularProducts = [
     id: 2,
     slug: "fly-chicken-sharing-meal",
     name: "Fly Chicken - Steen...",
-    image: "/home/hero3.jpg",
+    image: "/home/hero3.webp",
     rating: 4.9,
     deliveryTime: "10-20 minutes",
     deliveryFee: "20 NOK Delivery fee",
@@ -137,7 +137,7 @@ export const popularProducts = [
     id: 3,
     slug: "dominos-pizza-party-pack",
     name: "Domino's Pizza Sto...",
-    image: "/home/hero2.jpg",
+    image: "/home/hero2.webp",
     rating: 4.5,
     deliveryTime: "10-30 minutes",
     deliveryFee: "45 NOK Delivery fee",
@@ -147,7 +147,7 @@ export const popularProducts = [
     id: 4,
     slug: "dominos-pizza-lunch-box",
     name: "Domino's Pizza Sto...",
-    image: "/home/hero1.jpg",
+    image: "/home/hero1.webp",
     rating: 4.5,
     deliveryTime: "10-30 minutes",
     deliveryFee: "45 NOK Delivery fee",
