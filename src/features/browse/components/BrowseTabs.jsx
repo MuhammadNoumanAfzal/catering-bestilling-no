@@ -6,7 +6,7 @@ export default function BrowseTabs({
   showCenterDivider = false,
 }) {
   return (
-    <div className="mx-auto max-w-[440px] rounded-[18px] border border-[#decdbd] bg-[linear-gradient(180deg,#fbf6ef_0%,#efe2d3_100%)] p-1.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_10px_24px_rgba(102,54,26,0.08)] md:max-w-[450px] md:rounded-[24px]">
+    <div className="mx-auto w-full max-w-[440px] rounded-[18px] border border-[#decdbd] bg-[linear-gradient(180deg,#fbf6ef_0%,#efe2d3_100%)] p-1.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_10px_24px_rgba(102,54,26,0.08)] md:max-w-[450px] md:rounded-[24px]">
       <div
         className={`relative grid grid-cols-2 ${gapless ? "gap-0" : "gap-1.5"}`}
       >
@@ -32,7 +32,7 @@ export default function BrowseTabs({
               }`
             }
           >
-            <span className="text-[11px] font-semibold leading-[1.15] md:text-[16px]">
+            <span className="text-[12px] font-semibold leading-[1.15] sm:text-[13px] md:text-[16px]">
               {tab.label}
             </span>
           </NavLink>
