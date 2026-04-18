@@ -18,7 +18,8 @@ export default function HomeNavbar() {
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-10">
         <Link to="/" className="flex shrink-0 items-center">
           <img
-            src="/home/logo.png"
+            src="/home/logo.png
+            "
             alt="logo"
             className="h-12 w-auto object-contain sm:h-14 md:h-16"
           />

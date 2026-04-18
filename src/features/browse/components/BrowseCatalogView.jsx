@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BrowseTabs from "./BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
 import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
@@ -12,17 +12,19 @@ export default function BrowseCatalogView({
   moreOptions,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
-  }, []);
+  const hasMounted = useRef(false);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [menuItems]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: "auto" });
   }, [currentPage]);
 
   const totalPages = Math.ceil(menuItems.length / ITEMS_PER_PAGE);
@@ -33,7 +35,7 @@ export default function BrowseCatalogView({
   );
 
   return (
-    <section className="w-full px-6 md:px-20 py-12 ">
+    <section className="w-full px-6 py-12 md:px-20">
       <div className="mx-auto w-full max-w-7xl">
         <BrowseTabs />
         <BrowseCategoryStrip

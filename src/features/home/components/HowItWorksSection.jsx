@@ -3,25 +3,25 @@ import React from "react";
 const HowItWorks = () => {
   const steps = [
     {
-      id: "/home/1.png",
+      id: "/home/1.webp",
       title: "Choose Location",
       description:
         "Enter your delivery address or postal code to see which menus are available in your area for office or home delivery.",
-      icon: "/home/Vector.png",
+      icon: "/home/Vector.webp",
     },
     {
-      id: "/home/2.png",
+      id: "/home/2.webp",
       title: "Select Food",
       description:
         "Browse our varied menu options. Pick from flexible corporate lunch plans or delicious catering packages for your private events.",
-      icon: "/home/Vector-1.png",
+      icon: "/home/Vector-1.webp",
     },
     {
-      id: "/home/3.png",
+      id: "/home/3.webp",
       title: "Get Delivered",
       description:
         "Sit back and relax. Our team delivers fresh, chef-prepared meals directly to your door, exactly when you need them.",
-      icon: "/home/Vector-2.png",
+      icon: "/home/Vector-2.webp",
     },
   ];
 
@@ -37,7 +37,7 @@ const HowItWorks = () => {
         <div
           className="relative rounded-3xl overflow-hidden bg-cover bg-center min-h-[500px] flex items-center shadow-2xl"
           style={{
-            backgroundImage: `url('/home/bg-image.png')`,
+            backgroundImage: `url('/home/bg-image.webp')`,
           }}
         >
           {/* Dark Overlay to make text legible */}

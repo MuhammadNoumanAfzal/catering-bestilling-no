@@ -8,7 +8,7 @@ const OrderConfirmedPage = () => {
         {/* Centered Logo */}
         <div className="flex justify-center mb-20">
           <img
-            src="/home/logo.png"
+            src="/home/logo.webp"
             alt="logo"
             className="h-20 object-contain"
           />
