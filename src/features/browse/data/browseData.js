@@ -43,6 +43,7 @@ export const foodTypeMenuItems = [
   {
     id: 1,
     slug: "grilled-mixed-platter",
+    vendorSlug: "the-queens-kebab",
     title: "Grilled Mixed Platter",
     vendor: "By The Queen's Kebab",
     image: "/home/hero1.webp",
@@ -52,6 +53,7 @@ export const foodTypeMenuItems = [
   {
     id: 2,
     slug: "lunch-sharing-trays",
+    vendorSlug: "talormade-bispevika",
     title: "Lunch Sharing Trays",
     vendor: "By Talormade Bispevika",
     image: "/home/hero2.webp",
@@ -61,6 +63,7 @@ export const foodTypeMenuItems = [
   {
     id: 3,
     slug: "stone-oven-pizza-box",
+    vendorSlug: "brobekk-grill-pizza",
     title: "Stone Oven Pizza Box",
     vendor: "By Brobekk Grill & Pizza",
     image: "/home/hero3.webp",
@@ -70,6 +73,7 @@ export const foodTypeMenuItems = [
   {
     id: 4,
     slug: "sweet-breakfast-basket",
+    vendorSlug: "morning-bite-cafe",
     title: "Sweet Breakfast Basket",
     vendor: "By Morning Bite Cafe",
     image: "/home/v.webp",
@@ -79,6 +83,7 @@ export const foodTypeMenuItems = [
   {
     id: 5,
     slug: "salad-bowl-trio",
+    vendorSlug: "urban-salad-kitchen",
     title: "Salad Bowl Trio",
     vendor: "By Urban Salad Kitchen",
     image: "/home/hero2.webp",
@@ -88,6 +93,7 @@ export const foodTypeMenuItems = [
   {
     id: 6,
     slug: "nordic-dinner-combo",
+    vendorSlug: "golden-fork-kitchen",
     title: "Nordic Dinner Combo",
     vendor: "By Golden Fork Kitchen",
     image: "/home/hero1.webp",
@@ -97,6 +103,7 @@ export const foodTypeMenuItems = [
   {
     id: 7,
     slug: "chicken-wrap-feast",
+    vendorSlug: "oslo-wrap-house",
     title: "Chicken Wrap Feast",
     vendor: "By Oslo Wrap House",
     image: "/home/hero3.webp",
@@ -106,6 +113,7 @@ export const foodTypeMenuItems = [
   {
     id: 8,
     slug: "office-pizza-bundle",
+    vendorSlug: "pizza-corner",
     title: "Office Pizza Bundle",
     vendor: "By Pizza Corner",
     image: "/home/hero2.webp",
@@ -115,6 +123,7 @@ export const foodTypeMenuItems = [
   {
     id: 9,
     slug: "breakfast-mini-box",
+    vendorSlug: "eckers-frogner",
     title: "Breakfast Mini Box",
     vendor: "By Eckers Frogner",
     image: "/home/v.webp",
@@ -127,6 +136,7 @@ export const occasionMenuItems = [
   {
     id: 1,
     slug: "wedding-dessert-table",
+    vendorSlug: "golden-fork-kitchen",
     title: "Wedding Dessert Table",
     vendor: "By Golden Fork Kitchen",
     image: "/home/hero2.webp",
@@ -136,6 +146,7 @@ export const occasionMenuItems = [
   {
     id: 2,
     slug: "birthday-snack-tower",
+    vendorSlug: "talormade-bispevika",
     title: "Birthday Snack Tower",
     vendor: "By Talormade Bispevika",
     image: "/home/v.webp",
@@ -145,6 +156,7 @@ export const occasionMenuItems = [
   {
     id: 3,
     slug: "corporate-dinner-spread",
+    vendorSlug: "nordic-lunch-house",
     title: "Corporate Dinner Spread",
     vendor: "By Nordic Lunch House",
     image: "/home/hero3.webp",
@@ -154,6 +166,7 @@ export const occasionMenuItems = [
   {
     id: 4,
     slug: "anniversary-sharing-menu",
+    vendorSlug: "flints-grill",
     title: "Anniversary Sharing Menu",
     vendor: "By Flint's Grill",
     image: "/home/hero1.webp",
@@ -163,6 +176,7 @@ export const occasionMenuItems = [
   {
     id: 5,
     slug: "graduation-party-tray",
+    vendorSlug: "pizza-corner",
     title: "Graduation Party Tray",
     vendor: "By Pizza Corner",
     image: "/home/hero2.webp",
@@ -172,6 +186,7 @@ export const occasionMenuItems = [
   {
     id: 6,
     slug: "weekend-family-buffet",
+    vendorSlug: "the-queens-kebab",
     title: "Weekend Family Buffet",
     vendor: "By The Queen's Kebab",
     image: "/home/hero1.webp",
@@ -181,6 +196,7 @@ export const occasionMenuItems = [
   {
     id: 7,
     slug: "team-celebration-pack",
+    vendorSlug: "brobekk-grill-pizza",
     title: "Team Celebration Pack",
     vendor: "By Brobekk Grill & Pizza",
     image: "/home/hero3.webp",
@@ -190,6 +206,7 @@ export const occasionMenuItems = [
   {
     id: 8,
     slug: "premium-event-platters",
+    vendorSlug: "morning-bite-cafe",
     title: "Premium Event Platters",
     vendor: "By Morning Bite Cafe",
     image: "/home/v.webp",
@@ -199,6 +216,7 @@ export const occasionMenuItems = [
   {
     id: 9,
     slug: "cocktail-bites-selection",
+    vendorSlug: "urban-salad-kitchen",
     title: "Cocktail Bites Selection",
     vendor: "By Urban Salad Kitchen",
     image: "/home/hero2.webp",
