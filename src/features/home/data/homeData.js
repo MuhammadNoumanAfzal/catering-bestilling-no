@@ -1,6 +1,7 @@
 export const popularVendors = [
   {
     id: 1,
+    slug: "the-queens-kebab",
     name: "The Queen's Kebab",
     image: "/home/v.webp",
     rating: 4.9,
@@ -10,6 +11,7 @@ export const popularVendors = [
   },
   {
     id: 2,
+    slug: "flints-grill",
     name: "Flint's Grill",
     image: "/home/hero1.webp",
     rating: 3.9,
@@ -19,6 +21,7 @@ export const popularVendors = [
   },
   {
     id: 3,
+    slug: "brobekk-grill-pizza",
     name: "Brobekk Grill & Pizza",
     image: "/home/hero2.webp",
     rating: 4.0,
@@ -28,6 +31,7 @@ export const popularVendors = [
   },
   {
     id: 4,
+    slug: "mcdonalds-main-street",
     name: "McDonald's Main Street",
     image: "/home/hero3.webp",
     rating: 3.9,
@@ -37,6 +41,7 @@ export const popularVendors = [
   },
   {
     id: 5,
+    slug: "talormade-bispevika",
     name: "Talormade Bispevika",
     image: "/home/v.webp",
     rating: 4.0,
@@ -46,6 +51,7 @@ export const popularVendors = [
   },
   {
     id: 6,
+    slug: "eckers-frogner",
     name: "Eckers Frogner",
     image: "/home/hero1.webp",
     rating: 3.5,
@@ -58,6 +64,7 @@ export const popularVendors = [
 export const featuredVendors = [
   {
     id: 7,
+    slug: "nordic-lunch-house",
     name: "Nordic Lunch House",
     image: "/home/hero2.webp",
     rating: 4.8,
@@ -67,6 +74,7 @@ export const featuredVendors = [
   },
   {
     id: 8,
+    slug: "urban-salad-kitchen",
     name: "Urban Salad Kitchen",
     image: "/home/v.webp",
     rating: 4.7,
@@ -76,6 +84,7 @@ export const featuredVendors = [
   },
   {
     id: 9,
+    slug: "pizza-corner",
     name: "Pizza Corner",
     image: "/home/hero3.webp",
     rating: 4.6,
@@ -85,6 +94,7 @@ export const featuredVendors = [
   },
   {
     id: 10,
+    slug: "morning-bite-cafe",
     name: "Morning Bite Cafe",
     image: "/home/hero1.webp",
     rating: 4.5,
@@ -94,6 +104,7 @@ export const featuredVendors = [
   },
   {
     id: 11,
+    slug: "oslo-wrap-house",
     name: "Oslo Wrap House",
     image: "/home/hero2.webp",
     rating: 4.4,
@@ -103,6 +114,7 @@ export const featuredVendors = [
   },
   {
     id: 12,
+    slug: "golden-fork-kitchen",
     name: "Golden Fork Kitchen",
     image: "/home/v.webp",
     rating: 4.3,
@@ -116,6 +128,7 @@ export const popularProducts = [
   {
     id: 1,
     slug: "max-egertorget-burger-box",
+    vendorSlug: "max-egertorget",
     name: "Max - Egertorget",
     image: "/home/hero1.webp",
     rating: 3.9,
@@ -126,6 +139,7 @@ export const popularProducts = [
   {
     id: 2,
     slug: "fly-chicken-sharing-meal",
+    vendorSlug: "fly-chicken-steen",
     name: "Fly Chicken - Steen...",
     image: "/home/hero3.webp",
     rating: 4.9,
@@ -136,6 +150,7 @@ export const popularProducts = [
   {
     id: 3,
     slug: "dominos-pizza-party-pack",
+    vendorSlug: "dominos-pizza-storo",
     name: "Domino's Pizza Sto...",
     image: "/home/hero2.webp",
     rating: 4.5,
@@ -146,6 +161,7 @@ export const popularProducts = [
   {
     id: 4,
     slug: "dominos-pizza-lunch-box",
+    vendorSlug: "dominos-pizza-storo",
     name: "Domino's Pizza Sto...",
     image: "/home/hero1.webp",
     rating: 4.5,

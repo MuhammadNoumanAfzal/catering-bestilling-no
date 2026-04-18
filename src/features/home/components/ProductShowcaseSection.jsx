@@ -1,16 +1,23 @@
 import { FiStar } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
+import { useNavigate } from "react-router-dom";
 
 export function ProductItem({
   image,
   name,
+  vendorSlug,
   rating,
   deliveryTime,
   deliveryFee,
   discount,
 }) {
+  const navigate = useNavigate();
+
   return (
-    <article className="group">
+    <article
+      className="group cursor-pointer"
+      onClick={() => vendorSlug && navigate(`/vendor/${vendorSlug}`)}
+    >
       <div className="overflow-hidden rounded-[18px] bg-[#f2f2f2]">
         <img
           src={image}
