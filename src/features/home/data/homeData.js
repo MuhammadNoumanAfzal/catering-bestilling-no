@@ -170,3 +170,35 @@ export const popularProducts = [
     discount: "40% Discount",
   },
 ];
+
+const vendorCollections = {
+  popular: {
+    title: "Popular Vendors",
+    description:
+      "Explore the vendors customers order from most often for everyday lunches and office catering.",
+    vendors: popularVendors,
+  },
+  featured: {
+    title: "Featured Vendors",
+    description:
+      "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.",
+    vendors: featuredVendors,
+  },
+};
+
+const productCollections = {
+  popular: {
+    title: "Popular Products",
+    description:
+      "Browse the most-ordered meals and catering picks that teams keep coming back to.",
+    products: popularProducts,
+  },
+};
+
+export function getVendorCollectionBySlug(vendorType) {
+  return vendorCollections[vendorType] ?? null;
+}
+
+export function getProductCollectionBySlug(productType) {
+  return productCollections[productType] ?? null;
+}
