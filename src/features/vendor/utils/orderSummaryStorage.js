@@ -1,3 +1,5 @@
+import { vendorProfiles } from "../data/vendorData";
+
 const STORAGE_PREFIX = "vendor-order-summary:";
 
 export function createInitialOrderSummary(vendor) {
@@ -52,4 +54,39 @@ export function writeOrderSummary(vendorSlug, orderSummary) {
     getStorageKey(vendorSlug),
     JSON.stringify(orderSummary),
   );
+}
+
+export function readAllStoredOrderSummaries() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  return vendorProfiles
+    .map((vendor) => {
+      const orderSummary = readOrderSummary(vendor);
+
+      return {
+        vendor,
+        orderSummary,
+      };
+    })
+    .filter(({ orderSummary }) => orderSummary.items.length > 0);
+}
+
+export function clearStoredOrderSummary(vendorSlug) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.sessionStorage.removeItem(getStorageKey(vendorSlug));
+}
+
+export function clearAllStoredOrderSummaries() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  vendorProfiles.forEach((vendor) => {
+    window.sessionStorage.removeItem(getStorageKey(vendor.slug));
+  });
 }
