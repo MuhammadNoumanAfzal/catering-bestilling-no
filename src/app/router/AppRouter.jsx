@@ -15,7 +15,7 @@ import SignInPage from "../../features/auth/pages/SignInPage";
 import ForgotPasswordPage from "../../features/auth/pages/ForgotPasswordPage";
 import ForgotPasswordOtpPage from "../../features/auth/pages/ForgotPasswordOtpPage";
 import ResetPasswordPage from "../../features/auth/pages/ResetPasswordPage";
-import CheckoutPage from "../../features/checkout/pages/CheckoutPage";
+import CheckoutPage from "../../features/checkOut/pages/CheckoutPage";
 
 export default function AppRouter() {
   return (
