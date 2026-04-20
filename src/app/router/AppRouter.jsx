@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
+import CheckoutLayout from "../layouts/CheckoutLayout";
 import HomePage from "../../features/home/pages/HomePage";
 import ProductListingPage from "../../features/home/pages/ProductListingPage";
 import VendorListingPage from "../../features/home/pages/VendorListingPage";
@@ -14,6 +15,7 @@ import SignInPage from "../../features/auth/pages/SignInPage";
 import ForgotPasswordPage from "../../features/auth/pages/ForgotPasswordPage";
 import ForgotPasswordOtpPage from "../../features/auth/pages/ForgotPasswordOtpPage";
 import ResetPasswordPage from "../../features/auth/pages/ResetPasswordPage";
+import CheckoutPage from "../../features/checkout/pages/CheckoutPage";
 
 export default function AppRouter() {
   return (
@@ -41,6 +43,10 @@ export default function AppRouter() {
         />
         <Route path="/order-confirmed" element={<OrderConfirmedPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+      <Route element={<CheckoutLayout />}>
+        <Route path="/checkout" element={<Navigate to="/checkout/corporate" replace />} />
+        <Route path="/checkout/:checkoutType" element={<CheckoutPage />} />
       </Route>
     </Routes>
   );

@@ -1,4 +1,5 @@
 import { LuUtensilsCrossed } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 
 const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
@@ -48,6 +49,7 @@ export default function VendorOrderSidebar({
   onDeliveryAddressChange,
   onInvoiceAddressChange,
 }) {
+  const navigate = useNavigate();
   const items = orderSummary.items.map((item) => ({
     ...item,
     price: Number(item.price ?? 0),
@@ -235,6 +237,7 @@ export default function VendorOrderSidebar({
 
               <button
                 type="button"
+                onClick={() => navigate("/checkout/corporate")}
                 className="mt-4 w-full rounded-[4px] bg-[#cf6e38] px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
               >
                 Checkout
