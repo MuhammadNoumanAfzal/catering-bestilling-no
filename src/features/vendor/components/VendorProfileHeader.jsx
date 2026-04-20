@@ -4,8 +4,8 @@ export default function VendorProfileHeader({ vendor }) {
   return (
     <div className="rounded-[16px] border border-[#e7dfd6] bg-white p-4 shadow-[0_6px_18px_rgba(31,19,8,0.04)] sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-4">
-          <div className="flex h-24 w-42 shrink-0 items-center justify-center rounded-[12px] border border-[#ddd6cd] bg-white px-1">
+        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+          <div className="flex h-20 w-full max-w-[140px] shrink-0 items-center justify-center self-center rounded-[12px] border border-[#ddd6cd] bg-white px-2 sm:h-24 sm:w-42 sm:self-start">
             <img
               src={vendor.logo}
               alt={vendor.name}
@@ -13,10 +13,12 @@ export default function VendorProfileHeader({ vendor }) {
             />
           </div>
 
-          <div className="min-w-0">
-            <h1 className="type-h2 text-[#151515]">{vendor.name}</h1>
+          <div className="min-w-0 flex-1 text-center sm:text-left">
+            <h1 className="text-[30px] font-semibold leading-[1] tracking-[-0.03em] text-[#151515] sm:type-h2">
+              {vendor.name}
+            </h1>
 
-            <div className="mt-1 flex flex-wrap items-center gap-2 type-para ">
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[15px] text-[#151515] sm:justify-start">
               <span className="inline-flex items-center gap-1">
                 <FiStar className="fill-[#f4b400] text-[#f4b400]" />
                 {vendor.rating}
@@ -24,24 +26,24 @@ export default function VendorProfileHeader({ vendor }) {
               <span>({vendor.reviewCount} reviews)</span>
             </div>
 
-            <p className="mt-1 inline-flex items-center gap-1.5 type-para text-[#7a746d]">
+            <p className="mt-2 inline-flex max-w-full items-start justify-center gap-1.5 text-[15px] leading-6 text-[#7a746d] sm:justify-start">
               <FiMapPin className="text-[13px]" />
-              {vendor.addressLine}
+              <span className="break-words">{vendor.addressLine}</span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end">
           <button
             type="button"
-            className="inline-flex items-center gap-1 cursor-pointer rounded-full border border-[#ddd6cd] px-4 py-1 text-[11px] font-medium "
+            className="inline-flex flex-1 items-center justify-center gap-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium sm:flex-none"
           >
             <FiShare2 className="text-[12px]" />
             Share
           </button>
           <button
             type="button"
-            className="rounded-full border border-[#ddd6cd] cursor-pointer px-4 py-1 text-[11px] font-medium "
+            className="flex-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium sm:flex-none"
           >
             Save
           </button>

@@ -16,7 +16,7 @@ export default function HeroSection() {
         <div className="grid min-h-[calc(100vh-88px)] items-center gap-12 px-5 py-10 md:px-6 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-14">
           <div className="md:max-w-2xl">
             <h1 className=" text-[40px] md:text-[70px] font-extrabold text-black">
-              Order Lunch 
+              Order Lunch For
               <br />
               Work or Home
             </h1>

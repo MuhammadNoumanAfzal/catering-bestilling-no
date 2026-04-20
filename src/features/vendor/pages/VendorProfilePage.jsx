@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import VendorProfileHeader from "../components/VendorProfileHeader";
 import VendorCategoryTabs from "../components/VendorCategoryTabs";
 import VendorMenuSection from "../components/VendorMenuSection";
-import VendorMenuItemModal from "../components/VendorMenuItemModal";
 import VendorOrderSidebar from "../components/VendorOrderSidebar";
 import VendorAvailabilityPopup from "../components/VendorAvailabilityPopup";
 import {
@@ -11,25 +10,16 @@ import {
   getVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
 } from "../data/vendorData";
-
-function createInitialOrderSummary(vendor) {
-  return {
-    ...vendor.orderSummary,
-    items: [],
-    deliveryDate: "2026-03-25",
-    deliveryTime: "14:30",
-    personCount: vendor.orderSummary.personCount,
-    deliveryAddress: vendor.orderSummary.deliveryAddress,
-    invoiceAddress: vendor.orderSummary.invoiceAddress,
-    tipRate: 0,
-  };
-}
+import {
+  readOrderSummary,
+  writeOrderSummary,
+} from "../utils/orderSummaryStorage";
 
 export default function VendorProfilePage() {
   const { vendorSlug } = useParams();
+  const navigate = useNavigate();
   const vendor = getVendorProfileBySlug(vendorSlug);
   const [activeCategory, setActiveCategory] = useState("All - in - One Order");
-  const [selectedItem, setSelectedItem] = useState(null);
   const [orderSummary, setOrderSummary] = useState(null);
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
@@ -39,9 +29,8 @@ export default function VendorProfilePage() {
       return;
     }
 
-    setOrderSummary(createInitialOrderSummary(vendor));
+    setOrderSummary(readOrderSummary(vendor));
     setActiveCategory("All - in - One Order");
-    setSelectedItem(null);
     setIsAvailabilityPopupDismissed(false);
   }, [vendor]);
 
@@ -52,6 +41,14 @@ export default function VendorProfilePage() {
 
     setIsAvailabilityPopupDismissed(false);
   }, [orderSummary?.deliveryDate, orderSummary?.deliveryTime]);
+
+  useEffect(() => {
+    if (!vendor || !orderSummary) {
+      return;
+    }
+
+    writeOrderSummary(vendor.slug, orderSummary);
+  }, [orderSummary, vendor]);
 
   if (!vendor) {
     return <Navigate to="/" replace />;
@@ -74,18 +71,6 @@ export default function VendorProfilePage() {
     orderSummary.deliveryTime,
     vendor.slug,
   );
-
-  const handleAddToOrder = (summaryItem) => {
-    setOrderSummary((current) => ({
-      ...current,
-      personCount:
-        current.items.length === 0
-          ? summaryItem.totalServes
-          : current.personCount + summaryItem.totalServes,
-      items: [summaryItem, ...current.items],
-    }));
-    setSelectedItem(null);
-  };
 
   return (
     <section className=" px-4 py-5 md:px-6 lg:px-8">
@@ -130,13 +115,18 @@ export default function VendorProfilePage() {
                 <VendorMenuSection
                   key={section.id}
                   section={section}
-                  onItemClick={setSelectedItem}
+                  onItemClick={(item) =>
+                    navigate(
+                      `/vendor/${vendor.slug}/menu/${encodeURIComponent(item.id)}`,
+                    )
+                  }
                 />
               ))}
             </div>
           </div>
 
           <VendorOrderSidebar
+            vendor={vendor}
             orderSummary={orderSummary}
             onRemoveItem={(itemId) =>
               setOrderSummary((current) => ({
@@ -170,19 +160,6 @@ export default function VendorProfilePage() {
           />
         </div>
       </div>
-
-      {selectedItem ? (
-        <VendorMenuItemModal
-          item={selectedItem}
-          onClose={(summaryItem) => {
-            if (summaryItem) {
-              handleAddToOrder(summaryItem);
-              return;
-            }
-            setSelectedItem(null);
-          }}
-        />
-      ) : null}
 
       {showAvailabilityPopup && !isAvailabilityPopupDismissed ? (
         <VendorAvailabilityPopup
