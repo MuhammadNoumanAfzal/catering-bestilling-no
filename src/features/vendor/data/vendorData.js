@@ -612,6 +612,20 @@ export function getVendorProfileBySlug(slug) {
   return vendorProfiles.find((vendor) => vendor.slug === slug) ?? null;
 }
 
+export function getVendorMenuItemById(vendorSlug, itemId) {
+  const vendor = getVendorProfileBySlug(vendorSlug);
+
+  if (!vendor) {
+    return null;
+  }
+
+  return (
+    vendor.menuSections
+      .flatMap((section) => section.items)
+      .find((item) => item.id === itemId) ?? null
+  );
+}
+
 export function getVendorProfileByName(name) {
   const cleanedName = formatVendorName(name).toLowerCase();
 

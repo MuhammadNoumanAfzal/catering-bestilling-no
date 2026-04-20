@@ -1,4 +1,3 @@
-import { FiTrash2 } from "react-icons/fi";
 import { LuUtensilsCrossed } from "react-icons/lu";
 
 const TIP_OPTIONS = [
@@ -12,7 +11,34 @@ function formatCurrency(value) {
   return Number(value).toFixed(2);
 }
 
+function extractAmount(value) {
+  const matched = `${value ?? ""}`.match(/(\d+(?:\.\d+)?)/);
+  return matched ? Number(matched[1]) : 0;
+}
+
+function formatDateTime(date, time) {
+  if (!date) {
+    return "";
+  }
+
+  const parsed = new Date(`${date}T${time || "00:00"}`);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return [date, time].filter(Boolean).join(", ");
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(parsed);
+}
+
 export default function VendorOrderSidebar({
+  vendor,
   orderSummary,
   onRemoveItem,
   onTipChange,
@@ -22,28 +48,28 @@ export default function VendorOrderSidebar({
   onDeliveryAddressChange,
   onInvoiceAddressChange,
 }) {
-  const itemsWithLivePrice = orderSummary.items.map((item) => ({
+  const items = orderSummary.items.map((item) => ({
     ...item,
-    price: item.unitPrice ? item.unitPrice * orderSummary.personCount : item.price,
+    price: Number(item.price ?? 0),
   }));
-
-  const foodAndBeverage = itemsWithLivePrice.reduce(
-    (total, item) => total + item.price,
-    0,
-  );
-  const restaurantDeliveryFee = foodAndBeverage;
-  const salesTax = 32.83;
+  const foodAndBeverage = items.reduce((total, item) => total + item.price, 0);
+  const restaurantDeliveryFee = extractAmount(vendor?.deliveryFee);
+  const salesTax = foodAndBeverage * 0.15;
   const tipValue =
     typeof orderSummary.tipRate === "number"
       ? foodAndBeverage * orderSummary.tipRate
       : 0;
-  const total =
-    foodAndBeverage + restaurantDeliveryFee + salesTax + tipValue;
-  const hasItems = orderSummary.items.length > 0;
+  const total = foodAndBeverage + restaurantDeliveryFee + salesTax + tipValue;
+  const hasItems = items.length > 0;
+  const formattedDateTime = formatDateTime(
+    orderSummary.deliveryDate,
+    orderSummary.deliveryTime,
+  );
+  const restaurantName = vendor?.name ?? items[0]?.vendorName ?? "Selected restaurant";
 
   return (
-    <aside className="rounded-none border-l border-[#e7dfd6] bg-[#fffdfb]">
-      <div className="sticky top-[84px] p-4">
+    <aside className="rounded-none border-l border-[#e7dfd6] bg-[#fdfbf8]">
+      <div className="sticky top-[84px] p-2 sm:p-3">
         {!hasItems ? (
           <div className="flex min-h-[720px] flex-col items-center justify-center text-center">
             <LuUtensilsCrossed className="text-[64px] text-[#9d9d9d]" />
@@ -52,188 +78,169 @@ export default function VendorOrderSidebar({
             </p>
           </div>
         ) : (
-          <>
-            <h2 className="text-center text-[20px] font-extrabold uppercase text-[#1e1e1e]">
+          <div className="border border-[#d8d2ca] bg-white px-3 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+            <h2 className="text-center text-[20px] font-extrabold uppercase tracking-[0.04em] text-[#1d1d1d]">
               Order Summary
             </h2>
 
-            <div className="mt-5 space-y-5">
-              {itemsWithLivePrice.map((item, index) => (
-                <div key={item.id} className="border-b border-[#eee5dc] pb-4">
+            <div className="mt-3 border-t border-[#ddd6cf] pt-3">
+              {items.map((item) => (
+                <div key={item.id} className="border-b border-[#e2ddd8] pb-4 pt-1">
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-[13px] font-semibold text-[#1e1e1e]">
-                        {index + 1}. {item.name}
-                      </p>
-                      {item.details.map((detail) => (
-                        <p key={detail} className="mt-1 text-[11px] text-[#7c746d]">
-                          - {detail}
-                        </p>
-                      ))}
-                    </div>
+                    <p className="text-[14px] font-medium leading-5 text-[#252525]">
+                      {item.quantity} {item.name}
+                    </p>
+                    <p className="shrink-0 text-[14px] font-semibold text-[#252525]">
+                      ${formatCurrency(item.price)}
+                    </p>
+                  </div>
 
-                    <div className="flex flex-col items-end gap-2">
-                      <p className="text-[13px] font-semibold text-[#1e1e1e]">
-                        ${formatCurrency(item.price)}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => onRemoveItem(item.id)}
-                        className="cursor-pointer text-[#cf6e38]"
-                        aria-label={`Remove ${item.name}`}
+                  <div className="mt-2 space-y-1">
+                    {(item.details ?? []).map((detail) => (
+                      <p
+                        key={detail}
+                        className="text-[12px] font-medium leading-5 text-[#8b8580]"
                       >
-                        <FiTrash2 className="text-[13px]" />
-                      </button>
-                    </div>
+                        - {detail}
+                      </p>
+                    ))}
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <p className="text-[13px] text-[#76706a]">
+                      Serves {item.totalServes ?? item.serves ?? orderSummary.personCount}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => onRemoveItem(item.id)}
+                      className="cursor-pointer text-[13px] font-medium text-[#e05b46]"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
+            </div>
 
-              <div className="border-t border-[#eee5dc] pt-4">
-                <div className="space-y-3 text-[12px] text-[#2b2b2b]">
-                  <div className="flex items-center justify-between">
-                    <span>Food & beverage</span>
-                    <span>${formatCurrency(foodAndBeverage)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Restaurant delivery fee</span>
-                    <span>${formatCurrency(restaurantDeliveryFee)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>7.0% Sales tax</span>
-                    <span>${formatCurrency(salesTax)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Tip</span>
-                    <span>${formatCurrency(tipValue)}</span>
-                  </div>
-                </div>
+            <div className="border-b border-[#e2ddd8] py-4 text-[13px] text-[#4a4a4a]">
+              <div className="flex items-center justify-between gap-3">
+                <span>Food &amp; beverage</span>
+                <span className="font-semibold text-[#252525]">
+                  ${formatCurrency(foodAndBeverage)}
+                </span>
+              </div>
+              <p className="mt-1 text-[13px] text-[#76706a]">{restaurantName}</p>
 
-                <div className="mt-5 border-t border-[#eee5dc] pt-4">
-                  <p className="text-[11px] font-semibold text-[#2b2b2b]">Tip</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {TIP_OPTIONS.map((option) => (
-                      <button
-                        key={option.label}
-                        type="button"
-                        onClick={() => onTipChange(option.value)}
-                        className={`cursor-pointer rounded-[6px] border px-3 py-1.5 text-[11px] ${
-                          orderSummary.tipRate === option.value
-                            ? "border-[#cf6e38] bg-[#fff1eb] text-[#cf6e38]"
-                            : "border-[#ddd6cd] text-[#3b3b3b]"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span>Restaurant delivery fee</span>
+                <span className="font-semibold text-[#76706a]">
+                  ${formatCurrency(restaurantDeliveryFee)}
+                </span>
+              </div>
+              <p className="mt-1 text-[13px] text-[#76706a]">This is not a driver tip</p>
 
-                <div className="mt-5 border-t border-[#eee5dc] pt-5">
-                  <p className="text-center text-[18px] font-extrabold uppercase text-[#1e1e1e]">
-                    Event Details
-                  </p>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span>Sales Tax</span>
+                <span className="font-semibold text-[#76706a]">
+                  ${formatCurrency(salesTax)}
+                </span>
+              </div>
 
-                  <div className="mt-4 space-y-5">
-                    <div>
-                      <p className="text-[11px] font-semibold text-[#2b2b2b]">
-                        Delivery Date & Time
-                      </p>
-                      <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        <input
-                          type="date"
-                          value={orderSummary.deliveryDate}
-                          onChange={(event) =>
-                            onDeliveryDateChange(event.target.value)
-                          }
-                          className="w-full rounded-[6px] border border-[#ddd6cd] px-3 py-2 text-[12px] text-[#5b5550] outline-none"
-                        />
-                        <input
-                          type="time"
-                          value={orderSummary.deliveryTime}
-                          onChange={(event) =>
-                            onDeliveryTimeChange(event.target.value)
-                          }
-                          className="w-full rounded-[6px] border border-[#ddd6cd] px-3 py-2 text-[12px] text-[#5b5550] outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-[11px] font-semibold text-[#2b2b2b]">
-                        Person Count
-                      </p>
-                      <div className="mt-2 inline-flex items-center gap-4 rounded-[6px] border border-[#ddd6cd] px-4 py-2 text-[12px] text-[#5b5550]">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            onPersonCountChange(Math.max(1, orderSummary.personCount - 1))
-                          }
-                          className="cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <span>{orderSummary.personCount}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            onPersonCountChange(orderSummary.personCount + 1)
-                          }
-                          className="cursor-pointer"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-[11px] font-semibold text-[#2b2b2b]">
-                        Delivery Address
-                      </p>
-                      <input
-                        type="text"
-                        value={orderSummary.deliveryAddress}
-                        onChange={(event) =>
-                          onDeliveryAddressChange(event.target.value)
-                        }
-                        className="mt-2 w-full rounded-[6px] border border-[#ddd6cd] px-3 py-2 text-[12px] text-[#5b5550] outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <p className="text-[11px] font-semibold text-[#2b2b2b]">
-                        Invoice Address
-                      </p>
-                      <input
-                        type="text"
-                        value={orderSummary.invoiceAddress}
-                        onChange={(event) =>
-                          onInvoiceAddressChange(event.target.value)
-                        }
-                        className="mt-2 w-full rounded-[6px] border border-[#ddd6cd] px-3 py-2 text-[12px] text-[#5b5550] outline-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-5 flex items-center justify-between border-t border-[#eee5dc] pt-4">
-                  <span className="text-[14px] font-semibold text-[#1e1e1e]">
-                    Total
-                  </span>
-                  <span className="text-[18px] font-extrabold text-[#1e1e1e]">
-                    ${formatCurrency(total)}
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  className="mt-4 w-full rounded-[6px] bg-[#cf6e38] px-4 py-3 text-[14px] font-bold text-white transition hover:bg-[#bb602d]"
-                >
-                  Checkout
-                </button>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <span>Tip</span>
+                <span className="font-semibold text-[#252525]">
+                  ${formatCurrency(tipValue)}
+                </span>
               </div>
             </div>
-          </>
+
+            <div className="border-b border-[#e2ddd8] py-4">
+              <p className="text-[13px] font-semibold text-[#252525]">Tip</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {TIP_OPTIONS.map((option) => (
+                  <button
+                    key={option.label}
+                    type="button"
+                    onClick={() => onTipChange(option.value)}
+                    className={`rounded-full border px-3 py-1 text-[13px] leading-5 ${
+                      orderSummary.tipRate === option.value
+                        ? "border-[#cf6e38] bg-[#fff3ec] text-[#cf6e38]"
+                        : "border-[#d4cfc8] bg-white text-[#555555]"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-b border-[#e2ddd8] py-4">
+              <h3 className="text-center text-[18px] font-extrabold uppercase tracking-[0.04em] text-[#1d1d1d]">
+                Event Details
+              </h3>
+
+              <div className="mt-4">
+                <p className="text-[13px] font-semibold text-[#252525]">
+                  Delivery Date &amp; Time
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDeliveryDateChange(orderSummary.deliveryDate);
+                    onDeliveryTimeChange(orderSummary.deliveryTime);
+                  }}
+                  className="mt-2 w-full border border-[#ddd6cf] px-3 py-3 text-left text-[14px] text-[#66605b]"
+                >
+                  {formattedDateTime}
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <p className="text-[13px] font-semibold text-[#252525]">Person Count</p>
+                <div className="mt-2 inline-flex items-center border border-[#d7d1ca] text-[14px] text-[#3a3a3a]">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onPersonCountChange(Math.max(1, orderSummary.personCount - 1))
+                    }
+                    className="h-8 w-8 border-r border-[#d7d1ca]"
+                  >
+                    -
+                  </button>
+                  <span className="inline-flex min-w-[40px] justify-center px-3">
+                    {orderSummary.personCount}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onPersonCountChange(orderSummary.personCount + 1)}
+                    className="h-8 w-8 border-l border-[#d7d1ca]"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-4 text-center text-[13px] text-[#55514d]">
+                <p>Location: {orderSummary.deliveryAddress}</p>
+              </div>
+            </div>
+
+            <div className="pt-3">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[14px] font-semibold text-[#252525]">Total</span>
+                <span className="text-[18px] font-semibold text-[#252525]">
+                  ${formatCurrency(total)}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="mt-4 w-full rounded-[4px] bg-[#cf6e38] px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
+              >
+                Checkout
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </aside>

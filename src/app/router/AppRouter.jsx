@@ -6,6 +6,7 @@ import VendorListingPage from "../../features/home/pages/VendorListingPage";
 import BrowseFoodTypePage from "../../features/browse/pages/BrowseFoodTypePage";
 import BrowseOccasionPage from "../../features/browse/pages/BrowseOccasionPage";
 import OrderConfirmedPage from "../../features/order/pages/OrderConfirmedPage";
+import MenuDetailsPage from "../../features/menu/pages/MenuDetailsPage";
 import VendorProfilePage from "../../features/vendor/pages/VendorProfilePage";
 import AuthLayout from "../../features/auth/components/AuthLayout";
 import SignUpPage from "../../features/auth/pages/SignUpPage";
@@ -34,6 +35,10 @@ export default function AppRouter() {
         <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
         <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
         <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
+        <Route
+          path="/vendor/:vendorSlug/menu/:itemId"
+          element={<MenuDetailsPage />}
+        />
         <Route path="/order-confirmed" element={<OrderConfirmedPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
