@@ -17,6 +17,31 @@ function extractAmount(value) {
   return matched ? Number(matched[1]) : 0;
 }
 
+function getItemServes(item, personCount) {
+  const baseServes = Number(item.totalServes ?? item.serves ?? 0);
+  return Math.max(baseServes, Number(personCount ?? 0) || 0);
+}
+
+function getItemPrice(item, personCount) {
+  const unitPrice = Number(item.unitPrice ?? 0);
+
+  if (unitPrice > 0) {
+    return unitPrice * getItemServes(item, personCount);
+  }
+
+  return Number(item.price ?? 0);
+}
+
+function sortSummaryItems(items) {
+  return [...items].sort((left, right) => {
+    if (left.isAddOn === right.isAddOn) {
+      return 0;
+    }
+
+    return left.isAddOn ? 1 : -1;
+  });
+}
+
 function formatDateTime(date, time) {
   if (!date) {
     return "";
@@ -50,9 +75,10 @@ export default function VendorOrderSidebar({
   onInvoiceAddressChange,
 }) {
   const navigate = useNavigate();
-  const items = orderSummary.items.map((item) => ({
+  const items = sortSummaryItems(orderSummary.items).map((item) => ({
     ...item,
-    price: Number(item.price ?? 0),
+    price: getItemPrice(item, orderSummary.personCount),
+    effectiveServes: getItemServes(item, orderSummary.personCount),
   }));
   const foodAndBeverage = items.reduce((total, item) => total + item.price, 0);
   const restaurantDeliveryFee = extractAmount(vendor?.deliveryFee);
@@ -67,7 +93,8 @@ export default function VendorOrderSidebar({
     orderSummary.deliveryDate,
     orderSummary.deliveryTime,
   );
-  const restaurantName = vendor?.name ?? items[0]?.vendorName ?? "Selected restaurant";
+  const restaurantName =
+    vendor?.name ?? items[0]?.vendorName ?? "Selected restaurant";
 
   return (
     <aside className="rounded-none border-l border-[#e7dfd6] bg-[#fdfbf8]">
@@ -75,24 +102,27 @@ export default function VendorOrderSidebar({
         {!hasItems ? (
           <div className="flex min-h-[720px] flex-col items-center justify-center text-center">
             <LuUtensilsCrossed className="text-[64px] text-[#9d9d9d]" />
-            <p className="mt-4 text-[16px] font-semibold text-[#1f1f1f]">
+            <p className="mt-4 type-h3 font-semibold text-[#1f1f1f]">
               Add items to your cart
             </p>
           </div>
         ) : (
           <div className="border border-[#d8d2ca] bg-white px-3 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
-            <h2 className="text-center text-[20px] font-extrabold uppercase tracking-[0.04em] text-[#1d1d1d]">
+            <h2 className="text-center type-h3 font-extrabold uppercase tracking-[0.04em] ">
               Order Summary
             </h2>
 
             <div className="mt-3 border-t border-[#ddd6cf] pt-3">
               {items.map((item) => (
-                <div key={item.id} className="border-b border-[#e2ddd8] pb-4 pt-1">
+                <div
+                  key={item.id}
+                  className="border-b border-[#e2ddd8] pb-4 pt-1"
+                >
                   <div className="flex items-start justify-between gap-3">
-                    <p className="text-[14px] font-medium leading-5 text-[#252525]">
+                    <p className="text-[14px] font-medium leading-5 type-h5 ">
                       {item.quantity} {item.name}
                     </p>
-                    <p className="shrink-0 text-[14px] font-semibold text-[#252525]">
+                    <p className="shrink-0 text-[14px] font-semibold ">
                       ${formatCurrency(item.price)}
                     </p>
                   </div>
@@ -101,7 +131,7 @@ export default function VendorOrderSidebar({
                     {(item.details ?? []).map((detail) => (
                       <p
                         key={detail}
-                        className="text-[12px] font-medium leading-5 text-[#8b8580]"
+                        className="type-para font-medium leading-5 text-[#8b8580]"
                       >
                         - {detail}
                       </p>
@@ -109,13 +139,13 @@ export default function VendorOrderSidebar({
                   </div>
 
                   <div className="mt-3 flex items-center justify-between gap-3">
-                    <p className="text-[13px] text-[#76706a]">
-                      Serves {item.totalServes ?? item.serves ?? orderSummary.personCount}
+                    <p className="type-para text-[#76706a]">
+                      Serves {item.effectiveServes}
                     </p>
                     <button
                       type="button"
                       onClick={() => onRemoveItem(item.id)}
-                      className="cursor-pointer text-[13px] font-medium text-[#e05b46]"
+                      className="cursor-pointer type-para font-medium text-[#e05b46]"
                     >
                       Delete
                     </button>
@@ -124,14 +154,14 @@ export default function VendorOrderSidebar({
               ))}
             </div>
 
-            <div className="border-b border-[#e2ddd8] py-4 text-[13px] text-[#4a4a4a]">
+            <div className="border-b border-[#e2ddd8] py-4 type-para ">
               <div className="flex items-center justify-between gap-3">
                 <span>Food &amp; beverage</span>
-                <span className="font-semibold text-[#252525]">
+                <span className="font-semibold ">
                   ${formatCurrency(foodAndBeverage)}
                 </span>
               </div>
-              <p className="mt-1 text-[13px] text-[#76706a]">{restaurantName}</p>
+              <p className="mt-1 type-para text-[#76706a]">{restaurantName}</p>
 
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>Restaurant delivery fee</span>
@@ -139,7 +169,9 @@ export default function VendorOrderSidebar({
                   ${formatCurrency(restaurantDeliveryFee)}
                 </span>
               </div>
-              <p className="mt-1 text-[13px] text-[#76706a]">This is not a driver tip</p>
+              <p className="mt-1 type-para text-[#76706a]">
+                This is not a driver tip
+              </p>
 
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>Sales Tax</span>
@@ -150,21 +182,21 @@ export default function VendorOrderSidebar({
 
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>Tip</span>
-                <span className="font-semibold text-[#252525]">
+                <span className="font-semibold ">
                   ${formatCurrency(tipValue)}
                 </span>
               </div>
             </div>
 
             <div className="border-b border-[#e2ddd8] py-4">
-              <p className="text-[13px] font-semibold text-[#252525]">Tip</p>
+              <p className="text-[13px] font-semibold ">Tip</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {TIP_OPTIONS.map((option) => (
                   <button
                     key={option.label}
                     type="button"
                     onClick={() => onTipChange(option.value)}
-                    className={`rounded-full border px-3 py-1 text-[13px] leading-5 ${
+                    className={`rounded-full cursor-pointer border px-3 py-1 text-[13px] leading-5 ${
                       orderSummary.tipRate === option.value
                         ? "border-[#cf6e38] bg-[#fff3ec] text-[#cf6e38]"
                         : "border-[#d4cfc8] bg-white text-[#555555]"
@@ -177,12 +209,12 @@ export default function VendorOrderSidebar({
             </div>
 
             <div className="border-b border-[#e2ddd8] py-4">
-              <h3 className="text-center text-[18px] font-extrabold uppercase tracking-[0.04em] text-[#1d1d1d]">
+              <h3 className="text-center type-h3 font-extrabold uppercase tracking-[0.04em] text-[#1d1d1d]">
                 Event Details
               </h3>
 
               <div className="mt-4">
-                <p className="text-[13px] font-semibold text-[#252525]">
+                <p className="type-para font-semibold ">
                   Delivery Date &amp; Time
                 </p>
                 <button
@@ -198,14 +230,16 @@ export default function VendorOrderSidebar({
               </div>
 
               <div className="mt-4">
-                <p className="text-[13px] font-semibold text-[#252525]">Person Count</p>
+                <p className="type-para font-semibold ">Person Count</p>
                 <div className="mt-2 inline-flex items-center border border-[#d7d1ca] text-[14px] text-[#3a3a3a]">
                   <button
                     type="button"
                     onClick={() =>
-                      onPersonCountChange(Math.max(1, orderSummary.personCount - 1))
+                      onPersonCountChange(
+                        Math.max(1, orderSummary.personCount - 1),
+                      )
                     }
-                    className="h-8 w-8 border-r border-[#d7d1ca]"
+                    className="h-8 w-8 border-r cursor-pointer border-[#d7d1ca]"
                   >
                     -
                   </button>
@@ -214,23 +248,25 @@ export default function VendorOrderSidebar({
                   </span>
                   <button
                     type="button"
-                    onClick={() => onPersonCountChange(orderSummary.personCount + 1)}
-                    className="h-8 w-8 border-l border-[#d7d1ca]"
+                    onClick={() =>
+                      onPersonCountChange(orderSummary.personCount + 1)
+                    }
+                    className="h-8 w-8 border-l cursor-pointer border-[#d7d1ca]"
                   >
                     +
                   </button>
                 </div>
               </div>
 
-              <div className="mt-4 text-center text-[13px] text-[#55514d]">
+              <div className="mt-4 text-center type-para text-[#55514d]">
                 <p>Location: {orderSummary.deliveryAddress}</p>
               </div>
             </div>
 
             <div className="pt-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[14px] font-semibold text-[#252525]">Total</span>
-                <span className="text-[18px] font-semibold text-[#252525]">
+                <span className="type-h4 font-semibold ">Total</span>
+                <span className="type-h4  font-semibold ">
                   ${formatCurrency(total)}
                 </span>
               </div>
@@ -238,7 +274,7 @@ export default function VendorOrderSidebar({
               <button
                 type="button"
                 onClick={() => navigate("/checkout/corporate")}
-                className="mt-4 w-full rounded-[4px] bg-[#cf6e38] px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
+                className="mt-4 w-full cursor-pointer rounded-[4px] bg-[#cf6e38] px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
               >
                 Checkout
               </button>
