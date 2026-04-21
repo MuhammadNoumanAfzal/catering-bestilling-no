@@ -289,6 +289,9 @@ export default function MenuDetailsPage() {
             onInvoiceAddressChange={(invoiceAddress) =>
               setOrderSummary((current) => ({ ...current, invoiceAddress }))
             }
+            onTablewareChange={(tableware) =>
+              setOrderSummary((current) => ({ ...current, tableware }))
+            }
           />
         </div>
 

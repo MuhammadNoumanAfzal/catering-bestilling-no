@@ -1,4 +1,9 @@
 import { Link } from "react-router-dom";
+import TablewareModal, {
+  getSelectedTablewareCount,
+  getTablewareSummaryText,
+} from "../../../components/shared/TablewareModal";
+import { useState } from "react";
 
 const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
@@ -6,6 +11,7 @@ const TIP_OPTIONS = [
   { label: "20%", value: 0.2 },
   { label: "Other", value: "other" },
 ];
+const SALES_TAX_RATE = 0.15;
 
 function formatCurrency(value) {
   return Number(value ?? 0).toFixed(2);
@@ -45,14 +51,48 @@ function sortSummaryItems(items) {
   });
 }
 
-function VendorSummaryCard({ cart, onTipChange, onRemoveItem }) {
+function IncludedTablewareRow({ tableware, onEdit }) {
+  const selectedCount = getSelectedTablewareCount(tableware);
+  const summaryText = getTablewareSummaryText(tableware);
+
+  return (
+    <div className="pb-3 pt-3">
+      <div className="flex items-start justify-between gap-3">
+        <p className="type-subpara text-[#5f5a55]">{selectedCount} Tableware</p>
+        <p className="type-subpara font-semibold text-[#252525]">$0.00</p>
+      </div>
+
+      <p className="mt-1 text-[11px] leading-4 text-[#8b8580]">
+        - {summaryText}
+      </p>
+
+      <div className="mt-2 flex justify-end">
+        <button
+          type="button"
+          onClick={onEdit}
+          className="type-subpara cursor-pointer text-[#4f7cff]"
+        >
+          Edit
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function VendorSummaryCard({
+  cart,
+  onTipChange,
+  onRemoveItem,
+  onTablewareChange,
+}) {
+  const [isTablewareModalOpen, setIsTablewareModalOpen] = useState(false);
   const items = sortSummaryItems(cart.orderSummary.items).map((item) => ({
     ...item,
     effectivePrice: getItemPrice(item, cart.orderSummary.personCount),
   }));
   const subtotal = items.reduce((total, item) => total + item.effectivePrice, 0);
   const deliveryFee = extractAmount(cart.vendor.deliveryFee);
-  const salesTax = subtotal * 0.07;
+  const salesTax = subtotal * SALES_TAX_RATE;
   const tipValue = getTipValue(cart.orderSummary, subtotal);
 
   return (
@@ -97,6 +137,11 @@ function VendorSummaryCard({ cart, onTipChange, onRemoveItem }) {
               ) : null}
             </div>
           ))}
+
+          <IncludedTablewareRow
+            tableware={cart.orderSummary.tableware}
+            onEdit={() => setIsTablewareModalOpen(true)}
+          />
         </div>
 
         <div className="mt-4">
@@ -113,7 +158,7 @@ function VendorSummaryCard({ cart, onTipChange, onRemoveItem }) {
             <span className="font-semibold">${formatCurrency(deliveryFee)}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <span>7.0% Sales tax</span>
+            <span>Sales Tax</span>
             <span className="font-semibold">${formatCurrency(salesTax)}</span>
           </div>
           <div className="flex items-center justify-between gap-3">
@@ -139,6 +184,16 @@ function VendorSummaryCard({ cart, onTipChange, onRemoveItem }) {
           ))}
         </div>
       </div>
+
+      <TablewareModal
+        isOpen={isTablewareModalOpen}
+        initialValue={cart.orderSummary.tableware}
+        onClose={() => setIsTablewareModalOpen(false)}
+        onSave={(tableware) => {
+          onTablewareChange(cart.vendor.slug, tableware);
+          setIsTablewareModalOpen(false);
+        }}
+      />
     </section>
   );
 }
@@ -147,6 +202,7 @@ export default function CheckoutSummaryPanel({
   carts,
   onTipChange,
   onRemoveItem,
+  onTablewareChange,
 }) {
   const totals = carts.reduce(
     (accumulator, cart) => {
@@ -156,7 +212,7 @@ export default function CheckoutSummaryPanel({
         0,
       );
       const deliveryFee = extractAmount(cart.vendor.deliveryFee);
-      const salesTax = subtotal * 0.07;
+      const salesTax = subtotal * SALES_TAX_RATE;
       const tipValue = getTipValue(cart.orderSummary, subtotal);
 
       return {
@@ -182,6 +238,7 @@ export default function CheckoutSummaryPanel({
               cart={cart}
               onTipChange={onTipChange}
               onRemoveItem={onRemoveItem}
+              onTablewareChange={onTablewareChange}
             />
           ))}
 
