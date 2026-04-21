@@ -221,6 +221,22 @@ export default function CheckoutPage() {
     );
   };
 
+  const handleTablewareChange = (vendorSlug, tableware) => {
+    setCarts((current) =>
+      current.map((cart) =>
+        cart.vendor.slug === vendorSlug
+          ? {
+              ...cart,
+              orderSummary: {
+                ...cart.orderSummary,
+                tableware,
+              },
+            }
+          : cart,
+      ),
+    );
+  };
+
   const handleRemoveItem = (vendorSlug, itemId) => {
     setCarts((current) =>
       current
@@ -241,7 +257,9 @@ export default function CheckoutPage() {
               personCount: Math.max(
                 1,
                 cart.orderSummary.personCount -
-                  Number(removedItem?.totalServes ?? removedItem?.serves ?? 0),
+                  (removedItem?.isAddOn
+                    ? 0
+                    : Number(removedItem?.totalServes ?? removedItem?.serves ?? 0)),
               ),
             },
           };
@@ -505,6 +523,7 @@ export default function CheckoutPage() {
                   carts={carts}
                   onTipChange={handleTipChange}
                   onRemoveItem={handleRemoveItem}
+                  onTablewareChange={handleTablewareChange}
                 />
               ) : (
                 <aside className="flex min-h-[360px] items-center justify-center border-l border-[#d8d2ca] bg-white p-6 text-center">

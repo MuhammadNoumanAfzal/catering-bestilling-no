@@ -165,6 +165,9 @@ export default function VendorProfilePage() {
             onInvoiceAddressChange={(invoiceAddress) =>
               setOrderSummary((current) => ({ ...current, invoiceAddress }))
             }
+            onTablewareChange={(tableware) =>
+              setOrderSummary((current) => ({ ...current, tableware }))
+            }
           />
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { vendorProfiles } from "../data/vendorData";
+import { getDefaultTableware } from "../../../components/shared/TablewareModal";
 
 const STORAGE_PREFIX = "vendor-order-summary:";
 
@@ -12,6 +13,7 @@ export function createInitialOrderSummary(vendor) {
     deliveryAddress: vendor.orderSummary.deliveryAddress,
     invoiceAddress: vendor.orderSummary.invoiceAddress,
     tipRate: 0,
+    tableware: getDefaultTableware(),
   };
 }
 
@@ -39,6 +41,10 @@ export function readOrderSummary(vendor) {
       ...fallback,
       ...parsedValue,
       items: Array.isArray(parsedValue?.items) ? parsedValue.items : [],
+      tableware: {
+        ...fallback.tableware,
+        ...(parsedValue?.tableware ?? {}),
+      },
     };
   } catch {
     return fallback;
