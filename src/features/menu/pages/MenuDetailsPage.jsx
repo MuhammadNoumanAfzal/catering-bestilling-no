@@ -17,6 +17,7 @@ import {
   readOrderSummary,
   writeOrderSummary,
 } from "../../vendor/utils/orderSummaryStorage";
+import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
@@ -187,6 +188,8 @@ export default function MenuDetailsPage() {
           : current.personCount + summaryItem.totalServes,
       items: [summaryItem, ...current.items],
     }));
+
+    showSuccessToast(`${menuItem.modal.heading} added to cart`);
   };
 
   const showAvailabilityPopup = !isVendorDeliverySlotAvailable(
@@ -256,7 +259,14 @@ export default function MenuDetailsPage() {
           <VendorOrderSidebar
             vendor={vendor}
             orderSummary={orderSummary}
-            onRemoveItem={(itemKey) =>
+            onRemoveItem={async (itemKey) => {
+              const itemName = orderSummary.items.find((item) => item.id === itemKey)?.name;
+              const result = await confirmRemoveItem(itemName);
+
+              if (!result.isConfirmed) {
+                return;
+              }
+
               setOrderSummary((current) => {
                 const removedItem = current.items.find((item) => item.id === itemKey);
 
@@ -269,8 +279,8 @@ export default function MenuDetailsPage() {
                   ),
                   items: current.items.filter((item) => item.id !== itemKey),
                 };
-              })
-            }
+              });
+            }}
             onTipChange={(tipRate) =>
               setOrderSummary((current) => ({ ...current, tipRate }))
             }

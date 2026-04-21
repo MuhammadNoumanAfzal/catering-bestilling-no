@@ -14,6 +14,7 @@ import {
   readOrderSummary,
   writeOrderSummary,
 } from "../utils/orderSummaryStorage";
+import { confirmRemoveItem } from "../../../utils/alerts";
 
 export default function VendorProfilePage() {
   const { vendorSlug } = useParams();
@@ -132,7 +133,14 @@ export default function VendorProfilePage() {
           <VendorOrderSidebar
             vendor={vendor}
             orderSummary={orderSummary}
-            onRemoveItem={(itemId) =>
+            onRemoveItem={async (itemId) => {
+              const itemName = orderSummary.items.find((item) => item.id === itemId)?.name;
+              const result = await confirmRemoveItem(itemName);
+
+              if (!result.isConfirmed) {
+                return;
+              }
+
               setOrderSummary((current) => {
                 const removedItem = current.items.find((item) => item.id === itemId);
 
@@ -145,8 +153,8 @@ export default function VendorProfilePage() {
                   ),
                   items: current.items.filter((item) => item.id !== itemId),
                 };
-              })
-            }
+              });
+            }}
             onTipChange={(tipRate) =>
               setOrderSummary((current) => ({ ...current, tipRate }))
             }

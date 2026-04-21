@@ -8,6 +8,11 @@ import {
   readAllStoredOrderSummaries,
   writeOrderSummary,
 } from "../../vendor/utils/orderSummaryStorage";
+import {
+  confirmPlaceOrder,
+  confirmRemoveItem,
+  showOrderPlacedSuccess,
+} from "../../../utils/alerts";
 
 const VALID_TYPES = ["corporate", "private"];
 
@@ -238,7 +243,15 @@ export default function CheckoutPage() {
     );
   };
 
-  const handleRemoveItem = (vendorSlug, itemId) => {
+  const handleRemoveItem = async (vendorSlug, itemId) => {
+    const targetCart = carts.find((cart) => cart.vendor.slug === vendorSlug);
+    const itemName = targetCart?.orderSummary.items.find((item) => item.id === itemId)?.name;
+    const result = await confirmRemoveItem(itemName);
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     setCarts((current) =>
       current
         .map((cart) => {
@@ -269,8 +282,15 @@ export default function CheckoutPage() {
     );
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
+    const result = await confirmPlaceOrder();
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     clearAllStoredOrderSummaries();
+    await showOrderPlacedSuccess();
     navigate("/order-confirmed");
   };
 
