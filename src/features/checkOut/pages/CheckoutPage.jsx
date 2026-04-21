@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { FiBriefcase, FiUser } from "react-icons/fi";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import CheckoutHeader from "../components/CheckoutHeader";
 import CheckoutSummaryPanel from "../components/CheckoutSummaryPanel";
@@ -70,11 +71,11 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="type-subpara mb-1 block text-[#2d2d2d]">{label}</span>
+      <span className="type-h5 mb-3 block text-[#2d2d2d]">{label}</span>
       <input
         {...props}
         placeholder={placeholder}
-        className={`type-subpara h-8 w-full rounded-[2px] border border-[#d9d1c7] bg-white px-2 text-[#2d2d2d] outline-none placeholder:text-[#a49b92] ${inputClassName}`}
+        className={`type-para h-8 w-full rounded-[2px] border border-[#d9d1c7] bg-white px-2 text-[#2d2d2d] outline-none placeholder:text-[#a49b92] ${inputClassName}`}
       />
     </label>
   );
@@ -83,8 +84,8 @@ function Field({
 function Section({ title, children }) {
   return (
     <section className="rounded-[6px] bg-white p-3 shadow-[0_1px_4px_rgba(26,18,10,0.08)]">
-      <p className="type-subpara text-[#2d2d2d]">{title}</p>
-      <div className="mt-3">{children}</div>
+      <p className="type-h3 text-[#2d2d2d]">{title}</p>
+      <div className="mt-3 ">{children}</div>
     </section>
   );
 }
@@ -286,31 +287,40 @@ export default function CheckoutPage() {
       <CheckoutHeader />
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="overflow-hidden border border-[#d8d2ca] bg-[#f7f5f2]">
+        <div className="overflow-hidden border border-[#d8d2ca]">
           <div className="grid lg:grid-cols-[minmax(0,1fr)_380px]">
-            <section className="min-w-0 bg-[#f7f5f2] p-3 sm:p-4">
-              <Section title="Customer type">
-                <div className="grid grid-cols-2 gap-2">
+            <section className="min-w-0  p-3 sm:p-4">
+              <section className="rounded-[10px] border border-[#e6dfd7] bg-white p-3 shadow-[0_2px_10px_rgba(26,18,10,0.08)]">
+                <div className="flex items-center gap-2 text-[#222222]">
+                  <FiUser className="type-h3 text-[#d46331]" />
+                  <p className="type-h3 font-semibold leading-none">
+                    Customer type
+                  </p>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-4 type-h5">
                   {VALID_TYPES.map((type) => {
                     const isActive = normalizedType === type;
+                    const Icon = type === "corporate" ? FiBriefcase : FiUser;
 
                     return (
                       <button
                         key={type}
                         type="button"
                         onClick={() => handleTypeChange(type)}
-                        className={`type-subpara cursor-pointer rounded-[4px] border px-3 py-2 transition ${
+                        className={`flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[4px] border text-[14px] font-medium transition ${
                           isActive
-                            ? "border-[#efc0ac] bg-[#fff0ea] text-[#d46331]"
-                            : "border-[#d8d2ca] bg-white text-[#6b655f]"
+                            ? "border-[#f08a61] bg-[#fff3ee] text-[#d46331]"
+                            : "border-[#c9c4bd] bg-white text-[#6b655f]"
                         }`}
                       >
-                        {MODE_LABELS[type]}
+                        <Icon className="type-h3 " />
+                        <span>{MODE_LABELS[type]}</span>
                       </button>
                     );
                   })}
                 </div>
-              </Section>
+              </section>
 
               <div className="mt-3 space-y-3">
                 <Section title="Contact Info">
@@ -326,7 +336,7 @@ export default function CheckoutPage() {
                         className="sm:col-span-2"
                       />
                       <Field
-                        label="Organisasjonsnummer"
+                        label="Organization number"
                         value={formState.organizationNumber}
                         onChange={(event) =>
                           updateField("organizationNumber", event.target.value)
@@ -501,7 +511,7 @@ export default function CheckoutPage() {
 
                 <Section title="Additional Info">
                   <label className="block">
-                    <span className="type-subpara mb-1 block text-[#2d2d2d]">
+                    <span className="type-para mb-1 block text-[#2d2d2d]">
                       Order notes / Allergens &amp; Dietary Requirements
                     </span>
                     <textarea
@@ -524,6 +534,7 @@ export default function CheckoutPage() {
                   onTipChange={handleTipChange}
                   onRemoveItem={handleRemoveItem}
                   onTablewareChange={handleTablewareChange}
+                  onPlaceOrder={handlePlaceOrder}
                 />
               ) : (
                 <aside className="flex min-h-[360px] items-center justify-center border-l border-[#d8d2ca] bg-white p-6 text-center">
@@ -535,25 +546,6 @@ export default function CheckoutPage() {
                   </div>
                 </aside>
               )}
-
-              <div className="border-l border-t border-[#d8d2ca] bg-white px-4 py-4">
-                <p className="type-subpara text-[#8b8580]">
-                  I agree to the Terms &amp; Conditions and complete payment for
-                  this order.
-                </p>
-                <button
-                  type="button"
-                  onClick={handlePlaceOrder}
-                  disabled={!hasItems}
-                  className={`type-h6 mt-3 w-full rounded-[4px] px-4 py-3 text-white transition ${
-                    hasItems
-                      ? "cursor-pointer bg-[#cf6e38] hover:bg-[#bb602d]"
-                      : "cursor-not-allowed bg-[#d7cec6]"
-                  }`}
-                >
-                  Place Order
-                </button>
-              </div>
             </div>
           </div>
         </div>

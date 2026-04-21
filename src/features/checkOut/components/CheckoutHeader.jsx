@@ -5,13 +5,13 @@ export default function CheckoutHeader() {
   const navigate = useNavigate();
 
   return (
-    <header className="border-b border-[#d9d1c7] bg-white">
+    <header className="border-b border-[#d9d1c7] bg-[#f5f2ee]">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#ddd6cd] text-[#2b2b2b] transition hover:border-[#c85f33] hover:text-[#c85f33]"
+            className="inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-[#ddd6cd] text-[#2b2b2b] transition hover:border-[#c85f33] hover:text-[#c85f33]"
             aria-label="Go back"
           >
             <FiArrowLeft className="text-[18px]" />
@@ -21,12 +21,12 @@ export default function CheckoutHeader() {
             <img
               src="/home/logo.png"
               alt="Lunsjavtale"
-              className="h-10 w-auto object-contain"
+              className="h-16 w-auto object-contain"
             />
           </Link>
         </div>
 
-        <p className="type-h6 hidden text-[#2b2b2b] sm:block">
+        <p className="type-h4 hidden text-[#2b2b2b] sm:block">
           Checkout
         </p>
       </div>

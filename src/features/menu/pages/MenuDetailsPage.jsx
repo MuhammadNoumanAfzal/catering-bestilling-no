@@ -14,7 +14,7 @@ import {
   isVendorDeliverySlotAvailable,
 } from "../../vendor/data/vendorData";
 import {
-  createInitialOrderSummary,
+  readOrderSummary,
   writeOrderSummary,
 } from "../../vendor/utils/orderSummaryStorage";
 
@@ -40,7 +40,7 @@ export default function MenuDetailsPage() {
       return;
     }
 
-    setOrderSummary(createInitialOrderSummary(vendor));
+    setOrderSummary(readOrderSummary(vendor));
     setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");
     setSelectedRequired(menuItem.modal.requiredSelection.options[0] ?? "");
     setSelectedOptional({});
