@@ -189,6 +189,18 @@ export default function CheckoutPage() {
     setFormState((current) => ({ ...current, [key]: value }));
   };
 
+  const updateCartField = (key, value) => {
+    setCarts((current) =>
+      current.map((cart) => ({
+        ...cart,
+        orderSummary: {
+          ...cart.orderSummary,
+          [key]: value,
+        },
+      })),
+    );
+  };
+
   const handleTypeChange = (nextType) => {
     navigate(`/checkout/${nextType}`);
   };
@@ -410,14 +422,20 @@ export default function CheckoutPage() {
                       label="Date"
                       type="date"
                       value={formState.date}
-                      onChange={(event) => updateField("date", event.target.value)}
+                      onChange={(event) => {
+                        updateField("date", event.target.value);
+                        updateCartField("deliveryDate", event.target.value);
+                      }}
                       inputClassName="cursor-pointer"
                     />
                     <Field
                       label="Time"
                       type="time"
                       value={formState.time}
-                      onChange={(event) => updateField("time", event.target.value)}
+                      onChange={(event) => {
+                        updateField("time", event.target.value);
+                        updateCartField("deliveryTime", event.target.value);
+                      }}
                       inputClassName="cursor-pointer"
                     />
                   </div>
@@ -430,10 +448,14 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          updateField(
-                            "personCount",
-                            Math.max(1, Number(formState.personCount) - 1),
-                          )
+                          {
+                            const nextPersonCount = Math.max(
+                              1,
+                              Number(formState.personCount) - 1,
+                            );
+                            updateField("personCount", nextPersonCount);
+                            updateCartField("personCount", nextPersonCount);
+                          }
                         }
                         className="type-subpara h-8 w-8 cursor-pointer border-r border-[#d9d1c7] text-[#2d2d2d]"
                       >
@@ -445,10 +467,11 @@ export default function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          updateField(
-                            "personCount",
-                            Number(formState.personCount) + 1,
-                          )
+                          {
+                            const nextPersonCount = Number(formState.personCount) + 1;
+                            updateField("personCount", nextPersonCount);
+                            updateCartField("personCount", nextPersonCount);
+                          }
                         }
                         className="type-subpara h-8 w-8 cursor-pointer border-l border-[#d9d1c7] text-[#2d2d2d]"
                       >

@@ -71,6 +71,54 @@ export default function MenuDetailsPage() {
     );
   }, [menuItem, vendor]);
 
+  useEffect(() => {
+    if (!menuItem || !addOnItems.length) {
+      return;
+    }
+
+    setOrderSummary((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const syncedAddOnItems = Object.entries(selectedOptional)
+        .filter(([, quantity]) => quantity > 0)
+        .map(([key, quantity]) => {
+          const matchedOption = addOnItems.find(
+            (option) => `${option.groupTitle}:${option.label}` === key,
+          );
+
+          if (!matchedOption) {
+            return null;
+          }
+
+          return {
+            id: `addon-${menuItem.id}-${key}`,
+            addOnKey: key,
+            parentMenuItemId: menuItem.id,
+            name: matchedOption.label,
+            quantity,
+            serves: current.personCount,
+            totalServes: current.personCount,
+            unitPrice: Number(matchedOption.price) * quantity,
+            price: Number(matchedOption.price) * quantity * current.personCount,
+            isAddOn: true,
+            details: [`Qty: ${quantity}`, "Add-on item"],
+          };
+        })
+        .filter(Boolean);
+
+      const remainingItems = current.items.filter(
+        (item) => !(item.isAddOn && item.parentMenuItemId === menuItem.id),
+      );
+
+      return {
+        ...current,
+        items: [...remainingItems, ...syncedAddOnItems],
+      };
+    });
+  }, [addOnItems, menuItem, selectedOptional]);
+
   const includedMenuItems = useMemo(
     () => [
       { label: "Seasonal salad", image: menuItem.image },
@@ -110,9 +158,6 @@ export default function MenuDetailsPage() {
   const handleAddToCart = () => {
     const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
     const totalServes = menuItem.serves * quantityCount;
-    const selectedAddOns = Object.entries(selectedOptional)
-      .filter(([, quantity]) => quantity > 0)
-      .map(([key, quantity]) => `${key.split(":")[1]} x${quantity}`);
 
     const summaryItem = {
       id: `${menuItem.id}-${Date.now()}`,
@@ -126,7 +171,6 @@ export default function MenuDetailsPage() {
         `Serves ${menuItem.serves}`,
         selectedQuantity,
         selectedRequired,
-        ...selectedAddOns,
         vendorNote ? `Note: ${vendorNote}` : null,
       ].filter(Boolean),
     };
@@ -134,7 +178,7 @@ export default function MenuDetailsPage() {
     setOrderSummary((current) => ({
       ...current,
       personCount:
-        current.items.length === 0
+        current.items.filter((item) => !item.isAddOn).length === 0
           ? summaryItem.totalServes
           : current.personCount + summaryItem.totalServes,
       items: [summaryItem, ...current.items],
@@ -196,6 +240,9 @@ export default function MenuDetailsPage() {
                 onPersonCountChange={(personCount) =>
                   setOrderSummary((current) => ({ ...current, personCount }))
                 }
+                onDeliveryAddressChange={(deliveryAddress) =>
+                  setOrderSummary((current) => ({ ...current, deliveryAddress }))
+                }
                 onVendorNoteChange={setVendorNote}
                 onAddToCart={handleAddToCart}
               />
@@ -206,15 +253,19 @@ export default function MenuDetailsPage() {
             vendor={vendor}
             orderSummary={orderSummary}
             onRemoveItem={(itemKey) =>
-              setOrderSummary((current) => ({
-                ...current,
-                personCount: Math.max(
-                  1,
-                  current.personCount -
-                    (current.items.find((item) => item.id === itemKey)?.totalServes ?? 0),
-                ),
-                items: current.items.filter((item) => item.id !== itemKey),
-              }))
+              setOrderSummary((current) => {
+                const removedItem = current.items.find((item) => item.id === itemKey);
+
+                return {
+                  ...current,
+                  personCount: Math.max(
+                    1,
+                    current.personCount -
+                      (removedItem?.isAddOn ? 0 : (removedItem?.totalServes ?? 0)),
+                  ),
+                  items: current.items.filter((item) => item.id !== itemKey),
+                };
+              })
             }
             onTipChange={(tipRate) =>
               setOrderSummary((current) => ({ ...current, tipRate }))

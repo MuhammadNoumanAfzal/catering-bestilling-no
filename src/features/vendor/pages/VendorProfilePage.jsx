@@ -129,15 +129,19 @@ export default function VendorProfilePage() {
             vendor={vendor}
             orderSummary={orderSummary}
             onRemoveItem={(itemId) =>
-              setOrderSummary((current) => ({
-                ...current,
-                personCount: Math.max(
-                  1,
-                  current.personCount -
-                    (current.items.find((item) => item.id === itemId)?.totalServes ?? 0),
-                ),
-                items: current.items.filter((item) => item.id !== itemId),
-              }))
+              setOrderSummary((current) => {
+                const removedItem = current.items.find((item) => item.id === itemId);
+
+                return {
+                  ...current,
+                  personCount: Math.max(
+                    1,
+                    current.personCount -
+                      (removedItem?.isAddOn ? 0 : (removedItem?.totalServes ?? 0)),
+                  ),
+                  items: current.items.filter((item) => item.id !== itemId),
+                };
+              })
             }
             onTipChange={(tipRate) =>
               setOrderSummary((current) => ({ ...current, tipRate }))

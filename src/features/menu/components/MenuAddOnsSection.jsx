@@ -2,17 +2,17 @@ import { formatCurrency } from "./menuDetailsUtils";
 
 function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
   return (
-    <article className="w-[calc(50%-0.375rem)] shrink-0 overflow-hidden rounded-[16px] border border-[#d9d0c8] bg-white shadow-[0_4px_12px_rgba(39,24,13,0.06)] sm:w-[calc((100%-0.75rem)/3)] lg:w-[calc((100%-1.5rem)/4)] xl:w-[calc((100%-2.25rem)/5)]">
+    <article className="w-[calc(50%-0.375rem)] shrink-0 overflow-hidden rounded-[16px] border border-[#d9d0c8] bg-white shadow-[0_4px_12px_rgba(39,24,13,0.06)] sm:w-[calc((100%-0.75rem)/3)] lg:w-[calc((100%-3rem)/5)] xl:w-[calc((100%-5.25rem)/10 )]">
       <img
         src={option.image}
         alt={option.label}
-        className="h-[84px] w-full object-cover"
+        className="h-[104px] w-full object-cover"
       />
       <div className="p-2.5">
-        <p className="text-[13px] font-semibold leading-5 text-[#1d1713]">
+        <p className="text-para font-semibold leading-5 text-[#1d1713]">
           {option.label}
         </p>
-        <p className="mt-1 text-[12px] text-[#7d736b]">
+        <p className="mt-1 type-para text-[#7d736b]">
           NOK {formatCurrency(option.price)}
         </p>
 

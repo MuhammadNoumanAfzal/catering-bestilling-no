@@ -20,11 +20,37 @@ function getTipValue(summary, subtotal) {
   return typeof summary.tipRate === "number" ? subtotal * summary.tipRate : 0;
 }
 
+function getItemServes(item, personCount) {
+  const baseServes = Number(item.totalServes ?? item.serves ?? 0);
+  return Math.max(baseServes, Number(personCount ?? 0) || 0);
+}
+
+function getItemPrice(item, personCount) {
+  const unitPrice = Number(item.unitPrice ?? 0);
+
+  if (unitPrice > 0) {
+    return unitPrice * getItemServes(item, personCount);
+  }
+
+  return Number(item.price ?? 0);
+}
+
+function sortSummaryItems(items) {
+  return [...items].sort((left, right) => {
+    if (left.isAddOn === right.isAddOn) {
+      return 0;
+    }
+
+    return left.isAddOn ? 1 : -1;
+  });
+}
+
 function VendorSummaryCard({ cart, onTipChange, onRemoveItem }) {
-  const subtotal = cart.orderSummary.items.reduce(
-    (total, item) => total + Number(item.price ?? 0),
-    0,
-  );
+  const items = sortSummaryItems(cart.orderSummary.items).map((item) => ({
+    ...item,
+    effectivePrice: getItemPrice(item, cart.orderSummary.personCount),
+  }));
+  const subtotal = items.reduce((total, item) => total + item.effectivePrice, 0);
   const deliveryFee = extractAmount(cart.vendor.deliveryFee);
   const salesTax = subtotal * 0.07;
   const tipValue = getTipValue(cart.orderSummary, subtotal);
@@ -47,7 +73,7 @@ function VendorSummaryCard({ cart, onTipChange, onRemoveItem }) {
         </div>
 
         <div className="mt-3 border-l-2 border-[#c8c0b7] pl-3">
-          {cart.orderSummary.items.map((item) => (
+          {items.map((item) => (
             <div key={item.id} className="pb-3 last:pb-0">
               <div className="flex items-start justify-between gap-3">
                 <p className="type-subpara text-[#5f5a55]">
@@ -125,7 +151,8 @@ export default function CheckoutSummaryPanel({
   const totals = carts.reduce(
     (accumulator, cart) => {
       const subtotal = cart.orderSummary.items.reduce(
-        (sum, item) => sum + Number(item.price ?? 0),
+        (sum, item) =>
+          sum + getItemPrice(item, cart.orderSummary.personCount),
         0,
       );
       const deliveryFee = extractAmount(cart.vendor.deliveryFee);
