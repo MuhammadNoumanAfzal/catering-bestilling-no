@@ -32,6 +32,10 @@ export default function MenuDetailsPage() {
   const addOnsSliderRef = useRef(null);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [vendorSlug, itemId]);
+
+  useEffect(() => {
     if (!vendor || !menuItem) {
       return;
     }
