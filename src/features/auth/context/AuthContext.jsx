@@ -16,7 +16,7 @@ function readStoredUser() {
   }
 
   try {
-    const savedUser = window.localStorage.getItem(AUTH_STORAGE_KEY);
+    const savedUser = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
     return savedUser ? JSON.parse(savedUser) : null;
   } catch {
     return null;
@@ -31,12 +31,15 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    // Remove legacy persisted auth so users are not auto-logged in from old sessions.
+    window.localStorage.removeItem(AUTH_STORAGE_KEY);
+
     if (user) {
-      window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+      window.sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
       return;
     }
 
-    window.localStorage.removeItem(AUTH_STORAGE_KEY);
+    window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
   }, [user]);
 
   const value = useMemo(
