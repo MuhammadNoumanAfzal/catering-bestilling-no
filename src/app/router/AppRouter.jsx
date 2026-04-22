@@ -19,7 +19,9 @@ import CheckoutPage from "../../features/checkOut/pages/CheckoutPage";
 import VendorDashboardLayout from "../../features/vendorDashboard/layouts/VendorDashboardLayout";
 import VendorDashboardHomePage from "../../features/vendorDashboard/pages/VendorDashboardHomePage";
 import VendorPlaceholderPage from "../../features/vendorDashboard/pages/VendorPlaceholderPage";
+import VendorOrdersPage from "../../features/vendorDashboard/pages/VendorOrdersPage";
 import VendorRestaurantsPage from "../../features/vendorDashboard/pages/VendorRestaurantsPage";
+import VendorSettingsPage from "../../features/vendorDashboard/pages/VendorSettingsPage";
 
 export default function AppRouter() {
   return (
@@ -54,12 +56,12 @@ export default function AppRouter() {
       </Route>
       <Route path="/vendor-dashboard" element={<VendorDashboardLayout />}>
         <Route index element={<VendorDashboardHomePage />} />
-        <Route path="orders" element={<VendorPlaceholderPage />} />
+        <Route path="orders" element={<VendorOrdersPage />} />
         <Route path="restaurants" element={<VendorRestaurantsPage />} />
         <Route path="invoices" element={<VendorPlaceholderPage />} />
         <Route path="rewards" element={<VendorPlaceholderPage />} />
         <Route path="address" element={<VendorPlaceholderPage />} />
-        <Route path="settings" element={<VendorPlaceholderPage />} />
+        <Route path="settings" element={<VendorSettingsPage />} />
       </Route>
     </Routes>
   );

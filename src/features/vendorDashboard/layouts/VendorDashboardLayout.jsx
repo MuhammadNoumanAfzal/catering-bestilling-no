@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
+import CommonNavbar from "../../../components/shared/CommonNavbar";
 import VendorSidebar from "../components/VendorSidebar";
-import VendorTopbar from "../components/VendorTopbar";
 
 export default function VendorDashboardLayout() {
   return (
@@ -11,7 +11,10 @@ export default function VendorDashboardLayout() {
         </div>
 
         <div className="flex min-h-screen flex-1 flex-col">
-          <VendorTopbar />
+          <CommonNavbar
+            hideLogo
+            className="border-b border-[#ece5dd] bg-[#fcfaf7]/95 backdrop-blur"
+          />
           <main className="flex-1 p-5 md:p-8">
             <Outlet />
           </main>
