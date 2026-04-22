@@ -3,6 +3,8 @@ export default function AuthInput({
   type = "text",
   placeholder,
   value,
+  onChange,
+  name,
   readOnly = false,
   className = "",
 }) {
@@ -15,8 +17,10 @@ export default function AuthInput({
       )}
       <input
         type={type}
+        name={name}
         placeholder={placeholder}
-        defaultValue={value}
+        value={value}
+        onChange={onChange}
         readOnly={readOnly}
         className={`type-para w-full rounded-xl border border-[#ddd6ce] bg-white px-4 py-2 text-[#1d1a17] outline-none transition placeholder:text-[#b4aba2] focus:border-[#c85f33] focus:ring-2 focus:ring-[#c85f33]/15 ${className}`}
       />

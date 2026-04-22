@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  FiBell,
   FiChevronDown,
   FiMapPin,
   FiShoppingCart,
   FiCalendar,
   FiSearch,
+  FiUser,
   FiX,
 } from "react-icons/fi";
 import DeliveryDatePopover from "./navbar/DeliveryDatePopover";
 import EventDetailsPopover from "./navbar/EventDetailsPopover";
 import { formatNavbarDate } from "./navbar/navbarDateUtils";
+import { useAuth } from "../../features/auth/context/AuthContext";
 
 const dropdownOptions = {
   city: ["Bergen", "Oslo", "Stavanger", "Trondheim"],
@@ -29,6 +32,7 @@ function formatEventLabel(attendeeCount, eventName) {
 }
 
 export default function CommonNavbar() {
+  const { isLoggedIn, user } = useAuth();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [selectedFilters, setSelectedFilters] = useState({
     city: "Bergen",
@@ -293,12 +297,33 @@ export default function CommonNavbar() {
             Contact us
           </Link>
 
-          <Link
-            to="/"
-            className="type-h6 rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:bg-[#b6542c]"
-          >
-            Sign in
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <button
+                type="button"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[18px] text-[#2f2f2f] transition hover:text-[#c85f33]"
+                aria-label="Notifications"
+              >
+                <FiBell />
+              </button>
+
+              <div className="flex items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
+                  <FiUser />
+                </div>
+                <span className="type-h6 hidden pr-2 text-[#2f2f2f] sm:inline">
+                  {user?.name}
+                </span>
+              </div>
+            </>
+          ) : (
+            <Link
+              to="/signin"
+              className="type-h6 rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:bg-[#b6542c]"
+            >
+              Sign in
+            </Link>
+          )}
 
           <button
             type="button"
