@@ -1,25 +1,20 @@
 import { Link } from "react-router-dom";
-import { FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
+import { FiBell, FiMenu, FiShoppingCart, FiUser, FiX } from "react-icons/fi";
 import { useState } from "react";
+import { useAuth } from "../../auth/context/AuthContext";
 
 export default function HomeNavbar() {
   const [open, setOpen] = useState(false);
+  const { isLoggedIn, user } = useAuth();
 
   const closeMenu = () => setOpen(false);
-
-  const navLinks = [
-    { to: "/contact", label: "Contact us" },
-    { to: "/signin", label: "Sign in", button: true },
-    { to: "/cart", label: "Cart", icon: <FiShoppingCart /> },
-  ];
 
   return (
     <header className="relative z-50 w-full">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-10">
         <Link to="/" className="flex shrink-0 items-center">
           <img
-            src="/home/logo.png
-            "
+            src="/home/logo.png"
             alt="logo"
             className="h-12 w-auto object-contain sm:h-14 md:h-16"
           />
@@ -33,12 +28,31 @@ export default function HomeNavbar() {
             Contact us
           </Link>
 
-          <Link
-            to="/signin"
-            className="type-h6 rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:opacity-90"
-          >
-            Sign in
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <button
+                type="button"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfd7] bg-white text-xl text-[#2f2f2f] transition hover:text-[#c85f33]"
+                aria-label="Notifications"
+              >
+                <FiBell />
+              </button>
+
+              <div className="flex items-center gap-3 rounded-full border border-[#eadfd7] bg-white px-2 py-1.5 shadow-sm">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
+                  <FiUser />
+                </div>
+                <span className="type-h6 pr-2 text-[#2f2f2f]">{user?.name}</span>
+              </div>
+            </>
+          ) : (
+            <Link
+              to="/signin"
+              className="type-h6 rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:opacity-90"
+            >
+              Sign in
+            </Link>
+          )}
 
           <Link
             to="/cart"
@@ -85,13 +99,35 @@ export default function HomeNavbar() {
               Cart
             </Link>
 
-            <Link
-              to="/signin"
-              onClick={closeMenu}
-              className="mt-1 w-full rounded-full bg-[#c85f33] px-5 py-2.5 text-center text-sm font-medium text-white transition hover:opacity-90"
-            >
-              Sign in
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <button
+                  type="button"
+                  onClick={closeMenu}
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 transition hover:text-black"
+                >
+                  <FiBell />
+                  Notifications
+                </button>
+
+                <div className="flex items-center gap-2 rounded-2xl border border-[#eadfd7] px-3 py-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
+                    <FiUser />
+                  </span>
+                  <span className="text-sm font-medium text-[#2f2f2f]">
+                    {user?.name}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <Link
+                to="/signin"
+                onClick={closeMenu}
+                className="mt-1 w-full rounded-full bg-[#c85f33] px-5 py-2.5 text-center text-sm font-medium text-white transition hover:opacity-90"
+              >
+                Sign in
+              </Link>
+            )}
           </nav>
         </div>
       </div>
