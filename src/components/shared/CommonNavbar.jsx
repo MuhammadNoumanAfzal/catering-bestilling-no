@@ -4,6 +4,7 @@ import {
   FiBell,
   FiChevronDown,
   FiMapPin,
+  FiMenu,
   FiShoppingCart,
   FiCalendar,
   FiSearch,
@@ -31,9 +32,13 @@ function formatEventLabel(attendeeCount, eventName) {
   return "Event details";
 }
 
-export default function CommonNavbar() {
-  const { isLoggedIn, user } = useAuth();
+export default function CommonNavbar({
+  hideLogo = false,
+  className = "",
+}) {
+  const { isLoggedIn, user, signOut } = useAuth();
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
     city: "Bergen",
   });
@@ -51,6 +56,7 @@ export default function CommonNavbar() {
   const [draftAttendeeCount, setDraftAttendeeCount] = useState(0);
   const [draftEventName, setDraftEventName] = useState("");
   const dropdownRef = useRef(null);
+  const actionMenuRef = useRef(null);
 
   const toggleDropdown = (key) => {
     setOpenDropdown((current) => {
@@ -84,6 +90,10 @@ export default function CommonNavbar() {
       if (!dropdownRef.current?.contains(event.target)) {
         setOpenDropdown(null);
       }
+
+      if (!actionMenuRef.current?.contains(event.target)) {
+        setIsActionMenuOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -110,16 +120,23 @@ export default function CommonNavbar() {
     setOpenDropdown(null);
   };
 
+  const headerClasses = `sticky top-0 z-40 bg-white px-6 py-2 md:px-10 ${className}`.trim();
+  const innerClasses = hideLogo
+    ? "grid w-full grid-cols-[1fr_auto] items-center gap-3 px-2 py-2"
+    : "grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 px-2 py-2";
+
   return (
-    <header className="sticky top-0 px-6 md:px-10 z-40 bg-white">
-      <div className=" grid w-full  grid-cols-[auto_1fr_auto] items-center gap-3 px-2 py-1">
-        <Link to="/" className="mt-2 shrink-0">
-          <img
-            src="/home/logo.png"
-            alt="Lunsjavtale"
-            className="h-18 w-33 object-contain"
-          />
-        </Link>
+    <header className={headerClasses}>
+      <div className={innerClasses}>
+        {!hideLogo ? (
+          <Link to="/" className="flex shrink-0 items-center self-center">
+            <img
+              src="/home/logo.png"
+              alt="Lunsjavtale"
+              className="h-14 w-auto object-contain"
+            />
+          </Link>
+        ) : null}
 
         <div className="hidden min-w-0 items-center justify-self-center lg:flex">
           <div className="flex items-center gap-6">
@@ -289,52 +306,85 @@ export default function CommonNavbar() {
           </div>
         </div>
 
-        <div className="ml-auto flex items-center gap-3">
-          <Link
-            to="/"
-            className="type-h5 hidden text-[#2f2f2f] transition hover:text-[#c85f33] md:inline-flex"
-          >
-            Contact us
-          </Link>
-
-          {isLoggedIn ? (
-            <>
-              <button
-                type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[18px] text-[#2f2f2f] transition hover:text-[#c85f33]"
-                aria-label="Notifications"
-              >
-                <FiBell />
-              </button>
-
-              <div className="flex items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
-                  <FiUser />
-                </div>
-                <span className="type-h6 hidden pr-2 text-[#2f2f2f] sm:inline">
+        <div className="ml-auto" ref={actionMenuRef}>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsActionMenuOpen((current) => !current)}
+              className="flex items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm transition hover:border-[#d9c7ba]"
+              aria-label="Open navigation menu"
+              aria-expanded={isActionMenuOpen}
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
+                <FiUser />
+              </div>
+              {isLoggedIn ? (
+                <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
                   {user?.name}
                 </span>
-              </div>
-            </>
-          ) : (
-            <Link
-              to="/signin"
-              className="type-h6 rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:bg-[#b6542c]"
-            >
-              Sign in
-            </Link>
-          )}
+              ) : (
+                <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
+                  Menu
+                </span>
+              )}
+              <FiMenu className="text-[18px] text-[#6a625c]" />
+            </button>
 
-          <button
-            type="button"
-            className="inline-flex h-8 w-8 items-center justify-center text-[18px] text-[#2f2f2f] transition hover:text-[#c85f33]"
-            aria-label="Cart"
-          >
-            <div className="text-3xl">
-              {" "}
-              <FiShoppingCart />
-            </div>
-          </button>
+            {isActionMenuOpen ? (
+              <div className="absolute right-0 top-[calc(100%+10px)] z-50 min-w-[220px] rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)]">
+                <div className="space-y-1">
+                  <Link
+                    to="/"
+                    onClick={() => setIsActionMenuOpen(false)}
+                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                  >
+                    <FiMenu className="text-[17px]" />
+                    <span>Contact us</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsActionMenuOpen(false)}
+                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                  >
+                    <FiBell className="text-[17px]" />
+                    <span>Notifications</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsActionMenuOpen(false)}
+                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                  >
+                    <FiShoppingCart className="text-[17px]" />
+                    <span>Cart</span>
+                  </button>
+
+                  {isLoggedIn ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        signOut();
+                        setIsActionMenuOpen(false);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                    >
+                      <FiUser className="text-[17px]" />
+                      <span>Logout</span>
+                    </button>
+                  ) : (
+                    <Link
+                      to="/signin"
+                      onClick={() => setIsActionMenuOpen(false)}
+                      className="mt-2 flex items-center justify-center rounded-full bg-[#c85f33] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b6542c]"
+                    >
+                      Sign in
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </header>
