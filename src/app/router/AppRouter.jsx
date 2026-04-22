@@ -16,6 +16,10 @@ import ForgotPasswordPage from "../../features/auth/pages/ForgotPasswordPage";
 import ForgotPasswordOtpPage from "../../features/auth/pages/ForgotPasswordOtpPage";
 import ResetPasswordPage from "../../features/auth/pages/ResetPasswordPage";
 import CheckoutPage from "../../features/checkOut/pages/CheckoutPage";
+import VendorDashboardLayout from "../../features/vendorDashboard/layouts/VendorDashboardLayout";
+import VendorDashboardHomePage from "../../features/vendorDashboard/pages/VendorDashboardHomePage";
+import VendorPlaceholderPage from "../../features/vendorDashboard/pages/VendorPlaceholderPage";
+import VendorRestaurantsPage from "../../features/vendorDashboard/pages/VendorRestaurantsPage";
 
 export default function AppRouter() {
   return (
@@ -47,6 +51,15 @@ export default function AppRouter() {
       <Route element={<CheckoutLayout />}>
         <Route path="/checkout" element={<Navigate to="/checkout/corporate" replace />} />
         <Route path="/checkout/:checkoutType" element={<CheckoutPage />} />
+      </Route>
+      <Route path="/vendor-dashboard" element={<VendorDashboardLayout />}>
+        <Route index element={<VendorDashboardHomePage />} />
+        <Route path="orders" element={<VendorPlaceholderPage />} />
+        <Route path="restaurants" element={<VendorRestaurantsPage />} />
+        <Route path="invoices" element={<VendorPlaceholderPage />} />
+        <Route path="rewards" element={<VendorPlaceholderPage />} />
+        <Route path="address" element={<VendorPlaceholderPage />} />
+        <Route path="settings" element={<VendorPlaceholderPage />} />
       </Route>
     </Routes>
   );
