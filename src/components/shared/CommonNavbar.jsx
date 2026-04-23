@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FiBell,
   FiChevronDown,
+  FiGrid,
+  FiHome,
   FiMapPin,
   FiMenu,
   FiShoppingCart,
@@ -16,11 +18,19 @@ import EventDetailsPopover from "./navbar/EventDetailsPopover";
 import NotificationPopover from "./navbar/NotificationPopover";
 import { navbarNotifications } from "./navbar/notificationData";
 import { formatNavbarDate } from "./navbar/navbarDateUtils";
+import useNavbarCartSummary from "./navbar/useNavbarCartSummary";
 import { useAuth } from "../../features/auth/context/AuthContext";
+import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardData";
 
 const dropdownOptions = {
   city: ["Bergen", "Oslo", "Stavanger", "Trondheim"],
 };
+
+const commonProfileMenuItems = [
+  { label: "Home", to: "/", icon: FiHome },
+  { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
+  ...vendorNavigationItems.filter((item) => item.to !== "/vendor-dashboard"),
+];
 
 function formatEventLabel(attendeeCount, eventName) {
   if (eventName) {
@@ -38,7 +48,9 @@ export default function CommonNavbar({
   hideLogo = false,
   className = "",
 }) {
+  const navigate = useNavigate();
   const { isLoggedIn, user, signOut } = useAuth();
+  const { itemCount: cartItemCount } = useNavbarCartSummary();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -326,7 +338,7 @@ export default function CommonNavbar({
                   setIsNotificationOpen((current) => !current);
                   setIsActionMenuOpen(false);
                 }}
-                className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33]"
+                className="relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33]"
                 aria-label="Notifications"
                 aria-expanded={isNotificationOpen}
               >
@@ -343,6 +355,24 @@ export default function CommonNavbar({
               ) : null}
             </div>
 
+            <button
+              type="button"
+              onClick={() => {
+                setIsActionMenuOpen(false);
+                setIsNotificationOpen(false);
+                navigate("/checkout/corporate");
+              }}
+              className="relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33]"
+              aria-label="Go to checkout cart"
+            >
+              <FiShoppingCart className="text-[18px]" />
+              {cartItemCount > 0 ? (
+                <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
+                  {cartItemCount}
+                </span>
+              ) : null}
+            </button>
+
             <div className="relative">
               <button
                 type="button"
@@ -350,7 +380,7 @@ export default function CommonNavbar({
                   setIsActionMenuOpen((current) => !current);
                   setIsNotificationOpen(false);
                 }}
-                className="flex items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm transition hover:border-[#d9c7ba]"
+                className="flex cursor-pointer items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm transition hover:border-[#d9c7ba]"
                 aria-label="Open navigation menu"
                 aria-expanded={isActionMenuOpen}
               >
@@ -372,42 +402,32 @@ export default function CommonNavbar({
               {isActionMenuOpen ? (
                 <div className="absolute right-0 top-[calc(100%+10px)] z-50 min-w-[220px] rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)]">
                   <div className="space-y-1">
+                    {commonProfileMenuItems.map((item) => {
+                      const Icon = item.icon;
+
+                      return (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setIsActionMenuOpen(false)}
+                          className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                        >
+                          <Icon className="text-[17px]" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+
+                    <div className="my-1 border-t border-[#eee5dc]" />
+
                     <Link
-                      to="/"
+                      to="/contact"
                       onClick={() => setIsActionMenuOpen(false)}
-                      className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                      className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                     >
                       <FiMenu className="text-[17px]" />
                       <span>Contact us</span>
                     </Link>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsActionMenuOpen(false);
-                        setIsNotificationOpen(true);
-                      }}
-                      className="flex w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
-                    >
-                      <span className="flex items-center gap-3">
-                        <FiBell className="text-[17px]" />
-                        <span>Notifications</span>
-                      </span>
-                      {unreadNotificationCount > 0 ? (
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold text-white">
-                          {unreadNotificationCount}
-                        </span>
-                      ) : null}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsActionMenuOpen(false)}
-                      className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
-                    >
-                      <FiShoppingCart className="text-[17px]" />
-                      <span>Cart</span>
-                    </button>
 
                     {isLoggedIn ? (
                       <button
@@ -416,7 +436,7 @@ export default function CommonNavbar({
                           signOut();
                           setIsActionMenuOpen(false);
                         }}
-                        className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                        className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                       >
                         <FiUser className="text-[17px]" />
                         <span>Logout</span>
@@ -425,7 +445,7 @@ export default function CommonNavbar({
                       <Link
                         to="/signin"
                         onClick={() => setIsActionMenuOpen(false)}
-                        className="mt-2 flex items-center justify-center rounded-full bg-[#c85f33] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b6542c]"
+                        className="mt-2 flex cursor-pointer items-center justify-center rounded-full bg-[#c85f33] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b6542c]"
                       >
                         Sign in
                       </Link>
