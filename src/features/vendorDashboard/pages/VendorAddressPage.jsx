@@ -1,36 +1,10 @@
 import { useState } from "react";
+import { vendorAddressInitialState } from "../data/vendorDashboardData";
 
-const initialAddressState = {
-  deliveryLocationName: "New York Office",
-  deliveryStreetAddress: "123 Main St.",
-  deliveryUnitFloor: "Unit 1",
-  deliveryCity: "City name",
-  deliveryState: "State name",
-  deliveryZipCode: "001",
-  deliveryPhoneNumber: "111-222-33",
-  deliveryAskFor: "Receiving name",
-  deliveryInstructions: "BUZZ 124 and take the elevator to the 13th floor",
-  invoiceLocationName: "New York Office",
-  invoiceStreetAddress: "123 Main St.",
-  invoiceUnitFloor: "Unit 1",
-  invoiceCity: "City name",
-  invoiceState: "State name",
-  invoiceZipCode: "001",
-  invoicePhoneNumber: "111-222-33",
-  invoiceAskFor: "Receiving name",
-  invoiceInstructions: "BUZZ 124 and take the elevator to the 13th floor",
-};
-
-function AddressField({
-  label,
-  value,
-  onChange,
-  placeholder,
-  className = "",
-}) {
+function AddressField({ label, value, onChange, placeholder, className = "" }) {
   return (
     <label className={`block ${className}`}>
-      <span className="type-subpara mb-2 block text-[#8a8279]">{label}</span>
+      <span className="type-para mb-2 block text-[#8a8279]">{label}</span>
       <input
         value={value}
         onChange={onChange}
@@ -46,15 +20,16 @@ function AddressTextarea({
   value,
   onChange,
   placeholder,
+  className = "",
 }) {
   return (
-    <label className="block">
+    <label className={`block ${className}`}>
       <span className="type-subpara mb-2 block text-[#8a8279]">{label}</span>
       <textarea
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="type-subpara min-h-[44px] w-full rounded-[4px] border border-[#dad2ca] bg-white px-3 py-2 text-[#2d2d2d] outline-none placeholder:text-[#b2aaa1]"
+        className="type-subpara min-h-[100px] w-full rounded-[4px] border border-[#dad2ca] bg-white px-3 py-2 text-[#2d2d2d] outline-none placeholder:text-[#b2aaa1]"
       />
     </label>
   );
@@ -69,8 +44,8 @@ function AddressSection({
 }) {
   return (
     <section>
-      <h2 className="type-h3 text-[#191919]">{title}</h2>
-      <p className="mt-1 type-subpara text-[#8a8279]">{description}</p>
+      <h2 className="type-h2 ">{title}</h2>
+      <p className="mt-3 type-para ">{description}</p>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <AddressField
@@ -96,7 +71,9 @@ function AddressSection({
         <AddressField
           label="Unit/Floor"
           value={formState[`${prefix}UnitFloor`]}
-          onChange={(event) => updateField(`${prefix}UnitFloor`, event.target.value)}
+          onChange={(event) =>
+            updateField(`${prefix}UnitFloor`, event.target.value)
+          }
           placeholder="Unit 1"
           className="sm:col-span-1 lg:col-span-3"
         />
@@ -112,7 +89,9 @@ function AddressSection({
         <AddressField
           label="State"
           value={formState[`${prefix}State`]}
-          onChange={(event) => updateField(`${prefix}State`, event.target.value)}
+          onChange={(event) =>
+            updateField(`${prefix}State`, event.target.value)
+          }
           placeholder="State name"
           className="lg:col-span-2"
         />
@@ -120,7 +99,9 @@ function AddressSection({
         <AddressField
           label="Zip code"
           value={formState[`${prefix}ZipCode`]}
-          onChange={(event) => updateField(`${prefix}ZipCode`, event.target.value)}
+          onChange={(event) =>
+            updateField(`${prefix}ZipCode`, event.target.value)
+          }
           placeholder="001"
           className="lg:col-span-2"
         />
@@ -138,7 +119,9 @@ function AddressSection({
         <AddressField
           label="Upon delivery ask for"
           value={formState[`${prefix}AskFor`]}
-          onChange={(event) => updateField(`${prefix}AskFor`, event.target.value)}
+          onChange={(event) =>
+            updateField(`${prefix}AskFor`, event.target.value)
+          }
           placeholder="Receiving name"
           className="sm:col-span-1 lg:col-span-3"
         />
@@ -150,6 +133,7 @@ function AddressSection({
             updateField(`${prefix}Instructions`, event.target.value)
           }
           placeholder="BUZZ 124 and take the elevator to the 13th floor"
+          className="sm:col-span-2 lg:col-span-4"
         />
       </div>
     </section>
@@ -157,14 +141,14 @@ function AddressSection({
 }
 
 export default function VendorAddressPage() {
-  const [formState, setFormState] = useState(initialAddressState);
+  const [formState, setFormState] = useState(vendorAddressInitialState);
 
   function updateField(key, value) {
     setFormState((current) => ({ ...current, [key]: value }));
   }
 
   function handleCancel() {
-    setFormState(initialAddressState);
+    setFormState(vendorAddressInitialState);
   }
 
   function handleSave() {

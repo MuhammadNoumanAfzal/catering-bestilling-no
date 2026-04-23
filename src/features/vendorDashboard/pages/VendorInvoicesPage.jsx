@@ -48,12 +48,12 @@ function OverviewCard({ label, value }) {
   return (
     <article className="rounded-[18px] border border-[#ddd5cd] bg-white p-4 shadow-[0_8px_20px_rgba(30,30,30,0.04)]">
       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff3ec] text-[#cf5c2f]">
-        <FiFileText className="text-[18px]" />
+        <FiFileText className="text-[28px]" />
       </div>
       <p className="mt-4 text-[2rem] font-extrabold leading-none text-[#1f1f1f]">
         {value}
       </p>
-      <p className="mt-2 text-xs font-semibold text-[#6d665f]">{label}</p>
+      <p className="mt-2 type-para font-semibold">{label}</p>
     </article>
   );
 }
@@ -61,10 +61,10 @@ function OverviewCard({ label, value }) {
 function TotalCard({ label, value }) {
   return (
     <article className="rounded-[18px] border border-[#ece2d8] bg-[#fffdfa] px-4 py-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.04em] text-[#857c73]">
+      <p className="type-h6 font-semibold uppercase tracking-[0.04em] ">
         {label}
       </p>
-      <p className="mt-1 text-xl font-extrabold text-[#1f1f1f]">{value}</p>
+      <p className="mt-1 type-h4 font-extrabold ">{value}</p>
     </article>
   );
 }
@@ -234,8 +234,8 @@ export default function VendorInvoicesPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">Invoice</h1>
-        <p className="mt-2 text-sm text-[#625a52]">
+        <h1 className="type-h2 ">Invoice</h1>
+        <p className="mt-2 type-para ">
           Track all invoice and payment records.
         </p>
       </section>
@@ -313,7 +313,7 @@ export default function VendorInvoicesPage() {
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full border-separate border-spacing-y-2.5">
             <thead>
-              <tr className="text-left text-xs font-semibold uppercase tracking-[0.06em] text-[#80786f]">
+              <tr className="text-left type-h6 font-semibold uppercase tracking-[0.06em] ">
                 <th className="px-3 py-2">Invoice ID</th>
                 <th className="px-3 py-2">Vendor</th>
                 <th className="px-3 py-2">Event</th>
@@ -327,7 +327,7 @@ export default function VendorInvoicesPage() {
               {visibleInvoices.map((invoice, index) => (
                 <tr
                   key={`${invoice.id}-${invoice.dueOn}-${index}`}
-                  className="rounded-2xl bg-[#fcfbf9] text-sm text-[#232323] shadow-[0_6px_16px_rgba(20,20,20,0.04)]"
+                  className="rounded-2xl bg-[#fcfbf9] type-para shadow-[0_6px_16px_rgba(20,20,20,0.04)]"
                 >
                   <td className="rounded-l-2xl px-3 py-3 font-semibold">
                     {invoice.id}

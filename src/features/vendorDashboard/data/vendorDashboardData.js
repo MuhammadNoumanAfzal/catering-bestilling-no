@@ -552,3 +552,84 @@ export const vendorInvoiceRecords = [
     status: "Overdue",
   },
 ];
+
+export const vendorRewardActions = [
+  {
+    title: "Place Orders",
+    description: "All placed orders give points!",
+    cta: "Start order",
+    icon: FiShoppingBag,
+  },
+  {
+    title: "Invite Friends",
+    description:
+      "Invite 1 pal. If they order, send Eq. to 25,000 points friend!",
+    cta: "Invite 1 friend",
+    icon: FiUsers,
+  },
+  {
+    title: "Write Reviews",
+    description: "1000 points for each order you review.",
+    cta: "Review a past order",
+    icon: FiStar,
+  },
+];
+
+export const vendorRewardBenefits = [
+  "Always at least 1 point per $1 spent.",
+  "As much as 5 points per $1 spent when you order from restaurants offering bonus Rewards.",
+];
+
+export const vendorRewardRedemptionOptions = [
+  'Credit toward any order of $25 or more (Apply by choosing "Add promo" during checkout.)',
+  "Amazon Gift Cards - 2,500 points can be redeemed for a $25 Amazon Gift Card. Must redeem a minimum of 2,500 points. You get a digital gift card code, not a physical gift card.",
+];
+
+export const vendorRewardTips = [
+  "Rewards expire one year after your last order.",
+  "Points are added to your balance once orders are fulfilled.",
+  "You must have at least 2,500 points to redeem for an Amazon Gift Card.",
+  "Points earned from Rewards promotions cannot be combined with any other offers.",
+  "Points can only be redeemed on orders totaling $25 or more.",
+];
+
+export const vendorAddressInitialState = {
+  deliveryLocationName: "New York Office",
+  deliveryStreetAddress: "123 Main St.",
+  deliveryUnitFloor: "Unit 1",
+  deliveryCity: "City name",
+  deliveryState: "State name",
+  deliveryZipCode: "001",
+  deliveryPhoneNumber: "111-222-33",
+  deliveryAskFor: "Receiving name",
+  deliveryInstructions: "BUZZ 124 and take the elevator to the 13th floor",
+  invoiceLocationName: "New York Office",
+  invoiceStreetAddress: "123 Main St.",
+  invoiceUnitFloor: "Unit 1",
+  invoiceCity: "City name",
+  invoiceState: "State name",
+  invoiceZipCode: "001",
+  invoicePhoneNumber: "111-222-33",
+  invoiceAskFor: "Receiving name",
+  invoiceInstructions: "BUZZ 124 and take the elevator to the 13th floor",
+};
+
+export const vendorSettingsInitialState = {
+  firstName: "John",
+  lastName: "Doe",
+  primaryEmail: "john@example.com",
+  secondaryEmail: "doe@example.com",
+  mobilePhone: "+47 123 45 678",
+  workPhone: "+47 987 65 432",
+  company: "Lunsjavtale",
+  jobTitle: "Vendor Manager",
+  industry: "Catering",
+  oldPassword: "",
+  confirmOldPassword: "",
+  newPassword: "",
+  confirmNewPassword: "",
+  textNotifications: false,
+  emailNotifications: true,
+  pushNotifications: false,
+  orderConfirmationPush: false,
+};
