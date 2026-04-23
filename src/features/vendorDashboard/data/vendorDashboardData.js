@@ -11,6 +11,7 @@ import {
   FiShoppingBag,
   FiStar,
   FiTruck,
+  FiUsers,
 } from "react-icons/fi";
 
 export const vendorNavigationItems = [
