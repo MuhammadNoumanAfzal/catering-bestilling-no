@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiChevronDown,
   FiChevronLeft,
   FiChevronRight,
+  FiClock,
   FiSearch,
 } from "react-icons/fi";
 import {
@@ -17,12 +18,34 @@ const ORDER_TABS = [
   { label: "Scheduled", value: "scheduled" },
 ];
 
+const ORDER_DATE_OPTIONS = [
+  { label: "Last Month", value: "last-month" },
+  { label: "Last 3 Months", value: "last-3-months" },
+  { label: "Last 6 Months", value: "last-6-months" },
+  { label: "This Year", value: "this-year" },
+  { label: "Custom Date", value: "custom-date" },
+];
+
 const PAGE_SIZE = 8;
 
-function getStatusClasses(status) {
+function parseOrderDate(dateLabel) {
+  return new Date(`${dateLabel} 00:00:00`);
+}
+
+function normalizeOrderStatus(status) {
   const normalizedStatus = status.toLowerCase();
 
-  if (normalizedStatus === "completed" || normalizedStatus === "delivered") {
+  if (normalizedStatus === "delivered") {
+    return "completed";
+  }
+
+  return normalizedStatus;
+}
+
+function getStatusClasses(status) {
+  const normalizedStatus = normalizeOrderStatus(status);
+
+  if (normalizedStatus === "completed") {
     return "bg-[#d9f5da] text-[#2ca44f]";
   }
 
@@ -36,25 +59,101 @@ function getStatusClasses(status) {
 function StatusSummaryCard({ label, value }) {
   return (
     <article className="rounded-[18px] border border-[#d9d1c8] bg-white px-6 py-5 text-center shadow-[0_8px_20px_rgba(30,30,30,0.04)]">
-      <p className="text-[2rem] font-extrabold leading-none ">{value}</p>
-      <p className="mt-2 type-para ">{label}</p>
+      <p className="text-[2rem] font-extrabold leading-none text-[#222222]">
+        {value}
+      </p>
+      <p className="mt-2 type-para text-[#6d665f]">{label}</p>
     </article>
+  );
+}
+
+function getRangeDays(rangeValue) {
+  if (rangeValue === "last-month") {
+    return 30;
+  }
+
+  if (rangeValue === "last-3-months") {
+    return 90;
+  }
+
+  if (rangeValue === "last-6-months") {
+    return 180;
+  }
+
+  return null;
+}
+
+function formatDateChip(date) {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+}
+
+function getDateFilterLabel(selectedRange, referenceDate) {
+  if (selectedRange === "custom-date") {
+    const fromDate = new Date(referenceDate);
+    fromDate.setDate(referenceDate.getDate() - 28);
+    return `From: ${formatDateChip(fromDate)} To: ${formatDateChip(referenceDate)}`;
+  }
+
+  return (
+    ORDER_DATE_OPTIONS.find((option) => option.value === selectedRange)?.label ??
+    "Last Month"
   );
 }
 
 export default function VendorOrdersPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchValue, setSearchValue] = useState("");
+  const [selectedRange, setSelectedRange] = useState("last-month");
+  const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const dateMenuRef = useRef(null);
+
+  const referenceDate = useMemo(() => {
+    const timestamps = vendorOrders.map((order) => parseOrderDate(order.date).getTime());
+    return new Date(Math.max(...timestamps));
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dateMenuRef.current && !dateMenuRef.current.contains(event.target)) {
+        setIsDateMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const filteredOrders = useMemo(() => {
     const query = searchValue.trim().toLowerCase();
+    const rangeDays = getRangeDays(selectedRange);
 
     return vendorOrders.filter((order) => {
       const matchesTab =
-        activeTab === "all" ? true : order.status.toLowerCase() === activeTab;
+        activeTab === "all"
+          ? true
+          : normalizeOrderStatus(order.status) === activeTab;
+      const orderDate = parseOrderDate(order.date);
+      const diffInDays = Math.floor(
+        (referenceDate.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      const matchesRange =
+        selectedRange === "this-year"
+          ? orderDate.getFullYear() === referenceDate.getFullYear()
+          : selectedRange === "custom-date"
+            ? diffInDays >= 0 && diffInDays <= 28
+            : rangeDays === null
+              ? true
+              : diffInDays >= 0 && diffInDays <= rangeDays;
 
-      if (!matchesTab) {
+      if (!matchesTab || !matchesRange) {
         return false;
       }
 
@@ -67,7 +166,7 @@ export default function VendorOrdersPage() {
         .toLowerCase()
         .includes(query);
     });
-  }, [activeTab, searchValue]);
+  }, [activeTab, referenceDate, searchValue, selectedRange]);
 
   const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -98,7 +197,7 @@ export default function VendorOrdersPage() {
     <div className="space-y-6">
       <section>
         <h1 className="type-h2 text-[#191919]">Orders</h1>
-        <p className="mt-2 text-para ">
+        <p className="mt-2 type-para text-[#635b53]">
           Track, manage &amp; filter your all orders.
         </p>
       </section>
@@ -124,7 +223,7 @@ export default function VendorOrdersPage() {
                   type="button"
                   onClick={() => handleTabChange(tab.value)}
                   className={[
-                    "min-w-[112px] rounded-full cursor-pointer border px-5 py-2 type-h5  font-semibold transition",
+                    "min-w-[112px] rounded-full cursor-pointer border px-5 py-2 type-h6 font-semibold transition",
                     isActive
                       ? "border-[#f0b79e] bg-[#ffe5d8] text-[#cf5c2f]"
                       : "border-[#d9d1c8] bg-white text-[#1f1f1f] hover:bg-[#faf7f3]",
@@ -138,30 +237,73 @@ export default function VendorOrdersPage() {
 
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <label className="flex w-full items-center gap-2 rounded-full border border-[#ded6ce] bg-[#fcfaf8] px-4 py-2.5 text-sm text-[#7a7a7a] lg:max-w-[320px]">
-              <FiSearch className="type-para" />
+              <FiSearch className="text-[14px]" />
               <input
                 value={searchValue}
                 onChange={handleSearchChange}
                 placeholder="Search Order ID, Vendor, Event..."
-                className="w-full bg-transparent text-sm text-[#242424] outline-none placeholder:text-[#aaaaaa]"
+                className="type-subpara w-full bg-transparent text-[#242424] outline-none placeholder:text-[#aaaaaa]"
               />
             </label>
 
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-[#ded6ce] bg-white px-4 py-2.5 text-sm font-semibold cursor-pointer text-[#232323] transition hover:bg-[#faf7f3]"
-            >
-              <span>Last 7 days</span>
-              <FiChevronDown className="type-para" />
-            </button>
+            <div className="relative" ref={dateMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsDateMenuOpen((open) => !open)}
+                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-[#ded6ce] bg-[#fff7f3] px-4 py-2.5 text-sm font-semibold text-[#cf5c2f] transition hover:bg-[#fff0e8]"
+              >
+                <FiClock className="text-[14px]" />
+                <span className="type-subpara font-semibold">
+                  {getDateFilterLabel(selectedRange, referenceDate)}
+                </span>
+                <FiChevronDown
+                  className={[
+                    "text-[15px] transition",
+                    isDateMenuOpen ? "rotate-180" : "",
+                  ].join(" ")}
+                />
+              </button>
+
+              {isDateMenuOpen ? (
+                <div className="absolute right-0 top-[calc(100%+10px)] z-20 min-w-[190px] rounded-[10px] border border-[#e5ddd5] bg-white p-1.5 shadow-[0_18px_40px_rgba(31,24,19,0.12)]">
+                  {ORDER_DATE_OPTIONS.map((option) => {
+                    const isSelected = option.value === selectedRange;
+
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setSelectedRange(option.value);
+                          setCurrentPage(1);
+                          setIsDateMenuOpen(false);
+                        }}
+                        className={[
+                          "type-subpara flex w-full cursor-pointer items-center justify-between rounded-[8px] px-3 py-2 text-left transition",
+                          isSelected
+                            ? "bg-[#fff1e8] text-[#c85f33]"
+                            : "text-[#4d4d4d] hover:bg-[#faf7f3]",
+                        ].join(" ")}
+                      >
+                        <span>{option.label}</span>
+                        {isSelected ? (
+                          <span className="text-[10px] font-semibold uppercase">
+                            Active
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
 
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full border-separate border-spacing-y-2">
             <thead>
-              <tr className="text-left type-parafont-semibold uppercase tracking-[0.04em] 
-              ">
+              <tr className="type-subpara text-left uppercase tracking-[0.04em] text-[#7e776f]">
                 <th className="px-3 py-2">Order ID</th>
                 <th className="px-3 py-2">Vendor</th>
                 <th className="px-3 py-2">Event Name</th>

@@ -19,8 +19,11 @@ import CheckoutPage from "../../features/checkOut/pages/CheckoutPage";
 import VendorDashboardLayout from "../../features/vendorDashboard/layouts/VendorDashboardLayout";
 import VendorDashboardHomePage from "../../features/vendorDashboard/pages/VendorDashboardHomePage";
 import VendorPlaceholderPage from "../../features/vendorDashboard/pages/VendorPlaceholderPage";
+import VendorInvoicesPage from "../../features/vendorDashboard/pages/VendorInvoicesPage";
+import VendorAddressPage from "../../features/vendorDashboard/pages/VendorAddressPage";
 import VendorOrdersPage from "../../features/vendorDashboard/pages/VendorOrdersPage";
 import VendorRestaurantsPage from "../../features/vendorDashboard/pages/VendorRestaurantsPage";
+import VendorRewardsPage from "../../features/vendorDashboard/pages/VendorRewardsPage";
 import VendorSettingsPage from "../../features/vendorDashboard/pages/VendorSettingsPage";
 
 export default function AppRouter() {
@@ -58,9 +61,9 @@ export default function AppRouter() {
         <Route index element={<VendorDashboardHomePage />} />
         <Route path="orders" element={<VendorOrdersPage />} />
         <Route path="restaurants" element={<VendorRestaurantsPage />} />
-        <Route path="invoices" element={<VendorPlaceholderPage />} />
-        <Route path="rewards" element={<VendorPlaceholderPage />} />
-        <Route path="address" element={<VendorPlaceholderPage />} />
+        <Route path="invoices" element={<VendorInvoicesPage />} />
+        <Route path="rewards" element={<VendorRewardsPage />} />
+        <Route path="address" element={<VendorAddressPage />} />
         <Route path="settings" element={<VendorSettingsPage />} />
       </Route>
     </Routes>

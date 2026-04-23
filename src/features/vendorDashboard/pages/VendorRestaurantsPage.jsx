@@ -1,102 +1,68 @@
-import { FiMapPin, FiPackage, FiPlusCircle } from "react-icons/fi";
+import { FiHeart, FiStar } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import { vendorRestaurants } from "../data/vendorDashboardData";
 
-function getRestaurantStatusClasses(status) {
-  const normalizedStatus = status.toLowerCase();
-
-  if (normalizedStatus === "active") {
-    return "bg-[#eff9ef] text-[#269847]";
-  }
-
-  if (normalizedStatus === "busy") {
-    return "bg-[#fff3e8] text-[#c6792b]";
-  }
-
-  return "bg-[#f2f2f2] text-[#676767]";
+function RatingRow({ rating, reviewCount }) {
+  return (
+    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-[#7a746e]">
+      <div className="flex items-center gap-0.5 text-[#f4b400]">
+        {Array.from({ length: 5 }, (_, index) => (
+          <FiStar key={index} className="fill-current text-[11px]" />
+        ))}
+      </div>
+      <span className="font-semibold text-[#6c655f]">{rating.toFixed(1)}</span>
+      <span>({reviewCount})</span>
+    </div>
+  );
 }
 
 export default function VendorRestaurantsPage() {
   return (
     <div className="space-y-6">
-      <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <section>
         <div>
-          <h1 className="type-h3 text-[#191919]">Restaurants</h1>
+          <h1 className="type-h2 text-[#191919]">Saved Restaurants</h1>
           <p className="mt-2 text-sm text-[#5f5f5f]">
-            Manage your restaurant listings, activity, and availability.
+            View all your saved restaurants that you like to order again
           </p>
         </div>
-
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b84f26]"
-        >
-          <FiPlusCircle className="text-[18px]" />
-          <span>Add Restaurant</span>
-        </button>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-3">
+      <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 cursor-pointer">
         {vendorRestaurants.map((restaurant) => (
           <article
             key={restaurant.id}
-            className="rounded-[28px] border border-[#dad4ce] bg-white p-5 shadow-[0_10px_28px_rgba(32,32,32,0.06)]"
+            className="overflow-hidden rounded-[18px] border border-[#ddd7d1] bg-white shadow-[0_10px_24px_rgba(32,32,32,0.06)] transition hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(32,32,32,0.1)]"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-[#1f1f1f]">
-                  {restaurant.name}
-                </h2>
-                <p className="mt-1 text-sm text-[#7d746b]">
-                  {restaurant.cuisine}
-                </p>
-              </div>
-
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${getRestaurantStatusClasses(restaurant.status)}`}
-              >
-                {restaurant.status}
-              </span>
-            </div>
-
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center gap-3 rounded-2xl bg-[#faf7f3] px-4 py-3">
-                <FiPackage className="text-[17px] text-[#cf5c2f]" />
-                <div>
-                  <p className="text-xs uppercase tracking-[0.08em] text-[#8f867d]">
-                    Orders
-                  </p>
-                  <p className="text-sm font-semibold text-[#232323]">
-                    {restaurant.orders} active bookings
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 rounded-2xl bg-[#faf7f3] px-4 py-3">
-                <FiMapPin className="text-[17px] text-[#cf5c2f]" />
-                <div>
-                  <p className="text-xs uppercase tracking-[0.08em] text-[#8f867d]">
-                    Address
-                  </p>
-                  <p className="text-sm font-semibold text-[#232323]">
-                    {restaurant.address}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex gap-3">
+            <div className="relative">
+              <img
+                src={restaurant.image}
+                alt={restaurant.name}
+                className="h-32 w-full object-cover"
+              />
               <button
                 type="button"
-                className="flex-1 rounded-2xl border border-[#d8d0c8] px-4 py-3 text-sm font-semibold text-[#242424] transition hover:bg-[#faf7f3]"
+                aria-label="Saved restaurant"
+                className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/92 text-[#f15b4f] shadow-[0_8px_20px_rgba(0,0,0,0.12)]"
               >
-                View Details
+                <FiHeart className="fill-current text-[15px]" />
               </button>
-              <button
-                type="button"
-                className="flex-1 rounded-2xl bg-[#1f1f1f] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#111111]"
+            </div>
+
+            <div className="px-4 py-3">
+              <h2 className="text-base font-semibold text-[#242424]">
+                {restaurant.name}
+              </h2>
+              <RatingRow
+                rating={restaurant.rating}
+                reviewCount={restaurant.reviewCount}
+              />
+              <Link
+                to={`/vendor/${restaurant.slug}`}
+                className="mt-2 inline-flex text-sm font-medium text-[#5d7dff] transition hover:text-[#355df3]"
               >
-                Edit Listing
-              </button>
+                View Menu
+              </Link>
             </div>
           </article>
         ))}
