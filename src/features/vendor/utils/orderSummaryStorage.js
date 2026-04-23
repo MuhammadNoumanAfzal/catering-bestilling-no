@@ -2,6 +2,15 @@ import { vendorProfiles } from "../data/vendorData";
 import { getDefaultTableware } from "../../../components/shared/TablewareModal";
 
 const STORAGE_PREFIX = "vendor-order-summary:";
+const ORDER_SUMMARY_UPDATED_EVENT = "vendor-order-summary-updated";
+
+function emitOrderSummaryUpdated() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.dispatchEvent(new Event(ORDER_SUMMARY_UPDATED_EVENT));
+}
 
 export function createInitialOrderSummary(vendor) {
   return {
@@ -60,6 +69,7 @@ export function writeOrderSummary(vendorSlug, orderSummary) {
     getStorageKey(vendorSlug),
     JSON.stringify(orderSummary),
   );
+  emitOrderSummaryUpdated();
 }
 
 export function readAllStoredOrderSummaries() {
@@ -85,6 +95,7 @@ export function clearStoredOrderSummary(vendorSlug) {
   }
 
   window.sessionStorage.removeItem(getStorageKey(vendorSlug));
+  emitOrderSummaryUpdated();
 }
 
 export function clearAllStoredOrderSummaries() {
@@ -95,4 +106,19 @@ export function clearAllStoredOrderSummaries() {
   vendorProfiles.forEach((vendor) => {
     window.sessionStorage.removeItem(getStorageKey(vendor.slug));
   });
+  emitOrderSummaryUpdated();
+}
+
+export function subscribeToOrderSummaryUpdates(callback) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  window.addEventListener(ORDER_SUMMARY_UPDATED_EVENT, callback);
+  window.addEventListener("storage", callback);
+
+  return () => {
+    window.removeEventListener(ORDER_SUMMARY_UPDATED_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
 }
