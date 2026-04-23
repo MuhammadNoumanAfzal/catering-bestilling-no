@@ -13,6 +13,8 @@ import {
 } from "react-icons/fi";
 import DeliveryDatePopover from "./navbar/DeliveryDatePopover";
 import EventDetailsPopover from "./navbar/EventDetailsPopover";
+import NotificationPopover from "./navbar/NotificationPopover";
+import { navbarNotifications } from "./navbar/notificationData";
 import { formatNavbarDate } from "./navbar/navbarDateUtils";
 import { useAuth } from "../../features/auth/context/AuthContext";
 
@@ -39,6 +41,7 @@ export default function CommonNavbar({
   const { isLoggedIn, user, signOut } = useAuth();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({
     city: "Bergen",
   });
@@ -57,6 +60,10 @@ export default function CommonNavbar({
   const [draftEventName, setDraftEventName] = useState("");
   const dropdownRef = useRef(null);
   const actionMenuRef = useRef(null);
+  const notificationRef = useRef(null);
+  const unreadNotificationCount = navbarNotifications.filter(
+    (item) => item.unread,
+  ).length;
 
   const toggleDropdown = (key) => {
     setOpenDropdown((current) => {
@@ -93,6 +100,10 @@ export default function CommonNavbar({
 
       if (!actionMenuRef.current?.contains(event.target)) {
         setIsActionMenuOpen(false);
+      }
+
+      if (!notificationRef.current?.contains(event.target)) {
+        setIsNotificationOpen(false);
       }
     };
 
@@ -307,83 +318,122 @@ export default function CommonNavbar({
         </div>
 
         <div className="ml-auto" ref={actionMenuRef}>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setIsActionMenuOpen((current) => !current)}
-              className="flex items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm transition hover:border-[#d9c7ba]"
-              aria-label="Open navigation menu"
-              aria-expanded={isActionMenuOpen}
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
-                <FiUser />
-              </div>
-              {isLoggedIn ? (
-                <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
-                  {user?.name}
-                </span>
-              ) : (
-                <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
-                  Menu
-                </span>
-              )}
-              <FiMenu className="text-[18px] text-[#6a625c]" />
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="relative" ref={notificationRef}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsNotificationOpen((current) => !current);
+                  setIsActionMenuOpen(false);
+                }}
+                className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33]"
+                aria-label="Notifications"
+                aria-expanded={isNotificationOpen}
+              >
+                <FiBell className="text-[18px]" />
+                {unreadNotificationCount > 0 ? (
+                  <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
+                    {unreadNotificationCount}
+                  </span>
+                ) : null}
+              </button>
 
-            {isActionMenuOpen ? (
-              <div className="absolute right-0 top-[calc(100%+10px)] z-50 min-w-[220px] rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)]">
-                <div className="space-y-1">
-                  <Link
-                    to="/"
-                    onClick={() => setIsActionMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
-                  >
-                    <FiMenu className="text-[17px]" />
-                    <span>Contact us</span>
-                  </Link>
+              {isNotificationOpen ? (
+                <NotificationPopover notifications={navbarNotifications} />
+              ) : null}
+            </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsActionMenuOpen(false)}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
-                  >
-                    <FiBell className="text-[17px]" />
-                    <span>Notifications</span>
-                  </button>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsActionMenuOpen((current) => !current);
+                  setIsNotificationOpen(false);
+                }}
+                className="flex items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm transition hover:border-[#d9c7ba]"
+                aria-label="Open navigation menu"
+                aria-expanded={isActionMenuOpen}
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
+                  <FiUser />
+                </div>
+                {isLoggedIn ? (
+                  <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
+                    {user?.name}
+                  </span>
+                ) : (
+                  <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
+                    Menu
+                  </span>
+                )}
+                <FiMenu className="text-[18px] text-[#6a625c]" />
+              </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsActionMenuOpen(false)}
-                    className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
-                  >
-                    <FiShoppingCart className="text-[17px]" />
-                    <span>Cart</span>
-                  </button>
+              {isActionMenuOpen ? (
+                <div className="absolute right-0 top-[calc(100%+10px)] z-50 min-w-[220px] rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)]">
+                  <div className="space-y-1">
+                    <Link
+                      to="/"
+                      onClick={() => setIsActionMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                    >
+                      <FiMenu className="text-[17px]" />
+                      <span>Contact us</span>
+                    </Link>
 
-                  {isLoggedIn ? (
                     <button
                       type="button"
                       onClick={() => {
-                        signOut();
                         setIsActionMenuOpen(false);
+                        setIsNotificationOpen(true);
                       }}
+                      className="flex w-full items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                    >
+                      <span className="flex items-center gap-3">
+                        <FiBell className="text-[17px]" />
+                        <span>Notifications</span>
+                      </span>
+                      {unreadNotificationCount > 0 ? (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold text-white">
+                          {unreadNotificationCount}
+                        </span>
+                      ) : null}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsActionMenuOpen(false)}
                       className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                     >
-                      <FiUser className="text-[17px]" />
-                      <span>Logout</span>
+                      <FiShoppingCart className="text-[17px]" />
+                      <span>Cart</span>
                     </button>
-                  ) : (
-                    <Link
-                      to="/signin"
-                      onClick={() => setIsActionMenuOpen(false)}
-                      className="mt-2 flex items-center justify-center rounded-full bg-[#c85f33] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b6542c]"
-                    >
-                      Sign in
-                    </Link>
-                  )}
+
+                    {isLoggedIn ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          signOut();
+                          setIsActionMenuOpen(false);
+                        }}
+                        className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                      >
+                        <FiUser className="text-[17px]" />
+                        <span>Logout</span>
+                      </button>
+                    ) : (
+                      <Link
+                        to="/signin"
+                        onClick={() => setIsActionMenuOpen(false)}
+                        className="mt-2 flex items-center justify-center rounded-full bg-[#c85f33] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b6542c]"
+                      >
+                        Sign in
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

@@ -1,13 +1,42 @@
 import { Link } from "react-router-dom";
 import { FiBell, FiMenu, FiShoppingCart, FiUser, FiX } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../auth/context/AuthContext";
+import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
+import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 
 export default function HomeNavbar() {
   const [open, setOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const { isLoggedIn, user } = useAuth();
+  const desktopNotificationRef = useRef(null);
+  const mobileNotificationRef = useRef(null);
+  const unreadNotificationCount = navbarNotifications.filter(
+    (item) => item.unread,
+  ).length;
 
   const closeMenu = () => setOpen(false);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      const clickedDesktop = desktopNotificationRef.current?.contains(
+        event.target,
+      );
+      const clickedMobile = mobileNotificationRef.current?.contains(
+        event.target,
+      );
+
+      if (!clickedDesktop && !clickedMobile) {
+        setIsNotificationOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="relative z-50 w-full">
@@ -30,13 +59,26 @@ export default function HomeNavbar() {
 
           {isLoggedIn ? (
             <>
-              <button
-                type="button"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfd7] bg-white text-xl text-[#2f2f2f] transition hover:text-[#c85f33]"
-                aria-label="Notifications"
-              >
-                <FiBell />
-              </button>
+              <div className="relative" ref={desktopNotificationRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsNotificationOpen((current) => !current)}
+                  className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfd7] bg-white text-xl text-[#2f2f2f] transition hover:text-[#c85f33]"
+                  aria-label="Notifications"
+                  aria-expanded={isNotificationOpen}
+                >
+                  <FiBell />
+                  {unreadNotificationCount > 0 ? (
+                    <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
+                      {unreadNotificationCount}
+                    </span>
+                  ) : null}
+                </button>
+
+                {isNotificationOpen ? (
+                  <NotificationPopover notifications={navbarNotifications} />
+                ) : null}
+              </div>
 
               <div className="flex items-center gap-3 rounded-full border border-[#eadfd7] bg-white px-2 py-1.5 shadow-sm">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
@@ -103,12 +145,29 @@ export default function HomeNavbar() {
               <>
                 <button
                   type="button"
-                  onClick={closeMenu}
+                  onClick={() => setIsNotificationOpen((current) => !current)}
                   className="flex items-center gap-2 text-sm font-medium text-gray-700 transition hover:text-black"
+                  aria-expanded={isNotificationOpen}
                 >
-                  <FiBell />
+                  <span className="relative">
+                    <FiBell />
+                    {unreadNotificationCount > 0 ? (
+                      <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
+                        {unreadNotificationCount}
+                      </span>
+                    ) : null}
+                  </span>
                   Notifications
                 </button>
+
+                {isNotificationOpen ? (
+                  <div ref={mobileNotificationRef}>
+                    <NotificationPopover
+                      notifications={navbarNotifications}
+                      className="static mt-1 w-full max-w-none"
+                    />
+                  </div>
+                ) : null}
 
                 <div className="flex items-center gap-2 rounded-2xl border border-[#eadfd7] px-3 py-2">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">

@@ -1,5 +1,8 @@
+import { useEffect, useRef, useState } from "react";
 import { FiBell, FiChevronDown, FiSearch, FiShoppingCart, FiUser } from "react-icons/fi";
 import { useAuth } from "../../auth/context/AuthContext";
+import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
+import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 
 function FilterButton({ label }) {
   return (
@@ -15,6 +18,25 @@ function FilterButton({ label }) {
 
 export default function VendorTopbar() {
   const { user } = useAuth();
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const notificationRef = useRef(null);
+  const unreadNotificationCount = navbarNotifications.filter(
+    (item) => item.unread,
+  ).length;
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (!notificationRef.current?.contains(event.target)) {
+        setIsNotificationOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-20 border-b border-[#ece5dd] bg-[#fcfaf7]/95 px-5 py-4 backdrop-blur md:px-8">
@@ -42,13 +64,26 @@ export default function VendorTopbar() {
             Contact us
           </button>
 
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e3dbd3] bg-white text-[#2c2c2c] transition hover:text-[#cf5c2f]"
-            aria-label="Notifications"
-          >
-            <FiBell className="text-[18px]" />
-          </button>
+          <div className="relative" ref={notificationRef}>
+            <button
+              type="button"
+              onClick={() => setIsNotificationOpen((current) => !current)}
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e3dbd3] bg-white text-[#2c2c2c] transition hover:text-[#cf5c2f]"
+              aria-label="Notifications"
+              aria-expanded={isNotificationOpen}
+            >
+              <FiBell className="text-[18px]" />
+              {unreadNotificationCount > 0 ? (
+                <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#cf5c2f] px-1 text-[10px] font-bold leading-none text-white">
+                  {unreadNotificationCount}
+                </span>
+              ) : null}
+            </button>
+
+            {isNotificationOpen ? (
+              <NotificationPopover notifications={navbarNotifications} />
+            ) : null}
+          </div>
 
           <div className="flex items-center gap-3 rounded-full border border-[#e3dbd3] bg-white px-2 py-1.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#fff0e9] text-[#cf5c2f]">
