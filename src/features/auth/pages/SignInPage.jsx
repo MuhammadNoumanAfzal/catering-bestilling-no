@@ -57,12 +57,6 @@ export default function SignInPage() {
       }
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="rounded-2xl border border-[#f0d6c9] bg-[#fff6f1] p-4 text-sm text-[#6b4f42]">
-          <p className="font-semibold text-[#c85f33]">Demo login</p>
-          <p>Email: {DEMO_USER.email}</p>
-          <p>Password: {DEMO_USER.password}</p>
-        </div>
-
         <AuthInput
           label="Email"
           name="email"
