@@ -20,7 +20,7 @@ const CATEGORY_STRIP_VARIANTS = {
     label:
       "text-[11px] font-medium leading-tight text-[#5f5f5f] sm:text-xs md:text-sm",
     panel:
-      "absolute left-1/2 top-[calc(100%+12px)] z-20 w-[calc(100%-8px)] max-w-[820px] -translate-x-1/2 rounded-xl border border-[#dcdcdc] bg-white p-3 shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[92%] sm:p-4",
+      "absolute left-[740px] top-[calc(100%+12px)] z-50 w-[calc(100%-8px)] max-w-[820px] -translate-x-1/2 rounded-xl border border-[#dcdcdc] bg-white p-3 shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[92%] sm:p-4",
     panelPointer:
       "absolute -top-[7px] right-8 h-3.5 w-3.5 rotate-45 border-l border-t border-[#dcdcdc] bg-white sm:right-14",
     panelGrid: "grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4",
@@ -48,7 +48,7 @@ const CATEGORY_STRIP_VARIANTS = {
     ),
     label: "text-[11px] font-medium text-[#5f5f5f] sm:text-xs md:text-sm",
     panel:
-      "absolute left-1/2 top-[calc(100%+12px)] z-20 w-[calc(100%-8px)] max-w-[920px] -translate-x-1/2 rounded-xl border border-[#dcdcdc] bg-white p-3 shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[92%] sm:p-4",
+      "absolute left-1/2 top-[calc(100%+12px)] z-50 w-[calc(100%-8px)] max-w-[920px] -translate-x-1/2 rounded-xl border border-[#dcdcdc] bg-white p-3 shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[92%] sm:p-4",
     panelPointer:
       "absolute -top-[7px] right-6 h-3.5 w-3.5 rotate-45 border-l border-t border-[#dcdcdc] bg-white sm:right-8",
     panelGrid: "grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4",
