@@ -1,339 +1,19 @@
 import { useMemo, useState } from "react";
-import { FiCheck, FiChevronDown, FiStar, FiX } from "react-icons/fi";
 import {
-  browseFilterChips,
   dietaryOptions,
-  distanceOptions,
   offerOptions,
-  orderMinimumOptions,
   pricingOptions,
   ratingOptions,
   sortByOptions,
 } from "../../features/browse/data/browseData";
-
-const DROPDOWN_CHIP_KEYS = new Set([
-  "sort",
-  "rating",
-  "dietary",
-  "offer",
-  "pricing",
-  "other",
-]);
-
-const createDefaultOtherFilters = () => ({
-  individualPackaging: false,
-  newlyAdded: false,
-  smallBusiness: false,
-  budgetPerPerson: "",
-  orderMinimum: "Any price",
-  distance: "Any distance",
-});
-
-const FILTER_LABELS = {
-  sort: "Sort by",
-  rating: "Ratings",
-  dietary: "Dietary options",
-  offer: "Offer",
-  pricing: "Pricing",
-  other: "Other Filters",
-};
-
-const FILTER_BAR_VARIANTS = {
-  default: {
-    containerClassName:
-      "relative mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-2",
-    chipsWrapperClassName:
-      "grid w-full grid-cols-2 gap-2 lg:flex lg:min-w-0 lg:flex-1 lg:items-center lg:gap-2",
-    chipContainerClassName: "relative min-w-0 lg:flex-1",
-    chipButtonClassName:
-      "type-subpara inline-flex h-10 w-full items-center justify-between gap-2 rounded-full border px-3 font-semibold transition lg:px-4",
-    inactiveChipClassName: "border-[#ddd5cc] bg-white text-[#666666]",
-    applyButtonClassName:
-      "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-6 text-white transition hover:bg-[#b85e2a] lg:w-auto lg:shrink-0 lg:px-8",
-  },
-  preview: {
-    containerClassName:
-      "mt-5 flex flex-col gap-3 lg:flex-wrap lg:flex-row lg:items-center lg:justify-between lg:gap-2",
-    chipsWrapperClassName:
-      "grid w-full grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center lg:gap-2",
-    chipContainerClassName: "relative min-w-0",
-    chipButtonClassName:
-      "type-subpara inline-flex h-10 w-full items-center justify-between gap-2 rounded-full border px-3 font-semibold transition lg:w-auto lg:min-w-[132px] lg:px-4",
-    inactiveChipClassName: "border-[#bdbdbd] bg-white text-[#666666]",
-    applyButtonClassName:
-      "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-5 text-white transition hover:bg-[#b85e2a] sm:w-auto sm:self-end lg:h-8",
-  },
-};
-
-function FilterDropdown({ minWidthClassName, children, onClear }) {
-  return (
-    <div
-      className={`absolute left-0 top-[calc(100%+12px)] z-30 w-full max-w-[min(20rem,calc(100vw-2rem))] rounded-[12px] border border-[#d9d9d9] bg-white p-2 shadow-[0_12px_26px_rgba(0,0,0,0.16)] sm:w-auto ${minWidthClassName}`}
-    >
-      <span className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rotate-45 border-l border-t border-[#d9d9d9] bg-white" />
-      <div className="space-y-1">{children}</div>
-      <div className="mt-2 flex justify-end">
-        <button
-          type="button"
-          onClick={onClear}
-          className="type-para cursor-pointer rounded-[6px] border border-[#bcbcbc] px-2 py-1 text-black"
-        >
-          Clear filter
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function MultiSelectIndicator({ isSelected }) {
-  return (
-    <span
-      className={`flex h-3.5 w-3.5 items-center justify-center rounded border ${
-        isSelected
-          ? "border-[#CF3A00] bg-[#CF3A00]"
-          : "border-[#bcbcbc] bg-white"
-      }`}
-    >
-      {isSelected ? (
-        <span className="h-1.5 w-1.5 rounded-full bg-white" />
-      ) : null}
-    </span>
-  );
-}
-
-function InlineSelectDropdown({
-  label,
-  value,
-  options,
-  isOpen,
-  onToggle,
-  onSelect,
-  menuPosition = "bottom",
-}) {
-  const menuPositionClassName =
-    menuPosition === "top" ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]";
-
-  return (
-    <div className="relative">
-      <p className="type-para mb-1 text-black">{label}</p>
-      <button
-        type="button"
-        onClick={onToggle}
-        className={`type-subpara flex w-full items-center justify-between rounded-[2px] border bg-white px-3 py-2 text-left outline-none transition ${
-          value !== "Any price" && value !== "Any distance"
-            ? "border-[#CF3A00] text-[#CF3A00]"
-            : "border-[#cfcfcf] text-black"
-        }`}
-      >
-        <span>{value}</span>
-        <FiChevronDown
-          className={`text-[18px] ${
-            value !== "Any price" && value !== "Any distance"
-              ? "text-[#CF3A00]"
-              : "text-[#666]"
-          }`}
-        />
-      </button>
-
-      {isOpen ? (
-        <div
-          className={`absolute left-0 z-20 w-full max-w-[min(16rem,calc(100vw-3rem))] rounded-[8px] border border-[#d9d9d9] bg-white p-1 shadow-[0_12px_26px_rgba(0,0,0,0.16)] sm:w-[250px] ${menuPositionClassName}`}
-        >
-          {options.map((option) => {
-            const isSelected = option === value;
-
-            return (
-              <button
-                key={option}
-                type="button"
-                onClick={() => onSelect(option)}
-                className={`type-subpara flex w-full items-center justify-between rounded-[6px] px-3 py-2 text-left transition ${
-                  isSelected
-                    ? "bg-[#fff1eb] text-[#CF3A00]"
-                    : "text-black hover:bg-[#f7f2ec]"
-                }`}
-              >
-                <span>{option}</span>
-                <span className="flex w-4 justify-center">
-                  {isSelected ? (
-                    <FiCheck className="text-[14px] text-[#CF3A00]" />
-                  ) : null}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function OtherFiltersModal({ otherFilters, setOtherFilters, onClose }) {
-  const [openInlineDropdown, setOpenInlineDropdown] = useState(null);
-
-  const updateOtherFilter = (key, value) => {
-    setOtherFilters((current) => ({
-      ...current,
-      [key]: value,
-    }));
-  };
-
-  return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/10 px-4 py-6">
-      <div className="flex max-h-full w-full max-w-[440px] flex-col overflow-hidden rounded-[12px] border border-[#d9d9d9] bg-white shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
-        <div className="hide-scrollbar overflow-y-auto px-3 pt-3 sm:px-4 sm:pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <h1 className="type-h3 mb-3 text-black">Other Filters</h1>
-          <div className="space-y-3 pb-4 pr-2">
-            <label className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                checked={otherFilters.individualPackaging}
-                onChange={(event) =>
-                  updateOtherFilter("individualPackaging", event.target.checked)
-                }
-                className="mt-1 h-4 w-4 accent-[#CF3A00]"
-              />
-              <span>
-                <span className="type-para block text-black">
-                  Individual Packaging
-                </span>
-                <span className="type-subpara text-[#8a8a8a]">
-                  Restaurants that offer individually packaged items
-                </span>
-              </span>
-            </label>
-
-            <label className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                checked={otherFilters.newlyAdded}
-                onChange={(event) =>
-                  updateOtherFilter("newlyAdded", event.target.checked)
-                }
-                className="mt-1 h-4 w-4 accent-[#CF3A00]"
-              />
-              <span>
-                <span className="type-para block text-black">New</span>
-                <span className="type-subpara text-[#8a8a8a]">
-                  Restaurants that are new to Lunsjavtale
-                </span>
-              </span>
-            </label>
-
-            <label className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                checked={otherFilters.smallBusiness}
-                onChange={(event) =>
-                  updateOtherFilter("smallBusiness", event.target.checked)
-                }
-                className="mt-1 h-4 w-4 accent-[#CF3A00]"
-              />
-              <span className="type-para text-black">Small business</span>
-            </label>
-
-            <div>
-              <p className="type-para mb-1 text-black">Budget per person</p>
-              <input
-                type="text"
-                value={otherFilters.budgetPerPerson}
-                onChange={(event) =>
-                  updateOtherFilter("budgetPerPerson", event.target.value)
-                }
-                placeholder="$"
-                className={`type-subpara w-full rounded-[2px] border px-3 py-2 outline-none transition ${
-                  otherFilters.budgetPerPerson
-                    ? "border-[#CF3A00] text-[#CF3A00]"
-                    : "border-[#cfcfcf] text-black"
-                }`}
-              />
-            </div>
-
-            <div className="pt-6 sm:pt-10">
-              <h4 className="type-h4 mb-3 text-black">Delivery filters</h4>
-
-              <div className="space-y-3">
-                <InlineSelectDropdown
-                  label="Order minimum"
-                  value={otherFilters.orderMinimum}
-                  options={orderMinimumOptions}
-                  isOpen={openInlineDropdown === "orderMinimum"}
-                  onToggle={() =>
-                    setOpenInlineDropdown((current) =>
-                      current === "orderMinimum" ? null : "orderMinimum",
-                    )
-                  }
-                  onSelect={(option) => {
-                    updateOtherFilter("orderMinimum", option);
-                    setOpenInlineDropdown(null);
-                  }}
-                  menuPosition="bottom"
-                />
-
-                <InlineSelectDropdown
-                  label="Distance"
-                  value={otherFilters.distance}
-                  options={distanceOptions}
-                  isOpen={openInlineDropdown === "distance"}
-                  onToggle={() =>
-                    setOpenInlineDropdown((current) =>
-                      current === "distance" ? null : "distance",
-                    )
-                  }
-                  onSelect={(option) => {
-                    updateOtherFilter("distance", option);
-                    setOpenInlineDropdown(null);
-                  }}
-                  menuPosition="top"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-[#ece7e2] bg-white px-3 py-3 sm:px-4">
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={() => {
-                setOtherFilters(createDefaultOtherFilters());
-                onClose();
-              }}
-              className="type-para cursor-pointer rounded-[6px] border border-[#bcbcbc] px-2 py-1 text-black"
-            >
-              Clear filter
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="type-para cursor-pointer rounded-[6px] bg-[#CF3A00] px-2 py-1 text-white"
-            >
-              Apply filter
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SelectedFilterChip({ label, onRemove, tone = "default" }) {
-  const toneClassName =
-    tone === "highlight"
-      ? "border-[#bfe5af] bg-[#d8f1ca] text-[#1f1f1f]"
-      : "border-[#e2dfda] bg-[#f3f1ee] text-[#1f1f1f]";
-
-  return (
-    <button
-      type="button"
-      onClick={onRemove}
-      className={`type-subpara inline-flex h-9 items-center gap-2 rounded-[10px] border px-3 transition hover:opacity-90 ${toneClassName}`}
-    >
-      <span>{label}</span>
-      <FiX className="text-[14px]" />
-    </button>
-  );
-}
+import BrowseFilterControls from "./browseFilters/BrowseFilterControls";
+import {
+  createDefaultOtherFilters,
+  DROPDOWN_CHIP_KEYS,
+  FILTER_BAR_VARIANTS,
+} from "./browseFilters/browseFilterConfig";
+import OtherFiltersModal from "./browseFilters/OtherFiltersModal";
+import SelectedFilterChipsRow from "./browseFilters/SelectedFilterChipsRow";
 
 export default function BrowseFilterBar({
   variant = "default",
@@ -387,9 +67,7 @@ export default function BrowseFilterBar({
         id: `dietary-${option}`,
         label: option,
         onRemove: () =>
-          setSelectedDietary((current) =>
-            current.filter((item) => item !== option),
-          ),
+          setSelectedDietary((current) => current.filter((item) => item !== option)),
       });
     });
 
@@ -398,9 +76,7 @@ export default function BrowseFilterBar({
         id: `offer-${option}`,
         label: option,
         onRemove: () =>
-          setSelectedOffers((current) =>
-            current.filter((item) => item !== option),
-          ),
+          setSelectedOffers((current) => current.filter((item) => item !== option)),
       });
     });
 
@@ -513,14 +189,6 @@ export default function BrowseFilterBar({
     );
   };
 
-  const toggleMultiSelect = (setter, option) => {
-    setter((current) =>
-      current.includes(option)
-        ? current.filter((item) => item !== option)
-        : [...current, option],
-    );
-  };
-
   const handleChipClick = (chipKey) => {
     onControlInteract?.();
 
@@ -537,205 +205,39 @@ export default function BrowseFilterBar({
     <>
       <div className="sticky top-[76px] z-30 bg-white/95 pb-2 backdrop-blur-[6px]">
         <div className={styles.containerClassName}>
-          <div className={styles.chipsWrapperClassName}>
-            {browseFilterChips.map((chip) => {
-              const isDropdownChip = DROPDOWN_CHIP_KEYS.has(chip.key);
-              const isActive =
-                activeFilters.includes(chip.key) ||
-                (chip.key === "sort" && selectedSort !== "Sort by") ||
-                (chip.key === "rating" && selectedRating !== "Ratings") ||
-                (chip.key === "dietary" && selectedDietary.length > 0) ||
-                (chip.key === "offer" && selectedOffers.length > 0) ||
-                (chip.key === "pricing" && selectedPricing !== "Pricing") ||
-                (chip.key === "other" && otherFilterCount > 0);
-
-              return (
-                <div key={chip.key} className={styles.chipContainerClassName}>
-                  <button
-                    type="button"
-                    onClick={() => handleChipClick(chip.key)}
-                    className={`${styles.chipButtonClassName} ${
-                      isActive  
-                        ? "border-[#CF3A00] bg-[#fff1eb] text-[#CF3A00]"
-                        : styles.inactiveChipClassName
-                    }`}
-                  >
-                    <span className="flex w-3 shrink-0 justify-center">
-                      {chip.icon === "star" ? (
-                        <FiStar className="text-[11px] text-[#d5aa22]" />
-                      ) : null}
-                    </span>
-
-                    <span className="truncate">
-                      {FILTER_LABELS[chip.key] ?? chip.label}
-                    </span>
-
-                    {isDropdownChip ? (
-                      <FiChevronDown className="shrink-0 text-[16px]" />
-                    ) : null}
-                  </button>
-
-                  {chip.key === "sort" && openDropdown === "sort" ? (
-                    <FilterDropdown
-                      minWidthClassName="min-w-[190px]"
-                      onClear={() => {
-                        setSelectedSort("Sort by");
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      {sortByOptions.map((option) => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => {
-                            setSelectedSort(option);
-                            setOpenDropdown(null);
-                          }}
-                          className="type-para block w-full rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </FilterDropdown>
-                  ) : null}
-
-                  {chip.key === "rating" && openDropdown === "rating" ? (
-                    <FilterDropdown
-                      minWidthClassName="min-w-[190px]"
-                      onClear={() => {
-                        setSelectedRating("Ratings");
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      {ratingOptions.map((option, index) => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => {
-                            setSelectedRating(option);
-                            setOpenDropdown(null);
-                          }}
-                          className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
-                        >
-                          <span className="flex items-center gap-1 text-[#d5aa22]">
-                            <span className="text-black">{5 - index}</span>
-                            <FiStar className="text-[11px] fill-[#d5aa22]" />
-                          </span>
-                          <span>{option.replace(/^\d+\s*/, "")}</span>
-                        </button>
-                      ))}
-                    </FilterDropdown>
-                  ) : null}
-
-                  {chip.key === "dietary" && openDropdown === "dietary" ? (
-                    <FilterDropdown
-                      minWidthClassName="min-w-[190px]"
-                      onClear={() => {
-                        setSelectedDietary([]);
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      {dietaryOptions.map((option) => {
-                        const isSelected = selectedDietary.includes(option);
-
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() =>
-                              toggleMultiSelect(setSelectedDietary, option)
-                            }
-                            className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
-                          >
-                            <MultiSelectIndicator isSelected={isSelected} />
-                            <span>{option}</span>
-                          </button>
-                        );
-                      })}
-                    </FilterDropdown>
-                  ) : null}
-
-                  {chip.key === "offer" && openDropdown === "offer" ? (
-                    <FilterDropdown
-                      minWidthClassName="min-w-[250px]"
-                      onClear={() => {
-                        setSelectedOffers([]);
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      {offerOptions.map((option) => {
-                        const isSelected = selectedOffers.includes(option);
-
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() =>
-                              toggleMultiSelect(setSelectedOffers, option)
-                            }
-                            className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
-                          >
-                            <MultiSelectIndicator isSelected={isSelected} />
-                            <span>{option}</span>
-                          </button>
-                        );
-                      })}
-                    </FilterDropdown>
-                  ) : null}
-
-                  {chip.key === "pricing" && openDropdown === "pricing" ? (
-                    <FilterDropdown
-                      minWidthClassName="min-w-[190px]"
-                      onClear={() => {
-                        setSelectedPricing("Pricing");
-                        setOpenDropdown(null);
-                      }}
-                    >
-                      {pricingOptions.map((option) => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => {
-                            setSelectedPricing(option);
-                            setOpenDropdown(null);
-                          }}
-                          className="type-para block w-full rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </FilterDropdown>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
+          <BrowseFilterControls
+            styles={styles}
+            activeFilters={activeFilters}
+            otherFilterCount={otherFilterCount}
+            openDropdown={openDropdown}
+            onChipClick={handleChipClick}
+            setOpenDropdown={setOpenDropdown}
+            selectedSort={selectedSort}
+            setSelectedSort={setSelectedSort}
+            selectedRating={selectedRating}
+            setSelectedRating={setSelectedRating}
+            selectedDietary={selectedDietary}
+            setSelectedDietary={setSelectedDietary}
+            selectedOffers={selectedOffers}
+            setSelectedOffers={setSelectedOffers}
+            selectedPricing={selectedPricing}
+            setSelectedPricing={setSelectedPricing}
+            sortByOptions={sortByOptions}
+            ratingOptions={ratingOptions}
+            dietaryOptions={dietaryOptions}
+            offerOptions={offerOptions}
+            pricingOptions={pricingOptions}
+          />
 
           <button type="button" className={styles.applyButtonClassName}>
             Apply
           </button>
         </div>
 
-        {selectedFilterChips.length > 0 ? (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#efe9e2] pt-3">
-            {selectedFilterChips.map((chip) => (
-              <SelectedFilterChip
-                key={chip.id}
-                label={chip.label}
-                onRemove={chip.onRemove}
-                tone={chip.tone}
-              />
-            ))}
-
-            <button
-              type="button"
-              onClick={clearAllFilters}
-              className="type-subpara inline-flex h-9 items-center rounded-full border border-[#c9c4be] bg-white px-4 text-[#1f1f1f] transition hover:bg-[#f7f2ec]"
-            >
-              Clear all filters
-            </button>
-          </div>
-        ) : null}
+        <SelectedFilterChipsRow
+          chips={selectedFilterChips}
+          onClearAll={clearAllFilters}
+        />
       </div>
 
       {openDropdown === "other" ? (
