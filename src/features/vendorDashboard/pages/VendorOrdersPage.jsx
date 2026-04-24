@@ -301,7 +301,7 @@ export default function VendorOrdersPage() {
         </div>
 
         <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-y-2">
+          <table className="min-w-[760px] border-separate border-spacing-y-2">
             <thead>
               <tr className="type-subpara text-left uppercase tracking-[0.04em] text-[#7e776f]">
                 <th className="px-3 py-2">Order ID</th>
@@ -351,7 +351,7 @@ export default function VendorOrdersPage() {
             Showing {startIndex} - {endIndex} of {filteredOrders.length} Orders
           </p>
 
-          <div className="flex items-center gap-2">
+          <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto pb-1">
             <button
               type="button"
               onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}

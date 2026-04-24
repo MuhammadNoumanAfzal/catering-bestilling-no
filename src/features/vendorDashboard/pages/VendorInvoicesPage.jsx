@@ -98,11 +98,11 @@ function FilterMenu({
   menuRef,
 }) {
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative w-full sm:w-auto" ref={menuRef}>
       <button
         type="button"
         onClick={onToggle}
-        className="inline-flex items-center gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3]"
+        className="inline-flex w-full items-center justify-between gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto sm:justify-start"
       >
         <span>
           {options.find((option) => option.value === selectedValue)?.label ?? label}
@@ -116,7 +116,7 @@ function FilterMenu({
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 top-[calc(100%+10px)] z-20 min-w-[180px] rounded-2xl border border-[#e5ddd5] bg-white p-2 shadow-[0_18px_40px_rgba(31,24,19,0.12)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-20 rounded-2xl border border-[#e5ddd5] bg-white p-2 shadow-[0_18px_40px_rgba(31,24,19,0.12)] sm:left-auto sm:right-0 sm:min-w-[180px]">
           {options.map((option) => {
             const isSelected = option.value === selectedValue;
 
@@ -267,7 +267,7 @@ export default function VendorInvoicesPage() {
             />
           </label>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <FilterMenu
               isOpen={isStatusMenuOpen}
               label="Status: All"
@@ -286,7 +286,7 @@ export default function VendorInvoicesPage() {
 
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3]"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto"
             >
               <FiDownload className="text-[15px]" />
               <span>Export</span>
@@ -311,7 +311,7 @@ export default function VendorInvoicesPage() {
         </div>
 
         <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-y-2.5">
+          <table className="min-w-[760px] border-separate border-spacing-y-2.5">
             <thead>
               <tr className="text-left type-h6 font-semibold uppercase tracking-[0.06em] ">
                 <th className="px-3 py-2">Invoice ID</th>
@@ -361,7 +361,7 @@ export default function VendorInvoicesPage() {
             Showing {startIndex} - {endIndex} of {filteredInvoices.length} invoices
           </p>
 
-          <div className="flex items-center gap-2">
+          <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto pb-1">
             <button
               type="button"
               onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}

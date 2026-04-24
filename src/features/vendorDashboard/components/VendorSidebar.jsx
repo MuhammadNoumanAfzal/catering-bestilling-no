@@ -16,8 +16,8 @@ export default function VendorSidebar() {
   const { user, signOut } = useAuth();
 
   return (
-    <aside className="hide-scrollbar flex h-screen w-full max-w-[280px] flex-col overflow-y-auto bg-[#cb6033] px-5 py-6 text-white">
-      <div className="flex items-center justify-center rounded-[28px] border border-white/20 bg-white/8 px-5 py-5">
+    <aside className="hide-scrollbar flex w-full flex-col overflow-y-auto bg-[#cb6033] px-4 py-4 text-white lg:h-screen lg:max-w-[280px] lg:px-5 lg:py-6">
+      <div className="flex items-center justify-center rounded-[28px] border border-white/20 bg-white/8 px-5 py-4 lg:py-5">
         <img
           src="/home/logo.png"
           alt="Lunsjavtale"
@@ -25,29 +25,40 @@ export default function VendorSidebar() {
         />
       </div>
 
-      <nav className="mt-8 flex flex-1 flex-col gap-2">
+      <nav className="hide-scrollbar mt-5 flex flex-1 gap-2 overflow-x-auto pb-1 lg:mt-8 lg:flex-col lg:overflow-visible lg:pb-0">
         {vendorNavigationItems.map(({ label, to, icon: Icon, end }) => (
-          <NavLink key={to} to={to} end={end} className={getLinkClasses}>
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={(navState) =>
+              `${getLinkClasses(navState)} shrink-0 whitespace-nowrap lg:shrink`
+            }
+          >
             <Icon className="text-[18px]" />
             <span>{label}</span>
           </NavLink>
         ))}
       </nav>
 
-      <div className="mt-6 rounded-[26px] border border-white/18 bg-white/10 p-4">
-        <p className="text-sm font-semibold">{user?.name ?? "Vendor User"}</p>
-        <p className="mt-1 text-xs text-white/75">
-          Manage your restaurants and operations
-        </p>
+      <div className="mt-5 rounded-[26px] border border-white/18 bg-white/10 p-4 lg:mt-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:flex-col lg:items-stretch">
+          <div>
+            <p className="text-sm font-semibold">{user?.name ?? "Vendor User"}</p>
+            <p className="mt-1 text-xs text-white/75">
+              Manage your restaurants and operations
+            </p>
+          </div>
 
-        <button
-          type="button"
-          onClick={signOut}
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-[#b44f26] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a4451f]"
-        >
-          <FiLogOut className="text-[16px]" />
-          <span>Logout</span>
-        </button>
+          <button
+            type="button"
+            onClick={signOut}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-[#b44f26] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a4451f] sm:w-auto sm:min-w-[140px] lg:w-full"
+          >
+            <FiLogOut className="text-[16px]" />
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </aside>
   );

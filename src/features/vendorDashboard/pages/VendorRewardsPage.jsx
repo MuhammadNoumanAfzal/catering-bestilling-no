@@ -82,7 +82,7 @@ export default function VendorRewardsPage() {
         <button
           type="button"
           onClick={() => setRewardsEnabled((current) => !current)}
-          className="flex w-full cursor-pointer items-center justify-between gap-3 text-left"
+          className="flex w-full cursor-pointer flex-col items-start justify-between gap-3 text-left sm:flex-row sm:items-center"
         >
           <div>
             <p className="type-h5 ">Enable Rewards</p>
@@ -91,7 +91,7 @@ export default function VendorRewardsPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             <span className="type-para ">{rewardsEnabled ? "On" : "Off"}</span>
             {rewardsEnabled ? (
               <FiToggleRight className="text-[30px] text-[#cf5c2f]" />

@@ -257,7 +257,7 @@ export default function VendorSettingsPage() {
           <div className="mt-5 flex justify-end">
             <button
               type="button"
-              className="type-h6 cursor-pointer rounded-[8px] bg-[#cf6e38] px-5 py-2.5 text-white transition hover:bg-[#ba5f2e]"
+              className="type-h6 w-full cursor-pointer rounded-[8px] bg-[#cf6e38] px-5 py-2.5 text-white transition hover:bg-[#ba5f2e] sm:w-auto"
             >
               Save Changes
             </button>
@@ -270,7 +270,7 @@ export default function VendorSettingsPage() {
             <button
               type="button"
               onClick={handleReset}
-              className="type-h6 cursor-pointer rounded-[8px] bg-[#cf2e2e] px-4 py-2.5 text-white transition hover:bg-[#b92626]"
+              className="type-h6 w-full cursor-pointer rounded-[8px] bg-[#cf2e2e] px-4 py-2.5 text-white transition hover:bg-[#b92626] sm:w-auto"
             >
               Delete account
             </button>
