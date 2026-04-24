@@ -31,11 +31,11 @@ function getStatusClasses(status) {
 function VendorStatCard({ label, value, icon: Icon }) {
   return (
     <article className="rounded-[24px] border border-[#d9d9d9] bg-white p-5 shadow-[0_10px_24px_rgba(30,30,30,0.06)]">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f]">
-        <Icon className="text-[54px]" />
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f] sm:h-16 sm:w-16">
+        <Icon className="text-[42px] sm:text-[54px]" />
       </div>
       <p className="mt-5 type-h5">{label}</p>
-      <p className="mt-4 text-[30px] font-extrabold leading-none text-[#1f1f1f]">
+      <p className="mt-4 text-[26px] font-extrabold leading-none text-[#1f1f1f] sm:text-[30px]">
         {value}
       </p>
     </article>
@@ -69,7 +69,7 @@ export default function VendorDashboardHomePage() {
               {vendorRecentOrders.map((order, index) => (
                 <div
                   key={`${order.id}-${index}`}
-                  className="flex items-center justify-between rounded-2xl border border-[#efefef] px-4 py-3"
+                  className="flex flex-col gap-3 rounded-2xl border border-[#efefef] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <p className="type-h5">
@@ -99,13 +99,13 @@ export default function VendorDashboardHomePage() {
                 <Link
                   key={label}
                   to={to}
-                  className="flex w-full items-center justify-between rounded-2xl border border-[#efefef] px-4 py-3 text-left transition hover:bg-[#faf7f3]"
+                  className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[#efefef] px-4 py-3 text-left transition hover:bg-[#faf7f3]"
                 >
-                  <span className="flex items-center gap-3">
-                    <Icon className="text-[22px] text-[#666666]" />
+                  <span className="flex min-w-0 items-center gap-3">
+                    <Icon className="shrink-0 text-[22px] text-[#666666]" />
                     <span className="type-h5 text-[#222222]">{label}</span>
                   </span>
-                  <FiChevronRight className="text-[22px] text-[#9a9a9a]" />
+                  <FiChevronRight className="shrink-0 text-[22px] text-[#9a9a9a]" />
                 </Link>
               ))}
             </div>
@@ -121,20 +121,20 @@ export default function VendorDashboardHomePage() {
             {vendorInvoices.map((invoice, index) => (
               <div
                 key={`${invoice.id}-${index}`}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl border border-[#efefef] px-4 py-3"
+                className="grid gap-3 rounded-2xl border border-[#efefef] px-4 py-3 sm:grid-cols-[auto_1fr_auto] sm:items-center"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f]">
                   <FiStar className="text-[22px]" />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <p className="type-h5">
                     {invoice.id}
                   </p>
                   <p className="mt-1 type-para text-[#8d8d8d]">{invoice.date}</p>
                 </div>
 
-                <div className="text-right">
+                <div className="text-left sm:text-right">
                   <span
                     className={`inline-flex rounded-full px-3 py-1 type-h6 font-semibold ${getStatusClasses(invoice.status)}`}
                   >

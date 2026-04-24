@@ -173,18 +173,18 @@ export default function VendorAddressPage() {
         updateField={updateField}
       />
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <button
           type="button"
           onClick={handleCancel}
-          className="type-h6 cursor-pointer rounded-full border border-[#cfc6bd] bg-white px-5 py-2.5 text-[#1f1f1f] transition hover:bg-[#f8f4ef]"
+          className="type-h6 w-full cursor-pointer rounded-full border border-[#cfc6bd] bg-white px-5 py-2.5 text-[#1f1f1f] transition hover:bg-[#f8f4ef] sm:w-auto"
         >
           Cancel
         </button>
         <button
           type="button"
           onClick={handleSave}
-          className="type-h6 cursor-pointer rounded-full bg-[#cf5c2f] px-5 py-2.5 text-white transition hover:bg-[#b95127]"
+          className="type-h6 w-full cursor-pointer rounded-full bg-[#cf5c2f] px-5 py-2.5 text-white transition hover:bg-[#b95127] sm:w-auto"
         >
           Save
         </button>

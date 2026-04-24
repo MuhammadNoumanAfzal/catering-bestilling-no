@@ -4,23 +4,26 @@
   --font-family-base:
     "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-h1-size: 76px;
-  --font-h2-size: 40px;
-  --font-h3-size: 24px;
-  --font-h4-size: 20px;
-  --font-h5-size: 18px;
+  --font-h1-size: clamp(44px, 8vw, 76px);
+  --font-h2-size: clamp(28px, 5vw, 40px);
+  --font-h3-size: clamp(20px, 3.4vw, 24px);
+  --font-h4-size: clamp(18px, 3vw, 20px);
+  --font-h5-size: clamp(16px, 2.5vw, 18px);
   --font-h6-size: 14px;
-  --font-para-size: 16px;
+  --font-para-size: clamp(14px, 2.3vw, 16px);
   --font-subpara-size: 12px;
-    --font-fiter-size: 14px;
-
-
+  --font-fiter-size: 14px;
 }
 
 html,
 body,
 #root {
   font-family: var(--font-family-base);
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 button,
