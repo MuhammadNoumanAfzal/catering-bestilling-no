@@ -1,8 +1,13 @@
+import { useEffect } from "react";
 import { FaCheck } from "react-icons/fa";
 import { FiArrowRight, FiHome } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 export default function OrderConfirmedPage() {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
+
   return (
     <section className="min-h-[calc(100vh-120px)] bg-[linear-gradient(180deg,#faf6f1_0%,#fffdf9_100%)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">

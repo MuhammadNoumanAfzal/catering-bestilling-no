@@ -194,17 +194,21 @@ export default function HomeNavbar() {
 
         <button
           onClick={() => setOpen((prev) => !prev)}
-          className="flex h-12 w-12 cursor-pointer items-center justify-center text-9xl text-black transition duration-300 hover:scale-110 md:hidden"
+          className="flex h-12 w-12 cursor-pointer items-center justify-center md:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
         >
-          {open ? <FiX /> : <FiMenu />}
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfd7] bg-white text-[22px] text-[#2f2f2f] shadow-[0_6px_16px_rgba(35,22,12,0.08)] transition duration-300 hover:scale-105 hover:border-[#d9c7ba] hover:text-[#c85f33]">
+            {open ? <FiX /> : <FiMenu />}
+          </span>
         </button>
       </div>
 
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${
-          open ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        className={`transition-all duration-300 ease-in-out md:hidden ${
+          open
+            ? "max-h-[calc(100vh-88px)] overflow-y-auto opacity-100"
+            : "max-h-0 overflow-hidden opacity-0"
         }`}
       >
         <div className="mx-4 rounded-2xl border border-gray-100 bg-white px-4 py-4 shadow-lg">
@@ -256,7 +260,7 @@ export default function HomeNavbar() {
                   <div ref={mobileNotificationRef}>
                     <NotificationPopover
                       notifications={navbarNotifications}
-                      className="static mt-1 w-full max-w-none"
+                      className="static mt-1 w-full max-w-none shadow-none sm:shadow-[0_18px_40px_rgba(22,22,22,0.14)]"
                     />
                   </div>
                 ) : null}
