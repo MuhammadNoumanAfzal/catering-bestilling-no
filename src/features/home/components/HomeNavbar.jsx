@@ -14,6 +14,7 @@ import NotificationPopover from "../../../components/shared/navbar/NotificationP
 import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCartSummary";
 import { vendorNavigationItems } from "../../vendorDashboard/data/vendorDashboardData";
+import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
 const homeProfileMenuItems = [
   { label: "Home", to: "/", icon: FiHome },
@@ -64,6 +65,19 @@ export default function HomeNavbar() {
 
   const actionButtonClassName =
     "relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[#eadfd7] bg-white text-[1.1rem] text-[#2f2f2f] shadow-[0_6px_16px_rgba(35,22,12,0.08)] transition hover:-translate-y-[1px] hover:border-[#d9c7ba] hover:text-[#c85f33]";
+
+  const handleLogout = async () => {
+    const result = await confirmLogout();
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    signOut();
+    setIsProfileMenuOpen(false);
+    closeMenu();
+    await showSuccessToast("Logged out successfully");
+  };
 
   return (
     <header className="relative z-50 w-full">
@@ -161,10 +175,7 @@ export default function HomeNavbar() {
 
                       <button
                         type="button"
-                        onClick={() => {
-                          signOut();
-                          setIsProfileMenuOpen(false);
-                        }}
+                        onClick={handleLogout}
                         className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                       >
                         <FiUser className="text-[17px]" />
@@ -267,10 +278,7 @@ export default function HomeNavbar() {
 
                 <button
                   type="button"
-                  onClick={() => {
-                    signOut();
-                    closeMenu();
-                  }}
+                  onClick={handleLogout}
                   className="flex cursor-pointer items-center gap-2 rounded-2xl border border-[#eadfd7] px-3 py-2 text-left"
                 >
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">

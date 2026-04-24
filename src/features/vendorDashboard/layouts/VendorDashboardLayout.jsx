@@ -1,8 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import CommonNavbar from "../../../components/shared/CommonNavbar";
 import VendorSidebar from "../components/VendorSidebar";
+import { useAuth } from "../../auth/context/AuthContext";
 
 export default function VendorDashboardLayout() {
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/signin" replace state={{ from: location }} />;
+  }
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f5efe8_0%,#fbf9f6_32%,#f6f1eb_100%)]">
       <div className="mx-auto flex min-h-screen flex-col lg:flex-row">

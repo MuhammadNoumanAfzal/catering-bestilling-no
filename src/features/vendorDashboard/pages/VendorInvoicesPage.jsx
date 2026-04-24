@@ -1,149 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  FiChevronDown,
-  FiChevronLeft,
-  FiChevronRight,
-  FiDownload,
-  FiFileText,
-  FiSearch,
-} from "react-icons/fi";
+import { FiDownload, FiSearch } from "react-icons/fi";
+import InvoiceFilterMenu from "../components/invoices/InvoiceFilterMenu";
+import InvoiceOverviewCard from "../components/invoices/InvoiceOverviewCard";
+import InvoicePagination from "../components/invoices/InvoicePagination";
+import InvoiceTable from "../components/invoices/InvoiceTable";
+import InvoiceTotalCard from "../components/invoices/InvoiceTotalCard";
 import {
   vendorInvoiceOverview,
   vendorInvoiceRecords,
   vendorInvoiceTotals,
 } from "../data/vendorDashboardData";
-
-const STATUS_OPTIONS = [
-  { label: "Status: All", value: "all" },
-  { label: "Paid", value: "paid" },
-  { label: "Pending", value: "pending" },
-  { label: "Overdue", value: "overdue" },
-];
-
-const DATE_OPTIONS = [
-  { label: "Last 7 days", value: "7" },
-  { label: "Last 30 days", value: "30" },
-  { label: "This year", value: "year" },
-  { label: "All time", value: "all" },
-];
-
-const PAGE_SIZE = 8;
-const TODAY = new Date("2026-04-22T00:00:00");
-
-function getStatusClasses(status) {
-  const normalizedStatus = status.toLowerCase();
-
-  if (normalizedStatus === "paid") {
-    return "bg-[#dff6dd] text-[#2d9b42]";
-  }
-
-  if (normalizedStatus === "pending") {
-    return "bg-[#fff4d6] text-[#cf8b19]";
-  }
-
-  return "bg-[#fde2d9] text-[#d06036]";
-}
-
-function OverviewCard({ label, value }) {
-  return (
-    <article className="rounded-[18px] border border-[#ddd5cd] bg-white p-4 shadow-[0_8px_20px_rgba(30,30,30,0.04)]">
-      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff3ec] text-[#cf5c2f]">
-        <FiFileText className="text-[28px]" />
-      </div>
-      <p className="mt-4 text-[2rem] font-extrabold leading-none text-[#1f1f1f]">
-        {value}
-      </p>
-      <p className="mt-2 type-para font-semibold">{label}</p>
-    </article>
-  );
-}
-
-function TotalCard({ label, value }) {
-  return (
-    <article className="rounded-[18px] border border-[#ece2d8] bg-[#fffdfa] px-4 py-3">
-      <p className="type-h6 font-semibold uppercase tracking-[0.04em] ">
-        {label}
-      </p>
-      <p className="mt-1 type-h4 font-extrabold ">{value}</p>
-    </article>
-  );
-}
-
-function isWithinDateRange(dateValue, selectedRange) {
-  if (selectedRange === "all") {
-    return true;
-  }
-
-  const candidate = new Date(`${dateValue}T00:00:00`);
-
-  if (selectedRange === "year") {
-    return candidate.getFullYear() === TODAY.getFullYear();
-  }
-
-  const rangeDays = Number(selectedRange);
-  const diffInDays = Math.floor(
-    (TODAY.getTime() - candidate.getTime()) / (1000 * 60 * 60 * 24),
-  );
-
-  return diffInDays >= 0 && diffInDays < rangeDays;
-}
-
-function FilterMenu({
-  isOpen,
-  label,
-  onToggle,
-  options,
-  selectedValue,
-  onSelect,
-  menuRef,
-}) {
-  return (
-    <div className="relative w-full sm:w-auto" ref={menuRef}>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="inline-flex w-full items-center justify-between gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto sm:justify-start"
-      >
-        <span>
-          {options.find((option) => option.value === selectedValue)?.label ?? label}
-        </span>
-        <FiChevronDown
-          className={[
-            "text-[15px] transition",
-            isOpen ? "rotate-180" : "",
-          ].join(" ")}
-        />
-      </button>
-
-      {isOpen ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-20 rounded-2xl border border-[#e5ddd5] bg-white p-2 shadow-[0_18px_40px_rgba(31,24,19,0.12)] sm:left-auto sm:right-0 sm:min-w-[180px]">
-          {options.map((option) => {
-            const isSelected = option.value === selectedValue;
-
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => onSelect(option.value)}
-                className={[
-                  "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition",
-                  isSelected
-                    ? "bg-[#fff1e8] font-semibold text-[#c85f33]"
-                    : "text-[#2f2f2f] hover:bg-[#faf7f3]",
-                ].join(" ")}
-              >
-                <span>{option.label}</span>
-                {isSelected ? (
-                  <span className="text-xs font-semibold">Active</span>
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
-  );
-}
+import {
+  DATE_OPTIONS,
+  isInvoiceWithinDateRange,
+  PAGE_SIZE,
+  STATUS_OPTIONS,
+} from "../components/invoices/invoiceUtils";
 
 export default function VendorInvoicesPage() {
   const [searchValue, setSearchValue] = useState("");
@@ -181,7 +53,7 @@ export default function VendorInvoicesPage() {
         selectedStatus === "all"
           ? true
           : invoice.status.toLowerCase() === selectedStatus;
-      const matchesDate = isWithinDateRange(
+      const matchesDate = isInvoiceWithinDateRange(
         invoice.deliveredAt,
         selectedDateRange,
       );
@@ -226,11 +98,6 @@ export default function VendorInvoicesPage() {
     filteredInvoices.length,
   );
 
-  const paginationNumbers = Array.from(
-    { length: Math.min(totalPages, 4) },
-    (_, index) => index + 1,
-  );
-
   return (
     <div className="space-y-6">
       <section>
@@ -242,14 +109,14 @@ export default function VendorInvoicesPage() {
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {vendorInvoiceOverview.map((item) => (
-          <OverviewCard key={item.label} {...item} />
+          <InvoiceOverviewCard key={item.label} {...item} />
         ))}
       </section>
 
       <section className="rounded-[28px] border border-[#ddd4cb] bg-white p-4 shadow-[0_16px_34px_rgba(28,28,28,0.06)] md:p-5">
         <div className="grid gap-3 border-b border-[#ece4dc] pb-4 md:grid-cols-2 xl:grid-cols-4">
           {vendorInvoiceTotals.map((item) => (
-            <TotalCard key={item.label} {...item} />
+            <InvoiceTotalCard key={item.label} {...item} />
           ))}
         </div>
 
@@ -268,7 +135,7 @@ export default function VendorInvoicesPage() {
           </label>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <FilterMenu
+            <InvoiceFilterMenu
               isOpen={isStatusMenuOpen}
               label="Status: All"
               onToggle={() => {
@@ -292,7 +159,7 @@ export default function VendorInvoicesPage() {
               <span>Export</span>
             </button>
 
-            <FilterMenu
+            <InvoiceFilterMenu
               isOpen={isDateMenuOpen}
               label="Last 7 days"
               onToggle={() => {
@@ -310,112 +177,16 @@ export default function VendorInvoicesPage() {
           </div>
         </div>
 
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-[760px] border-separate border-spacing-y-2.5">
-            <thead>
-              <tr className="text-left type-h6 font-semibold uppercase tracking-[0.06em] ">
-                <th className="px-3 py-2">Invoice ID</th>
-                <th className="px-3 py-2">Vendor</th>
-                <th className="px-3 py-2">Event</th>
-                <th className="px-3 py-2">Delivered</th>
-                <th className="px-3 py-2">Due On</th>
-                <th className="px-3 py-2">Amount</th>
-                <th className="px-3 py-2">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleInvoices.map((invoice, index) => (
-                <tr
-                  key={`${invoice.id}-${invoice.dueOn}-${index}`}
-                  className="rounded-2xl bg-[#fcfbf9] type-para shadow-[0_6px_16px_rgba(20,20,20,0.04)]"
-                >
-                  <td className="rounded-l-2xl px-3 py-3 font-semibold">
-                    {invoice.id}
-                  </td>
-                  <td className="px-3 py-3">{invoice.vendor}</td>
-                  <td className="px-3 py-3">{invoice.event}</td>
-                  <td className="px-3 py-3">{invoice.deliveredOn}</td>
-                  <td className="px-3 py-3">{invoice.dueOn}</td>
-                  <td className="px-3 py-3 font-semibold">{invoice.amount}</td>
-                  <td className="rounded-r-2xl px-3 py-3">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusClasses(invoice.status)}`}
-                    >
-                      {invoice.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <InvoiceTable invoices={visibleInvoices} />
 
-          {visibleInvoices.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#ddd4cb] px-4 py-10 text-center text-sm text-[#777777]">
-              No invoices matched your current filter.
-            </div>
-          ) : null}
-        </div>
-
-        <div className="mt-5 flex flex-col gap-3 border-t border-[#ece4dc] pt-4 text-sm text-[#666666] md:flex-row md:items-center md:justify-between">
-          <p>
-            Showing {startIndex} - {endIndex} of {filteredInvoices.length} invoices
-          </p>
-
-          <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto pb-1">
-            <button
-              type="button"
-              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-              disabled={safeCurrentPage === 1}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#ddd4cb] text-[#6c6c6c] transition hover:bg-[#faf7f3] disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <FiChevronLeft className="text-[14px]" />
-            </button>
-
-            {paginationNumbers.map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                onClick={() => setCurrentPage(pageNumber)}
-                className={[
-                  "flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-semibold transition",
-                  pageNumber === safeCurrentPage
-                    ? "bg-[#cf5c2f] text-white shadow-[0_8px_16px_rgba(207,92,47,0.18)]"
-                    : "text-[#4d4d4d] hover:bg-[#faf7f3]",
-                ].join(" ")}
-              >
-                {pageNumber}
-              </button>
-            ))}
-
-            {totalPages > 4 ? <span className="px-1 text-xs">...</span> : null}
-
-            {totalPages > 4 ? (
-              <button
-                type="button"
-                onClick={() => setCurrentPage(totalPages)}
-                className={[
-                  "flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-semibold transition",
-                  totalPages === safeCurrentPage
-                    ? "bg-[#cf5c2f] text-white shadow-[0_8px_16px_rgba(207,92,47,0.18)]"
-                    : "text-[#4d4d4d] hover:bg-[#faf7f3]",
-                ].join(" ")}
-              >
-                {totalPages}
-              </button>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={() =>
-                setCurrentPage((page) => Math.min(totalPages, page + 1))
-              }
-              disabled={safeCurrentPage === totalPages}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#ddd4cb] text-[#6c6c6c] transition hover:bg-[#faf7f3] disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <FiChevronRight className="text-[14px]" />
-            </button>
-          </div>
-        </div>
+        <InvoicePagination
+          currentPage={safeCurrentPage}
+          endIndex={endIndex}
+          onPageChange={setCurrentPage}
+          startIndex={startIndex}
+          totalItems={filteredInvoices.length}
+          totalPages={totalPages}
+        />
       </section>
     </div>
   );
