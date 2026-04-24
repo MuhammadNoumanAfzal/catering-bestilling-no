@@ -10,6 +10,15 @@ export const DEMO_USER = {
 
 const AuthContext = createContext(null);
 
+function clearStoredUser() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(AUTH_STORAGE_KEY);
+  window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+}
+
 function readStoredUser() {
   if (typeof window === "undefined") {
     return null;
@@ -72,7 +81,10 @@ export function AuthProvider({ children }) {
           user: nextUser,
         };
       },
-      signOut: () => setUser(null),
+      signOut: () => {
+        clearStoredUser();
+        setUser(null);
+      },
     }),
     [user],
   );

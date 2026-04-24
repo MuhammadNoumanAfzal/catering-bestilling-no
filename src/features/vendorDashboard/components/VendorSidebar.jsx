@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../auth/context/AuthContext";
 import { vendorNavigationItems } from "../data/vendorDashboardData";
+import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
 function getLinkClasses({ isActive }) {
   return [
@@ -14,6 +15,17 @@ function getLinkClasses({ isActive }) {
 
 export default function VendorSidebar() {
   const { user, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    const result = await confirmLogout();
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    signOut();
+    await showSuccessToast("Logged out successfully");
+  };
 
   return (
     <aside className="hide-scrollbar flex w-full flex-col overflow-y-auto bg-[#cb6033] px-4 py-4 text-white lg:h-screen lg:max-w-[280px] lg:px-5 lg:py-6">
@@ -52,7 +64,7 @@ export default function VendorSidebar() {
 
           <button
             type="button"
-            onClick={signOut}
+            onClick={handleLogout}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-[#b44f26] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a4451f] sm:w-auto sm:min-w-[140px] lg:w-full"
           >
             <FiLogOut className="text-[16px]" />

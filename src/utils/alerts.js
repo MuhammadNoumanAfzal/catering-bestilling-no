@@ -58,6 +58,20 @@ export function confirmPlaceOrder() {
   );
 }
 
+export function confirmLogout() {
+  return Swal.fire(
+    withBaseOptions({
+      icon: "question",
+      title: "Log out now?",
+      text: "You will be signed out of your current session.",
+      showCancelButton: true,
+      confirmButtonText: "Log out",
+      cancelButtonText: "Stay signed in",
+      cancelButtonColor: "#d7cec6",
+    }),
+  );
+}
+
 export function showOrderPlacedSuccess() {
   return Swal.fire(
     withBaseOptions({
