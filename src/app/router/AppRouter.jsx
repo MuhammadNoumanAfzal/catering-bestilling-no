@@ -6,6 +6,7 @@ import ProductListingPage from "../../features/home/pages/ProductListingPage";
 import VendorListingPage from "../../features/home/pages/VendorListingPage";
 import BrowseFoodTypePage from "../../features/browse/pages/BrowseFoodTypePage";
 import BrowseOccasionPage from "../../features/browse/pages/BrowseOccasionPage";
+import ContactPage from "../../features/contact/pages/ContactPage";
 import OrderConfirmedPage from "../../features/order/pages/OrderConfirmedPage";
 import MenuDetailsPage from "../../features/menu/pages/MenuDetailsPage";
 import VendorProfilePage from "../../features/vendor/pages/VendorProfilePage";
@@ -45,6 +46,7 @@ export default function AppRouter() {
         <Route path="/vendors/:vendorType" element={<VendorListingPage />} />
         <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
         <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
         <Route
           path="/vendor/:vendorSlug/menu/:itemId"

@@ -163,10 +163,11 @@ export default function MenuDetailsPage() {
   const handleAddToCart = () => {
     const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
     const totalServes = menuItem.serves * quantityCount;
+    const itemName = menuItem.modal?.heading ?? menuItem.title ?? "Item";
 
     const summaryItem = {
       id: `${menuItem.id}-${Date.now()}`,
-      name: menuItem.modal.heading,
+      name: itemName,
       quantity: quantityCount,
       serves: menuItem.serves,
       totalServes,
@@ -189,7 +190,7 @@ export default function MenuDetailsPage() {
       items: [summaryItem, ...current.items],
     }));
 
-    showSuccessToast(`${menuItem.modal.heading} added to cart`);
+    showSuccessToast(`${itemName} added to cart`);
   };
 
   const showAvailabilityPopup = !isVendorDeliverySlotAvailable(

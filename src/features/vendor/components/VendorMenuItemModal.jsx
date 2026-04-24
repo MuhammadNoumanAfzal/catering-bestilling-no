@@ -59,13 +59,14 @@ export default function VendorMenuItemModal({ item, onClose }) {
   const handleAddToOrder = () => {
     const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
     const totalServes = item.serves * quantityCount;
+    const itemName = item.modal?.heading ?? item.title ?? "Item";
     const selectedAddOns = Object.entries(selectedOptional)
       .filter(([, isSelected]) => isSelected)
       .map(([key]) => key.split(":")[1]);
 
     onClose({
       id: `${item.id}-${Date.now()}`,
-      name: item.modal.heading,
+      name: itemName,
       quantity: quantityCount,
       serves: item.serves,
       totalServes,
