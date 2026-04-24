@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FiArrowRight } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import AuthButton from "../components/AuthButton";
 import AuthCard from "../components/AuthCard";
@@ -37,20 +38,21 @@ export default function SignInPage() {
 
   return (
     <AuthCard
-      title="Sign in"
-      subtitle="Welcome back. Use the demo login below to continue."
+      badge="Sign In"
+      title="Welcome back"
+      subtitle="Sign in to continue managing your catering account."
       footer={
-        <div className="flex items-center justify-between gap-4 text-left">
-          <p className="type-h4 text-[#7c746d]">
+        <div className="flex flex-col gap-3 text-left sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[15px] text-[#6f665f]">
             Don&apos;t have an account?{" "}
             <Link
               to="/signup"
-              className="type-para font-semibold text-[#0e8bdc]"
+              className="font-semibold text-[#c85f33]"
             >
               Create one
             </Link>
           </p>
-          <Link to="/" className="type-para whitespace-nowrap text-[#0e8bdc]">
+          <Link to="/" className="text-[15px] font-semibold text-[#c85f33]">
             I&apos;m a Caterer
           </Link>
         </div>
@@ -64,6 +66,7 @@ export default function SignInPage() {
           placeholder="nouman@example.com"
           value={formData.email}
           onChange={handleChange}
+          required
         />
         <AuthInput
           label="Password"
@@ -72,19 +75,31 @@ export default function SignInPage() {
           placeholder="********"
           value={formData.password}
           onChange={handleChange}
+          required
         />
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-between">
+          <p className="text-[13px] text-[#8a7f76]">
+            Demo login is prefilled
+          </p>
           <Link
             to="/forgot-password"
-            className="type-para font-semibold text-[#c85f33]"
+            className="text-[14px] font-semibold text-[#c85f33]"
           >
             Forgot password?
           </Link>
         </div>
         {errorMessage ? (
-          <p className="type-para text-sm text-red-600">{errorMessage}</p>
+          <p className="rounded-2xl border border-[#f2c7c2] bg-[#fff4f2] px-4 py-3 text-sm text-[#c43f32]">
+            {errorMessage}
+          </p>
         ) : null}
-        <AuthButton type="submit">Sign in</AuthButton>
+        <AuthButton
+          type="submit"
+          className="inline-flex items-center justify-center gap-2"
+        >
+          Sign in
+          <FiArrowRight className="text-[16px]" />
+        </AuthButton>
       </form>
     </AuthCard>
   );
