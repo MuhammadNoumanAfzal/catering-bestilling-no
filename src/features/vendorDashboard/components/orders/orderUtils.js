@@ -1,3 +1,8 @@
+export const ORDER_VIEW_TABS = [
+  { label: "Active Orders", value: "active" },
+  { label: "Recent Orders", value: "recent" },
+];
+
 export const ORDER_TABS = [
   { label: "All Orders", value: "all" },
   { label: "Completed", value: "completed" },
@@ -27,6 +32,12 @@ export function normalizeOrderStatus(status) {
   }
 
   return normalizedStatus;
+}
+
+export function isActiveOrder(status) {
+  const normalizedStatus = normalizeOrderStatus(status);
+
+  return normalizedStatus === "scheduled" || normalizedStatus === "draft";
 }
 
 export function getOrderStatusClasses(status) {
