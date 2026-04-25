@@ -27,10 +27,11 @@ import VendorOrdersPage from "../../features/vendorDashboard/pages/VendorOrdersP
 import VendorRestaurantsPage from "../../features/vendorDashboard/pages/VendorRestaurantsPage";
 import VendorRewardsPage from "../../features/vendorDashboard/pages/VendorRewardsPage";
 import VendorSettingsPage from "../../features/vendorDashboard/pages/VendorSettingsPage";
+import { BrowseFiltersProvider } from "../context/BrowseFiltersContext";
 
 export default function AppRouter() {
   return (
-    <>
+    <BrowseFiltersProvider>
       <RouteScrollManager />
 
       <Routes>
@@ -83,6 +84,6 @@ export default function AppRouter() {
           <Route path="settings" element={<VendorSettingsPage />} />
         </Route>
       </Routes>
-    </>
+    </BrowseFiltersProvider>
   );
 }

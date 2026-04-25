@@ -1,6 +1,11 @@
-import { FiMapPin, FiShare2, FiStar } from "react-icons/fi";
+import { FiBookmark, FiMapPin, FiShare2, FiStar } from "react-icons/fi";
 
-export default function VendorProfileHeader({ vendor }) {
+export default function VendorProfileHeader({
+  vendor,
+  isSaved,
+  onSaveToggle,
+  onShare,
+}) {
   return (
     <div className="rounded-[16px] border border-[#e7dfd6] bg-white p-4 shadow-[0_6px_18px_rgba(31,19,8,0.04)] sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -36,16 +41,24 @@ export default function VendorProfileHeader({ vendor }) {
         <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end">
           <button
             type="button"
-            className="inline-flex flex-1 items-center justify-center gap-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium sm:flex-none"
+            onClick={onShare}
+            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium transition hover:border-[#cf6e38] hover:text-[#cf6e38] sm:flex-none"
           >
             <FiShare2 className="text-[12px]" />
             Share
           </button>
           <button
             type="button"
-            className="flex-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium sm:flex-none"
+            onClick={onSaveToggle}
+            aria-pressed={isSaved}
+            className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full border px-4 py-2 text-[12px] font-medium transition sm:flex-none ${
+              isSaved
+                ? "border-[#cf6e38] bg-[#fff3ec] text-[#cf6e38]"
+                : "border-[#ddd6cd] text-[#151515] hover:border-[#cf6e38] hover:text-[#cf6e38]"
+            }`}
           >
-            Save
+            <FiBookmark className={`text-[12px] ${isSaved ? "fill-current" : ""}`} />
+            {isSaved ? "Saved" : "Save"}
           </button>
         </div>
       </div>
