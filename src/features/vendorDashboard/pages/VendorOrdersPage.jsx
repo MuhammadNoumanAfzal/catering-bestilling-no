@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import OrderDateFilter from "../components/orders/OrderDateFilter";
+import OrderDetailsModal from "../components/orders/OrderDetailsModal";
 import OrderStatusSummaryCard from "../components/orders/OrderStatusSummaryCard";
 import OrdersPagination from "../components/orders/OrdersPagination";
 import OrdersTable from "../components/orders/OrdersTable";
@@ -20,8 +21,13 @@ export default function VendorOrdersPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchValue, setSearchValue] = useState("");
   const [selectedRange, setSelectedRange] = useState("last-month");
+  const [customDateRange, setCustomDateRange] = useState({
+    from: "2025-02-05",
+    to: "2025-03-05",
+  });
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const dateMenuRef = useRef(null);
 
   const referenceDate = useMemo(() => {
@@ -60,7 +66,15 @@ export default function VendorOrdersPage() {
         selectedRange === "this-year"
           ? orderDate.getFullYear() === referenceDate.getFullYear()
           : selectedRange === "custom-date"
-            ? diffInDays >= 0 && diffInDays <= 28
+            ? (() => {
+                if (!customDateRange.from || !customDateRange.to) {
+                  return true;
+                }
+
+                const fromDate = new Date(`${customDateRange.from}T00:00:00`);
+                const toDate = new Date(`${customDateRange.to}T23:59:59`);
+                return orderDate >= fromDate && orderDate <= toDate;
+              })()
             : rangeDays === null
               ? true
               : diffInDays >= 0 && diffInDays <= rangeDays;
@@ -78,7 +92,7 @@ export default function VendorOrdersPage() {
         .toLowerCase()
         .includes(query);
     });
-  }, [activeTab, referenceDate, searchValue, selectedRange]);
+  }, [activeTab, customDateRange, referenceDate, searchValue, selectedRange]);
 
   const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -154,10 +168,23 @@ export default function VendorOrdersPage() {
             </label>
 
             <OrderDateFilter
+              customDateRange={customDateRange}
               isOpen={isDateMenuOpen}
               menuRef={dateMenuRef}
               onSelect={(value) => {
                 setSelectedRange(value);
+                setCurrentPage(1);
+                if (value !== "custom-date") {
+                  setIsDateMenuOpen(false);
+                }
+              }}
+              onCustomDateChange={(field, value) =>
+                setCustomDateRange((current) => ({
+                  ...current,
+                  [field]: value,
+                }))
+              }
+              onApplyCustomDate={() => {
                 setCurrentPage(1);
                 setIsDateMenuOpen(false);
               }}
@@ -168,7 +195,10 @@ export default function VendorOrdersPage() {
           </div>
         </div>
 
-        <OrdersTable orders={visibleOrders} />
+        <OrdersTable
+          orders={visibleOrders}
+          onOpenDetails={(order) => setSelectedOrder(order)}
+        />
 
         <OrdersPagination
           currentPage={safeCurrentPage}
@@ -179,6 +209,12 @@ export default function VendorOrdersPage() {
           totalPages={totalPages}
         />
       </section>
+
+      <OrderDetailsModal
+        order={selectedOrder}
+        isOpen={Boolean(selectedOrder)}
+        onClose={() => setSelectedOrder(null)}
+      />
     </div>
   );
 }

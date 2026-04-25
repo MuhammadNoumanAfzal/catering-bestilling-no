@@ -67,8 +67,25 @@ export function formatDateChip(date) {
   return `${day}-${month}-${year}`;
 }
 
-export function getDateFilterLabel(selectedRange, referenceDate) {
+export function formatInputDate(dateValue) {
+  if (!dateValue) {
+    return "";
+  }
+
+  const [year, month, day] = dateValue.split("-");
+  return `${day}-${month}-${year}`;
+}
+
+export function getDateFilterLabel(
+  selectedRange,
+  referenceDate,
+  customDateRange = {},
+) {
   if (selectedRange === "custom-date") {
+    if (customDateRange.from && customDateRange.to) {
+      return `From: ${formatInputDate(customDateRange.from)} To: ${formatInputDate(customDateRange.to)}`;
+    }
+
     const fromDate = new Date(referenceDate);
     fromDate.setDate(referenceDate.getDate() - 28);
     return `From: ${formatDateChip(fromDate)} To: ${formatDateChip(referenceDate)}`;

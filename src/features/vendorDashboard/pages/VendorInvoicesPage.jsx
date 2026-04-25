@@ -12,6 +12,7 @@ import {
 } from "../data/vendorDashboardData";
 import {
   DATE_OPTIONS,
+  getInvoiceDateFilterLabel,
   isInvoiceWithinDateRange,
   PAGE_SIZE,
   STATUS_OPTIONS,
@@ -21,6 +22,10 @@ export default function VendorInvoicesPage() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedDateRange, setSelectedDateRange] = useState("7");
+  const [customDateRange, setCustomDateRange] = useState({
+    from: "2025-02-05",
+    to: "2025-03-05",
+  });
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,6 +61,7 @@ export default function VendorInvoicesPage() {
       const matchesDate = isInvoiceWithinDateRange(
         invoice.deliveredAt,
         selectedDateRange,
+        customDateRange,
       );
 
       if (!matchesStatus || !matchesDate) {
@@ -79,11 +85,11 @@ export default function VendorInvoicesPage() {
         .toLowerCase()
         .includes(query);
     });
-  }, [searchValue, selectedDateRange, selectedStatus]);
+  }, [customDateRange, searchValue, selectedDateRange, selectedStatus]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchValue, selectedStatus, selectedDateRange]);
+  }, [customDateRange, searchValue, selectedStatus, selectedDateRange]);
 
   const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -161,7 +167,10 @@ export default function VendorInvoicesPage() {
 
             <InvoiceFilterMenu
               isOpen={isDateMenuOpen}
-              label="Last 7 days"
+              label={getInvoiceDateFilterLabel(
+                selectedDateRange,
+                customDateRange,
+              )}
               onToggle={() => {
                 setIsDateMenuOpen((open) => !open);
                 setIsStatusMenuOpen(false);
@@ -170,9 +179,94 @@ export default function VendorInvoicesPage() {
               selectedValue={selectedDateRange}
               onSelect={(value) => {
                 setSelectedDateRange(value);
-                setIsDateMenuOpen(false);
+                if (value !== "custom-date") {
+                  setIsDateMenuOpen(false);
+                }
               }}
               menuRef={dateMenuRef}
+              renderContent={() => (
+                <div className="sm:min-w-[260px]">
+                  {DATE_OPTIONS.map((option) => {
+                    const isSelected = option.value === selectedDateRange;
+
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setSelectedDateRange(option.value);
+                          if (option.value !== "custom-date") {
+                            setIsDateMenuOpen(false);
+                          }
+                        }}
+                        className={[
+                          "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition",
+                          isSelected
+                            ? "bg-[#fff1e8] font-semibold text-[#c85f33]"
+                            : "text-[#2f2f2f] hover:bg-[#faf7f3]",
+                        ].join(" ")}
+                      >
+                        <span>{option.label}</span>
+                        {isSelected ? (
+                          <span className="text-xs font-semibold">Active</span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+
+                  {selectedDateRange === "custom-date" ? (
+                    <div className="mt-2 rounded-xl border border-[#f0e2d7] bg-[#fff8f3] p-3">
+                      <div className="grid gap-3">
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.08em] text-[#9a6d53]">
+                            From
+                          </span>
+                          <input
+                            type="date"
+                            value={customDateRange.from}
+                            max={customDateRange.to || undefined}
+                            onChange={(event) =>
+                              setCustomDateRange((current) => ({
+                                ...current,
+                                from: event.target.value,
+                              }))
+                            }
+                            className="w-full rounded-xl border border-[#e7d8cb] bg-white px-3 py-2 text-sm text-[#2d2d2d] outline-none"
+                          />
+                        </label>
+
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.08em] text-[#9a6d53]">
+                            To
+                          </span>
+                          <input
+                            type="date"
+                            value={customDateRange.to}
+                            min={customDateRange.from || undefined}
+                            onChange={(event) =>
+                              setCustomDateRange((current) => ({
+                                ...current,
+                                to: event.target.value,
+                              }))
+                            }
+                            className="w-full rounded-xl border border-[#e7d8cb] bg-white px-3 py-2 text-sm text-[#2d2d2d] outline-none"
+                          />
+                        </label>
+                      </div>
+
+                      <div className="mt-3 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setIsDateMenuOpen(false)}
+                          className="rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#bc602d]"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              )}
             />
           </div>
         </div>
