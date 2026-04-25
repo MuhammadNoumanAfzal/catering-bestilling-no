@@ -76,7 +76,7 @@ export default function OrderDateFilter({
                     onChange={(event) =>
                       onCustomDateChange("from", event.target.value)
                     }
-                    className="w-full rounded-[14px] border border-[#e8d6c8] bg-white px-3 py-2.5 text-sm text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#ffd8c6]"
+                    className="w-full cursor-pointer rounded-[14px] border border-[#e8d6c8] bg-white px-3 py-2.5 text-sm text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#ffd8c6]"
                   />
                 </label>
 
@@ -91,7 +91,7 @@ export default function OrderDateFilter({
                     onChange={(event) =>
                       onCustomDateChange("to", event.target.value)
                     }
-                    className="w-full rounded-[14px] border border-[#e8d6c8] bg-white px-3 py-2.5 text-sm text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#ffd8c6]"
+                    className="w-full cursor-pointer rounded-[14px] border border-[#e8d6c8] bg-white px-3 py-2.5 text-sm text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#ffd8c6]"
                   />
                 </label>
               </div>
@@ -100,7 +100,7 @@ export default function OrderDateFilter({
                 <button
                   type="button"
                   onClick={onApplyCustomDate}
-                  className="inline-flex items-center justify-center rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(207,110,56,0.24)] transition hover:bg-[#bc602d]"
+                  className="inline-flex cursor-pointer items-center justify-center rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(207,110,56,0.24)] transition hover:bg-[#bc602d]"
                 >
                   Apply
                 </button>

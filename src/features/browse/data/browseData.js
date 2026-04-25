@@ -7,7 +7,7 @@ export const foodTypeCategories = [
   { name: "Breakfast", icon: "/home/breakfast.svg" },
   { name: "Hot Meal", icon: "/home/hotMeal.svg" },
   { name: "Salad", icon: "/home/salad.svg" },
-  { name: " Packages", icon: "/home/meetingPackages.svg" },
+  { name: "Packages", icon: "/home/meetingPackages.svg" },
   { name: "Asian", icon: "/home/hotMeal.svg" },
   { name: "BBQ", icon: "/home/hotMeal.svg" },
   { name: "Healthy", icon: "/home/salad.svg" },
@@ -19,13 +19,11 @@ export const foodTypeCategories = [
 export const occasionCategories = [
   { name: "Breakfast", icon: "/home/breakfast.svg" },
   { name: "Birthday", icon: "/home/hotMeal.svg" },
-
-  { name: "Baby ", icon: "/home/breakfast.svg" },
-  { name: " Meeting", icon: "/home/meetingPackages.svg" },
+  { name: "Baby", icon: "/home/breakfast.svg" },
+  { name: "Meeting", icon: "/home/meetingPackages.svg" },
   { name: "Conference", icon: "/home/meetingPackages.svg" },
   { name: "Networking", icon: "/home/salad.svg" },
-  { name: " Party", icon: "/home/pizza.svg" },
-
+  { name: "Party", icon: "/home/pizza.svg" },
   { name: "Reception", icon: "/home/pizza.svg" },
   { name: "More", icon: null },
 ];
@@ -49,6 +47,7 @@ export const foodTypeMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.9,
     price: "NOK 189",
+    categoryTags: ["Hot Meal", "BBQ", "American", "Dinner"],
   },
   {
     id: 2,
@@ -59,6 +58,7 @@ export const foodTypeMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.8,
     price: "NOK 230",
+    categoryTags: ["Packages", "Healthy", "Meeting", "Conference"],
   },
   {
     id: 3,
@@ -69,6 +69,7 @@ export const foodTypeMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.6,
     price: "NOK 165",
+    categoryTags: ["Hot Meal", "Italian", "Packages", "South Italian American"],
   },
   {
     id: 4,
@@ -79,6 +80,7 @@ export const foodTypeMenuItems = [
     image: "/home/v.webp",
     rating: 4.7,
     price: "NOK 149",
+    categoryTags: ["Breakfast", "Bakery", "Coffee & Tea"],
   },
   {
     id: 5,
@@ -89,6 +91,7 @@ export const foodTypeMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.5,
     price: "NOK 139",
+    categoryTags: ["Salad", "Healthy", "Bowls", "Plant-Based", "Salads"],
   },
   {
     id: 6,
@@ -99,6 +102,7 @@ export const foodTypeMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.4,
     price: "NOK 199",
+    categoryTags: ["Hot Meal", "Packages", "Seafood"],
   },
   {
     id: 7,
@@ -109,6 +113,7 @@ export const foodTypeMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.6,
     price: "NOK 159",
+    categoryTags: ["Hot Meal", "Healthy", "Chicken"],
   },
   {
     id: 8,
@@ -119,6 +124,7 @@ export const foodTypeMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.7,
     price: "NOK 249",
+    categoryTags: ["Packages", "Italian", "Hot Meal"],
   },
   {
     id: 9,
@@ -129,6 +135,40 @@ export const foodTypeMenuItems = [
     image: "/home/v.webp",
     rating: 4.3,
     price: "NOK 119",
+    categoryTags: ["Breakfast", "Healthy", "Bakery"],
+  },
+  {
+    id: 10,
+    slug: "asian-rice-bowl-feast",
+    vendorSlug: "urban-salad-kitchen",
+    title: "Asian Rice Bowl Feast",
+    vendor: "By Urban Salad Kitchen",
+    image: "/home/hero1.webp",
+    rating: 4.8,
+    price: "NOK 209",
+    categoryTags: ["Asian", "Healthy", "Bowls", "Thai"],
+  },
+  {
+    id: 11,
+    slug: "smokehouse-bbq-tray",
+    vendorSlug: "flints-grill",
+    title: "Smokehouse BBQ Tray",
+    vendor: "By Flint's Grill",
+    image: "/home/hero3.webp",
+    rating: 4.9,
+    price: "NOK 259",
+    categoryTags: ["BBQ", "Hot Meal", "American", "Southern"],
+  },
+  {
+    id: 12,
+    slug: "healthy-green-lunch-box",
+    vendorSlug: "urban-salad-kitchen",
+    title: "Healthy Green Lunch Box",
+    vendor: "By Urban Salad Kitchen",
+    image: "/home/hero2.webp",
+    rating: 4.7,
+    price: "NOK 179",
+    categoryTags: ["Healthy", "Salad", "Plant-Based", "Smoothies & Juices"],
   },
 ];
 
@@ -142,6 +182,7 @@ export const occasionMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.9,
     price: "NOK 499",
+    categoryTags: ["Reception", "Party", "Engagement"],
   },
   {
     id: 2,
@@ -152,6 +193,7 @@ export const occasionMenuItems = [
     image: "/home/v.webp",
     rating: 4.8,
     price: "NOK 320",
+    categoryTags: ["Birthday", "Party", "Baby"],
   },
   {
     id: 3,
@@ -162,6 +204,7 @@ export const occasionMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.7,
     price: "NOK 429",
+    categoryTags: ["Meeting", "Conference", "Networking", "Board Meeting"],
   },
   {
     id: 4,
@@ -172,6 +215,7 @@ export const occasionMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.6,
     price: "NOK 359",
+    categoryTags: ["Reception", "Party", "Family Gathering"],
   },
   {
     id: 5,
@@ -182,6 +226,7 @@ export const occasionMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.5,
     price: "NOK 279",
+    categoryTags: ["Party", "Networking", "Office Celebration"],
   },
   {
     id: 6,
@@ -192,6 +237,7 @@ export const occasionMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.8,
     price: "NOK 389",
+    categoryTags: ["Breakfast", "Reception", "Brunch Event"],
   },
   {
     id: 7,
@@ -202,6 +248,7 @@ export const occasionMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.5,
     price: "NOK 345",
+    categoryTags: ["Meeting", "Conference", "Workshop"],
   },
   {
     id: 8,
@@ -212,6 +259,7 @@ export const occasionMenuItems = [
     image: "/home/v.webp",
     rating: 4.4,
     price: "NOK 299",
+    categoryTags: ["Networking", "Reception", "Launch Event"],
   },
   {
     id: 9,
@@ -222,6 +270,29 @@ export const occasionMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.7,
     price: "NOK 269",
+    categoryTags: ["Reception", "Party", "Client Meeting"],
+  },
+  {
+    id: 10,
+    slug: "baby-shower-brunch-box",
+    vendorSlug: "morning-bite-cafe",
+    title: "Baby Shower Brunch Box",
+    vendor: "By Morning Bite Cafe",
+    image: "/home/v.webp",
+    rating: 4.6,
+    price: "NOK 289",
+    categoryTags: ["Baby", "Breakfast", "Baby Shower", "Brunch Event"],
+  },
+  {
+    id: 11,
+    slug: "conference-lunch-bundle",
+    vendorSlug: "nordic-lunch-house",
+    title: "Conference Lunch Bundle",
+    vendor: "By Nordic Lunch House",
+    image: "/home/hero3.webp",
+    rating: 4.7,
+    price: "NOK 519",
+    categoryTags: ["Conference", "Meeting", "Board Meeting", "Lunch Buffet"],
   },
 ];
 
