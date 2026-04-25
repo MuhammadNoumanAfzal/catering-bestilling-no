@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import MenuAddOnsSection from "../components/MenuAddOnsSection";
 import MenuDeliveryForm from "../components/MenuDeliveryForm";
 import MenuHeroBanner from "../components/MenuHeroBanner";
@@ -14,13 +14,22 @@ import {
   isVendorDeliverySlotAvailable,
 } from "../../vendor/data/vendorData";
 import {
+  clearOtherStoredOrderSummaries,
   readOrderSummary,
   writeOrderSummary,
 } from "../../vendor/utils/orderSummaryStorage";
-import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
+import { useAuth } from "../../auth/context/AuthContext";
+import {
+  confirmRemoveItem,
+  promptSignInRequired,
+  showSuccessToast,
+} from "../../../utils/alerts";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
   const vendor = getVendorProfileBySlug(vendorSlug);
   const menuItem = getVendorMenuItemById(vendorSlug, itemId);
   const [orderSummary, setOrderSummary] = useState(null);
@@ -31,19 +40,29 @@ export default function MenuDetailsPage() {
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
   const addOnsSliderRef = useRef(null);
+  const minimumPersons = menuItem?.serves ?? 1;
 
   useEffect(() => {
     if (!vendor || !menuItem) {
       return;
     }
 
-    setOrderSummary(readOrderSummary(vendor));
+    setOrderSummary((current) => {
+      const storedSummary = readOrderSummary(vendor);
+      return {
+        ...storedSummary,
+        personCount: Math.max(
+          minimumPersons,
+          Number(storedSummary.personCount ?? minimumPersons),
+        ),
+      };
+    });
     setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");
     setSelectedRequired(menuItem.modal.requiredSelection.options[0] ?? "");
     setSelectedOptional({});
     setVendorNote("");
     setIsAvailabilityPopupDismissed(false);
-  }, [menuItem, vendor]);
+  }, [menuItem, minimumPersons, vendor]);
 
   useEffect(() => {
     if (!vendor || !orderSummary) {
@@ -122,11 +141,31 @@ export default function MenuDetailsPage() {
 
   const includedMenuItems = useMemo(
     () => [
-      { label: "Seasonal salad", image: menuItem.image },
-      { label: "Fresh bread", image: vendor.heroSideImage ?? menuItem.image },
-      { label: "Main menu selection", image: vendor.banner },
-      { label: "Dessert bite", image: menuItem.image },
-      { label: "Serving setup", image: vendor.heroSideImage ?? vendor.banner },
+      {
+        label: "Main menu selection",
+        description: `${menuItem.description} Allergens: Gluten, dairy.`,
+        image: vendor.banner,
+      },
+      {
+        label: "Seasonal salad",
+        description: "Fresh greens, herbs, and house vinaigrette. Allergens: Mustard.",
+        image: menuItem.image,
+      },
+      {
+        label: "Fresh bread",
+        description: "Bakery bread with whipped butter. Allergens: Gluten, dairy.",
+        image: vendor.heroSideImage ?? menuItem.image,
+      },
+      {
+        label: "Dessert bite",
+        description: "Chef's sweet finish for the menu. Allergens: Egg, dairy.",
+        image: menuItem.image,
+      },
+      {
+        label: "Serving setup",
+        description: "Servingware and setup items included for easy presentation.",
+        image: vendor.heroSideImage ?? vendor.banner,
+      },
     ],
     [menuItem, vendor],
   );
@@ -160,7 +199,19 @@ export default function MenuDetailsPage() {
     });
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (!isLoggedIn) {
+      const result = await promptSignInRequired();
+
+      if (result.isConfirmed) {
+        navigate("/signin", { state: { from: location } });
+      } else if (result.isDenied) {
+        navigate("/signup", { state: { from: location } });
+      }
+
+      return;
+    }
+
     const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
     const totalServes = menuItem.serves * quantityCount;
     const itemName = menuItem.modal?.heading ?? menuItem.title ?? "Item";
@@ -180,6 +231,8 @@ export default function MenuDetailsPage() {
         vendorNote ? `Note: ${vendorNote}` : null,
       ].filter(Boolean),
     };
+
+    clearOtherStoredOrderSummaries(vendor.slug);
 
     setOrderSummary((current) => ({
       ...current,
@@ -246,11 +299,15 @@ export default function MenuDetailsPage() {
                   setOrderSummary((current) => ({ ...current, deliveryTime }))
                 }
                 onPersonCountChange={(personCount) =>
-                  setOrderSummary((current) => ({ ...current, personCount }))
+                  setOrderSummary((current) => ({
+                    ...current,
+                    personCount: Math.max(minimumPersons, personCount),
+                  }))
                 }
                 onDeliveryAddressChange={(deliveryAddress) =>
                   setOrderSummary((current) => ({ ...current, deliveryAddress }))
                 }
+                minimumPersons={minimumPersons}
                 onVendorNoteChange={setVendorNote}
                 onAddToCart={handleAddToCart}
               />
@@ -292,7 +349,10 @@ export default function MenuDetailsPage() {
               setOrderSummary((current) => ({ ...current, deliveryTime }))
             }
             onPersonCountChange={(personCount) =>
-              setOrderSummary((current) => ({ ...current, personCount }))
+              setOrderSummary((current) => ({
+                ...current,
+                personCount: Math.max(minimumPersons, personCount),
+              }))
             }
             onDeliveryAddressChange={(deliveryAddress) =>
               setOrderSummary((current) => ({ ...current, deliveryAddress }))
@@ -303,6 +363,7 @@ export default function MenuDetailsPage() {
             onTablewareChange={(tableware) =>
               setOrderSummary((current) => ({ ...current, tableware }))
             }
+            minimumPersons={minimumPersons}
           />
         </div>
 

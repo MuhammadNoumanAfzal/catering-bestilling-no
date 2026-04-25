@@ -4,7 +4,9 @@ import TablewareModal, {
   getTablewareSummaryText,
 } from "../../../components/shared/TablewareModal";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/context/AuthContext";
+import { promptSignInRequired } from "../../../utils/alerts";
 
 const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
@@ -103,6 +105,7 @@ function IncludedTablewareRow({ tableware, onEdit }) {
 export default function VendorOrderSidebar({
   vendor,
   orderSummary,
+  minimumPersons = 1,
   onRemoveItem,
   onTipChange,
   onDeliveryDateChange,
@@ -114,6 +117,8 @@ export default function VendorOrderSidebar({
 }) {
   const [isTablewareModalOpen, setIsTablewareModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
   const items = sortSummaryItems(orderSummary.items).map((item) => ({
     ...item,
     price: getItemPrice(item, orderSummary.personCount),
@@ -280,7 +285,7 @@ export default function VendorOrderSidebar({
                     type="button"
                     onClick={() =>
                       onPersonCountChange(
-                        Math.max(1, orderSummary.personCount - 1),
+                        Math.max(minimumPersons, orderSummary.personCount - 1),
                       )
                     }
                     className="h-8 w-8 border-r cursor-pointer border-[#d7d1ca]"
@@ -317,7 +322,21 @@ export default function VendorOrderSidebar({
 
               <button
                 type="button"
-                onClick={() => navigate("/checkout/corporate")}
+                onClick={async () => {
+                  if (!isLoggedIn) {
+                    const result = await promptSignInRequired();
+
+                    if (result.isConfirmed) {
+                      navigate("/signin", { state: { from: location } });
+                    } else if (result.isDenied) {
+                      navigate("/signup", { state: { from: location } });
+                    }
+
+                    return;
+                  }
+
+                  navigate("/checkout/corporate");
+                }}
                 className="mt-4 w-full cursor-pointer rounded-[4px] bg-[#cf6e38] px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
               >
                 Checkout

@@ -1,21 +1,38 @@
+import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
-function IncludedMenuRow({ image, label }) {
+function IncludedMenuRow({ description, image, label }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <button
       type="button"
+      onClick={() => setIsOpen((current) => !current)}
       className="flex w-full cursor-pointer items-center justify-between gap-4 py-3 text-left"
     >
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
         <img
           src={image}
           alt={label}
           className="h-11 w-16 rounded-[6px] object-cover"
         />
-        <span className="text-[15px] font-medium text-[#1b1713]">{label}</span>
+        <div className="min-w-0 flex-1">
+          <span className="block text-[15px] font-medium text-[#1b1713]">
+            {label}
+          </span>
+          {isOpen && description ? (
+            <span className="mt-1 block text-[12px] leading-5 text-[#6f655d]">
+              {description}
+            </span>
+          ) : null}
+        </div>
       </div>
-      <FiChevronDown className="shrink-0 text-[16px] text-[#6f655d]" />
+      <FiChevronDown
+        className={`shrink-0 text-[16px] text-[#6f655d] transition ${
+          isOpen ? "rotate-180" : ""
+        }`}
+      />
     </button>
   );
 }
@@ -34,6 +51,7 @@ export default function MenuIncludedSection({
         {includedMenuItems.map((includedItem) => (
           <IncludedMenuRow
             key={includedItem.label}
+            description={includedItem.description}
             image={includedItem.image}
             label={includedItem.label}
           />

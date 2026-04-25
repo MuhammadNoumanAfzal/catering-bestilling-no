@@ -82,3 +82,20 @@ export function showOrderPlacedSuccess() {
     }),
   );
 }
+
+export function promptSignInRequired() {
+  return Swal.fire(
+    withBaseOptions({
+      icon: "info",
+      title: "Sign in required",
+      text: "Please sign in or create an account before placing an order.",
+      showCancelButton: true,
+      showDenyButton: true,
+      confirmButtonText: "Sign in",
+      denyButtonText: "Create account",
+      cancelButtonText: "Not now",
+      cancelButtonColor: "#d7cec6",
+      denyButtonColor: "#f0b79e",
+    }),
+  );
+}
