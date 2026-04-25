@@ -27,7 +27,7 @@ export default function VendorCategoryTabs({
 
   return (
     <div className="border-b border-[#ece5dc] pb-6">
-      <div className="flex flex-wrap items-center gap-5 text-[14px] font-semibold">
+      <div className="hide-scrollbar flex items-center gap-5 overflow-x-auto pb-2 text-[14px] font-semibold">
         {categories.map((category) => {
           const isActive = activeCategory === category;
 
@@ -36,10 +36,10 @@ export default function VendorCategoryTabs({
               key={category}
               type="button"
               onClick={() => onCategoryChange(category)}
-              className={`border-b pb-2 transition ${
+              className={`shrink-0 border-b pb-2 transition ${
                 isActive
-                  ? "border-[#1a1a1a] font-semibold cursor-pointer"
-                  : "border-transparent cursor-pointer text-[#5f5f5f]"
+                  ? "cursor-pointer border-[#1a1a1a] font-semibold text-[#1a1a1a]"
+                  : "cursor-pointer border-transparent text-[#5f5f5f]"
               }`}
             >
               {category}
@@ -47,7 +47,7 @@ export default function VendorCategoryTabs({
           );
         })}
 
-        <div className="relative ml-auto">
+        <div className="relative ml-auto shrink-0">
           <button
             type="button"
             onClick={() => setShowFilters((current) => !current)}

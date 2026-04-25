@@ -15,6 +15,70 @@ const DEFAULT_SECTIONS = [
   "Boxed Lunches",
 ];
 
+const DETAIL_LINE_LIBRARY = {
+  "All - in - One Order": [
+    "Slow-roasted mains, seasonal sides, artisan bread, and house-made sauces.",
+    "Balanced buffet setup with hot protein, fresh salad, and dessert-ready extras.",
+    "Chef-curated office spread with premium proteins and sharing platters.",
+  ],
+  Appetizers: [
+    "Handheld bites with dipping sauces, garnish trays, and easy sharing portions.",
+    "Warm starters prepared for meetings, receptions, and casual team events.",
+    "Freshly plated snacks with crisp vegetables, herbs, and signature dressings.",
+  ],
+  "Catering Packages": [
+    "Complete package with mains, sides, serving setup, and disposable cutlery.",
+    "Meeting-ready tray selection with flexible portions and easy table service.",
+    "Premium bundle designed for longer events and larger guest groups.",
+  ],
+  "Boxed Lunches": [
+    "Individually packed lunches with labeled boxes, sides, dessert, and napkins.",
+    "Easy grab-and-go meal set for workshops, trainings, and office deliveries.",
+    "Compact lunch option with a fresh entree, small side, and sweet finish.",
+  ],
+};
+
+const DIETARY_LABEL_LIBRARY = [
+  ["Halal", "High Protein"],
+  ["Vegetarian Friendly", "Nut Free"],
+  ["Gluten-Free Option", "Dairy Aware"],
+  ["Individually Packed", "Office Favorite"],
+];
+
+const ALLERGEN_LIBRARY = [
+  ["Milk", "Egg"],
+  ["Wheat", "Soy"],
+  ["Sesame", "Mustard"],
+  ["Shellfish", "Celery"],
+];
+
+const REVIEW_AUTHOR_NAMES = [
+  "Emma Johnson",
+  "Noah Larsen",
+  "Sofia Ahmed",
+  "Lucas Berg",
+  "Mia Andersen",
+  "Ethan Ali",
+];
+
+const REVIEW_HEADLINES = [
+  "Reliable catering for team lunches",
+  "Fresh food and smooth delivery",
+  "Great setup for office events",
+  "Well packed and easy to serve",
+  "Strong flavors and generous portions",
+  "Perfect for last-minute planning",
+];
+
+const REVIEW_COMMENTS = [
+  "Everything arrived on time, clearly labeled, and the portions were generous enough for the whole team.",
+  "The menu felt fresh and balanced, and the packaging made setup very easy for our meeting room.",
+  "Guests loved the variety. The hot dishes stayed warm and the salads were still crisp on arrival.",
+  "Communication was smooth from start to finish and the food presentation looked polished for our event.",
+  "This vendor has become one of our safest choices for office catering because the quality stays consistent.",
+  "We ordered for a mixed group with dietary needs and everyone found something they could enjoy.",
+];
+
 const SECTION_SUBCATEGORIES = {
   "All - in - One Order": [
     "Full Meal",
@@ -475,12 +539,42 @@ function createOptionalGroup(title, offset) {
   };
 }
 
+function createReviewDate(index) {
+  const reviewDate = new Date(2026, 3, 24 - index * 3);
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(reviewDate);
+}
+
+function createVendorReviews(vendor) {
+  return Array.from({ length: 6 }, (_, index) => ({
+    id: `${vendor.slug}-review-${index + 1}`,
+    author: REVIEW_AUTHOR_NAMES[index % REVIEW_AUTHOR_NAMES.length],
+    rating: Number(Math.max(4, vendor.rating - index * 0.1).toFixed(1)),
+    title: REVIEW_HEADLINES[index % REVIEW_HEADLINES.length],
+    comment: REVIEW_COMMENTS[index % REVIEW_COMMENTS.length],
+    occasion: DEFAULT_SECTIONS[index % DEFAULT_SECTIONS.length],
+    date: createReviewDate(index),
+  }));
+}
+
 function createItemFromSeed(seed, sectionTitle, index) {
   const sectionOffset = DEFAULT_SECTIONS.indexOf(sectionTitle) * 12;
   const price = parsePrice(seed.price) + sectionOffset;
   const serves = 5 + ((index + sectionOffset) % 4) * 5;
   const subcategory =
     SECTION_SUBCATEGORIES[sectionTitle]?.[index] ?? sectionTitle;
+  const detailLines = [
+    DETAIL_LINE_LIBRARY[sectionTitle]?.[
+      index % DETAIL_LINE_LIBRARY[sectionTitle].length
+    ] ?? "Freshly prepared for office meals and catering events.",
+    `Allergens: ${ALLERGEN_LIBRARY[index % ALLERGEN_LIBRARY.length].join(", ")}`,
+  ];
+  const dietaryLabels = DIETARY_LABEL_LIBRARY[index % DIETARY_LABEL_LIBRARY.length];
+  const allergens = ALLERGEN_LIBRARY[index % ALLERGEN_LIBRARY.length];
 
   return {
     id: `${seed.slug}-${sectionTitle}-${index}`,
@@ -493,6 +587,9 @@ function createItemFromSeed(seed, sectionTitle, index) {
     description:
       sectionDescriptions[sectionTitle] ??
       "Freshly prepared menu designed for office lunches and catered events.",
+    detailLines,
+    dietaryLabels,
+    allergens,
     price,
     modal: {
       heading: seed.title,
@@ -617,12 +714,14 @@ export const vendorProfiles = vendorDirectory.map((vendor) => {
     (item) => item.slug === vendor.slug,
   );
   const menuSections = buildMenuSections(vendor);
+  const reviews = createVendorReviews(vendor);
 
   return {
     ...vendor,
     logo: vendor.logo ?? previewCard?.image,
     categories: DEFAULT_SECTIONS,
     menuSections,
+    reviews,
     orderSummary: createOrderSummary(menuSections),
   };
 });
@@ -653,6 +752,10 @@ export function getVendorProfileByName(name) {
       (vendor) => vendor.name.toLowerCase() === cleanedName,
     ) ?? null
   );
+}
+
+export function getVendorReviewsBySlug(slug) {
+  return getVendorProfileBySlug(slug)?.reviews ?? [];
 }
 
 function resolveVendorPostalCoverage(vendor) {

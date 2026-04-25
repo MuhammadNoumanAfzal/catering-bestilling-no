@@ -11,6 +11,7 @@ import ContactPage from "../../features/contact/pages/ContactPage";
 import OrderConfirmedPage from "../../features/order/pages/OrderConfirmedPage";
 import MenuDetailsPage from "../../features/menu/pages/MenuDetailsPage";
 import VendorProfilePage from "../../features/vendor/pages/VendorProfilePage";
+import VendorReviewsPage from "../../features/vendor/pages/VendorReviewsPage";
 import AuthLayout from "../../features/auth/components/AuthLayout";
 import SignUpPage from "../../features/auth/pages/SignUpPage";
 import SignInPage from "../../features/auth/pages/SignInPage";
@@ -56,6 +57,10 @@ export default function AppRouter() {
           <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
+          <Route
+            path="/vendor/:vendorSlug/reviews"
+            element={<VendorReviewsPage />}
+          />
           <Route
             path="/vendor/:vendorSlug/menu/:itemId"
             element={<MenuDetailsPage />}
