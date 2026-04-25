@@ -26,10 +26,6 @@ export default function VendorProfilePage() {
     useState(false);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
-  }, [vendorSlug]);
-
-  useEffect(() => {
     if (!vendor) {
       return;
     }
