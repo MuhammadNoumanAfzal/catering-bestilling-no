@@ -30,6 +30,7 @@ import VendorSettingsPage from "../../features/vendorDashboard/pages/VendorSetti
 export default function AppRouter() {
   return (
     <Routes>
+      {/* Authentication routes */}
       <Route element={<AuthLayout />}>
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signin" element={<SignInPage />} />
@@ -40,6 +41,8 @@ export default function AppRouter() {
         />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Route>
+
+      {/* Main customer-facing routes */}
       <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/products/:productType" element={<ProductListingPage />} />
@@ -55,10 +58,17 @@ export default function AppRouter() {
         <Route path="/order-confirmed" element={<OrderConfirmedPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
+
+      {/* Checkout flow routes */}
       <Route element={<CheckoutLayout />}>
-        <Route path="/checkout" element={<Navigate to="/checkout/corporate" replace />} />
+        <Route
+          path="/checkout"
+          element={<Navigate to="/checkout/corporate" replace />}
+        />
         <Route path="/checkout/:checkoutType" element={<CheckoutPage />} />
       </Route>
+
+      {/* Vendor dashboard routes */}
       <Route path="/vendor-dashboard" element={<VendorDashboardLayout />}>
         <Route index element={<VendorDashboardHomePage />} />
         <Route path="orders" element={<VendorOrdersPage />} />
