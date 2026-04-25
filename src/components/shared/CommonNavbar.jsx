@@ -10,10 +10,6 @@ import { useAuth } from "../../features/auth/context/AuthContext";
 import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardData";
 import { confirmLogout, showSuccessToast } from "../../utils/alerts";
 
-const dropdownOptions = {
-  city: ["Bergen", "Oslo", "Stavanger", "Trondheim"],
-};
-
 const commonProfileMenuItems = [
   { label: "Home", to: "/", icon: FiHome },
   { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
@@ -42,9 +38,7 @@ export default function CommonNavbar({
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState({
-    city: "Bergen",
-  });
+  const [locationValue, setLocationValue] = useState("Bergen");
   const [searchValue, setSearchValue] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
@@ -85,11 +79,6 @@ export default function CommonNavbar({
 
       return nextDropdown;
     });
-  };
-
-  const handleSelect = (key, value) => {
-    setSelectedFilters((current) => ({ ...current, [key]: value }));
-    setOpenDropdown(null);
   };
 
   useEffect(() => {
@@ -170,11 +159,10 @@ export default function CommonNavbar({
               draftDate={draftDate}
               draftEventName={draftEventName}
               draftTime={draftTime}
-              dropdownOptions={dropdownOptions}
               eventLabel={eventLabel}
-              handleSelect={handleSelect}
               hasDeliverySelection={hasDeliverySelection}
               hasEventSelection={hasEventSelection}
+              locationValue={locationValue}
               onApplyDelivery={applyDeliverySelection}
               onApplyEvent={applyEventDetails}
               onAttendeeChange={(change) =>
@@ -182,6 +170,7 @@ export default function CommonNavbar({
               }
               onDateSelect={setDraftDate}
               onEventNameChange={setDraftEventName}
+              onLocationChange={setLocationValue}
               onMonthChange={(direction) =>
                 setCalendarMonth(
                   (current) =>
@@ -196,7 +185,6 @@ export default function CommonNavbar({
               onTimeSelect={setDraftTime}
               openDropdown={openDropdown}
               searchValue={searchValue}
-              selectedFilters={selectedFilters}
               setSearchValue={setSearchValue}
               toggleDropdown={toggleDropdown}
             />

@@ -15,22 +15,21 @@ export default function CommonNavbarFilters({
   draftDate,
   draftEventName,
   draftTime,
-  dropdownOptions,
   eventLabel,
   hasDeliverySelection,
   hasEventSelection,
-  handleSelect,
+  locationValue,
   onApplyDelivery,
   onApplyEvent,
   onAttendeeChange,
   onDateSelect,
   onEventNameChange,
+  onLocationChange,
   onMonthChange,
   onSearchChange,
   onTimeSelect,
   openDropdown,
   searchValue,
-  selectedFilters,
   setSearchValue,
   toggleDropdown,
 }) {
@@ -38,31 +37,20 @@ export default function CommonNavbarFilters({
     <div className="flex items-center gap-6">
       <div className="relative ">
         <div className="flex h-8 items-center overflow-hidden rounded-full border border-[#d9d1c7] bg-white px-2 ">
-          <button
-            type="button"
-            onClick={() => toggleDropdown("city")}
-            className={`type-subpara flex h-full cursor-pointer items-center gap-1.5 font-semibold transition ${
-              openDropdown === "city" || selectedFilters.city !== "Bergen"
-                ? "text-[#CF3A00]"
-                : "text-[#434343]"
-            }`}
-          >
+          <label className="type-subpara flex h-full items-center gap-1.5 font-semibold text-[#434343]">
             <FiMapPin
               className={`text-[14px] ${
-                openDropdown === "city" || selectedFilters.city !== "Bergen"
-                  ? "text-[#CF3A00]"
-                  : "text-[#8f8f8f]"
+                locationValue.trim() ? "text-[#CF3A00]" : "text-[#8f8f8f]"
               }`}
             />
-            <span className="text-[16px]">{selectedFilters.city}</span>
-            <FiChevronDown
-              className={`pl-14 text-[10px] ${
-                openDropdown === "city" || selectedFilters.city !== "Bergen"
-                  ? "text-[#CF3A00]"
-                  : "text-[#8f8f8f]"
-              }`}
+            <input
+              type="text"
+              value={locationValue}
+              onChange={(event) => onLocationChange(event.target.value)}
+              placeholder="Enter location"
+              className="w-[150px] bg-transparent text-[16px] text-[#434343] outline-none placeholder:text-[#a7a099]"
             />
-          </button>
+          </label>
 
           <div className="h-4  w-px bg-[#e3ddd6]" />
 
@@ -136,23 +124,6 @@ export default function CommonNavbarFilters({
             onAttendeeChange={onAttendeeChange}
             onEventNameChange={onEventNameChange}
           />
-        ) : null}
-
-        {openDropdown &&
-        openDropdown !== "delivery" &&
-        openDropdown !== "event" ? (
-          <div className="absolute left-0 top-[calc(100%+8px)] z-50 min-w-[220px] rounded-2xl border border-[#ece7df] bg-white p-2 shadow-lg">
-            {dropdownOptions[openDropdown].map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => handleSelect(openDropdown, option)}
-                className="type-subpara flex w-full rounded-xl px-3 py-2 text-left text-[#4f4f4f] transition hover:bg-[#f7f2ec]"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
         ) : null}
       </div>
 
