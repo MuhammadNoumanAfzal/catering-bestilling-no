@@ -11,10 +11,14 @@ import {
   isVendorDeliverySlotAvailable,
 } from "../data/vendorData";
 import {
+  isVendorSaved,
+  toggleSavedVendor,
+} from "../utils/savedVendorsStorage";
+import {
   readOrderSummary,
   writeOrderSummary,
 } from "../utils/orderSummaryStorage";
-import { confirmRemoveItem } from "../../../utils/alerts";
+import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
 
 export default function VendorProfilePage() {
   const { vendorSlug } = useParams();
@@ -22,6 +26,7 @@ export default function VendorProfilePage() {
   const vendor = getVendorProfileBySlug(vendorSlug);
   const [activeCategory, setActiveCategory] = useState("All - in - One Order");
   const [orderSummary, setOrderSummary] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
 
@@ -31,6 +36,7 @@ export default function VendorProfilePage() {
     }
 
     setOrderSummary(readOrderSummary(vendor));
+    setIsSaved(isVendorSaved(vendor.slug));
     setActiveCategory("All - in - One Order");
     setIsAvailabilityPopupDismissed(false);
   }, [vendor]);
@@ -73,6 +79,48 @@ export default function VendorProfilePage() {
     vendor.slug,
   );
 
+  const handleSaveToggle = () => {
+    const nextSavedState = toggleSavedVendor(vendor.slug);
+    setIsSaved(nextSavedState);
+    showSuccessToast(
+      nextSavedState
+        ? `${vendor.name} saved successfully`
+        : `${vendor.name} removed from saved restaurants`,
+    );
+  };
+
+  const handleShare = async () => {
+    const shareUrl =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/vendor/${vendor.slug}`
+        : `/vendor/${vendor.slug}`;
+    const sharePayload = {
+      title: vendor.name,
+      text: `Check out ${vendor.name} on Lunsjavtale.`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(sharePayload);
+        await showSuccessToast(`${vendor.name} shared successfully`);
+        return;
+      }
+
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+        await showSuccessToast("Restaurant link copied to clipboard");
+        return;
+      }
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        return;
+      }
+    }
+
+    showSuccessToast("Sharing is not supported on this device");
+  };
+
   return (
     <section className=" px-4 py-5 md:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[12px] border border-[#ddd6cd] bg-white">
@@ -95,7 +143,12 @@ export default function VendorProfilePage() {
               </div>
 
               <div className="mt-4">
-                <VendorProfileHeader vendor={vendor} />
+                <VendorProfileHeader
+                  vendor={vendor}
+                  isSaved={isSaved}
+                  onSaveToggle={handleSaveToggle}
+                  onShare={handleShare}
+                />
               </div>
 
               <div className="mt-5">
