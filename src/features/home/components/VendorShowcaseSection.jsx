@@ -3,6 +3,7 @@ import VendorCard from "./VendorCard";
 export default function VendorShowcaseSection({
   title,
   vendors,
+  emptyMessage,
   seeAllLabel = "See all",
   onSeeAllClick,
 }) {
@@ -29,11 +30,17 @@ export default function VendorShowcaseSection({
           </div>
         ) : null}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleVendors.map((vendor) => (
-            <VendorCard key={vendor.id ?? vendor.name} {...vendor} />
-          ))}
-        </div>
+        {visibleVendors.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleVendors.map((vendor) => (
+              <VendorCard key={vendor.id ?? vendor.name} {...vendor} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
+            {emptyMessage ?? "No vendors are available for this location yet."}
+          </div>
+        )}
       </div>
     </section>
   );
