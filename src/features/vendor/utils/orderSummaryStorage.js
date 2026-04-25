@@ -98,6 +98,22 @@ export function clearStoredOrderSummary(vendorSlug) {
   emitOrderSummaryUpdated();
 }
 
+export function clearOtherStoredOrderSummaries(activeVendorSlug) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  vendorProfiles.forEach((vendor) => {
+    if (vendor.slug === activeVendorSlug) {
+      return;
+    }
+
+    window.sessionStorage.removeItem(getStorageKey(vendor.slug));
+  });
+
+  emitOrderSummaryUpdated();
+}
+
 export function clearAllStoredOrderSummaries() {
   if (typeof window === "undefined") {
     return;

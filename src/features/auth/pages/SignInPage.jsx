@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthButton from "../components/AuthButton";
 import AuthCard from "../components/AuthCard";
 import AuthInput from "../components/AuthInput";
@@ -8,6 +8,7 @@ import { DEMO_USER, useAuth } from "../context/AuthContext";
 import { showSuccessToast } from "../../../utils/alerts";
 
 export default function SignInPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [formData, setFormData] = useState({
@@ -33,7 +34,7 @@ export default function SignInPage() {
     }
 
     await showSuccessToast(`Welcome back, ${result.user.name}`);
-    navigate("/");
+    navigate(location.state?.from?.pathname ?? "/", { replace: true });
   };
 
   return (
@@ -47,6 +48,7 @@ export default function SignInPage() {
             Don&apos;t have an account?{" "}
             <Link
               to="/signup"
+              state={location.state}
               className="font-semibold text-[#c85f33]"
             >
               Create one

@@ -1,4 +1,4 @@
-import { FiCalendar, FiClock, FiMapPin } from "react-icons/fi";
+import { FiClock, FiMapPin } from "react-icons/fi";
 
 const TIME_OPTIONS = Array.from({ length: 25 }, (_, index) => {
   const totalMinutes = 8 * 60 + index * 30;
@@ -18,6 +18,7 @@ function formatTimeLabel(value) {
 }
 
 export default function MenuDeliveryForm({
+  minimumPersons = 1,
   orderSummary,
   vendorNote,
   onDeliveryDateChange,
@@ -36,14 +37,13 @@ export default function MenuDeliveryForm({
       <div className="mt-4 grid gap-3 sm:grid-cols-[176px_176px]">
         <label className="block">
           <span className="text-[13px] text-[#3f342b]">Date</span>
-          <div className="relative mt-1">
+          <div className="mt-1">
             <input
               type="date"
               value={orderSummary.deliveryDate}
               onChange={(event) => onDeliveryDateChange(event.target.value)}
-              className="w-full cursor-pointer rounded-[8px] border border-[#d7cdc4] px-4 py-2.5 pr-10 text-[14px] text-[#1d1713] outline-none"
+              className="w-full cursor-pointer rounded-[8px] border border-[#d7cdc4] px-4 py-2.5 text-[14px] text-[#1d1713] outline-none"
             />
-            <FiCalendar className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[16px] text-[#1d1713]" />
           </div>
         </label>
 
@@ -80,12 +80,18 @@ export default function MenuDeliveryForm({
             onChange={(event) => onPersonCountChange(Number(event.target.value))}
             className="cursor-pointer rounded-[8px] border border-[#d7cdc4] bg-white px-3 py-1.5 text-[14px] text-[#1d1713] outline-none"
           >
-            {Array.from({ length: 50 }, (_, index) => index + 1).map((count) => (
+            {Array.from(
+              { length: Math.max(50, minimumPersons) - minimumPersons + 1 },
+              (_, index) => minimumPersons + index,
+            ).map((count) => (
               <option key={count} value={count}>
                 {count}
               </option>
             ))}
           </select>
+          <span className="text-[13px] text-[#7e7469]">
+            Minimum {minimumPersons}
+          </span>
         </div>
 
         <label className="mt-4 block">

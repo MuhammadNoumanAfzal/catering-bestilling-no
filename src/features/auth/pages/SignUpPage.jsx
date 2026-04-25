@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthButton from "../components/AuthButton";
 import AuthCard from "../components/AuthCard";
 import AuthInput from "../components/AuthInput";
@@ -15,6 +15,8 @@ const initialFormState = {
 };
 
 export default function SignUpPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [formState, setFormState] = useState(initialFormState);
 
   const handleChange = (event) => {
@@ -26,6 +28,7 @@ export default function SignUpPage() {
     event.preventDefault();
     await showSuccessToast("Account created successfully");
     setFormState(initialFormState);
+    navigate(location.state?.from?.pathname ?? "/signin");
   };
 
   return (
@@ -37,7 +40,11 @@ export default function SignUpPage() {
         <div className="flex flex-col gap-3 text-left sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[15px] text-[#6f665f]">
             Already have an account?{" "}
-            <Link to="/signin" className="font-semibold text-[#c85f33]">
+            <Link
+              to="/signin"
+              state={location.state}
+              className="font-semibold text-[#c85f33]"
+            >
               Sign in
             </Link>
           </p>

@@ -66,9 +66,6 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
           Price: {menuItem.price} per person
         </p>
         <p className="text-[16px] leading-9 text-[#1d1713]">
-          Minimum Persons: {menuItem.serves}
-        </p>
-        <p className="text-[16px] leading-9 text-[#1d1713]">
           Vendor: {vendor.name}
         </p>
         <p className="mt-4 max-w-3xl text-[15px] leading-8 text-[#4e443c]">
