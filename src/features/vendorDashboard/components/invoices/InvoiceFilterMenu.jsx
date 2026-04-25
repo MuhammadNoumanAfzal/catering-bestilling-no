@@ -15,7 +15,7 @@ export default function InvoiceFilterMenu({
       <button
         type="button"
         onClick={onToggle}
-        className="inline-flex w-full items-center justify-between gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto sm:justify-start"
+        className="inline-flex w-full cursor-pointer items-center justify-between gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto sm:justify-start"
       >
         <span>
           {options.find((option) => option.value === selectedValue)?.label ?? label}
@@ -38,7 +38,7 @@ export default function InvoiceFilterMenu({
                     type="button"
                     onClick={() => onSelect(option.value)}
                     className={[
-                      "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition",
+                      "flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition",
                       isSelected
                         ? "bg-[#fff1e8] font-semibold text-[#c85f33]"
                         : "text-[#2f2f2f] hover:bg-[#faf7f3]",

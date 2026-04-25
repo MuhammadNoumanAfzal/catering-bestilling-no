@@ -8,7 +8,7 @@ const CATEGORY_STRIP_VARIANTS = {
       "mx-auto mt-4 w-full max-w-[1120px] overflow-x-auto px-2 py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:mt-6 sm:px-4 sm:py-5",
     grid: "flex min-w-max gap-4 sm:gap-6 md:gap-9",
     button:
-      "flex w-[72px] shrink-0 flex-col items-center gap-2 text-center sm:w-[80px] md:w-[88px]",
+      "flex w-[72px] shrink-0 cursor-pointer flex-col items-center gap-2 text-center sm:w-[80px] md:w-[88px]",
     iconWrapper:
       "flex h-10 w-10 items-center justify-center rounded-full bg-[#f7f2ec] transition sm:h-11 sm:w-11 md:h-12 md:w-12",
     image: "h-6 w-6 object-contain opacity-90 sm:h-7 sm:w-7 md:h-8 md:w-8",
@@ -25,11 +25,11 @@ const CATEGORY_STRIP_VARIANTS = {
       "absolute -top-[7px] right-8 h-3.5 w-3.5 rotate-45 border-l border-t border-[#dcdcdc] bg-white sm:right-14",
     panelGrid: "grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4",
     optionButton:
-      "rounded-full border border-[#bbbbbb] px-3 py-2 text-center text-xs text-[#333] transition hover:bg-[#f7f2ec] sm:text-sm",
+      "rounded-full cursor-pointer border border-[#bbbbbb] px-3 py-2 text-center text-xs text-[#333] transition hover:bg-[#f7f2ec] sm:text-sm",
     clearButton:
-      "rounded-md border border-[#bcbcbc] px-3 py-2 text-xs text-[#333] sm:text-sm",
+      "rounded-md cursor-pointer border border-[#bcbcbc] px-3 py-2 text-xs text-[#333] sm:text-sm",
     applyButton:
-      "rounded-md bg-[#CF3A00] px-3 py-2 text-xs text-white sm:text-sm",
+      "rounded-md cursor-pointer bg-[#CF3A00] px-3 py-2 text-xs text-white sm:text-sm",
   },
   preview: {
     wrapper: "relative w-full",
@@ -37,7 +37,7 @@ const CATEGORY_STRIP_VARIANTS = {
       "mx-auto mt-6 w-full max-w-[1120px] overflow-x-auto px-2 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:mt-8 sm:px-4",
     grid: "flex min-w-max gap-4 sm:gap-5 md:gap-6",
     button:
-      "flex w-[70px] shrink-0 flex-col items-center gap-2 text-center sm:w-[76px] md:w-[82px]",
+      "flex w-[70px] shrink-0 cursor-pointer flex-col items-center gap-2 text-center sm:w-[76px] md:w-[82px]",
     iconWrapper:
       "flex h-9 w-9 items-center justify-center text-[#8b8b8b] sm:h-10 sm:w-10",
     image: "h-5 w-5 object-contain opacity-90 sm:h-6 sm:w-6",
@@ -53,17 +53,19 @@ const CATEGORY_STRIP_VARIANTS = {
       "absolute -top-[7px] right-6 h-3.5 w-3.5 rotate-45 border-l border-t border-[#dcdcdc] bg-white sm:right-8",
     panelGrid: "grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4",
     optionButton:
-      "rounded-full border border-[#bbbbbb] px-3 py-2 text-center text-xs text-[#333] transition hover:bg-[#f7f2ec] sm:text-sm",
+      "rounded-full cursor-pointer border border-[#bbbbbb] px-3 py-2 text-center text-xs text-[#333] transition hover:bg-[#f7f2ec] sm:text-sm",
     clearButton:
-      "rounded-md border border-[#bcbcbc] px-3 py-2 text-xs text-[#333] sm:text-sm",
+      "rounded-md cursor-pointer border border-[#bcbcbc] px-3 py-2 text-xs text-[#333] sm:text-sm",
     applyButton:
-      "rounded-md bg-[#CF3A00] px-3 py-2 text-xs text-white sm:text-sm",
+      "rounded-md cursor-pointer bg-[#CF3A00] px-3 py-2 text-xs text-white sm:text-sm",
   },
 };
 
 export default function BrowseCategoryStrip({
+  activeCategory,
   categories = [],
   moreOptions = [],
+  onCategoryChange,
   variant = "default",
   isOpen,
   onOpenChange,
@@ -93,6 +95,7 @@ export default function BrowseCategoryStrip({
       return;
     }
 
+    onCategoryChange?.(itemName);
     setPanelOpen(false);
   };
 
@@ -106,10 +109,12 @@ export default function BrowseCategoryStrip({
 
   const clearFilters = () => {
     setSelectedMoreOptions([]);
+    onCategoryChange?.(null);
     setPanelOpen(false);
   };
 
   const applyFilters = () => {
+    onCategoryChange?.(selectedMoreOptions.length > 0 ? selectedMoreOptions : null);
     setPanelOpen(false);
   };
 
@@ -125,6 +130,11 @@ export default function BrowseCategoryStrip({
             const isMore = item.name === "More";
             const isMoreActive =
               isMore && (showMorePanel || hasSelectedMoreOptions);
+            const isActiveCategory =
+              !isMore &&
+              (Array.isArray(activeCategory)
+                ? activeCategory.includes(item.name)
+                : activeCategory === item.name);
 
             return (
               <button
@@ -132,12 +142,12 @@ export default function BrowseCategoryStrip({
                 type="button"
                 onClick={() => handleCategoryClick(item.name)}
                 className={`${styles.button} transition ${
-                  isMoreActive ? "text-[#CF3A00]" : ""
+                  isMoreActive || isActiveCategory ? "text-[#CF3A00]" : ""
                 }`}
               >
                 <span
                   className={`${styles.iconWrapper} ${
-                    isMoreActive
+                    isMoreActive || isActiveCategory
                       ? "border border-[#CF3A00] bg-[#fff1eb] text-[#CF3A00]"
                       : ""
                   }`}
@@ -155,7 +165,7 @@ export default function BrowseCategoryStrip({
 
                 <span
                   className={`${styles.label} ${
-                    isMoreActive ? "text-[#CF3A00]" : ""
+                    isMoreActive || isActiveCategory ? "text-[#CF3A00]" : ""
                   }`}
                 >
                   {item.name}
