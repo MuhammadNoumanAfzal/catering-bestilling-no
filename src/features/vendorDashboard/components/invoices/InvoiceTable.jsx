@@ -3,9 +3,9 @@ import { getInvoiceStatusClasses } from "./invoiceUtils";
 export default function InvoiceTable({ invoices }) {
   return (
     <div className="mt-4 overflow-x-auto">
-      <table className="min-w-[760px] border-separate border-spacing-y-2.5">
+      <table className="w-full border-separate border-spacing-y-2">
         <thead>
-          <tr className="text-left type-h6 font-semibold uppercase tracking-[0.06em]">
+          <tr className="type-subpara text-left uppercase tracking-[0.04em] text-[#7e776f]">
             <th className="px-3 py-2">Invoice ID</th>
             <th className="px-3 py-2">Vendor</th>
             <th className="px-3 py-2">Event</th>
@@ -19,7 +19,7 @@ export default function InvoiceTable({ invoices }) {
           {invoices.map((invoice, index) => (
             <tr
               key={`${invoice.id}-${invoice.dueOn}-${index}`}
-              className="rounded-2xl bg-[#fcfbf9] type-para shadow-[0_6px_16px_rgba(20,20,20,0.04)]"
+              className="rounded-2xl bg-[#fcfbf9] text-sm text-[#232323] shadow-[0_2px_8px_rgba(20,20,20,0.03)]"
             >
               <td className="rounded-l-2xl px-3 py-3 font-semibold">{invoice.id}</td>
               <td className="px-3 py-3">{invoice.vendor}</td>
