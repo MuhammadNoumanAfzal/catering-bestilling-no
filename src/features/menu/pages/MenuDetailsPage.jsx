@@ -144,6 +144,10 @@ export default function MenuDetailsPage() {
   }
 
   const updateOptionalQuantity = (groupTitle, optionLabel, delta) => {
+    if (delta > 0) {
+      showSuccessToast(`${optionLabel} add-on added to cart`);
+    }
+
     setSelectedOptional((current) => {
       const key = `${groupTitle}:${optionLabel}`;
       const nextValue = Math.max(0, (current[key] ?? 0) + delta);
