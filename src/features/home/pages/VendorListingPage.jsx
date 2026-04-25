@@ -11,7 +11,6 @@ export default function VendorListingPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
     setVisibleCount(PAGE_SIZE);
   }, [vendorType]);
 

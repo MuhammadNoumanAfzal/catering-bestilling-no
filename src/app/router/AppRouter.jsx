@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
 import CheckoutLayout from "../layouts/CheckoutLayout";
+import RouteScrollManager from "./RouteScrollManager";
 import HomePage from "../../features/home/pages/HomePage";
 import ProductListingPage from "../../features/home/pages/ProductListingPage";
 import VendorListingPage from "../../features/home/pages/VendorListingPage";
@@ -29,55 +30,59 @@ import VendorSettingsPage from "../../features/vendorDashboard/pages/VendorSetti
 
 export default function AppRouter() {
   return (
-    <Routes>
-      {/* Authentication routes */}
-      <Route element={<AuthLayout />}>
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/signin" element={<SignInPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route
-          path="/forgot-password/verify"
-          element={<ForgotPasswordOtpPage />}
-        />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-      </Route>
+    <>
+      <RouteScrollManager />
 
-      {/* Main customer-facing routes */}
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/products/:productType" element={<ProductListingPage />} />
-        <Route path="/vendors/:vendorType" element={<VendorListingPage />} />
-        <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
-        <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
-        <Route
-          path="/vendor/:vendorSlug/menu/:itemId"
-          element={<MenuDetailsPage />}
-        />
-        <Route path="/order-confirmed" element={<OrderConfirmedPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
+      <Routes>
+        {/* Authentication routes */}
+        <Route element={<AuthLayout />}>
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/forgot-password/verify"
+            element={<ForgotPasswordOtpPage />}
+          />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+        </Route>
 
-      {/* Checkout flow routes */}
-      <Route element={<CheckoutLayout />}>
-        <Route
-          path="/checkout"
-          element={<Navigate to="/checkout/corporate" replace />}
-        />
-        <Route path="/checkout/:checkoutType" element={<CheckoutPage />} />
-      </Route>
+        {/* Main customer-facing routes */}
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products/:productType" element={<ProductListingPage />} />
+          <Route path="/vendors/:vendorType" element={<VendorListingPage />} />
+          <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
+          <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
+          <Route
+            path="/vendor/:vendorSlug/menu/:itemId"
+            element={<MenuDetailsPage />}
+          />
+          <Route path="/order-confirmed" element={<OrderConfirmedPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
 
-      {/* Vendor dashboard routes */}
-      <Route path="/vendor-dashboard" element={<VendorDashboardLayout />}>
-        <Route index element={<VendorDashboardHomePage />} />
-        <Route path="orders" element={<VendorOrdersPage />} />
-        <Route path="restaurants" element={<VendorRestaurantsPage />} />
-        <Route path="invoices" element={<VendorInvoicesPage />} />
-        <Route path="rewards" element={<VendorRewardsPage />} />
-        <Route path="address" element={<VendorAddressPage />} />
-        <Route path="settings" element={<VendorSettingsPage />} />
-      </Route>
-    </Routes>
+        {/* Checkout flow routes */}
+        <Route element={<CheckoutLayout />}>
+          <Route
+            path="/checkout"
+            element={<Navigate to="/checkout/corporate" replace />}
+          />
+          <Route path="/checkout/:checkoutType" element={<CheckoutPage />} />
+        </Route>
+
+        {/* Vendor dashboard routes */}
+        <Route path="/vendor-dashboard" element={<VendorDashboardLayout />}>
+          <Route index element={<VendorDashboardHomePage />} />
+          <Route path="orders" element={<VendorOrdersPage />} />
+          <Route path="restaurants" element={<VendorRestaurantsPage />} />
+          <Route path="invoices" element={<VendorInvoicesPage />} />
+          <Route path="rewards" element={<VendorRewardsPage />} />
+          <Route path="address" element={<VendorAddressPage />} />
+          <Route path="settings" element={<VendorSettingsPage />} />
+        </Route>
+      </Routes>
+    </>
   );
 }

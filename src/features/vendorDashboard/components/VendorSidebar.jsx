@@ -31,7 +31,7 @@ export default function VendorSidebar() {
     <aside className="hide-scrollbar flex w-full flex-col overflow-y-auto bg-[#cb6033] px-4 py-4 text-white lg:h-screen lg:max-w-[280px] lg:px-5 lg:py-6">
       <div className="flex items-center justify-center rounded-[28px] border border-white/20 bg-white/8 px-5 py-4 lg:py-5">
         <img
-          src="/home/logo.png"
+          src="/home/logo2.png"
           alt="Lunsjavtale"
           className="h-16 w-auto object-contain"
         />

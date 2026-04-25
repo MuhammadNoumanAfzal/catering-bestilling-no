@@ -15,10 +15,6 @@ import { showSuccessToast } from "../../../utils/alerts";
 export default function ContactPage() {
   const [formState, setFormState] = useState(initialContactFormState);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
-  }, []);
-
   const updateField = (key, value) => {
     setFormState((current) => ({ ...current, [key]: value }));
   };

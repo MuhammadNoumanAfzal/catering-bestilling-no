@@ -30,7 +30,6 @@ export default function CheckoutPage() {
   const [formState, setFormState] = useState(() => createInitialFormState());
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
     const storedCarts = readAllStoredOrderSummaries();
     setCarts(storedCarts);
     setFormState(createInitialFormState(storedCarts[0]));
