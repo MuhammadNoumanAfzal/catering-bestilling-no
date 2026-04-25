@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import BrowseTabs from "./BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
 import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
@@ -11,6 +12,7 @@ export default function BrowseCatalogView({
   menuItems,
   moreOptions,
 }) {
+  const { attendeeCount } = useBrowseFilters();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const hasMounted = useRef(false);
@@ -20,19 +22,32 @@ export default function BrowseCatalogView({
     : selectedCategory?.trim() ?? null;
   const filteredMenuItems = menuItems.filter((item) => {
     if (!normalizedCategoryFilter) {
-      return true;
+      const minimumGuests = item.minimumGuests ?? 0;
+      const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
+
+      return attendeeCount <= 0
+        ? true
+        : attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
     }
 
     const tags = (item.categoryTags ?? []).map((tag) => tag.trim());
+    const minimumGuests = item.minimumGuests ?? 0;
+    const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
+    const matchesAttendees =
+      attendeeCount <= 0
+        ? true
+        : attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
 
-    return Array.isArray(normalizedCategoryFilter)
+    const matchesCategory = Array.isArray(normalizedCategoryFilter)
       ? normalizedCategoryFilter.some((tag) => tags.includes(tag))
       : tags.includes(normalizedCategoryFilter);
+
+    return matchesCategory && matchesAttendees;
   });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedCategory]);
+  }, [attendeeCount, selectedCategory]);
 
   useEffect(() => {
     if (!hasMounted.current) {

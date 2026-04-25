@@ -47,6 +47,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.9,
     price: "NOK 189",
+    minimumGuests: 10,
+    maximumGuests: 40,
     categoryTags: ["Hot Meal", "BBQ", "American", "Dinner"],
   },
   {
@@ -58,6 +60,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.8,
     price: "NOK 230",
+    minimumGuests: 15,
+    maximumGuests: 60,
     categoryTags: ["Packages", "Healthy", "Meeting", "Conference"],
   },
   {
@@ -69,6 +73,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.6,
     price: "NOK 165",
+    minimumGuests: 8,
+    maximumGuests: 35,
     categoryTags: ["Hot Meal", "Italian", "Packages", "South Italian American"],
   },
   {
@@ -80,6 +86,8 @@ export const foodTypeMenuItems = [
     image: "/home/v.webp",
     rating: 4.7,
     price: "NOK 149",
+    minimumGuests: 4,
+    maximumGuests: 18,
     categoryTags: ["Breakfast", "Bakery", "Coffee & Tea"],
   },
   {
@@ -91,6 +99,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.5,
     price: "NOK 139",
+    minimumGuests: 6,
+    maximumGuests: 24,
     categoryTags: ["Salad", "Healthy", "Bowls", "Plant-Based", "Salads"],
   },
   {
@@ -102,6 +112,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.4,
     price: "NOK 199",
+    minimumGuests: 20,
+    maximumGuests: 80,
     categoryTags: ["Hot Meal", "Packages", "Seafood"],
   },
   {
@@ -113,6 +125,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.6,
     price: "NOK 159",
+    minimumGuests: 8,
+    maximumGuests: 30,
     categoryTags: ["Hot Meal", "Healthy", "Chicken"],
   },
   {
@@ -124,6 +138,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.7,
     price: "NOK 249",
+    minimumGuests: 15,
+    maximumGuests: 70,
     categoryTags: ["Packages", "Italian", "Hot Meal"],
   },
   {
@@ -135,6 +151,8 @@ export const foodTypeMenuItems = [
     image: "/home/v.webp",
     rating: 4.3,
     price: "NOK 119",
+    minimumGuests: 4,
+    maximumGuests: 16,
     categoryTags: ["Breakfast", "Healthy", "Bakery"],
   },
   {
@@ -146,6 +164,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.8,
     price: "NOK 209",
+    minimumGuests: 10,
+    maximumGuests: 36,
     categoryTags: ["Asian", "Healthy", "Bowls", "Thai"],
   },
   {
@@ -157,6 +177,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.9,
     price: "NOK 259",
+    minimumGuests: 12,
+    maximumGuests: 50,
     categoryTags: ["BBQ", "Hot Meal", "American", "Southern"],
   },
   {
@@ -168,6 +190,8 @@ export const foodTypeMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.7,
     price: "NOK 179",
+    minimumGuests: 6,
+    maximumGuests: 28,
     categoryTags: ["Healthy", "Salad", "Plant-Based", "Smoothies & Juices"],
   },
 ];
@@ -182,6 +206,8 @@ export const occasionMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.9,
     price: "NOK 499",
+    minimumGuests: 25,
+    maximumGuests: 120,
     categoryTags: ["Reception", "Party", "Engagement"],
   },
   {
@@ -193,6 +219,8 @@ export const occasionMenuItems = [
     image: "/home/v.webp",
     rating: 4.8,
     price: "NOK 320",
+    minimumGuests: 10,
+    maximumGuests: 40,
     categoryTags: ["Birthday", "Party", "Baby"],
   },
   {
@@ -204,6 +232,8 @@ export const occasionMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.7,
     price: "NOK 429",
+    minimumGuests: 20,
+    maximumGuests: 100,
     categoryTags: ["Meeting", "Conference", "Networking", "Board Meeting"],
   },
   {
@@ -215,6 +245,8 @@ export const occasionMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.6,
     price: "NOK 359",
+    minimumGuests: 18,
+    maximumGuests: 80,
     categoryTags: ["Reception", "Party", "Family Gathering"],
   },
   {
@@ -226,6 +258,8 @@ export const occasionMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.5,
     price: "NOK 279",
+    minimumGuests: 12,
+    maximumGuests: 45,
     categoryTags: ["Party", "Networking", "Office Celebration"],
   },
   {
@@ -237,6 +271,8 @@ export const occasionMenuItems = [
     image: "/home/hero1.webp",
     rating: 4.8,
     price: "NOK 389",
+    minimumGuests: 8,
+    maximumGuests: 32,
     categoryTags: ["Breakfast", "Reception", "Brunch Event"],
   },
   {
@@ -248,6 +284,8 @@ export const occasionMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.5,
     price: "NOK 345",
+    minimumGuests: 20,
+    maximumGuests: 90,
     categoryTags: ["Meeting", "Conference", "Workshop"],
   },
   {
@@ -259,6 +297,8 @@ export const occasionMenuItems = [
     image: "/home/v.webp",
     rating: 4.4,
     price: "NOK 299",
+    minimumGuests: 15,
+    maximumGuests: 55,
     categoryTags: ["Networking", "Reception", "Launch Event"],
   },
   {
@@ -270,6 +310,8 @@ export const occasionMenuItems = [
     image: "/home/hero2.webp",
     rating: 4.7,
     price: "NOK 269",
+    minimumGuests: 12,
+    maximumGuests: 40,
     categoryTags: ["Reception", "Party", "Client Meeting"],
   },
   {
@@ -281,6 +323,8 @@ export const occasionMenuItems = [
     image: "/home/v.webp",
     rating: 4.6,
     price: "NOK 289",
+    minimumGuests: 10,
+    maximumGuests: 36,
     categoryTags: ["Baby", "Breakfast", "Baby Shower", "Brunch Event"],
   },
   {
@@ -292,6 +336,8 @@ export const occasionMenuItems = [
     image: "/home/hero3.webp",
     rating: 4.7,
     price: "NOK 519",
+    minimumGuests: 30,
+    maximumGuests: 150,
     categoryTags: ["Conference", "Meeting", "Board Meeting", "Lunch Buffet"],
   },
 ];
