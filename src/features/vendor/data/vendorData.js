@@ -44,6 +44,10 @@ const SECTION_SUBCATEGORIES = {
 
 const WEEKDAY_SHORT_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+function normalizePostalCode(postalCode = "") {
+  return `${postalCode}`.replace(/\D/g, "").slice(0, 4);
+}
+
 function formatTimeLabel(time) {
   const [rawHours = "0", rawMinutes = "00"] = `${time}`.split(":");
   const hours = Number(rawHours);
@@ -117,6 +121,7 @@ const vendorDirectory = [
     cuisine: "Grill",
     addressLine: "45 Storgata, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5003", "5004", "5005", "5010", "5011"],
     deliveryFee: "NOK 30 Delivery fee",
     leadTime: "30-45 min",
     availability: createAvailability(),
@@ -132,6 +137,7 @@ const vendorDirectory = [
     cuisine: "Kebab & Grill",
     addressLine: "8 Strandgaten, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5004", "5006", "5007", "5014"],
     deliveryFee: "NOK 35 Delivery fee",
     leadTime: "25-40 min",
     availability: createAvailability({
@@ -151,6 +157,7 @@ const vendorDirectory = [
     cuisine: "Pizza & Grill",
     addressLine: "11 Sentrum, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5008", "5009", "5010", "5052"],
     deliveryFee: "NOK 0 Delivery fee",
     leadTime: "20-40 min",
     availability: createAvailability({
@@ -171,6 +178,7 @@ const vendorDirectory = [
     cuisine: "Fast Food",
     addressLine: "22 Main Street, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5003", "5004", "5008", "5015", "5053"],
     deliveryFee: "NOK 40 Delivery fee",
     leadTime: "20-35 min",
     availability: createAvailability({
@@ -193,6 +201,7 @@ const vendorDirectory = [
     cuisine: "Bakery & Lunch",
     addressLine: "12 Bryggen, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5006", "5007", "5013", "5015"],
     deliveryFee: "NOK 20 Delivery fee",
     leadTime: "20-30 min",
     availability: createAvailability({
@@ -213,6 +222,7 @@ const vendorDirectory = [
     cuisine: "Cafe",
     addressLine: "7 Frognerveien, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5009", "5011", "5012", "5052"],
     deliveryFee: "NOK 45 Delivery fee",
     leadTime: "25-40 min",
     availability: createAvailability({
@@ -232,6 +242,7 @@ const vendorDirectory = [
     cuisine: "Nordic Lunch",
     addressLine: "31 Harbour Street, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5003", "5005", "5010", "5017", "5054"],
     deliveryFee: "NOK 29 Delivery fee",
     leadTime: "20-30 min",
     availability: createAvailability({
@@ -252,6 +263,7 @@ const vendorDirectory = [
     cuisine: "Healthy Bowls",
     addressLine: "17 Marken, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5007", "5008", "5012", "5014", "5055"],
     deliveryFee: "NOK 32 Delivery fee",
     leadTime: "15-25 min",
     availability: createAvailability({
@@ -273,6 +285,7 @@ const vendorDirectory = [
     cuisine: "Pizza",
     addressLine: "4 Torget, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5004", "5009", "5011", "5018", "5056"],
     deliveryFee: "NOK 38 Delivery fee",
     leadTime: "20-35 min",
     availability: createAvailability({
@@ -295,6 +308,7 @@ const vendorDirectory = [
     cuisine: "Breakfast & Cafe",
     addressLine: "29 Nygardsgaten, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5007", "5008", "5015", "5057"],
     deliveryFee: "NOK 25 Delivery fee",
     leadTime: "15-20 min",
     availability: createAvailability({
@@ -315,6 +329,7 @@ const vendorDirectory = [
     cuisine: "Wraps",
     addressLine: "13 Strandkaien, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5006", "5009", "5013", "5016", "5058"],
     deliveryFee: "NOK 35 Delivery fee",
     leadTime: "20-30 min",
     availability: createAvailability({
@@ -334,6 +349,7 @@ const vendorDirectory = [
     cuisine: "Catering",
     addressLine: "21 City Center, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5005", "5010", "5014", "5053", "5059"],
     deliveryFee: "NOK 39 Delivery fee",
     leadTime: "20-40 min",
     availability: createAvailability({
@@ -355,6 +371,7 @@ const vendorDirectory = [
     cuisine: "Burgers",
     addressLine: "Egertorget 5, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5003", "5004", "5005", "5063"],
     deliveryFee: "NOK 20 Delivery fee",
     leadTime: "15-30 min",
     availability: createAvailability({
@@ -377,6 +394,7 @@ const vendorDirectory = [
     cuisine: "Chicken",
     addressLine: "Steen Avenue 3, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5008", "5009", "5012", "5067"],
     deliveryFee: "NOK 20 Delivery fee",
     leadTime: "10-20 min",
     availability: createAvailability({
@@ -399,6 +417,7 @@ const vendorDirectory = [
     cuisine: "Pizza",
     addressLine: "Storo 18, Bergen",
     city: "Bergen",
+    servicePostalCodes: ["5007", "5011", "5018", "5070"],
     deliveryFee: "NOK 45 Delivery fee",
     leadTime: "20-35 min",
     availability: createAvailability({
@@ -633,6 +652,37 @@ export function getVendorProfileByName(name) {
     vendorProfiles.find(
       (vendor) => vendor.name.toLowerCase() === cleanedName,
     ) ?? null
+  );
+}
+
+function resolveVendorPostalCoverage(vendor) {
+  if ((vendor?.servicePostalCodes ?? []).length > 0) {
+    return vendor.servicePostalCodes;
+  }
+
+  const matchedVendor =
+    vendor?.slug
+      ? vendorProfiles.find((candidate) => candidate.slug === vendor.slug)
+      : getVendorProfileByName(vendor?.name);
+
+  return matchedVendor?.servicePostalCodes ?? [];
+}
+
+export function isVendorAvailableForPostalCode(vendor, postalCode) {
+  const normalizedInput = normalizePostalCode(postalCode);
+
+  if (!normalizedInput) {
+    return true;
+  }
+
+  return resolveVendorPostalCoverage(vendor).some((candidate) =>
+    candidate.startsWith(normalizedInput),
+  );
+}
+
+export function filterVendorsByPostalCode(vendors, postalCode) {
+  return vendors.filter((vendor) =>
+    isVendorAvailableForPostalCode(vendor, postalCode),
   );
 }
 

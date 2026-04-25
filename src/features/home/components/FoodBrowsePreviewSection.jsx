@@ -44,6 +44,7 @@ export default function FoodBrowsePreviewSection() {
   const activeCategoryLabel = Array.isArray(normalizedCategoryFilter)
     ? normalizedCategoryFilter.join(", ")
     : normalizedCategoryFilter;
+  const shouldShowPreviewMenu = Boolean(normalizedCategoryFilter);
 
   return (
     <section className="overflow-x-clip bg-white px-4 py-6 sm:px-8 lg:px-20">
@@ -62,12 +63,14 @@ export default function FoodBrowsePreviewSection() {
         <BrowseFilterBar onControlInteract={() => setShowMorePanel(false)} />
       </div>
 
-      <BrowseMenuSection
-        title="Menu"
-        items={previewItems}
-        totalItems={previewItems.length}
-        activeCategoryLabel={activeCategoryLabel}
-      />
+      {shouldShowPreviewMenu ? (
+        <BrowseMenuSection
+          title="Menu"
+          items={previewItems}
+          totalItems={previewItems.length}
+          activeCategoryLabel={activeCategoryLabel}
+        />
+      ) : null}
     </section>
   );
 }

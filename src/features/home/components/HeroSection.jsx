@@ -1,7 +1,13 @@
-import { FiMapPin, FiSearch, FiArrowDownLeft } from "react-icons/fi";
+import { FiMapPin, FiSearch } from "react-icons/fi";
 import HomeNavbar from "./HomeNavbar";
 
-export default function HeroSection() {
+export default function HeroSection({
+  deliveryAddress,
+  onDeliveryAddressChange,
+  postalCode,
+  onPostalCodeChange,
+  availableVendorCount,
+}) {
   return (
     <section className="relative overflow-hidden bg-[#fbf8f5]">
       <img
@@ -31,6 +37,10 @@ export default function HeroSection() {
                   <FiMapPin className="shrink-0 text-sm text-gray-500" />
                   <input
                     type="text"
+                    value={deliveryAddress}
+                    onChange={(event) =>
+                      onDeliveryAddressChange?.(event.target.value)
+                    }
                     placeholder="Enter your delivery address"
                     className="type-para ml-3 w-full bg-transparent text-gray-700 outline-none placeholder:text-gray-400"
                   />
@@ -38,15 +48,30 @@ export default function HeroSection() {
 
                 <input
                   type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={postalCode}
+                  onChange={(event) => onPostalCodeChange?.(event.target.value)}
                   placeholder="Add Postal Code"
                   className="type-para h-12 rounded-xl border border-gray-300 bg-white px-4 text-gray-700 outline-none placeholder:text-gray-400 transition focus-within:border-[#e98c65] sm:w-[180px]"
                 />
               </div>
 
-              <button className="type-h6 mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#c85f33] px-6 text-white transition hover:bg-[#b9542b]">
+              <button
+                type="button"
+                className="type-h6 mt-3 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#c85f33] px-6 text-white transition hover:bg-[#b9542b]"
+              >
                 <FiSearch className="text-base" />
                 Search
               </button>
+
+              <p className="mt-3 text-sm text-[#5f5a55]">
+                {postalCode
+                  ? `${availableVendorCount} vendor${
+                      availableVendorCount === 1 ? "" : "s"
+                    } available for postal code ${postalCode}.`
+                  : "Enter a 4-digit postal code to see vendors available in your area."}
+              </p>
             </div>
           </div>
 
