@@ -1,5 +1,6 @@
 import Footer from "../../components/shared/Footer";
 import CommonNavbar from "../../components/shared/CommonNavbar";
+import { BrowseFiltersProvider } from "../context/BrowseFiltersContext";
 import { Outlet, useLocation } from "react-router-dom";
 
 export default function AppLayout() {
@@ -9,10 +10,12 @@ export default function AppLayout() {
   const showCommonNavbar = !hideSharedShell;
 
   return (
-    <div>
-      {showCommonNavbar ? <CommonNavbar /> : null}
-      <Outlet />
-      <Footer />
-    </div>
+    <BrowseFiltersProvider>
+      <div>
+        {showCommonNavbar ? <CommonNavbar /> : null}
+        <Outlet />
+        <Footer />
+      </div>
+    </BrowseFiltersProvider>
   );
 }

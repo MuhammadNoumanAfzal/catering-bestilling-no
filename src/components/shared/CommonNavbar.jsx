@@ -8,6 +8,7 @@ import { formatNavbarDate } from "./navbar/navbarDateUtils";
 import useNavbarCartSummary from "./navbar/useNavbarCartSummary";
 import { useAuth } from "../../features/auth/context/AuthContext";
 import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardData";
+import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 import { confirmLogout, showSuccessToast } from "../../utils/alerts";
 
 const commonProfileMenuItems = [
@@ -34,6 +35,12 @@ export default function CommonNavbar({
 }) {
   const navigate = useNavigate();
   const { isLoggedIn, user, signOut } = useAuth();
+  const {
+    attendeeCount,
+    eventName,
+    setAttendeeCount,
+    setEventName,
+  } = useBrowseFilters();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
@@ -48,8 +55,6 @@ export default function CommonNavbar({
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
-  const [attendeeCount, setAttendeeCount] = useState(0);
-  const [eventName, setEventName] = useState("");
   const [draftAttendeeCount, setDraftAttendeeCount] = useState(0);
   const [draftEventName, setDraftEventName] = useState("");
   const dropdownRef = useRef(null);
