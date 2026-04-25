@@ -1,7 +1,13 @@
 import { FiHeart } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
-export default function MenuHeroBanner({ vendorSlug, image, title }) {
+export default function MenuHeroBanner({
+  vendorSlug,
+  image,
+  title,
+  isSaved,
+  onSaveToggle,
+}) {
   return (
     <div className="relative overflow-hidden rounded-t-[30px]">
       <img
@@ -19,10 +25,16 @@ export default function MenuHeroBanner({ vendorSlug, image, title }) {
 
       <button
         type="button"
-        className="absolute right-4 top-4 inline-flex cursor-pointer items-center gap-1 rounded-full bg-white/95 px-3 py-1.5 text-[13px] font-medium text-[#382d24] shadow"
+        onClick={onSaveToggle}
+        aria-pressed={isSaved}
+        className={`absolute right-4 top-4 inline-flex cursor-pointer items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-medium shadow transition ${
+          isSaved
+            ? "bg-[#cf6e38] text-white"
+            : "bg-white/95 text-[#382d24]"
+        }`}
       >
-        <FiHeart />
-        Save
+        <FiHeart className={isSaved ? "fill-current" : ""} />
+        {isSaved ? "Saved" : "Save"}
       </button>
     </div>
   );

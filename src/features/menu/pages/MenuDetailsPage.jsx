@@ -14,6 +14,10 @@ import {
   isVendorDeliverySlotAvailable,
 } from "../../vendor/data/vendorData";
 import {
+  isVendorSaved,
+  toggleSavedVendor,
+} from "../../vendor/utils/savedVendorsStorage";
+import {
   clearOtherStoredOrderSummaries,
   readOrderSummary,
   writeOrderSummary,
@@ -37,6 +41,7 @@ export default function MenuDetailsPage() {
   const [selectedRequired, setSelectedRequired] = useState("");
   const [selectedOptional, setSelectedOptional] = useState({});
   const [vendorNote, setVendorNote] = useState("");
+  const [isSaved, setIsSaved] = useState(false);
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
   const addOnsSliderRef = useRef(null);
@@ -61,6 +66,7 @@ export default function MenuDetailsPage() {
     setSelectedRequired(menuItem.modal.requiredSelection.options[0] ?? "");
     setSelectedOptional({});
     setVendorNote("");
+    setIsSaved(isVendorSaved(vendor.slug));
     setIsAvailabilityPopupDismissed(false);
   }, [menuItem, minimumPersons, vendor]);
 
@@ -271,6 +277,16 @@ export default function MenuDetailsPage() {
     });
   };
 
+  const handleSaveToggle = () => {
+    const nextSavedState = toggleSavedVendor(vendor.slug);
+    setIsSaved(nextSavedState);
+    showSuccessToast(
+      nextSavedState
+        ? `${vendor.name} saved successfully`
+        : `${vendor.name} removed from saved restaurants`,
+    );
+  };
+
   return (
     <section className="px-4 py-5 md:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[30px] border border-[#ddd3c8] bg-[#fffaf6] shadow-[0_14px_40px_rgba(55,34,19,0.08)]">
@@ -278,6 +294,8 @@ export default function MenuDetailsPage() {
           vendorSlug={vendor.slug}
           image={menuItem.image}
           title={menuItem.modal.heading}
+          isSaved={isSaved}
+          onSaveToggle={handleSaveToggle}
         />
 
         <div className="grid lg:grid-cols-[minmax(0,1fr)_360px]">
