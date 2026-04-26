@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
 import FoodBrowsePreviewSection from "../components/FoodBrowsePreviewSection";
@@ -25,27 +25,36 @@ export default function HomePage() {
     deliveryTime,
     locationValue,
     setDeliveryAddress,
-    setLocationValue,
   } = useBrowseFilters();
+  const [postalCode, setPostalCode] = useState("");
+  const normalizedPostalCode = postalCode.replace(/\D/g, "").slice(0, 4);
+  const activeHomeLocationFilter =
+    normalizedPostalCode || deliveryAddress.trim() || locationValue;
   const filteredPopularVendors = useMemo(() => {
-    const locationFiltered = filterVendorsByLocation(popularVendors, locationValue);
+    const locationFiltered = filterVendorsByLocation(
+      popularVendors,
+      activeHomeLocationFilter,
+    );
     return filterVendorsByDeliverySlot(
       locationFiltered,
       deliveryDate,
       deliveryTime,
     );
-  }, [deliveryDate, deliveryTime, locationValue]);
+  }, [activeHomeLocationFilter, deliveryDate, deliveryTime]);
   const filteredFeaturedVendors = useMemo(() => {
-    const locationFiltered = filterVendorsByLocation(featuredVendors, locationValue);
+    const locationFiltered = filterVendorsByLocation(
+      featuredVendors,
+      activeHomeLocationFilter,
+    );
     return filterVendorsByDeliverySlot(
       locationFiltered,
       deliveryDate,
       deliveryTime,
     );
-  }, [deliveryDate, deliveryTime, locationValue]);
+  }, [activeHomeLocationFilter, deliveryDate, deliveryTime]);
   const filteredPopularProducts = useMemo(
-    () => filterItemsByVendorLocation(popularProducts, locationValue),
-    [locationValue],
+    () => filterItemsByVendorLocation(popularProducts, activeHomeLocationFilter),
+    [activeHomeLocationFilter],
   );
   const availableVendorCount =
     filteredPopularVendors.length + filteredFeaturedVendors.length;
@@ -55,8 +64,8 @@ export default function HomePage() {
       <HeroSection
         deliveryAddress={deliveryAddress}
         onDeliveryAddressChange={setDeliveryAddress}
-        locationValue={locationValue}
-        onLocationChange={setLocationValue}
+        postalCode={normalizedPostalCode}
+        onPostalCodeChange={setPostalCode}
         availableVendorCount={availableVendorCount}
       />
       <FoodBrowsePreviewSection />
@@ -64,8 +73,8 @@ export default function HomePage() {
         title="Popular Vendors"
         vendors={filteredPopularVendors}
         emptyMessage={
-          locationValue
-            ? `No popular vendors are currently available for ${locationValue}.`
+          activeHomeLocationFilter
+            ? `No popular vendors are currently available for ${activeHomeLocationFilter}.`
             : undefined
         }
         onSeeAllClick={() => navigate("/vendors/popular")}
@@ -74,8 +83,8 @@ export default function HomePage() {
         title="Featured Vendors"
         vendors={filteredFeaturedVendors}
         emptyMessage={
-          locationValue
-            ? `No featured vendors are currently available for ${locationValue}.`
+          activeHomeLocationFilter
+            ? `No featured vendors are currently available for ${activeHomeLocationFilter}.`
             : undefined
         }
         onSeeAllClick={() => navigate("/vendors/featured")}
