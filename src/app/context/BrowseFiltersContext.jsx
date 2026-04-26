@@ -7,19 +7,32 @@ export function BrowseFiltersProvider({ children }) {
   const [eventName, setEventName] = useState("");
   const [locationValue, setLocationValue] = useState("Bergen");
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryDate, setDeliveryDate] = useState(null);
+  const [deliveryTime, setDeliveryTime] = useState("");
 
   const value = useMemo(
     () => ({
       attendeeCount,
       deliveryAddress,
+      deliveryDate,
+      deliveryTime,
       eventName,
       locationValue,
       setAttendeeCount,
       setDeliveryAddress,
+      setDeliveryDate,
+      setDeliveryTime,
       setEventName,
       setLocationValue,
     }),
-    [attendeeCount, deliveryAddress, eventName, locationValue],
+    [
+      attendeeCount,
+      deliveryAddress,
+      deliveryDate,
+      deliveryTime,
+      eventName,
+      locationValue,
+    ],
   );
 
   return (

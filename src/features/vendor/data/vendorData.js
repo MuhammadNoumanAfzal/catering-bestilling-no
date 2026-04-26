@@ -830,6 +830,16 @@ export function filterItemsByVendorLocation(
   });
 }
 
+export function filterVendorsByDeliverySlot(vendors, date, time) {
+  if (!date || !time) {
+    return vendors;
+  }
+
+  return vendors.filter((vendor) =>
+    isVendorDeliverySlotAvailable(vendor, date, time),
+  );
+}
+
 function isDateValid(date) {
   return !Number.isNaN(new Date(date).getTime());
 }
