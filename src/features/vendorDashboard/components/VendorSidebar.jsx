@@ -28,23 +28,30 @@ export default function VendorSidebar() {
   };
 
   return (
-    <aside className="hide-scrollbar flex w-full flex-col overflow-y-auto bg-[#cb6033] px-4 py-4 text-white lg:h-screen lg:max-w-[280px] lg:px-5 lg:py-6">
-      <div className="flex items-center justify-center rounded-[28px] border border-white/20 bg-white/8 px-5 py-4 lg:py-5">
+    <aside className="hide-scrollbar flex w-full flex-col overflow-y-auto rounded-[28px] bg-[#cb6033] px-3 py-3 text-white shadow-[0_18px_38px_rgba(146,62,26,0.22)] lg:h-screen lg:max-w-[280px] lg:rounded-none lg:px-5 lg:py-6 lg:shadow-none">
+      <div className="flex items-center justify-center rounded-[24px] border border-white/20 bg-white/8 px-4 py-3 lg:rounded-[28px] lg:px-5 lg:py-5">
         <img
           src="/home/logo2.png"
           alt="Lunsjavtale"
-          className="h-16 w-auto object-contain"
+          className="h-12 w-auto object-contain sm:h-14 lg:h-16"
         />
       </div>
 
-      <nav className="hide-scrollbar mt-5 flex flex-1 gap-2 overflow-x-auto pb-1 lg:mt-8 lg:flex-col lg:overflow-visible lg:pb-0">
+      <div className="mt-3 rounded-[22px] border border-white/15 bg-white/10 px-4 py-3 lg:hidden">
+        <p className="text-sm font-semibold">{user?.name ?? "Vendor User"}</p>
+        <p className="mt-1 text-xs text-white/75">
+          Manage your restaurants and operations
+        </p>
+      </div>
+
+      <nav className="hide-scrollbar mt-4 flex flex-1 gap-2 overflow-x-auto pb-1 lg:mt-8 lg:flex-col lg:overflow-visible lg:pb-0">
         {vendorNavigationItems.map(({ label, to, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
             className={(navState) =>
-              `${getLinkClasses(navState)} shrink-0 whitespace-nowrap lg:shrink`
+              `${getLinkClasses(navState)} shrink-0 whitespace-nowrap px-3 py-2.5 lg:shrink lg:px-4 lg:py-3`
             }
           >
             <Icon className="text-[18px]" />
@@ -53,9 +60,9 @@ export default function VendorSidebar() {
         ))}
       </nav>
 
-      <div className="mt-5 rounded-[26px] border border-white/18 bg-white/10 p-4 lg:mt-6">
+      <div className="mt-4 rounded-[22px] border border-white/18 bg-white/10 p-3 lg:mt-6 lg:rounded-[26px] lg:p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:flex-col lg:items-stretch">
-          <div>
+          <div className="hidden lg:block">
             <p className="text-sm font-semibold">{user?.name ?? "Vendor User"}</p>
             <p className="mt-1 text-xs text-white/75">
               Manage your restaurants and operations

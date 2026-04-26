@@ -94,7 +94,7 @@ function RewardActionModal({ action, onClose, onConfirm }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-[28px] border border-[#eadfd4] bg-[linear-gradient(180deg,#fffaf6_0%,#ffffff_100%)] shadow-[0_28px_60px_rgba(20,15,10,0.22)]">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-[#eadfd4] bg-[linear-gradient(180deg,#fffaf6_0%,#ffffff_100%)] shadow-[0_28px_60px_rgba(20,15,10,0.22)] sm:rounded-[28px]">
         <button
           type="button"
           onClick={onClose}
@@ -104,14 +104,14 @@ function RewardActionModal({ action, onClose, onConfirm }) {
           <FiX className="text-[18px]" />
         </button>
 
-        <div className="border-b border-[#f0e7df] bg-[linear-gradient(135deg,#fff1e8_0%,#fff8f4_100%)] px-6 py-7">
+        <div className="border-b border-[#f0e7df] bg-[linear-gradient(135deg,#fff1e8_0%,#fff8f4_100%)] px-5 py-6 sm:px-6 sm:py-7">
           <div className="inline-flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[#cf5c2f] shadow-[0_10px_24px_rgba(207,92,47,0.16)]">
             {action.icon ? <action.icon className="text-[28px]" /> : <FiGift className="text-[28px]" />}
           </div>
           <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#cf5c2f]">
             {content.eyebrow}
           </p>
-          <h2 className="mt-2 text-[30px] font-semibold leading-[1.05] tracking-[-0.03em] text-[#181310]">
+          <h2 className="mt-2 text-[24px] font-semibold leading-[1.08] tracking-[-0.03em] text-[#181310] sm:text-[30px]">
             {content.title}
           </h2>
           <p className="mt-3 text-[15px] leading-7 text-[#62564c]">
@@ -119,7 +119,7 @@ function RewardActionModal({ action, onClose, onConfirm }) {
           </p>
         </div>
 
-        <div className="px-6 py-6">
+        <div className="max-h-[70vh] overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
           <div className="space-y-3">
             {content.bullets.map((item) => (
               <div
@@ -199,7 +199,7 @@ export default function VendorRewardsPage() {
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {vendorRewardActions.map((action) => (
           <RewardActionCard
             key={action.title}

@@ -154,8 +154,8 @@ export default function VendorOrdersPage() {
         </div>
       </section>
 
-      <section className="rounded-[28px] border border-[#ddd4cb] bg-[linear-gradient(180deg,#fffdfb_0%,#ffffff_100%)] p-4 shadow-[0_18px_40px_rgba(28,28,28,0.07)] md:p-6">
-        <div className="rounded-[24px] border border-[#efe4db] bg-[linear-gradient(180deg,#fffaf6_0%,#fffdfb_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+      <section className="rounded-[24px] border border-[#ddd4cb] bg-[linear-gradient(180deg,#fffdfb_0%,#ffffff_100%)] p-3 shadow-[0_18px_40px_rgba(28,28,28,0.07)] sm:p-4 md:rounded-[28px] md:p-6">
+        <div className="rounded-[20px] border border-[#efe4db] bg-[linear-gradient(180deg,#fffaf6_0%,#fffdfb_100%)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:p-4 md:rounded-[24px]">
           <div className="flex flex-col gap-4 border-b border-[#ece4dc] pb-5">
             <div className="hide-scrollbar overflow-x-auto">
               <div className="flex min-w-max items-center gap-3 pr-1">
@@ -220,7 +220,7 @@ export default function VendorOrdersPage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 rounded-[22px] bg-white/90 p-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-3 rounded-[18px] bg-white/90 p-2.5 sm:rounded-[22px] sm:p-3 lg:flex-row lg:items-center lg:justify-between">
               <label className="flex w-full items-center gap-2.5 rounded-full border border-[#eadfd5] bg-[#fcfaf8] px-4 py-3 text-sm text-[#7a7a7a] shadow-[0_6px_16px_rgba(31,19,8,0.04)] lg:max-w-[360px]">
                 <FiSearch className="text-[15px] text-[#b08b75]" />
                 <input
@@ -231,7 +231,7 @@ export default function VendorOrdersPage() {
                 />
               </label>
 
-              <div className="flex justify-end">
+              <div className="flex w-full justify-stretch sm:justify-end">
                 <OrderDateFilter
                   customDateRange={customDateRange}
                   isOpen={isDateMenuOpen}
