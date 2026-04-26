@@ -5,7 +5,7 @@ const BrowseFiltersContext = createContext(null);
 export function BrowseFiltersProvider({ children }) {
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [eventName, setEventName] = useState("");
-  const [locationValue, setLocationValue] = useState("Bergen");
+  const [locationValue, setLocationValue] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(null);
   const [deliveryTime, setDeliveryTime] = useState("");
