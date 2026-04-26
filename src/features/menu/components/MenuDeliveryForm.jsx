@@ -1,21 +1,5 @@
-import { FiClock, FiMapPin } from "react-icons/fi";
-
-const TIME_OPTIONS = Array.from({ length: 25 }, (_, index) => {
-  const totalMinutes = 8 * 60 + index * 30;
-  const hours = `${Math.floor(totalMinutes / 60)}`.padStart(2, "0");
-  const minutes = `${totalMinutes % 60}`.padStart(2, "0");
-
-  return `${hours}:${minutes}`;
-});
-
-function formatTimeLabel(value) {
-  const [rawHours = "0", rawMinutes = "00"] = value.split(":");
-  const hours = Number(rawHours);
-  const suffix = hours >= 12 ? "PM" : "AM";
-  const normalizedHours = hours % 12 || 12;
-
-  return `${normalizedHours}:${rawMinutes} ${suffix}`;
-}
+import { FiMapPin } from "react-icons/fi";
+import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
 
 export default function MenuDeliveryForm({
   minimumPersons = 1,
@@ -49,21 +33,12 @@ export default function MenuDeliveryForm({
 
         <label className="block">
           <span className="text-[13px] text-[#3f342b]">Time</span>
-          <div className="relative mt-1">
-            <select
+          <div className="mt-1">
+            <PreferredTimePicker
               value={orderSummary.deliveryTime}
-              onChange={(event) => onDeliveryTimeChange(event.target.value)}
-              className="w-full cursor-pointer appearance-none rounded-[8px] border border-[#d7cdc4] bg-white px-4 py-2.5 pr-16 text-[14px] text-[#1d1713] outline-none"
-            >
-              {TIME_OPTIONS.map((time) => (
-                <option key={time} value={time}>
-                  {formatTimeLabel(time)}
-                </option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2 text-[#1d1713]">
-              <FiClock className="text-[16px]" />
-            </div>
+              onChange={onDeliveryTimeChange}
+              placeholder="Select preferred time"
+            />
           </div>
         </label>
       </div>

@@ -98,3 +98,61 @@ textarea {
   display: none;
 }
 
+.preferred-time-picker {
+  position: relative;
+}
+
+.preferred-time-picker .react-time-picker {
+  width: 100%;
+}
+
+.preferred-time-picker .react-time-picker__wrapper {
+  min-height: 46px;
+  border-radius: 12px;
+  border: 1px solid #d7cdc4;
+  background: #ffffff;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  color: #1d1713;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.preferred-time-picker .react-time-picker__wrapper:focus-within {
+  border-color: #cf6e38;
+  box-shadow: 0 0 0 3px rgba(207, 110, 56, 0.12);
+}
+
+.preferred-time-picker .react-time-picker__inputGroup {
+  min-width: 0;
+  flex: 1;
+  padding-left: 2px;
+  font-size: 14px;
+  color: #1d1713;
+}
+
+.preferred-time-picker .react-time-picker__inputGroup__input {
+  min-width: 14px;
+  color: #1d1713;
+}
+
+.preferred-time-picker .react-time-picker__inputGroup__divider,
+.preferred-time-picker .react-time-picker__inputGroup__leadingZero,
+.preferred-time-picker .react-time-picker__inputGroup__amPm {
+  color: #1d1713;
+}
+
+.preferred-time-picker .react-time-picker__inputGroup__input::placeholder {
+  color: #a49b92;
+}
+
+.preferred-time-picker .react-time-picker__button {
+  border: 0;
+  background: transparent;
+  color: #8d7e72;
+  padding: 0;
+}
+

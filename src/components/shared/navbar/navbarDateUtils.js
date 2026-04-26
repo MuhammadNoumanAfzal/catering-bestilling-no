@@ -1,27 +1,5 @@
 export const weekdayLabels = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
-function buildQuarterHourSlots(startHour, endHour) {
-  const slots = [];
-
-  for (let hour = startHour; hour <= endHour; hour += 1) {
-    for (let minutes = 0; minutes < 60; minutes += 15) {
-      const date = new Date(2026, 0, 1, hour, minutes);
-      slots.push(
-        date.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        }),
-      );
-    }
-  }
-
-  return slots;
-}
-
-export const earlierSlots = buildQuarterHourSlots(9, 12);
-
-export const laterSlots = buildQuarterHourSlots(13, 18);
-
 export function getMonthDays(viewDate) {
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -52,6 +30,24 @@ export function isSameDay(firstDate, secondDate) {
   );
 }
 
+export function formatTimeTo12Hour(time) {
+  if (!time) {
+    return "";
+  }
+
+  const [rawHours = "0", rawMinutes = "00"] = `${time}`.split(":");
+  const hours = Number(rawHours);
+
+  if (Number.isNaN(hours)) {
+    return `${time}`;
+  }
+
+  const suffix = hours >= 12 ? "PM" : "AM";
+  const normalizedHours = hours % 12 || 12;
+
+  return `${normalizedHours}:${rawMinutes} ${suffix}`;
+}
+
 export function formatNavbarDate(date, time) {
   if (!date && !time) {
     return "Any time";
@@ -64,5 +60,5 @@ export function formatNavbarDate(date, time) {
       })
     : "Any day";
 
-  return time ? `${dateLabel}, ${time}` : dateLabel;
+  return time ? `${dateLabel}, ${formatTimeTo12Hour(time)}` : dateLabel;
 }
