@@ -1,18 +1,10 @@
-import { useState } from "react";
 import {
   FiArrowLeft,
   FiArrowRight,
   FiChevronDown,
-  FiChevronLeft,
-  FiChevronRight,
 } from "react-icons/fi";
-import {
-  earlierSlots,
-  getMonthDays,
-  isSameDay,
-  laterSlots,
-  weekdayLabels,
-} from "./navbarDateUtils";
+import { getMonthDays, isSameDay, weekdayLabels } from "./navbarDateUtils";
+import PreferredTimePicker from "../PreferredTimePicker";
 
 export default function DeliveryDatePopover({
   calendarMonth,
@@ -23,8 +15,6 @@ export default function DeliveryDatePopover({
   onMonthChange,
   onTimeSelect,
 }) {
-  const [showEarlier, setShowEarlier] = useState(true);
-  const [showLater, setShowLater] = useState(true);
   const calendarDays = getMonthDays(calendarMonth);
   const displayedMonth = calendarMonth.toLocaleDateString("en-US", {
     month: "long",
@@ -106,72 +96,20 @@ export default function DeliveryDatePopover({
         <div className="mb-2 flex items-start justify-between gap-3">
           <div>
             <p className="type-h4 font-semibold ">Delivery time</p>
-            <p className="max-w-[240px] type-subpara mt-4 mb-4 leading-4  text-[#7e7469]">
-              To ensure on-time delivery and setup, your order may arrive up to
-              15 minutes before the selected time.
+            <p className="type-subpara mt-3 max-w-[250px] leading-5 text-[#7e7469]">
+              Choose the exact time you prefer. We may arrive up to 15 minutes
+              earlier to ensure smooth delivery and setup.
             </p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowEarlier((current) => !current)}
-          className="mb-2 inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-[8px] border border-[#d6cec4] px-3 py-1.5 text-[11px] font-semibold text-black"
-        >
-          <span>Earlier</span>
-          <FiChevronDown
-            className={`text-[11px] transition ${showEarlier ? "rotate-180" : ""}`}
+        <div className="rounded-[18px] border border-[#e4d9cf] bg-[linear-gradient(180deg,#fff8f3_0%,#ffffff_100%)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+          <PreferredTimePicker
+            value={draftTime}
+            onChange={onTimeSelect}
+            placeholder="Select preferred time"
           />
-        </button>
-        {showEarlier ? (
-          <div className="grid grid-cols-4 gap-2">
-            {earlierSlots.map((slot) => (
-              <button
-                key={slot}
-                type="button"
-                onClick={() => onTimeSelect(slot)}
-                className={`cursor-pointer rounded-[8px] border px-2 py-2 text-[11px] font-medium transition ${
-                  draftTime === slot
-                    ? "border-[#d56d41] bg-[#fff3ed] text-[#c85f33]"
-                    : "border-[#d6cec4] text-[#3f3f3f] hover:bg-[#f8f4ef]"
-                }`}
-              >
-                {slot}
-              </button>
-            ))}
-          </div>
-        ) : null}
-
-        <button
-          type="button"
-          onClick={() => setShowLater((current) => !current)}
-          className={`inline-flex w-full cursor-pointer items-center justify-center gap-1 rounded-[8px] border border-[#d6cec4] px-3 py-1.5 text-[11px] font-semibold text-black ${
-            showEarlier ? "mt-3" : "mt-2"
-          }`}
-        >
-          <span>Later</span>
-          <FiChevronDown
-            className={`text-[11px] transition ${showLater ? "rotate-180" : ""}`}
-          />
-        </button>
-        {showLater ? (
-          <div className="mt-2 grid grid-cols-4 gap-2">
-            {laterSlots.map((slot) => (
-              <button
-                key={slot}
-                type="button"
-                onClick={() => onTimeSelect(slot)}
-                className={`cursor-pointer rounded-[8px] border px-2 py-2 text-[11px] font-medium transition ${
-                  draftTime === slot
-                    ? "border-[#d56d41] bg-[#fff3ed] text-[#c85f33]"
-                    : "border-[#d6cec4] text-[#3f3f3f] hover:bg-[#f8f4ef]"
-                }`}
-              >
-                {slot}
-              </button>
-            ))}
-          </div>
-        ) : null}
+        </div>
       </div>
 
       <button
