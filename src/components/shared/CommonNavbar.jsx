@@ -37,15 +37,16 @@ export default function CommonNavbar({
   const { isLoggedIn, user, signOut } = useAuth();
   const {
     attendeeCount,
+    locationValue,
     eventName,
     setAttendeeCount,
     setEventName,
+    setLocationValue,
   } = useBrowseFilters();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [locationValue, setLocationValue] = useState("Bergen");
   const [searchValue, setSearchValue] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");

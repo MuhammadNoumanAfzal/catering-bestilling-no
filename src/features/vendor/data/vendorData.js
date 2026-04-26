@@ -112,6 +112,10 @@ function normalizePostalCode(postalCode = "") {
   return `${postalCode}`.replace(/\D/g, "").slice(0, 4);
 }
 
+function normalizeLocationQuery(locationQuery = "") {
+  return `${locationQuery}`.trim().toLowerCase();
+}
+
 function formatTimeLabel(time) {
   const [rawHours = "0", rawMinutes = "00"] = `${time}`.split(":");
   const hours = Number(rawHours);
@@ -787,6 +791,43 @@ export function filterVendorsByPostalCode(vendors, postalCode) {
   return vendors.filter((vendor) =>
     isVendorAvailableForPostalCode(vendor, postalCode),
   );
+}
+
+export function isVendorAvailableForLocation(vendor, locationQuery) {
+  const normalizedPostalCode = normalizePostalCode(locationQuery);
+
+  if (normalizedPostalCode) {
+    return isVendorAvailableForPostalCode(vendor, normalizedPostalCode);
+  }
+
+  const normalizedQuery = normalizeLocationQuery(locationQuery);
+
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  return [vendor?.city, vendor?.addressLine, vendor?.name]
+    .filter(Boolean)
+    .some((value) => value.toLowerCase().includes(normalizedQuery));
+}
+
+export function filterVendorsByLocation(vendors, locationQuery) {
+  return vendors.filter((vendor) =>
+    isVendorAvailableForLocation(vendor, locationQuery),
+  );
+}
+
+export function filterItemsByVendorLocation(
+  items,
+  locationQuery,
+  getVendorSlug = (item) => item?.vendorSlug,
+) {
+  return items.filter((item) => {
+    const vendorSlug = getVendorSlug(item);
+    const vendor = vendorSlug ? getVendorProfileBySlug(vendorSlug) : null;
+
+    return vendor ? isVendorAvailableForLocation(vendor, locationQuery) : true;
+  });
 }
 
 function isDateValid(date) {

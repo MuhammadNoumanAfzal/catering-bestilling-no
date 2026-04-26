@@ -4,8 +4,8 @@ import HomeNavbar from "./HomeNavbar";
 export default function HeroSection({
   deliveryAddress,
   onDeliveryAddressChange,
-  postalCode,
-  onPostalCodeChange,
+  locationValue,
+  onLocationChange,
   availableVendorCount,
 }) {
   return (
@@ -48,11 +48,9 @@ export default function HeroSection({
 
                 <input
                   type="text"
-                  inputMode="numeric"
-                  maxLength={4}
-                  value={postalCode}
-                  onChange={(event) => onPostalCodeChange?.(event.target.value)}
-                  placeholder="Add Postal Code"
+                  value={locationValue}
+                  onChange={(event) => onLocationChange?.(event.target.value)}
+                  placeholder="Add Location or Postal Code"
                   className="type-para h-12 rounded-xl border border-gray-300 bg-white px-4 text-gray-700 outline-none placeholder:text-gray-400 transition focus-within:border-[#e98c65] sm:w-[180px]"
                 />
               </div>
@@ -66,11 +64,11 @@ export default function HeroSection({
               </button>
 
               <p className="mt-3 text-sm text-[#5f5a55]">
-                {postalCode
+                {locationValue
                   ? `${availableVendorCount} vendor${
                       availableVendorCount === 1 ? "" : "s"
-                    } available for postal code ${postalCode}.`
-                  : "Enter a 4-digit postal code to see vendors available in your area."}
+                    } available for location ${locationValue}.`
+                  : "Enter a location or 4-digit postal code to see vendors available in your area."}
               </p>
             </div>
           </div>

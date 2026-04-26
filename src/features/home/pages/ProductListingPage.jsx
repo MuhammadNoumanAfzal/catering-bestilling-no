@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
+import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { ProductItem } from "../components/ProductShowcaseSection";
 import { getProductCollectionBySlug } from "../data/homeData";
+import { filterItemsByVendorLocation } from "../../vendor/data/vendorData";
 
 const PAGE_SIZE = 8;
 
 export default function ProductListingPage() {
   const { productType } = useParams();
+  const { locationValue } = useBrowseFilters();
   const productCollection = getProductCollectionBySlug(productType);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -19,8 +22,12 @@ export default function ProductListingPage() {
   }
 
   const { title, description, products } = productCollection;
-  const visibleProducts = products.slice(0, visibleCount);
-  const hasMore = visibleCount < products.length;
+  const filteredProducts = useMemo(
+    () => filterItemsByVendorLocation(products, locationValue),
+    [locationValue, products],
+  );
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
 
   return (
     <section className="bg-white px-4 py-8 sm:px-6 lg:px-20">
@@ -50,13 +57,21 @@ export default function ProductListingPage() {
           ))}
         </div>
 
+        {filteredProducts.length === 0 ? (
+          <div className="mt-6 rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
+            {locationValue
+              ? `No products are currently available for ${locationValue}.`
+              : "No products are available right now."}
+          </div>
+        ) : null}
+
         {hasMore ? (
           <div className="mt-8 flex justify-center">
             <button
               type="button"
               onClick={() =>
                 setVisibleCount((current) =>
-                  Math.min(current + PAGE_SIZE, products.length),
+                  Math.min(current + PAGE_SIZE, filteredProducts.length),
                 )
               }
               className="rounded-full bg-[#c85f33] px-6 py-3 text-[14px] font-semibold text-white transition hover:bg-[#b6542c]"

@@ -4,6 +4,7 @@ import BrowseTabs from "./BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
 import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
 import BrowseMenuSection from "./BrowseMenuSection";
+import { filterItemsByVendorLocation } from "../../vendor/data/vendorData";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -12,7 +13,7 @@ export default function BrowseCatalogView({
   menuItems,
   moreOptions,
 }) {
-  const { attendeeCount } = useBrowseFilters();
+  const { attendeeCount, locationValue } = useBrowseFilters();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const hasMounted = useRef(false);
@@ -20,7 +21,10 @@ export default function BrowseCatalogView({
   const normalizedCategoryFilter = Array.isArray(selectedCategory)
     ? selectedCategory.map((item) => item.trim())
     : selectedCategory?.trim() ?? null;
-  const filteredMenuItems = menuItems.filter((item) => {
+  const filteredMenuItems = filterItemsByVendorLocation(
+    menuItems,
+    locationValue,
+  ).filter((item) => {
     if (!normalizedCategoryFilter) {
       const minimumGuests = item.minimumGuests ?? 0;
       const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
@@ -47,7 +51,7 @@ export default function BrowseCatalogView({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [attendeeCount, selectedCategory]);
+  }, [attendeeCount, locationValue, selectedCategory]);
 
   useEffect(() => {
     if (!hasMounted.current) {
