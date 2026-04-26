@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiGrid, FiHome } from "react-icons/fi";
 import CommonNavbarActions from "./navbar/CommonNavbarActions";
 import CommonNavbarFilters from "./navbar/CommonNavbarFilters";
@@ -34,12 +34,17 @@ export default function CommonNavbar({
   className = "",
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLoggedIn, user, signOut } = useAuth();
   const {
     attendeeCount,
+    deliveryDate,
+    deliveryTime,
     locationValue,
     eventName,
     setAttendeeCount,
+    setDeliveryDate,
+    setDeliveryTime,
     setEventName,
     setLocationValue,
   } = useBrowseFilters();
@@ -48,8 +53,6 @@ export default function CommonNavbar({
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState("");
   const [draftDate, setDraftDate] = useState(new Date());
   const [draftTime, setDraftTime] = useState("");
   const [calendarMonth, setCalendarMonth] = useState(() => {
@@ -70,9 +73,9 @@ export default function CommonNavbar({
       const nextDropdown = current === key ? null : key;
 
       if (nextDropdown === "delivery") {
-        const nextDate = selectedDate ?? new Date();
+        const nextDate = deliveryDate ?? new Date();
         setDraftDate(nextDate);
-        setDraftTime(selectedTime);
+        setDraftTime(deliveryTime);
         setCalendarMonth(
           new Date(nextDate.getFullYear(), nextDate.getMonth(), 1),
         );
@@ -109,15 +112,19 @@ export default function CommonNavbar({
     };
   }, []);
 
-  const deliveryLabel = formatNavbarDate(selectedDate, selectedTime);
+  const deliveryLabel = formatNavbarDate(deliveryDate, deliveryTime);
   const eventLabel = formatEventLabel(attendeeCount, eventName);
-  const hasDeliverySelection = Boolean(selectedDate || selectedTime);
+  const hasDeliverySelection = Boolean(deliveryDate || deliveryTime);
   const hasEventSelection = Boolean(attendeeCount > 0 || eventName.trim());
 
   const applyDeliverySelection = () => {
-    setSelectedDate(draftDate);
-    setSelectedTime(draftTime);
+    setDeliveryDate(draftDate);
+    setDeliveryTime(draftTime);
     setOpenDropdown(null);
+
+    if (location.pathname.startsWith("/vendor-dashboard")) {
+      navigate("/");
+    }
   };
 
   const applyEventDetails = () => {

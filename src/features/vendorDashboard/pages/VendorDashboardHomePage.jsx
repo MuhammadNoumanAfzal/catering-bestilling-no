@@ -31,7 +31,7 @@ function getStatusClasses(status) {
 function VendorStatCard({ label, value, icon: Icon }) {
   return (
     <article className="rounded-[24px] border border-[#d9d9d9] bg-white p-4 shadow-[0_10px_24px_rgba(30,30,30,0.06)] sm:p-5">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f] sm:h-16 sm:w-16">
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-transparent text-[#cf5c2f] sm:h-16 sm:w-16">
         <Icon className="text-[34px] sm:text-[54px]" />
       </div>
       <p className="mt-4 text-sm font-semibold text-[#2a2a2a] sm:mt-5 sm:text-base">{label}</p>

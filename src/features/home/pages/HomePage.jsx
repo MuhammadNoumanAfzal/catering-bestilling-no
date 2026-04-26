@@ -8,6 +8,7 @@ import ProductShowcaseSection from "../components/ProductShowcaseSection";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import {
   filterItemsByVendorLocation,
+  filterVendorsByDeliverySlot,
   filterVendorsByLocation,
 } from "../../vendor/data/vendorData";
 import {
@@ -20,18 +21,28 @@ export default function HomePage() {
   const navigate = useNavigate();
   const {
     deliveryAddress,
+    deliveryDate,
+    deliveryTime,
     locationValue,
     setDeliveryAddress,
     setLocationValue,
   } = useBrowseFilters();
-  const filteredPopularVendors = useMemo(
-    () => filterVendorsByLocation(popularVendors, locationValue),
-    [locationValue],
-  );
-  const filteredFeaturedVendors = useMemo(
-    () => filterVendorsByLocation(featuredVendors, locationValue),
-    [locationValue],
-  );
+  const filteredPopularVendors = useMemo(() => {
+    const locationFiltered = filterVendorsByLocation(popularVendors, locationValue);
+    return filterVendorsByDeliverySlot(
+      locationFiltered,
+      deliveryDate,
+      deliveryTime,
+    );
+  }, [deliveryDate, deliveryTime, locationValue]);
+  const filteredFeaturedVendors = useMemo(() => {
+    const locationFiltered = filterVendorsByLocation(featuredVendors, locationValue);
+    return filterVendorsByDeliverySlot(
+      locationFiltered,
+      deliveryDate,
+      deliveryTime,
+    );
+  }, [deliveryDate, deliveryTime, locationValue]);
   const filteredPopularProducts = useMemo(
     () => filterItemsByVendorLocation(popularProducts, locationValue),
     [locationValue],
