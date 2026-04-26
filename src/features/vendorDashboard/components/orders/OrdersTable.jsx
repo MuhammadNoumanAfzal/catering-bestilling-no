@@ -21,7 +21,8 @@ export default function OrdersTable({ orders, onOpenDetails }) {
   }, []);
 
   return (
-    <div className="mt-4 overflow-x-auto">
+    <div className="mt-4">
+      <div className="overflow-x-auto hidden md:block">
       <table className="w-full border-separate border-spacing-y-2">
         <thead>
           <tr className="type-subpara text-left uppercase tracking-[0.04em] text-[#7e776f]">
@@ -91,6 +92,88 @@ export default function OrdersTable({ orders, onOpenDetails }) {
           ))}
         </tbody>
       </table>
+      </div>
+
+      <div className="space-y-3 md:hidden">
+        {orders.map((order, index) => (
+          <article
+            key={`${order.id}-${order.date}-mobile-${index}`}
+            className="rounded-[20px] border border-[#e8dfd7] bg-[#fcfbf9] p-4 shadow-[0_8px_20px_rgba(20,20,20,0.04)]"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9a8f84]">
+                  Order #{index + 1}
+                </p>
+                <p className="mt-1 text-base font-semibold text-[#232323]">
+                  {order.id}
+                </p>
+                <p className="mt-1 text-sm text-[#6b635c]">{order.vendor}</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onOpenDetails(order)}
+                className="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#e5ddd5] bg-white text-[#5f5750] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
+                aria-label={`Open actions for ${order.id}`}
+              >
+                <FiMoreHorizontal className="text-[16px]" />
+              </button>
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
+                  Event
+                </p>
+                <p className="mt-1 text-sm font-medium text-[#242424]">
+                  {order.eventName}
+                </p>
+              </div>
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
+                  Date
+                </p>
+                <p className="mt-1 text-sm font-medium text-[#242424]">
+                  {order.date}
+                </p>
+              </div>
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
+                  Guests
+                </p>
+                <p className="mt-1 text-sm font-medium text-[#242424]">
+                  {order.person}
+                </p>
+              </div>
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
+                  Total
+                </p>
+                <p className="mt-1 text-sm font-semibold text-[#242424]">
+                  {order.total}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <span
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getOrderStatusClasses(order.status)}`}
+              >
+                {order.status}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => onOpenDetails(order)}
+                className="text-sm font-semibold text-[#cf6e38]"
+              >
+                View details
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
 
       {orders.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[#ddd4cb] px-4 py-10 text-center text-sm text-[#777777]">
