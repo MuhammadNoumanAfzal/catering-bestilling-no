@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
+import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import VendorCard from "../components/VendorCard";
 import { getVendorCollectionBySlug } from "../data/homeData";
+import { filterVendorsByLocation } from "../../vendor/data/vendorData";
 
 const PAGE_SIZE = 8;
 
 export default function VendorListingPage() {
   const { vendorType } = useParams();
+  const { locationValue } = useBrowseFilters();
   const vendorCollection = getVendorCollectionBySlug(vendorType);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -19,8 +22,12 @@ export default function VendorListingPage() {
   }
 
   const { title, description, vendors } = vendorCollection;
-  const visibleVendors = vendors.slice(0, visibleCount);
-  const hasMore = visibleCount < vendors.length;
+  const filteredVendors = useMemo(
+    () => filterVendorsByLocation(vendors, locationValue),
+    [locationValue, vendors],
+  );
+  const visibleVendors = filteredVendors.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredVendors.length;
 
   return (
     <section className="bg-white px-4 py-8 sm:px-6 lg:px-20">
@@ -50,13 +57,21 @@ export default function VendorListingPage() {
           ))}
         </div>
 
+        {filteredVendors.length === 0 ? (
+          <div className="mt-6 rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
+            {locationValue
+              ? `No vendors are currently available for ${locationValue}.`
+              : "No vendors are available right now."}
+          </div>
+        ) : null}
+
         {hasMore ? (
           <div className="mt-8 flex justify-center">
             <button
               type="button"
               onClick={() =>
                 setVisibleCount((current) =>
-                  Math.min(current + PAGE_SIZE, vendors.length),
+                  Math.min(current + PAGE_SIZE, filteredVendors.length),
                 )
               }
               className="rounded-full bg-[#c85f33] px-6 py-3 text-[14px] font-semibold text-white transition hover:bg-[#b6542c]"

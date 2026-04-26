@@ -1,11 +1,15 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
 import FoodBrowsePreviewSection from "../components/FoodBrowsePreviewSection";
 import HowItWorksSection from "../components/HowItWorksSection";
 import VendorShowcaseSection from "../components/VendorShowcaseSection";
 import ProductShowcaseSection from "../components/ProductShowcaseSection";
-import { filterVendorsByPostalCode } from "../../vendor/data/vendorData";
+import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
+import {
+  filterItemsByVendorLocation,
+  filterVendorsByLocation,
+} from "../../vendor/data/vendorData";
 import {
   popularVendors,
   featuredVendors,
@@ -14,16 +18,23 @@ import {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [postalCode, setPostalCode] = useState("");
-  const normalizedPostalCode = postalCode.replace(/\D/g, "").slice(0, 4);
+  const {
+    deliveryAddress,
+    locationValue,
+    setDeliveryAddress,
+    setLocationValue,
+  } = useBrowseFilters();
   const filteredPopularVendors = useMemo(
-    () => filterVendorsByPostalCode(popularVendors, normalizedPostalCode),
-    [normalizedPostalCode],
+    () => filterVendorsByLocation(popularVendors, locationValue),
+    [locationValue],
   );
   const filteredFeaturedVendors = useMemo(
-    () => filterVendorsByPostalCode(featuredVendors, normalizedPostalCode),
-    [normalizedPostalCode],
+    () => filterVendorsByLocation(featuredVendors, locationValue),
+    [locationValue],
+  );
+  const filteredPopularProducts = useMemo(
+    () => filterItemsByVendorLocation(popularProducts, locationValue),
+    [locationValue],
   );
   const availableVendorCount =
     filteredPopularVendors.length + filteredFeaturedVendors.length;
@@ -33,8 +44,8 @@ export default function HomePage() {
       <HeroSection
         deliveryAddress={deliveryAddress}
         onDeliveryAddressChange={setDeliveryAddress}
-        postalCode={normalizedPostalCode}
-        onPostalCodeChange={setPostalCode}
+        locationValue={locationValue}
+        onLocationChange={setLocationValue}
         availableVendorCount={availableVendorCount}
       />
       <FoodBrowsePreviewSection />
@@ -42,8 +53,8 @@ export default function HomePage() {
         title="Popular Vendors"
         vendors={filteredPopularVendors}
         emptyMessage={
-          normalizedPostalCode
-            ? `No popular vendors currently deliver to postal code ${normalizedPostalCode}.`
+          locationValue
+            ? `No popular vendors are currently available for ${locationValue}.`
             : undefined
         }
         onSeeAllClick={() => navigate("/vendors/popular")}
@@ -52,15 +63,15 @@ export default function HomePage() {
         title="Featured Vendors"
         vendors={filteredFeaturedVendors}
         emptyMessage={
-          normalizedPostalCode
-            ? `No featured vendors currently deliver to postal code ${normalizedPostalCode}.`
+          locationValue
+            ? `No featured vendors are currently available for ${locationValue}.`
             : undefined
         }
         onSeeAllClick={() => navigate("/vendors/featured")}
       />
       <ProductShowcaseSection
         title="Popular Products"
-        products={popularProducts}
+        products={filteredPopularProducts}
         onSeeAllClick={() => navigate("/products/popular")}
       />
       <HowItWorksSection />

@@ -5,15 +5,21 @@ const BrowseFiltersContext = createContext(null);
 export function BrowseFiltersProvider({ children }) {
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [eventName, setEventName] = useState("");
+  const [locationValue, setLocationValue] = useState("Bergen");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   const value = useMemo(
     () => ({
       attendeeCount,
+      deliveryAddress,
       eventName,
+      locationValue,
       setAttendeeCount,
+      setDeliveryAddress,
       setEventName,
+      setLocationValue,
     }),
-    [attendeeCount, eventName],
+    [attendeeCount, deliveryAddress, eventName, locationValue],
   );
 
   return (
