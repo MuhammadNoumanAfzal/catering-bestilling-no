@@ -27,6 +27,7 @@ export default function CommonNavbarFilters({
   onLocationChange,
   onMonthChange,
   onSearchChange,
+  onSearchSubmit,
   onTimeSelect,
   openDropdown,
   searchValue,
@@ -132,6 +133,12 @@ export default function CommonNavbarFilters({
           type="text"
           value={searchValue}
           onChange={(event) => onSearchChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              onSearchSubmit?.();
+            }
+          }}
           placeholder="Search restaurant..."
           className="text-[10px] w-full bg-transparent text-[#5c5c5c] outline-none placeholder:text-[#b8b1a9]"
         />
@@ -149,6 +156,7 @@ export default function CommonNavbarFilters({
 
         <button
           type="button"
+          onClick={onSearchSubmit}
           className="ml-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#c85f33] text-white"
           aria-label="Search"
         >

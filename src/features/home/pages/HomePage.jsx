@@ -24,10 +24,12 @@ export default function HomePage() {
     deliveryDate,
     deliveryTime,
     locationValue,
+    searchQuery,
     setDeliveryAddress,
   } = useBrowseFilters();
   const [postalCode, setPostalCode] = useState("");
   const normalizedPostalCode = postalCode.replace(/\D/g, "").slice(0, 4);
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const activeHomeLocationFilter =
     normalizedPostalCode || deliveryAddress.trim() || locationValue;
   const filteredPopularVendors = useMemo(() => {
@@ -39,8 +41,24 @@ export default function HomePage() {
       locationFiltered,
       deliveryDate,
       deliveryTime,
-    );
-  }, [activeHomeLocationFilter, deliveryDate, deliveryTime]);
+    ).filter((vendor) => {
+      if (!normalizedSearchQuery) {
+        return true;
+      }
+
+      const searchableText = [vendor.name, vendor.deliveryFee, vendor.discount]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedSearchQuery);
+    });
+  }, [
+    activeHomeLocationFilter,
+    deliveryDate,
+    deliveryTime,
+    normalizedSearchQuery,
+  ]);
   const filteredFeaturedVendors = useMemo(() => {
     const locationFiltered = filterVendorsByLocation(
       featuredVendors,
@@ -50,11 +68,46 @@ export default function HomePage() {
       locationFiltered,
       deliveryDate,
       deliveryTime,
-    );
-  }, [activeHomeLocationFilter, deliveryDate, deliveryTime]);
+    ).filter((vendor) => {
+      if (!normalizedSearchQuery) {
+        return true;
+      }
+
+      const searchableText = [vendor.name, vendor.deliveryFee, vendor.discount]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedSearchQuery);
+    });
+  }, [
+    activeHomeLocationFilter,
+    deliveryDate,
+    deliveryTime,
+    normalizedSearchQuery,
+  ]);
   const filteredPopularProducts = useMemo(
-    () => filterItemsByVendorLocation(popularProducts, activeHomeLocationFilter),
-    [activeHomeLocationFilter],
+    () =>
+      filterItemsByVendorLocation(
+        popularProducts,
+        activeHomeLocationFilter,
+      ).filter((product) => {
+        if (!normalizedSearchQuery) {
+          return true;
+        }
+
+        const searchableText = [
+          product.name,
+          product.title,
+          product.description,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchableText.includes(normalizedSearchQuery);
+      }),
+    [activeHomeLocationFilter, normalizedSearchQuery],
   );
   const availableVendorCount =
     filteredPopularVendors.length + filteredFeaturedVendors.length;

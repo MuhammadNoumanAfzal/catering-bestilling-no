@@ -13,7 +13,7 @@ export default function BrowseCatalogView({
   menuItems,
   moreOptions,
 }) {
-  const { attendeeCount, locationValue } = useBrowseFilters();
+  const { attendeeCount, locationValue, searchQuery } = useBrowseFilters();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const hasMounted = useRef(false);
@@ -21,17 +21,36 @@ export default function BrowseCatalogView({
   const normalizedCategoryFilter = Array.isArray(selectedCategory)
     ? selectedCategory.map((item) => item.trim())
     : selectedCategory?.trim() ?? null;
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredMenuItems = filterItemsByVendorLocation(
     menuItems,
     locationValue,
   ).filter((item) => {
+    const searchableText = [
+      item.title,
+      item.name,
+      item.description,
+      ...(item.categoryTags ?? []),
+      ...(item.detailLines ?? []),
+      item.vendorName,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    const matchesSearch = normalizedSearchQuery
+      ? searchableText.includes(normalizedSearchQuery)
+      : true;
+
     if (!normalizedCategoryFilter) {
       const minimumGuests = item.minimumGuests ?? 0;
       const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
 
-      return attendeeCount <= 0
+      const matchesAttendees =
+        attendeeCount <= 0
         ? true
         : attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
+
+      return matchesAttendees && matchesSearch;
     }
 
     const tags = (item.categoryTags ?? []).map((tag) => tag.trim());
@@ -46,12 +65,12 @@ export default function BrowseCatalogView({
       ? normalizedCategoryFilter.some((tag) => tags.includes(tag))
       : tags.includes(normalizedCategoryFilter);
 
-    return matchesCategory && matchesAttendees;
+    return matchesCategory && matchesAttendees && matchesSearch;
   });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [attendeeCount, locationValue, selectedCategory]);
+  }, [attendeeCount, locationValue, searchQuery, selectedCategory]);
 
   useEffect(() => {
     if (!hasMounted.current) {

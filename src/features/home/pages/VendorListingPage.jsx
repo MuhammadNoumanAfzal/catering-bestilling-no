@@ -9,7 +9,7 @@ const PAGE_SIZE = 8;
 
 export default function VendorListingPage() {
   const { vendorType } = useParams();
-  const { locationValue } = useBrowseFilters();
+  const { locationValue, searchQuery } = useBrowseFilters();
   const vendorCollection = getVendorCollectionBySlug(vendorType);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -22,9 +22,27 @@ export default function VendorListingPage() {
   }
 
   const { title, description, vendors } = vendorCollection;
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredVendors = useMemo(
-    () => filterVendorsByLocation(vendors, locationValue),
-    [locationValue, vendors],
+    () =>
+      filterVendorsByLocation(vendors, locationValue).filter((vendor) => {
+        if (!normalizedSearchQuery) {
+          return true;
+        }
+
+        const searchableText = [
+          vendor.name,
+          vendor.cuisine,
+          vendor.addressLine,
+          vendor.city,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchableText.includes(normalizedSearchQuery);
+      }),
+    [locationValue, normalizedSearchQuery, vendors],
   );
   const visibleVendors = filteredVendors.slice(0, visibleCount);
   const hasMore = visibleCount < filteredVendors.length;

@@ -6,6 +6,7 @@ export function BrowseFiltersProvider({ children }) {
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [eventName, setEventName] = useState("");
   const [locationValue, setLocationValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(null);
   const [deliveryTime, setDeliveryTime] = useState("");
@@ -18,12 +19,14 @@ export function BrowseFiltersProvider({ children }) {
       deliveryTime,
       eventName,
       locationValue,
+      searchQuery,
       setAttendeeCount,
       setDeliveryAddress,
       setDeliveryDate,
       setDeliveryTime,
       setEventName,
       setLocationValue,
+      setSearchQuery,
     }),
     [
       attendeeCount,
@@ -32,6 +35,7 @@ export function BrowseFiltersProvider({ children }) {
       deliveryTime,
       eventName,
       locationValue,
+      searchQuery,
     ],
   );
 

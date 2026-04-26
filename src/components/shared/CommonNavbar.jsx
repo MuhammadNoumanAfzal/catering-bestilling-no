@@ -42,17 +42,18 @@ export default function CommonNavbar({
     deliveryTime,
     locationValue,
     eventName,
+    searchQuery,
     setAttendeeCount,
     setDeliveryDate,
     setDeliveryTime,
     setEventName,
     setLocationValue,
+    setSearchQuery,
   } = useBrowseFilters();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
   const [draftDate, setDraftDate] = useState(new Date());
   const [draftTime, setDraftTime] = useState("");
   const [calendarMonth, setCalendarMonth] = useState(() => {
@@ -133,6 +134,12 @@ export default function CommonNavbar({
     setOpenDropdown(null);
   };
 
+  const handleSearchSubmit = () => {
+    if (location.pathname.startsWith("/vendor-dashboard")) {
+      navigate("/");
+    }
+  };
+
   const handleSignOut = async () => {
     const result = await confirmLogout();
 
@@ -191,14 +198,15 @@ export default function CommonNavbar({
                       current.getFullYear(),
                       current.getMonth() + direction,
                       1,
-                    ),
+                  ),
                 )
               }
-              onSearchChange={setSearchValue}
+              onSearchChange={setSearchQuery}
+              onSearchSubmit={handleSearchSubmit}
               onTimeSelect={setDraftTime}
               openDropdown={openDropdown}
-              searchValue={searchValue}
-              setSearchValue={setSearchValue}
+              searchValue={searchQuery}
+              setSearchValue={setSearchQuery}
               toggleDropdown={toggleDropdown}
             />
           </div>
