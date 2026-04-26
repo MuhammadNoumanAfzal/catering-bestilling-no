@@ -9,7 +9,7 @@ const PAGE_SIZE = 8;
 
 export default function ProductListingPage() {
   const { productType } = useParams();
-  const { locationValue } = useBrowseFilters();
+  const { locationValue, searchQuery } = useBrowseFilters();
   const productCollection = getProductCollectionBySlug(productType);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -22,9 +22,27 @@ export default function ProductListingPage() {
   }
 
   const { title, description, products } = productCollection;
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredProducts = useMemo(
-    () => filterItemsByVendorLocation(products, locationValue),
-    [locationValue, products],
+    () =>
+      filterItemsByVendorLocation(products, locationValue).filter((product) => {
+        if (!normalizedSearchQuery) {
+          return true;
+        }
+
+        const searchableText = [
+          product.name,
+          product.title,
+          product.description,
+          product.vendorName,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        return searchableText.includes(normalizedSearchQuery);
+      }),
+    [locationValue, normalizedSearchQuery, products],
   );
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
