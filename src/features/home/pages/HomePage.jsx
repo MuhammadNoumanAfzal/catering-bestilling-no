@@ -10,12 +10,9 @@ import {
   filterItemsByVendorLocation,
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,
+  vendorProfiles,
 } from "../../vendor/data/vendorData";
-import {
-  popularVendors,
-  featuredVendors,
-  popularProducts,
-} from "../data/homeData";
+import { popularProducts } from "../data/homeData";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -32,60 +29,57 @@ export default function HomePage() {
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const activeHomeLocationFilter =
     normalizedPostalCode || deliveryAddress.trim() || locationValue;
+  const homeVendorCards = useMemo(
+    () =>
+      vendorProfiles
+        .map((vendor) => ({
+          id: vendor.slug,
+          slug: vendor.slug,
+          name: vendor.name,
+          image: vendor.banner ?? vendor.heroSideImage ?? vendor.logo,
+          rating: vendor.rating,
+          deliveryTime: vendor.leadTime,
+          deliveryFee: vendor.deliveryFee,
+          discount: vendor.cuisine,
+        }))
+        .sort((left, right) => right.rating - left.rating),
+    [],
+  );
+  const filteredHomeVendors = useMemo(() => {
+    const locationFiltered = filterVendorsByLocation(
+      homeVendorCards,
+      activeHomeLocationFilter,
+    );
+
+    return filterVendorsByDeliverySlot(
+      locationFiltered,
+      deliveryDate,
+      deliveryTime,
+    ).filter((vendor) => {
+      if (!normalizedSearchQuery) {
+        return true;
+      }
+
+      const searchableText = [vendor.name, vendor.deliveryFee, vendor.discount]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchableText.includes(normalizedSearchQuery);
+    });
+  }, [
+    activeHomeLocationFilter,
+    deliveryDate,
+    deliveryTime,
+    homeVendorCards,
+    normalizedSearchQuery,
+  ]);
   const filteredPopularVendors = useMemo(() => {
-    const locationFiltered = filterVendorsByLocation(
-      popularVendors,
-      activeHomeLocationFilter,
-    );
-    return filterVendorsByDeliverySlot(
-      locationFiltered,
-      deliveryDate,
-      deliveryTime,
-    ).filter((vendor) => {
-      if (!normalizedSearchQuery) {
-        return true;
-      }
-
-      const searchableText = [vendor.name, vendor.deliveryFee, vendor.discount]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return searchableText.includes(normalizedSearchQuery);
-    });
-  }, [
-    activeHomeLocationFilter,
-    deliveryDate,
-    deliveryTime,
-    normalizedSearchQuery,
-  ]);
+    return filteredHomeVendors.slice(0, 3);
+  }, [filteredHomeVendors]);
   const filteredFeaturedVendors = useMemo(() => {
-    const locationFiltered = filterVendorsByLocation(
-      featuredVendors,
-      activeHomeLocationFilter,
-    );
-    return filterVendorsByDeliverySlot(
-      locationFiltered,
-      deliveryDate,
-      deliveryTime,
-    ).filter((vendor) => {
-      if (!normalizedSearchQuery) {
-        return true;
-      }
-
-      const searchableText = [vendor.name, vendor.deliveryFee, vendor.discount]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      return searchableText.includes(normalizedSearchQuery);
-    });
-  }, [
-    activeHomeLocationFilter,
-    deliveryDate,
-    deliveryTime,
-    normalizedSearchQuery,
-  ]);
+    return filteredHomeVendors.slice(3, 6);
+  }, [filteredHomeVendors]);
   const filteredPopularProducts = useMemo(
     () =>
       filterItemsByVendorLocation(
