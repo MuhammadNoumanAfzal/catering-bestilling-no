@@ -250,6 +250,29 @@ export default function HomeNavbar() {
 
             {isLoggedIn ? (
               <>
+                <div className="border-t border-[#eee5dc] pt-2">
+                  <div className="flex flex-col gap-1">
+                    {homeProfileMenuItems.map((item) => {
+                      const Icon = item.icon;
+
+                      return (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => {
+                            setIsProfileMenuOpen(false);
+                            closeMenu();
+                          }}
+                          className="flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
+                        >
+                          <Icon className="text-[16px]" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => setIsNotificationOpen((current) => !current)}
