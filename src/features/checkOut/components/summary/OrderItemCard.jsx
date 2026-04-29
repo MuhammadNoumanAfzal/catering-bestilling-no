@@ -23,7 +23,7 @@ export default function OrderItemCard({
 
         <div className="text-right">
           <p className="type-para font-semibold text-[#252525]">
-            ${formatCurrency(item.effectivePrice)}
+            NOK {formatCurrency(item.effectivePrice)}
           </p>
           <button
             type="button"

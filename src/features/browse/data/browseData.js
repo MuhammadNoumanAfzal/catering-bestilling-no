@@ -364,7 +364,7 @@ const foodTypeItemMetadata = {
   "grilled-mixed-platter": {
     dietaryTags: ["Halal"],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -376,7 +376,7 @@ const foodTypeItemMetadata = {
   "lunch-sharing-trays": {
     dietaryTags: ["Vegetarian"],
     offerTags: ["Free Delivery", "Accepts discount code"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: true,
@@ -388,7 +388,7 @@ const foodTypeItemMetadata = {
   "stone-oven-pizza-box": {
     dietaryTags: [],
     offerTags: ["Have a discount"],
-    pricingTier: "$$(Standard)",
+    pricingTier: "Standard",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -400,7 +400,7 @@ const foodTypeItemMetadata = {
   "sweet-breakfast-basket": {
     dietaryTags: ["Vegetarian"],
     offerTags: ["Free Delivery"],
-    pricingTier: "$$(Standard)",
+    pricingTier: "Standard",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: true,
@@ -412,7 +412,7 @@ const foodTypeItemMetadata = {
   "salad-bowl-trio": {
     dietaryTags: ["Vegetarian", "Vegan", "Gluten-Free"],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$(Standard)",
+    pricingTier: "Standard",
     individualPackaging: true,
     newlyAdded: false,
     smallBusiness: false,
@@ -424,7 +424,7 @@ const foodTypeItemMetadata = {
   "nordic-dinner-combo": {
     dietaryTags: [],
     offerTags: ["Have a discount"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -436,7 +436,7 @@ const foodTypeItemMetadata = {
   "chicken-wrap-feast": {
     dietaryTags: ["Halal"],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$(Standard)",
+    pricingTier: "Standard",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: true,
@@ -448,7 +448,7 @@ const foodTypeItemMetadata = {
   "office-pizza-bundle": {
     dietaryTags: [],
     offerTags: ["Have a discount"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -460,7 +460,7 @@ const foodTypeItemMetadata = {
   "breakfast-mini-box": {
     dietaryTags: ["Vegetarian"],
     offerTags: ["Free Delivery"],
-    pricingTier: "$(Budget-friendly)",
+    pricingTier: "Budget-friendly",
     individualPackaging: true,
     newlyAdded: false,
     smallBusiness: true,
@@ -472,7 +472,7 @@ const foodTypeItemMetadata = {
   "asian-rice-bowl-feast": {
     dietaryTags: ["Gluten-Free"],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: false,
@@ -484,7 +484,7 @@ const foodTypeItemMetadata = {
   "smokehouse-bbq-tray": {
     dietaryTags: ["Halal"],
     offerTags: ["Have a discount"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -496,7 +496,7 @@ const foodTypeItemMetadata = {
   "healthy-green-lunch-box": {
     dietaryTags: ["Vegetarian", "Vegan", "Gluten-Free"],
     offerTags: ["Free Delivery"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: false,
@@ -511,7 +511,7 @@ const occasionItemMetadata = {
   "wedding-dessert-table": {
     dietaryTags: ["Vegetarian"],
     offerTags: ["Free Delivery"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -523,7 +523,7 @@ const occasionItemMetadata = {
   "birthday-snack-tower": {
     dietaryTags: ["Vegetarian"],
     offerTags: ["Have a discount"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: true,
@@ -535,7 +535,7 @@ const occasionItemMetadata = {
   "corporate-dinner-spread": {
     dietaryTags: ["Halal"],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -547,7 +547,7 @@ const occasionItemMetadata = {
   "anniversary-sharing-menu": {
     dietaryTags: [],
     offerTags: ["Have a discount"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -559,7 +559,7 @@ const occasionItemMetadata = {
   "graduation-party-tray": {
     dietaryTags: [],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: true,
@@ -571,7 +571,7 @@ const occasionItemMetadata = {
   "weekend-family-buffet": {
     dietaryTags: ["Halal"],
     offerTags: ["Free Delivery"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: true,
@@ -583,7 +583,7 @@ const occasionItemMetadata = {
   "team-celebration-pack": {
     dietaryTags: [],
     offerTags: ["Have a discount"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: false,
     smallBusiness: true,
@@ -595,7 +595,7 @@ const occasionItemMetadata = {
   "premium-event-platters": {
     dietaryTags: ["Vegetarian"],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: true,
@@ -607,7 +607,7 @@ const occasionItemMetadata = {
   "cocktail-bites-selection": {
     dietaryTags: ["Vegetarian", "Gluten-Free"],
     offerTags: ["Free Delivery"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: false,
     smallBusiness: false,
@@ -619,7 +619,7 @@ const occasionItemMetadata = {
   "baby-shower-brunch-box": {
     dietaryTags: ["Vegetarian"],
     offerTags: ["Have a discount"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: true,
     smallBusiness: true,
@@ -631,7 +631,7 @@ const occasionItemMetadata = {
   "conference-lunch-bundle": {
     dietaryTags: ["Halal"],
     offerTags: ["Accepts discount code"],
-    pricingTier: "$$$(Premium)",
+    pricingTier: "Premium",
     individualPackaging: true,
     newlyAdded: false,
     smallBusiness: true,
@@ -651,7 +651,7 @@ function enrichMenuItems(items, metadataBySlug) {
     newlyAdded: false,
     offerTags: [],
     popularityScore: item.rating ?? 0,
-    pricingTier: "$$(Standard)",
+    pricingTier: "Standard",
     smallBusiness: false,
     ...item,
     ...(metadataBySlug[item.slug] ?? {}),
@@ -748,16 +748,16 @@ export const offerOptions = [
 ];
 
 export const pricingOptions = [
-  "$(Budget-friendly)",
-  "$$(Standard)",
-  "$$$(Premium)",
+  "Budget-friendly",
+  "Standard",
+  "Premium",
 ];
 
 export const orderMinimumOptions = [
   "Any price",
-  "Under $25",
-  "$25 - $50",
-  "$50+",
+  "Under NOK 250",
+  "NOK 250 - NOK 500",
+  "NOK 500+",
 ];
 
 export const distanceOptions = [
@@ -766,3 +766,4 @@ export const distanceOptions = [
   "Within 5 km",
   "Within 10 km",
 ];
+

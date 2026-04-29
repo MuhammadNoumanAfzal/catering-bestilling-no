@@ -94,31 +94,31 @@ export const vendorInvoices = [
     id: "#12549",
     date: "05 Mar 2025",
     status: "Pending",
-    amount: "$548.73",
+    amount: "NOK 548.73",
   },
   {
     id: "#12549",
     date: "05 Mar 2025",
     status: "Completed",
-    amount: "$548.73",
+    amount: "NOK 548.73",
   },
   {
     id: "#12549",
     date: "05 Mar 2025",
     status: "Pending",
-    amount: "$548.73",
+    amount: "NOK 548.73",
   },
   {
     id: "#12549",
     date: "05 Mar 2025",
     status: "Completed",
-    amount: "$548.73",
+    amount: "NOK 548.73",
   },
   {
     id: "#12549",
     date: "05 Mar 2025",
     status: "Pending",
-    amount: "$548.73",
+    amount: "NOK 548.73",
   },
 ];
 
@@ -211,7 +211,7 @@ export const vendorOrders = [
     eventName: "Annual Dinner",
     date: "05 Mar 2025",
     person: 20,
-    total: "$548.73",
+    total: "NOK 548.73",
     status: "Scheduled",
   },
   {
@@ -220,7 +220,7 @@ export const vendorOrders = [
     eventName: "Annual Dinner",
     date: "04 Mar 2025",
     person: 20,
-    total: "$548.73",
+    total: "NOK 548.73",
     status: "Delivered",
   },
   {
@@ -229,7 +229,7 @@ export const vendorOrders = [
     eventName: "Annual Dinner",
     date: "03 Mar 2025",
     person: 35,
-    total: "$548.73",
+    total: "NOK 548.73",
     status: "Delivered",
   },
   {
@@ -238,7 +238,7 @@ export const vendorOrders = [
     eventName: "Annual Dinner",
     date: "01 Mar 2025",
     person: 15,
-    total: "$548.73",
+    total: "NOK 548.73",
     status: "Draft",
   },
   {
@@ -247,7 +247,7 @@ export const vendorOrders = [
     eventName: "Birthday Party",
     date: "25 Feb 2025",
     person: 20,
-    total: "$548.73",
+    total: "NOK 548.73",
     status: "Delivered",
   },
   {
@@ -256,7 +256,7 @@ export const vendorOrders = [
     eventName: "Office Event",
     date: "20 Feb 2025",
     person: 50,
-    total: "$548.73",
+    total: "NOK 548.73",
     status: "Scheduled",
   },
   {
@@ -265,7 +265,7 @@ export const vendorOrders = [
     eventName: "Family Dinner",
     date: "15 Feb 2025",
     person: 20,
-    total: "$548.73",
+    total: "NOK 548.73",
     status: "Draft",
   },
   {
@@ -274,7 +274,7 @@ export const vendorOrders = [
     eventName: "Annual Dinner",
     date: "05 Feb 2025",
     person: 20,
-    total: "$745.23",
+    total: "NOK 745.23",
     status: "Scheduled",
   },
   {
@@ -283,7 +283,7 @@ export const vendorOrders = [
     eventName: "Board Lunch",
     date: "31 Jan 2025",
     person: 18,
-    total: "$415.00",
+    total: "NOK 415.00",
     status: "Delivered",
   },
   {
@@ -292,7 +292,7 @@ export const vendorOrders = [
     eventName: "Seafood Buffet",
     date: "29 Jan 2025",
     person: 42,
-    total: "$892.40",
+    total: "NOK 892.40",
     status: "Completed",
   },
   {
@@ -301,7 +301,7 @@ export const vendorOrders = [
     eventName: "Training Lunch",
     date: "28 Jan 2025",
     person: 24,
-    total: "$386.15",
+    total: "NOK 386.15",
     status: "Completed",
   },
   {
@@ -310,7 +310,7 @@ export const vendorOrders = [
     eventName: "Quarterly Meetup",
     date: "26 Jan 2025",
     person: 60,
-    total: "$1,148.00",
+    total: "NOK 1,148.00",
     status: "Scheduled",
   },
 ];
@@ -337,19 +337,19 @@ export const vendorInvoiceOverview = [
 export const vendorInvoiceTotals = [
   {
     label: "Total Spent",
-    value: "$12,540.75",
+    value: "NOK 12,540.75",
   },
   {
     label: "This Month",
-    value: "$2,340.50",
+    value: "NOK 2,340.50",
   },
   {
     label: "Pending Amount",
-    value: "$1,120.00",
+    value: "NOK 1,120.00",
   },
   {
     label: "Overdue Amount",
-    value: "$320.75",
+    value: "NOK 320.75",
   },
 ];
 
@@ -362,7 +362,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-21",
     dueOn: "26 Apr 2026",
     dueAt: "2026-04-26",
-    amount: "$548.73",
+    amount: "NOK 548.73",
     status: "Paid",
   },
   {
@@ -373,7 +373,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-20",
     dueOn: "24 Apr 2026",
     dueAt: "2026-04-24",
-    amount: "$612.10",
+    amount: "NOK 612.10",
     status: "Paid",
   },
   {
@@ -384,7 +384,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-19",
     dueOn: "23 Apr 2026",
     dueAt: "2026-04-23",
-    amount: "$488.45",
+    amount: "NOK 488.45",
     status: "Pending",
   },
   {
@@ -395,7 +395,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-17",
     dueOn: "22 Apr 2026",
     dueAt: "2026-04-22",
-    amount: "$702.90",
+    amount: "NOK 702.90",
     status: "Paid",
   },
   {
@@ -406,7 +406,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-15",
     dueOn: "20 Apr 2026",
     dueAt: "2026-04-20",
-    amount: "$1,240.00",
+    amount: "NOK 1,240.00",
     status: "Overdue",
   },
   {
@@ -417,7 +417,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-13",
     dueOn: "18 Apr 2026",
     dueAt: "2026-04-18",
-    amount: "$389.55",
+    amount: "NOK 389.55",
     status: "Paid",
   },
   {
@@ -428,7 +428,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-11",
     dueOn: "16 Apr 2026",
     dueAt: "2026-04-16",
-    amount: "$845.23",
+    amount: "NOK 845.23",
     status: "Pending",
   },
   {
@@ -439,7 +439,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-09",
     dueOn: "14 Apr 2026",
     dueAt: "2026-04-14",
-    amount: "$745.23",
+    amount: "NOK 745.23",
     status: "Pending",
   },
   {
@@ -450,7 +450,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-07",
     dueOn: "12 Apr 2026",
     dueAt: "2026-04-12",
-    amount: "$932.40",
+    amount: "NOK 932.40",
     status: "Paid",
   },
   {
@@ -461,7 +461,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-04-04",
     dueOn: "09 Apr 2026",
     dueAt: "2026-04-09",
-    amount: "$321.20",
+    amount: "NOK 321.20",
     status: "Paid",
   },
   {
@@ -472,7 +472,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-03-31",
     dueOn: "05 Apr 2026",
     dueAt: "2026-04-05",
-    amount: "$1,120.75",
+    amount: "NOK 1,120.75",
     status: "Pending",
   },
   {
@@ -483,7 +483,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-03-27",
     dueOn: "01 Apr 2026",
     dueAt: "2026-04-01",
-    amount: "$564.30",
+    amount: "NOK 564.30",
     status: "Paid",
   },
   {
@@ -494,7 +494,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-03-24",
     dueOn: "29 Mar 2026",
     dueAt: "2026-03-29",
-    amount: "$678.15",
+    amount: "NOK 678.15",
     status: "Overdue",
   },
   {
@@ -505,7 +505,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-03-20",
     dueOn: "25 Mar 2026",
     dueAt: "2026-03-25",
-    amount: "$410.00",
+    amount: "NOK 410.00",
     status: "Paid",
   },
   {
@@ -516,7 +516,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-03-15",
     dueOn: "20 Mar 2026",
     dueAt: "2026-03-20",
-    amount: "$958.25",
+    amount: "NOK 958.25",
     status: "Pending",
   },
   {
@@ -527,7 +527,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-03-08",
     dueOn: "13 Mar 2026",
     dueAt: "2026-03-13",
-    amount: "$287.90",
+    amount: "NOK 287.90",
     status: "Paid",
   },
   {
@@ -538,7 +538,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-02-28",
     dueOn: "05 Mar 2026",
     dueAt: "2026-03-05",
-    amount: "$514.70",
+    amount: "NOK 514.70",
     status: "Paid",
   },
   {
@@ -549,7 +549,7 @@ export const vendorInvoiceRecords = [
     deliveredAt: "2026-02-14",
     dueOn: "19 Feb 2026",
     dueAt: "2026-02-19",
-    amount: "$1,486.20",
+    amount: "NOK 1,486.20",
     status: "Overdue",
   },
 ];
@@ -577,13 +577,13 @@ export const vendorRewardActions = [
 ];
 
 export const vendorRewardBenefits = [
-  "Always at least 1 point per $1 spent.",
-  "As much as 5 points per $1 spent when you order from restaurants offering bonus Rewards.",
+  "Always at least 1 point per NOK 1 spent.",
+  "As much as 5 points per NOK 1 spent when you order from restaurants offering bonus Rewards.",
 ];
 
 export const vendorRewardRedemptionOptions = [
-  'Credit toward any order of $25 or more (Apply by choosing "Add promo" during checkout.)',
-  "Amazon Gift Cards - 2,500 points can be redeemed for a $25 Amazon Gift Card. Must redeem a minimum of 2,500 points. You get a digital gift card code, not a physical gift card.",
+  'Credit toward any order of NOK 250 or more (Apply by choosing "Add promo" during checkout.)',
+  "Amazon Gift Cards - 2,500 points can be redeemed for a NOK 250 Amazon Gift Card. Must redeem a minimum of 2,500 points. You get a digital gift card code, not a physical gift card.",
 ];
 
 export const vendorRewardTips = [
@@ -591,7 +591,7 @@ export const vendorRewardTips = [
   "Points are added to your balance once orders are fulfilled.",
   "You must have at least 2,500 points to redeem for an Amazon Gift Card.",
   "Points earned from Rewards promotions cannot be combined with any other offers.",
-  "Points can only be redeemed on orders totaling $25 or more.",
+  "Points can only be redeemed on orders totaling NOK 250 or more.",
 ];
 
 export const vendorAddressInitialState = {
@@ -634,3 +634,4 @@ export const vendorSettingsInitialState = {
   pushNotifications: false,
   orderConfirmationPush: false,
 };
+
