@@ -93,38 +93,38 @@ function RewardActionModal({ action, onClose, onConfirm }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-[24px] border border-[#eadfd4] bg-[linear-gradient(180deg,#fffaf6_0%,#ffffff_100%)] shadow-[0_28px_60px_rgba(20,15,10,0.22)] sm:rounded-[28px]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-3 py-3 sm:px-4 sm:py-6">
+      <div className="relative flex max-h-[calc(100vh-1.5rem)] w-full max-w-lg flex-col overflow-hidden rounded-[20px] border border-[#eadfd4] bg-[linear-gradient(180deg,#fffaf6_0%,#ffffff_100%)] shadow-[0_28px_60px_rgba(20,15,10,0.22)] sm:max-h-[calc(100vh-3rem)] sm:rounded-[28px]">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#eadfd4] bg-white text-[#3e332b] transition hover:border-[#cf5c2f] hover:text-[#cf5c2f]"
+          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#eadfd4] bg-white text-[#3e332b] transition hover:border-[#cf5c2f] hover:text-[#cf5c2f] sm:right-4 sm:top-4 sm:h-10 sm:w-10"
           aria-label="Close reward popup"
         >
           <FiX className="text-[18px]" />
         </button>
 
-        <div className="border-b border-[#f0e7df] bg-[linear-gradient(135deg,#fff1e8_0%,#fff8f4_100%)] px-5 py-6 sm:px-6 sm:py-7">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[#cf5c2f] shadow-[0_10px_24px_rgba(207,92,47,0.16)]">
+        <div className="shrink-0 border-b border-[#f0e7df] bg-[linear-gradient(135deg,#fff1e8_0%,#fff8f4_100%)] px-4 py-5 pr-14 sm:px-6 sm:py-7 sm:pr-16">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-white text-[#cf5c2f] shadow-[0_10px_24px_rgba(207,92,47,0.16)] sm:h-14 sm:w-14 sm:rounded-[18px]">
             {action.icon ? <action.icon className="text-[28px]" /> : <FiGift className="text-[28px]" />}
           </div>
-          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#cf5c2f]">
+          <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#cf5c2f] sm:mt-4 sm:text-[12px] sm:tracking-[0.18em]">
             {content.eyebrow}
           </p>
-          <h2 className="mt-2 text-[24px] font-semibold leading-[1.08] tracking-[-0.03em] text-[#181310] sm:text-[30px]">
+          <h2 className="mt-2 text-[21px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#181310] sm:text-[30px]">
             {content.title}
           </h2>
-          <p className="mt-3 text-[15px] leading-7 text-[#62564c]">
+          <p className="mt-3 text-[14px] leading-6 text-[#62564c] sm:text-[15px] sm:leading-7">
             {content.description}
           </p>
         </div>
 
-        <div className="max-h-[70vh] overflow-y-auto px-5 py-5 sm:px-6 sm:py-6">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
           <div className="space-y-3">
             {content.bullets.map((item) => (
               <div
                 key={item}
-                className="flex items-start gap-3 rounded-[18px] border border-[#efe4db] bg-[#fffdfb] px-4 py-3"
+                className="flex items-start gap-3 rounded-[16px] border border-[#efe4db] bg-[#fffdfb] px-3 py-3 sm:rounded-[18px] sm:px-4"
               >
                 <FiCheckCircle className="mt-0.5 shrink-0 text-[18px] text-[#cf5c2f]" />
                 <p className="text-[14px] leading-6 text-[#564d46]">{item}</p>
@@ -132,18 +132,18 @@ function RewardActionModal({ action, onClose, onConfirm }) {
             ))}
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <div className="mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer rounded-full border border-[#ddd3ca] px-5 py-2.5 text-sm font-semibold text-[#49413b] transition hover:bg-[#faf6f2]"
+              className="w-full cursor-pointer rounded-full border border-[#ddd3ca] px-5 py-3 text-sm font-semibold text-[#49413b] transition hover:bg-[#faf6f2] sm:w-auto sm:py-2.5"
             >
               Not now
             </button>
             <button
               type="button"
               onClick={() => onConfirm(content.confirmAction)}
-              className="cursor-pointer rounded-full bg-[#cf5c2f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#bb5127]"
+              className="w-full cursor-pointer rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb5127] sm:w-auto sm:py-2.5"
             >
               {content.confirmLabel}
             </button>
