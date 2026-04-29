@@ -35,7 +35,7 @@ export default function Footer() {
             <div className="flex flex-col gap-4 lg:min-w-0 lg:flex-row lg:items-center lg:gap-6">
               <Link to="/" className="inline-flex shrink-0">
                 <img
-                  src="/home/logo.png"
+                  src="/home/logo2.png"
                   alt="Cateringbestilling"
                   className="h-12 w-auto object-contain"
                 />
