@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiDownload, FiSearch } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import InvoiceFilterMenu from "../components/invoices/InvoiceFilterMenu";
 import InvoiceOverviewCard from "../components/invoices/InvoiceOverviewCard";
 import InvoicePagination from "../components/invoices/InvoicePagination";
@@ -19,6 +20,7 @@ import {
 } from "../components/invoices/invoiceUtils";
 
 export default function VendorInvoicesPage() {
+  const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedDateRange, setSelectedDateRange] = useState("7");
@@ -271,7 +273,12 @@ export default function VendorInvoicesPage() {
           </div>
         </div>
 
-        <InvoiceTable invoices={visibleInvoices} />
+        <InvoiceTable
+          invoices={visibleInvoices}
+          onOpenDetails={(invoice) =>
+            navigate(`/vendor-dashboard/invoices/${encodeURIComponent(invoice.id)}`)
+          }
+        />
 
         <InvoicePagination
           currentPage={safeCurrentPage}
