@@ -1,21 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { ProductItem } from "../components/ProductShowcaseSection";
 import { getProductCollectionBySlug } from "../data/homeData";
 import { filterItemsByVendorLocation } from "../../vendor/data/vendorData";
+import {
+  formatCategoryLabel,
+  matchesCategorySelection,
+  parseCategoryParamValue,
+} from "../../browse/utils/categoryFilters";
 
 const PAGE_SIZE = 8;
 
 export default function ProductListingPage() {
   const { productType } = useParams();
+  const [searchParams] = useSearchParams();
   const { locationValue, searchQuery } = useBrowseFilters();
   const productCollection = getProductCollectionBySlug(productType);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
+  const activeCategoryLabel = formatCategoryLabel(selectedCategory);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [productType]);
+  }, [productType, selectedCategory]);
 
   if (!productCollection) {
     return <Navigate to="/" replace />;
@@ -26,6 +34,10 @@ export default function ProductListingPage() {
   const filteredProducts = useMemo(
     () =>
       filterItemsByVendorLocation(products, locationValue).filter((product) => {
+        if (!matchesCategorySelection(product.categoryTags, selectedCategory)) {
+          return false;
+        }
+
         if (!normalizedSearchQuery) {
           return true;
         }
@@ -35,6 +47,7 @@ export default function ProductListingPage() {
           product.title,
           product.description,
           product.vendorName,
+          ...(product.categoryTags ?? []),
         ]
           .filter(Boolean)
           .join(" ")
@@ -42,7 +55,7 @@ export default function ProductListingPage() {
 
         return searchableText.includes(normalizedSearchQuery);
       }),
-    [locationValue, normalizedSearchQuery, products],
+    [locationValue, normalizedSearchQuery, products, selectedCategory],
   );
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
@@ -59,6 +72,11 @@ export default function ProductListingPage() {
             <p className="mt-2 max-w-[720px] text-[14px] leading-7 text-[#4f4f4f]">
               {description}
             </p>
+            {activeCategoryLabel ? (
+              <p className="mt-3 inline-flex rounded-full bg-[#fff1eb] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#c85f33]">
+                Showing category: {activeCategoryLabel}
+              </p>
+            ) : null}
           </div>
 
           <Link
@@ -77,9 +95,11 @@ export default function ProductListingPage() {
 
         {filteredProducts.length === 0 ? (
           <div className="mt-6 rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
-            {locationValue
-              ? `No products are currently available for ${locationValue}.`
-              : "No products are available right now."}
+            {activeCategoryLabel
+              ? `No products are currently available for ${activeCategoryLabel}${locationValue ? ` in ${locationValue}` : ""}.`
+              : locationValue
+                ? `No products are currently available for ${locationValue}.`
+                : "No products are available right now."}
           </div>
         ) : null}
 
