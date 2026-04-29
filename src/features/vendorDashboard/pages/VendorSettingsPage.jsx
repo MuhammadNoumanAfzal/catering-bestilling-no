@@ -5,10 +5,14 @@ import PasswordSettingsSection from "../components/settings/PasswordSettingsSect
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
 import SettingsActions from "../components/settings/SettingsActions";
 import { vendorSettingsInitialState } from "../data/vendorDashboardData";
+import {
+  readSavedSettings,
+  writeSavedSettings,
+} from "../../../utils/customerProfileStorage";
 
 export default function VendorSettingsPage() {
   const location = useLocation();
-  const [formState, setFormState] = useState(vendorSettingsInitialState);
+  const [formState, setFormState] = useState(() => readSavedSettings());
 
   useEffect(() => {
     if (!location.hash) {
@@ -24,11 +28,16 @@ export default function VendorSettingsPage() {
   }, [location.hash]);
 
   function updateField(key, value) {
-    setFormState((current) => ({ ...current, [key]: value }));
+    setFormState((current) => {
+      const nextState = { ...current, [key]: value };
+      writeSavedSettings(nextState);
+      return nextState;
+    });
   }
 
   function handleReset() {
     setFormState(vendorSettingsInitialState);
+    writeSavedSettings(vendorSettingsInitialState);
   }
 
   return (

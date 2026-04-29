@@ -1,3 +1,9 @@
+import {
+  buildCheckoutAddressFields,
+  getDefaultSavedAddress,
+  readSavedSettings,
+} from "../../../../utils/customerProfileStorage";
+
 export const VALID_TYPES = ["corporate", "private"];
 
 export const MODE_LABELS = {
@@ -25,23 +31,28 @@ export const PLACEHOLDERS = {
 
 export function createInitialFormState(primaryCart) {
   const orderSummary = primaryCart?.orderSummary;
+  const savedSettings = readSavedSettings();
+  const defaultDeliveryAddress = getDefaultSavedAddress("delivery");
+  const defaultInvoiceAddress = getDefaultSavedAddress("invoice");
 
   return {
-    companyName: "",
+    companyName: savedSettings.company ?? "",
     organizationNumber: "",
     invoiceReference: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    deliveryAddress: orderSummary?.deliveryAddress ?? "",
-    deliveryAddressLine2: "",
-    deliveryCity: "",
-    deliveryPostalCode: "",
-    invoiceAddress: orderSummary?.invoiceAddress ?? "",
-    invoiceAddressLine2: "",
-    invoiceCity: "",
-    invoicePostalCode: "",
+    firstName: savedSettings.firstName ?? "",
+    lastName: savedSettings.lastName ?? "",
+    email: savedSettings.primaryEmail ?? "",
+    phone: savedSettings.mobilePhone ?? "",
+    ...buildCheckoutAddressFields(
+      "delivery",
+      defaultDeliveryAddress,
+      orderSummary?.deliveryAddress ?? "",
+    ),
+    ...buildCheckoutAddressFields(
+      "invoice",
+      defaultInvoiceAddress,
+      orderSummary?.invoiceAddress ?? "",
+    ),
     eventName: "",
     occasion: "",
     date: orderSummary?.deliveryDate ?? "2026-03-25",
