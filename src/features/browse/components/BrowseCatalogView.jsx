@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import BrowseTabs from "./BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
 import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
 import BrowseMenuSection from "./BrowseMenuSection";
 import { filterItemsByVendorLocation } from "../../vendor/data/vendorData";
+import {
+  formatCategoryLabel,
+  getCategoryParamValue,
+  matchesCategorySelection,
+  parseCategoryParamValue,
+} from "../utils/categoryFilters";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -14,13 +21,32 @@ export default function BrowseCatalogView({
   moreOptions,
 }) {
   const { attendeeCount, locationValue, searchQuery } = useBrowseFilters();
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState(() =>
+    parseCategoryParamValue(searchParams.get("category")),
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const hasMounted = useRef(false);
 
-  const normalizedCategoryFilter = Array.isArray(selectedCategory)
-    ? selectedCategory.map((item) => item.trim())
-    : selectedCategory?.trim() ?? null;
+  useEffect(() => {
+    setSelectedCategory(parseCategoryParamValue(searchParams.get("category")));
+  }, [searchParams]);
+
+  const handleCategoryChange = (nextCategory) => {
+    setSelectedCategory(nextCategory);
+
+    const nextParams = new URLSearchParams(searchParams);
+    const categoryValue = getCategoryParamValue(nextCategory);
+
+    if (categoryValue) {
+      nextParams.set("category", categoryValue);
+    } else {
+      nextParams.delete("category");
+    }
+
+    setSearchParams(nextParams, { replace: true });
+  };
+
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredMenuItems = filterItemsByVendorLocation(
     menuItems,
@@ -40,30 +66,16 @@ export default function BrowseCatalogView({
     const matchesSearch = normalizedSearchQuery
       ? searchableText.includes(normalizedSearchQuery)
       : true;
-
-    if (!normalizedCategoryFilter) {
-      const minimumGuests = item.minimumGuests ?? 0;
-      const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
-
-      const matchesAttendees =
-        attendeeCount <= 0
-        ? true
-        : attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
-
-      return matchesAttendees && matchesSearch;
-    }
-
-    const tags = (item.categoryTags ?? []).map((tag) => tag.trim());
     const minimumGuests = item.minimumGuests ?? 0;
     const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
     const matchesAttendees =
       attendeeCount <= 0
         ? true
         : attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
-
-    const matchesCategory = Array.isArray(normalizedCategoryFilter)
-      ? normalizedCategoryFilter.some((tag) => tags.includes(tag))
-      : tags.includes(normalizedCategoryFilter);
+    const matchesCategory = matchesCategorySelection(
+      item.categoryTags,
+      selectedCategory,
+    );
 
     return matchesCategory && matchesAttendees && matchesSearch;
   });
@@ -91,9 +103,7 @@ export default function BrowseCatalogView({
     startIndex,
     startIndex + ITEMS_PER_PAGE,
   );
-  const activeCategoryLabel = Array.isArray(normalizedCategoryFilter)
-    ? normalizedCategoryFilter.join(", ")
-    : normalizedCategoryFilter;
+  const activeCategoryLabel = formatCategoryLabel(selectedCategory);
 
   return (
     <section className="w-full px-6 py-12 md:px-20">
@@ -103,7 +113,7 @@ export default function BrowseCatalogView({
           activeCategory={selectedCategory}
           categories={categories}
           moreOptions={moreOptions}
-          onCategoryChange={setSelectedCategory}
+          onCategoryChange={handleCategoryChange}
         />
         <BrowseFilterBar />
       </div>

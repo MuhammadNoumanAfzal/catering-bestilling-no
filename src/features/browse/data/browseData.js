@@ -1,30 +1,48 @@
+import {
+  Apple,
+  Baby,
+  BriefcaseBusiness,
+  CakeSlice,
+  Croissant,
+  Flame,
+  GlassWater,
+  Handshake,
+  Network,
+  PartyPopper,
+  Pizza,
+  Presentation,
+  Salad,
+  Soup,
+  UtensilsCrossed,
+} from "lucide-react";
+
 export const browseTabs = [
   { id: "food-type", label: "Browse by Food Type", href: "/browse/food-type" },
   { id: "occasion", label: "Browse by Occasion", href: "/browse/occasion" },
 ];
 
 export const foodTypeCategories = [
-  { name: "Breakfast", icon: "/home/breakfast.svg" },
-  { name: "Hot Meal", icon: "/home/hotMeal.svg" },
-  { name: "Salad", icon: "/home/salad.svg" },
-  { name: "Packages", icon: "/home/meetingPackages.svg" },
-  { name: "Asian", icon: "/home/hotMeal.svg" },
-  { name: "BBQ", icon: "/home/hotMeal.svg" },
-  { name: "Healthy", icon: "/home/salad.svg" },
-  { name: "Italian", icon: "/home/pizza.svg" },
+  { name: "Breakfast", icon: Croissant },
+  { name: "Hot Meal", icon: Soup },
+  { name: "Salad", icon: Salad },
+  { name: "Packages", icon: BriefcaseBusiness },
+  { name: "Asian", icon: UtensilsCrossed },
+  { name: "BBQ", icon: Flame },
+  { name: "Healthy", icon: Apple },
+  { name: "Italian", icon: Pizza },
 
   { name: "More", icon: null },
 ];
 
 export const occasionCategories = [
-  { name: "Breakfast", icon: "/home/breakfast.svg" },
-  { name: "Birthday", icon: "/home/hotMeal.svg" },
-  { name: "Baby", icon: "/home/breakfast.svg" },
-  { name: "Meeting", icon: "/home/meetingPackages.svg" },
-  { name: "Conference", icon: "/home/meetingPackages.svg" },
-  { name: "Networking", icon: "/home/salad.svg" },
-  { name: "Party", icon: "/home/pizza.svg" },
-  { name: "Reception", icon: "/home/pizza.svg" },
+  { name: "Breakfast", icon: Croissant },
+  { name: "Birthday", icon: CakeSlice },
+  { name: "Baby", icon: Baby },
+  { name: "Meeting", icon: Handshake },
+  { name: "Conference", icon: Presentation },
+  { name: "Networking", icon: Network },
+  { name: "Party", icon: PartyPopper },
+  { name: "Reception", icon: GlassWater },
   { name: "More", icon: null },
 ];
 

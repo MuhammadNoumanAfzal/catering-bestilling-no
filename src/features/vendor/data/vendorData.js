@@ -762,15 +762,24 @@ export function getVendorReviewsBySlug(slug) {
   return getVendorProfileBySlug(slug)?.reviews ?? [];
 }
 
+function resolveVendorReference(vendor) {
+  if (!vendor) {
+    return null;
+  }
+
+  if (vendor.slug) {
+    return vendorProfiles.find((candidate) => candidate.slug === vendor.slug) ?? null;
+  }
+
+  return getVendorProfileByName(vendor.name);
+}
+
 function resolveVendorPostalCoverage(vendor) {
   if ((vendor?.servicePostalCodes ?? []).length > 0) {
     return vendor.servicePostalCodes;
   }
 
-  const matchedVendor =
-    vendor?.slug
-      ? vendorProfiles.find((candidate) => candidate.slug === vendor.slug)
-      : getVendorProfileByName(vendor?.name);
+  const matchedVendor = resolveVendorReference(vendor);
 
   return matchedVendor?.servicePostalCodes ?? [];
 }
@@ -795,6 +804,7 @@ export function filterVendorsByPostalCode(vendors, postalCode) {
 
 export function isVendorAvailableForLocation(vendor, locationQuery) {
   const normalizedPostalCode = normalizePostalCode(locationQuery);
+  const matchedVendor = resolveVendorReference(vendor);
 
   if (normalizedPostalCode) {
     return isVendorAvailableForPostalCode(vendor, normalizedPostalCode);
@@ -806,7 +816,11 @@ export function isVendorAvailableForLocation(vendor, locationQuery) {
     return true;
   }
 
-  return [vendor?.city, vendor?.addressLine, vendor?.name]
+  return [
+    vendor?.city ?? matchedVendor?.city,
+    vendor?.addressLine ?? matchedVendor?.addressLine,
+    vendor?.name ?? matchedVendor?.name,
+  ]
     .filter(Boolean)
     .some((value) => value.toLowerCase().includes(normalizedQuery));
 }
@@ -845,7 +859,9 @@ function isDateValid(date) {
 }
 
 export function isVendorDeliverySlotAvailable(vendor, date, time) {
-  const deliverySchedule = vendor?.availability?.delivery;
+  const matchedVendor = resolveVendorReference(vendor);
+  const deliverySchedule =
+    vendor?.availability?.delivery ?? matchedVendor?.availability?.delivery;
 
   if (!deliverySchedule || !date || !time || !isDateValid(date)) {
     return true;

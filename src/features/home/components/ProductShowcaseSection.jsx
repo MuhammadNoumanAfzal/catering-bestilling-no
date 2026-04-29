@@ -53,6 +53,7 @@ export function ProductItem({
 export default function ProductShowcaseSection({
   title,
   products,
+  emptyMessage,
   seeAllLabel = "See all",
   onSeeAllClick,
 }) {
@@ -77,11 +78,17 @@ export default function ProductShowcaseSection({
           </div>
         ) : null}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductItem key={product.id ?? product.name} {...product} />
-          ))}
-        </div>
+        {products.length > 0 ? (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <ProductItem key={product.id ?? product.name} {...product} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
+            {emptyMessage ?? "No products are available right now."}
+          </div>
+        )}
       </div>
     </section>
   );

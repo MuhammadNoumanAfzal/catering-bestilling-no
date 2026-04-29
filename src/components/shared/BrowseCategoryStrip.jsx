@@ -82,6 +82,25 @@ export default function BrowseCategoryStrip({
   const hasSelectedMoreOptions = selectedMoreOptions.length > 0;
   const shouldScroll = categories.length > 6;
 
+  const renderIcon = (item) => {
+    if (typeof item.icon === "string") {
+      return (
+        <img
+          src={item.icon}
+          alt={item.name}
+          className={styles.image}
+        />
+      );
+    }
+
+    if (item.icon) {
+      const Icon = item.icon;
+      return <Icon className={styles.image} aria-hidden="true" />;
+    }
+
+    return styles.fallbackIcon;
+  };
+
   const setPanelOpen = (nextOpen) => {
     if (isOpen === undefined) {
       setInternalOpen(nextOpen);
@@ -152,15 +171,7 @@ export default function BrowseCategoryStrip({
                       : ""
                   }`}
                 >
-                  {item.icon ? (
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className={styles.image}
-                    />
-                  ) : (
-                    styles.fallbackIcon
-                  )}
+                  {renderIcon(item)}
                 </span>
 
                 <span

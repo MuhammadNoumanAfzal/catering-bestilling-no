@@ -1,21 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import VendorCard from "../components/VendorCard";
 import { getVendorCollectionBySlug } from "../data/homeData";
 import { filterVendorsByLocation } from "../../vendor/data/vendorData";
+import {
+  formatCategoryLabel,
+  matchesCategorySelection,
+  parseCategoryParamValue,
+} from "../../browse/utils/categoryFilters";
 
 const PAGE_SIZE = 8;
 
 export default function VendorListingPage() {
   const { vendorType } = useParams();
+  const [searchParams] = useSearchParams();
   const { locationValue, searchQuery } = useBrowseFilters();
   const vendorCollection = getVendorCollectionBySlug(vendorType);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
+  const activeCategoryLabel = formatCategoryLabel(selectedCategory);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [vendorType]);
+  }, [selectedCategory, vendorType]);
 
   if (!vendorCollection) {
     return <Navigate to="/" replace />;
@@ -26,6 +34,10 @@ export default function VendorListingPage() {
   const filteredVendors = useMemo(
     () =>
       filterVendorsByLocation(vendors, locationValue).filter((vendor) => {
+        if (!matchesCategorySelection(vendor.categoryTags, selectedCategory)) {
+          return false;
+        }
+
         if (!normalizedSearchQuery) {
           return true;
         }
@@ -35,6 +47,7 @@ export default function VendorListingPage() {
           vendor.cuisine,
           vendor.addressLine,
           vendor.city,
+          ...(vendor.categoryTags ?? []),
         ]
           .filter(Boolean)
           .join(" ")
@@ -42,7 +55,7 @@ export default function VendorListingPage() {
 
         return searchableText.includes(normalizedSearchQuery);
       }),
-    [locationValue, normalizedSearchQuery, vendors],
+    [locationValue, normalizedSearchQuery, selectedCategory, vendors],
   );
   const visibleVendors = filteredVendors.slice(0, visibleCount);
   const hasMore = visibleCount < filteredVendors.length;
@@ -59,6 +72,11 @@ export default function VendorListingPage() {
             <p className="mt-2 max-w-[720px] text-[14px] leading-7 text-[#4f4f4f]">
               {description}
             </p>
+            {activeCategoryLabel ? (
+              <p className="mt-3 inline-flex rounded-full bg-[#fff1eb] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#c85f33]">
+                Showing category: {activeCategoryLabel}
+              </p>
+            ) : null}
           </div>
 
           <Link
@@ -77,9 +95,11 @@ export default function VendorListingPage() {
 
         {filteredVendors.length === 0 ? (
           <div className="mt-6 rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
-            {locationValue
-              ? `No vendors are currently available for ${locationValue}.`
-              : "No vendors are available right now."}
+            {activeCategoryLabel
+              ? `No vendors are currently available for ${activeCategoryLabel}${locationValue ? ` in ${locationValue}` : ""}.`
+              : locationValue
+                ? `No vendors are currently available for ${locationValue}.`
+                : "No vendors are available right now."}
           </div>
         ) : null}
 
