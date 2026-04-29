@@ -25,6 +25,14 @@ import {
   matchesCategorySelection,
   normalizeCategorySelection,
 } from "../../browse/utils/categoryFilters";
+import {
+  matchesDietaryFilter,
+  matchesOfferFilter,
+  matchesOtherFilters,
+  matchesPricingFilter,
+  matchesRatingFilter,
+  sortCatalogItems,
+} from "../../browse/utils/catalogFilters";
 
 function buildCategoryQuery(selectedCategory) {
   const categoryValue = getCategoryParamValue(selectedCategory);
@@ -62,7 +70,13 @@ export default function HomePage() {
     deliveryDate,
     deliveryTime,
     locationValue,
+    otherFilters,
     searchQuery,
+    selectedDietary,
+    selectedOffers,
+    selectedPricing,
+    selectedRating,
+    selectedSort,
     setDeliveryAddress,
   } = useBrowseFilters();
   const [postalCode, setPostalCode] = useState("");
@@ -77,28 +91,50 @@ export default function HomePage() {
 
   const filteredMenuItems = useMemo(
     () =>
-      filterItemsByVendorLocation(foodTypeMenuItems, activeHomeLocationFilter).filter(
-        (item) => {
+      sortCatalogItems(
+        filterItemsByVendorLocation(
+          foodTypeMenuItems,
+          activeHomeLocationFilter,
+        ).filter((item) => {
           const vendor = getVendorProfileBySlug(item.vendorSlug);
 
           return (
             matchesCategorySelection(item.categoryTags, normalizedCategoryFilter) &&
             matchesGuestRange(item, attendeeCount) &&
             matchesSearchText(
-              [item.title, item.vendor, item.description, ...(item.categoryTags ?? [])],
+              [
+                item.title,
+                item.vendor,
+                item.description,
+                ...(item.categoryTags ?? []),
+                ...(item.dietaryTags ?? []),
+                ...(item.offerTags ?? []),
+              ],
               normalizedSearchQuery,
             ) &&
+            matchesRatingFilter(item.rating, selectedRating) &&
+            matchesDietaryFilter(item, selectedDietary) &&
+            matchesOfferFilter(item, selectedOffers) &&
+            matchesPricingFilter(item, selectedPricing) &&
+            matchesOtherFilters(item, otherFilters) &&
             isVendorDeliverySlotAvailable(vendor, deliveryDate, deliveryTime)
           );
-        },
+        }),
+        selectedSort,
       ),
     [
       activeHomeLocationFilter,
       attendeeCount,
       deliveryDate,
       deliveryTime,
+      otherFilters,
       normalizedCategoryFilter,
       normalizedSearchQuery,
+      selectedDietary,
+      selectedOffers,
+      selectedPricing,
+      selectedRating,
+      selectedSort,
     ],
   );
   const previewMenuItems = useMemo(

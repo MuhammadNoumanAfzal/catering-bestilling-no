@@ -29,6 +29,7 @@ export default function BrowseFilterControls({
   return (
     <div className={styles.chipsWrapperClassName}>
       {browseFilterChips.map((chip) => {
+        const chipIndex = browseFilterChips.findIndex((item) => item.key === chip.key);
         const isActive =
           activeFilters.includes(chip.key) ||
           (chip.key === "sort" && selectedSort !== "Sort by") ||
@@ -75,6 +76,7 @@ export default function BrowseFilterControls({
                 dietaryOptions={dietaryOptions}
                 offerOptions={offerOptions}
                 pricingOptions={pricingOptions}
+                mobileAlign={chipIndex % 2 === 0 ? "left" : "right"}
               />
             ) : null}
           </BrowseFilterChipButton>
