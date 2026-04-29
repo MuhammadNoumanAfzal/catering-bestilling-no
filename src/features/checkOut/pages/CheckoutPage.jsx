@@ -18,16 +18,74 @@ import {
   writeOrderSummary,
 } from "../../vendor/utils/orderSummaryStorage";
 import {
+  buildCheckoutAddressFields,
+  readSavedAddresses,
+} from "../../../utils/customerProfileStorage";
+import {
   confirmPlaceOrder,
   confirmRemoveItem,
   showOrderPlacedSuccess,
 } from "../../../utils/alerts";
+
+function formatAddressPreview(formState, prefix) {
+  return [
+    formState[`${prefix}Address`],
+    formState[`${prefix}AddressLine2`],
+    formState[`${prefix}City`],
+    formState[`${prefix}PostalCode`],
+  ]
+    .filter(Boolean)
+    .join(", ");
+}
+
+function CheckoutAddressControls({
+  type,
+  title,
+  selectedAddressId,
+  savedAddresses,
+  onSelectAddress,
+  isEditing,
+  onToggleEditing,
+}) {
+  return (
+    <div className="flex flex-col gap-2 sm:items-end">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <select
+          value={selectedAddressId}
+          onChange={(event) => onSelectAddress(event.target.value)}
+          className="type-subpara min-w-[170px] rounded-full border border-[#d8d0c7] bg-[#fcfaf8] px-3 py-2 text-[#37322f] outline-none"
+        >
+          {savedAddresses.map((address) => (
+            <option key={address.id} value={address.id}>
+              {address.label || "Saved address"}
+            </option>
+          ))}
+        </select>
+
+        <button
+          type="button"
+          onClick={onToggleEditing}
+          className="rounded-full border border-[#efcdb7] bg-[#fff5ee] px-3.5 py-2 text-sm font-semibold text-[#c86434] transition hover:bg-[#fff0e6]"
+        >
+          {isEditing ? "Hide editor" : title}
+        </button>
+      </div>
+      <p className="text-[12px] text-[#8b8177]">
+        Auto-filled from saved addresses, but you can still customize it here.
+      </p>
+    </div>
+  );
+}
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { checkoutType } = useParams();
   const [carts, setCarts] = useState([]);
   const [formState, setFormState] = useState(() => createInitialFormState());
+  const [isDeliveryAddressEditing, setIsDeliveryAddressEditing] = useState(false);
+  const [isInvoiceAddressEditing, setIsInvoiceAddressEditing] = useState(false);
+  const deliveryAddresses = useMemo(() => readSavedAddresses("delivery"), []);
+  const invoiceAddresses = useMemo(() => readSavedAddresses("invoice"), []);
 
   useEffect(() => {
     const storedCarts = readAllStoredOrderSummaries();
@@ -88,6 +146,20 @@ export default function CheckoutPage() {
 
   const handleTypeChange = (nextType) => {
     navigate(`/checkout/${nextType}`);
+  };
+
+  const applySavedAddress = (type, addressId) => {
+    const source = type === "delivery" ? deliveryAddresses : invoiceAddresses;
+    const selectedAddress = source.find((address) => address.id === addressId);
+
+    if (!selectedAddress) {
+      return;
+    }
+
+    setFormState((current) => ({
+      ...current,
+      ...buildCheckoutAddressFields(type, selectedAddress, current[`${type}Address`]),
+    }));
   };
 
   const handleTipChange = (vendorSlug, tipRate) => {
@@ -193,22 +265,80 @@ export default function CheckoutPage() {
                   updateField={updateField}
                 />
 
-                <CheckoutSection title="Delivery Address">
-                  <CheckoutAddressFields
-                    mode={normalizedType}
-                    prefix="delivery"
-                    formState={formState}
-                    updateField={updateField}
-                  />
+                <CheckoutSection
+                  title="Delivery Address"
+                  actions={
+                    <CheckoutAddressControls
+                      type="delivery"
+                      title="Edit address"
+                      selectedAddressId={formState.selectedDeliveryAddressId}
+                      savedAddresses={deliveryAddresses}
+                      onSelectAddress={(addressId) => applySavedAddress("delivery", addressId)}
+                      isEditing={isDeliveryAddressEditing}
+                      onToggleEditing={() =>
+                        setIsDeliveryAddressEditing((current) => !current)
+                      }
+                    />
+                  }
+                >
+                  <div className="rounded-[12px] border border-[#eadfd5] bg-[#fffaf6] px-3 py-3">
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#a77b60]">
+                      Current delivery address
+                    </p>
+                    <p className="mt-1 text-[14px] text-[#4a443f]">
+                      {formatAddressPreview(formState, "delivery") ||
+                        "Choose a saved delivery address or add a custom one."}
+                    </p>
+                  </div>
+
+                  {isDeliveryAddressEditing ? (
+                    <div className="mt-3">
+                      <CheckoutAddressFields
+                        mode={normalizedType}
+                        prefix="delivery"
+                        formState={formState}
+                        updateField={updateField}
+                      />
+                    </div>
+                  ) : null}
                 </CheckoutSection>
 
-                <CheckoutSection title="Invoice Address">
-                  <CheckoutAddressFields
-                    mode={normalizedType}
-                    prefix="invoice"
-                    formState={formState}
-                    updateField={updateField}
-                  />
+                <CheckoutSection
+                  title="Invoice Address"
+                  actions={
+                    <CheckoutAddressControls
+                      type="invoice"
+                      title="Edit invoice address"
+                      selectedAddressId={formState.selectedInvoiceAddressId}
+                      savedAddresses={invoiceAddresses}
+                      onSelectAddress={(addressId) => applySavedAddress("invoice", addressId)}
+                      isEditing={isInvoiceAddressEditing}
+                      onToggleEditing={() =>
+                        setIsInvoiceAddressEditing((current) => !current)
+                      }
+                    />
+                  }
+                >
+                  <div className="rounded-[12px] border border-[#eadfd5] bg-[#fffaf6] px-3 py-3">
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#a77b60]">
+                      Current invoice address
+                    </p>
+                    <p className="mt-1 text-[14px] text-[#4a443f]">
+                      {formatAddressPreview(formState, "invoice") ||
+                        "Choose a saved invoice address or add a custom one."}
+                    </p>
+                  </div>
+
+                  {isInvoiceAddressEditing ? (
+                    <div className="mt-3">
+                      <CheckoutAddressFields
+                        mode={normalizedType}
+                        prefix="invoice"
+                        formState={formState}
+                        updateField={updateField}
+                      />
+                    </div>
+                  ) : null}
                 </CheckoutSection>
 
                 <EventDetailsSection
