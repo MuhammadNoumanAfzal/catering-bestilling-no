@@ -21,7 +21,7 @@ import {
 
 export default function VendorOrdersPage() {
   const [activeView, setActiveView] = useState("active");
-  const [activeTab, setActiveTab] = useState("all");
+  const [selectedTabs, setSelectedTabs] = useState(["all"]);
   const [searchValue, setSearchValue] = useState("");
   const [selectedRange, setSelectedRange] = useState("last-month");
   const [customDateRange, setCustomDateRange] = useState({
@@ -60,9 +60,9 @@ export default function VendorOrdersPage() {
       const matchesView =
         activeView === "active" ? isActiveOrder(order.status) : true;
       const matchesTab =
-        activeTab === "all"
+        selectedTabs.includes("all")
           ? true
-          : normalizeOrderStatus(order.status) === activeTab;
+          : selectedTabs.includes(normalizeOrderStatus(order.status));
       const orderDate = parseOrderDate(order.date);
       const diffInDays = Math.floor(
         (referenceDate.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24),
@@ -98,11 +98,11 @@ export default function VendorOrdersPage() {
         .includes(query);
     });
   }, [
-    activeTab,
     activeView,
     customDateRange,
     referenceDate,
     searchValue,
+    selectedTabs,
     selectedRange,
   ]);
 
@@ -121,13 +121,33 @@ export default function VendorOrdersPage() {
   ).length;
 
   function handleTabChange(tab) {
-    setActiveTab(tab);
+    setSelectedTabs((current) => {
+      if (tab === "all") {
+        return ["all"];
+      }
+
+      const currentTabs = current.includes("all") ? [] : current;
+      const nextTabs = currentTabs.includes(tab)
+        ? currentTabs.filter((item) => item !== tab)
+        : [...currentTabs, tab];
+
+      return nextTabs.length > 0 ? nextTabs : ["all"];
+    });
     setCurrentPage(1);
   }
 
   function handleViewChange(view) {
     setActiveView(view);
-    setActiveTab("all");
+    setSelectedTabs((current) => {
+      if (view !== "active") {
+        return current;
+      }
+
+      const allowedTabs = ["all", "draft", "scheduled"];
+      const nextTabs = current.filter((tab) => allowedTabs.includes(tab));
+
+      return nextTabs.length > 0 ? nextTabs : ["all"];
+    });
     setCurrentPage(1);
   }
 
@@ -199,7 +219,7 @@ export default function VendorOrdersPage() {
                     )
                   : ORDER_TABS
                 ).map((tab) => {
-                  const isActive = tab.value === activeTab;
+                  const isActive = selectedTabs.includes(tab.value);
 
                   return (
                     <button
