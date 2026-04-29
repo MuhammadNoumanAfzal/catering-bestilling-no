@@ -35,9 +35,9 @@ export default function CommonNavbarFilters({
   toggleDropdown,
 }) {
   return (
-    <div className="flex items-center gap-6">
-      <div className="relative ">
-        <div className="flex h-8 items-center overflow-hidden rounded-full border border-[#d9d1c7] bg-white px-2 ">
+    <div className="flex min-w-0 items-center gap-3 xl:gap-6">
+      <div className="relative min-w-0">
+        <div className="flex h-8 min-w-0 items-center overflow-hidden rounded-full border border-[#d9d1c7] bg-white px-2">
           <label className="type-subpara flex h-full items-center gap-1.5 font-semibold text-[#434343]">
             <FiMapPin
               className={`text-[14px] ${
@@ -49,7 +49,7 @@ export default function CommonNavbarFilters({
               value={locationValue}
               onChange={(event) => onLocationChange(event.target.value)}
               placeholder="Enter location"
-              className="w-[150px] bg-transparent text-[16px] text-[#434343] outline-none placeholder:text-[#a7a099]"
+              className="w-[112px] bg-transparent text-[15px] text-[#434343] outline-none placeholder:text-[#a7a099] xl:w-[150px] xl:text-[16px]"
             />
           </label>
 
@@ -58,13 +58,13 @@ export default function CommonNavbarFilters({
           <button
             type="button"
             onClick={() => toggleDropdown("delivery")}
-            className={`type-subpara flex h-full min-w-[185px] cursor-pointer items-center justify-between gap-3 px-3 font-semibold transition ${
+            className={`type-subpara flex h-full min-w-[150px] cursor-pointer items-center justify-between gap-2 px-2.5 font-semibold transition xl:min-w-[185px] xl:gap-3 xl:px-3 ${
               openDropdown === "delivery" || hasDeliverySelection
                 ? "text-[#CF3A00]"
                 : "text-[#5d5d5d]"
             }`}
           >
-            <span className="flex items-center gap-1.5">
+            <span className="flex min-w-0 flex-1 items-center gap-1.5">
               <FiCalendar
                 className={`text-[14px] ${
                   openDropdown === "delivery" || hasDeliverySelection
@@ -72,7 +72,9 @@ export default function CommonNavbarFilters({
                     : "text-[#8f8f8f]"
                 }`}
               />
-              <span className="text-[16px]">{deliveryLabel}</span>
+              <span className="truncate whitespace-nowrap text-[15px] xl:text-[16px]">
+                {deliveryLabel}
+              </span>
             </span>
             <FiChevronDown
               className={`shrink-0 text-[10px] ${
@@ -88,13 +90,15 @@ export default function CommonNavbarFilters({
           <button
             type="button"
             onClick={() => toggleDropdown("event")}
-            className={`type-subpara flex h-full min-w-[165px] cursor-pointer items-center justify-between gap-3 px-3 font-semibold transition ${
+            className={`type-subpara flex h-full min-w-[138px] cursor-pointer items-center justify-between gap-2 px-2.5 font-semibold transition xl:min-w-[165px] xl:gap-3 xl:px-3 ${
               openDropdown === "event" || hasEventSelection
                 ? "text-[#CF3A00]"
                 : "text-[#5d5d5d]"
             }`}
           >
-            <span className="text-[16px]">{eventLabel}</span>
+            <span className="truncate whitespace-nowrap text-[15px] xl:text-[16px]">
+              {eventLabel}
+            </span>
             <FiChevronDown
               className={`shrink-0 text-[10px] ${
                 openDropdown === "event" || hasEventSelection
@@ -128,7 +132,7 @@ export default function CommonNavbarFilters({
         ) : null}
       </div>
 
-      <div className="flex h-8 w-full max-w-[220px] items-center rounded-full border border-[#ddd6cd] bg-white pl-3 pr-1">
+      <div className="flex h-8 w-full max-w-[180px] items-center rounded-full border border-[#ddd6cd] bg-white pl-3 pr-1 xl:max-w-[220px]">
         <input
           type="text"
           value={searchValue}
