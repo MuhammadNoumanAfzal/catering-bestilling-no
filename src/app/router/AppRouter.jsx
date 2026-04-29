@@ -23,6 +23,7 @@ import VendorDashboardLayout from "../../features/vendorDashboard/layouts/Vendor
 import VendorDashboardHomePage from "../../features/vendorDashboard/pages/VendorDashboardHomePage";
 import VendorPlaceholderPage from "../../features/vendorDashboard/pages/VendorPlaceholderPage";
 import VendorInvoicesPage from "../../features/vendorDashboard/pages/VendorInvoicesPage";
+import VendorInvoiceDetailsPage from "../../features/vendorDashboard/pages/VendorInvoiceDetailsPage";
 import VendorAddressPage from "../../features/vendorDashboard/pages/VendorAddressPage";
 import VendorOrdersPage from "../../features/vendorDashboard/pages/VendorOrdersPage";
 import VendorRestaurantsPage from "../../features/vendorDashboard/pages/VendorRestaurantsPage";
@@ -84,6 +85,7 @@ export default function AppRouter() {
           <Route path="orders" element={<VendorOrdersPage />} />
           <Route path="restaurants" element={<VendorRestaurantsPage />} />
           <Route path="invoices" element={<VendorInvoicesPage />} />
+          <Route path="invoices/:invoiceId" element={<VendorInvoiceDetailsPage />} />
           <Route path="rewards" element={<VendorRewardsPage />} />
           <Route path="address" element={<VendorAddressPage />} />
           <Route path="settings" element={<VendorSettingsPage />} />

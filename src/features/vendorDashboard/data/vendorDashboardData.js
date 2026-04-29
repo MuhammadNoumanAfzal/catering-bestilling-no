@@ -554,6 +554,10 @@ export const vendorInvoiceRecords = [
   },
 ];
 
+export function getVendorInvoiceById(invoiceId) {
+  return vendorInvoiceRecords.find((invoice) => invoice.id === invoiceId) ?? null;
+}
+
 export const vendorRewardActions = [
   {
     title: "Place Orders",
