@@ -82,7 +82,7 @@ export default function OtherFiltersModal({
                 onChange={(event) =>
                   updateOtherFilter("budgetPerPerson", event.target.value)
                 }
-                placeholder="$"
+                placeholder="NOK"
                 className={`type-subpara w-full rounded-[2px] border px-3 py-2 outline-none transition ${
                   otherFilters.budgetPerPerson
                     ? "border-[#CF3A00] text-[#CF3A00]"

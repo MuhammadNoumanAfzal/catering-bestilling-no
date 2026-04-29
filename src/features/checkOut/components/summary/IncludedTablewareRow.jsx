@@ -25,7 +25,7 @@ export default function IncludedTablewareRow({ tableware, onEdit }) {
           </div>
         </div>
 
-        <p className="type-para font-semibold text-[#252525]">$0.00</p>
+        <p className="type-para font-semibold text-[#252525]">NOK 0.00</p>
       </div>
 
       <div className="mt-2 flex justify-end">

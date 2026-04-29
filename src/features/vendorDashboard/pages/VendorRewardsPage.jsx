@@ -27,7 +27,7 @@ function getRewardModalContent(action) {
         "Every placed order helps you build your rewards balance. Larger food totals can unlock even more points from bonus restaurants.",
       bullets: [
         "Points are added after the order is fulfilled.",
-        "Bonus reward vendors can earn up to 5 points per $1 spent.",
+        "Bonus reward vendors can earn up to 5 points per NOK 1 spent.",
         "Rewards can later be redeemed toward future orders.",
       ],
       confirmLabel: "Go to Orders",

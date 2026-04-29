@@ -8,7 +8,10 @@ export const TIP_OPTIONS = [
 export const SALES_TAX_RATE = 0.15;
 
 export function formatCurrency(value) {
-  return Number(value ?? 0).toFixed(2);
+  return new Intl.NumberFormat("nb-NO", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value ?? 0));
 }
 
 export function extractAmount(value) {

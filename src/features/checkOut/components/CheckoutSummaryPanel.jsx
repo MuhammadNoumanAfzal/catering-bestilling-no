@@ -29,7 +29,7 @@ export default function CheckoutSummaryPanel({
                 Current total
               </span>
               <span className="text-[24px] font-semibold leading-none text-white">
-                ${formatCurrency(grandTotal)}
+                NOK {formatCurrency(grandTotal)}
               </span>
             </div>
           </div>
@@ -58,7 +58,7 @@ export default function CheckoutSummaryPanel({
               </div>
 
               <span className="text-[26px] font-semibold leading-none">
-                ${formatCurrency(grandTotal)}
+                NOK {formatCurrency(grandTotal)}
               </span>
             </div>
           </div>

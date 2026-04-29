@@ -26,7 +26,7 @@ function OptionRow({ option, type = "radio", selected, onToggle }) {
         </span>
         {option.price ? (
           <span className="mt-1 block text-[13px] text-[#666]">
-            +${option.price.toFixed(2)}
+            +NOK {option.price.toFixed(2)}
           </span>
         ) : null}
       </span>
@@ -106,7 +106,7 @@ export default function VendorMenuItemModal({ item, onClose }) {
               {item.modal.heading}
             </h2>
             <p className="mt-2 text-[16px] text-[#151515]">
-              <span className="font-bold">${item.modal.pricePerPerson}</span> / person
+              <span className="font-bold">NOK {item.modal.pricePerPerson}</span> / person
             </p>
             <span className="mt-4 inline-flex rounded-[8px] bg-[#efefef] px-3 py-1 text-[14px] font-semibold text-[#1f1f1f]">
               {item.modal.badge}
@@ -237,10 +237,10 @@ export default function VendorMenuItemModal({ item, onClose }) {
             </span>
             <span className="text-right">
               <span className="block text-[18px] font-bold">
-                ${item.modal.pricePerPerson}
+                NOK {item.modal.pricePerPerson}
               </span>
               <span className="block text-[14px]">
-                ${item.modal.pricePerPerson} / person
+                NOK {item.modal.pricePerPerson} / person
               </span>
             </span>
           </button>

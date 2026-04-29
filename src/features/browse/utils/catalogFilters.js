@@ -78,18 +78,18 @@ export function matchesOtherFilters(item, otherFilters) {
   if (otherFilters.orderMinimum !== "Any price") {
     const minimumOrderValue = item.minimumOrderValue ?? extractFirstNumber(item.price);
 
-    if (otherFilters.orderMinimum === "Under $25" && minimumOrderValue >= 25) {
+    if (otherFilters.orderMinimum === "Under NOK 250" && minimumOrderValue >= 250) {
       return false;
     }
 
     if (
-      otherFilters.orderMinimum === "$25 - $50" &&
-      (minimumOrderValue < 25 || minimumOrderValue > 50)
+      otherFilters.orderMinimum === "NOK 250 - NOK 500" &&
+      (minimumOrderValue < 250 || minimumOrderValue > 500)
     ) {
       return false;
     }
 
-    if (otherFilters.orderMinimum === "$50+" && minimumOrderValue < 50) {
+    if (otherFilters.orderMinimum === "NOK 500+" && minimumOrderValue < 500) {
       return false;
     }
   }

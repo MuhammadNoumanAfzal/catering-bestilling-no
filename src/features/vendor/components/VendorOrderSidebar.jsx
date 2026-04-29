@@ -16,7 +16,10 @@ const TIP_OPTIONS = [
 ];
 
 function formatCurrency(value) {
-  return Number(value).toFixed(2);
+  return new Intl.NumberFormat("nb-NO", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(value ?? 0));
 }
 
 function extractAmount(value) {
@@ -81,7 +84,7 @@ function IncludedTablewareRow({ tableware, onEdit }) {
           {selectedCount} Tableware
         </p>
         <p className="shrink-0 text-[14px] font-semibold text-[#252525]">
-          $0.00
+          NOK 0.00
         </p>
       </div>
 
@@ -167,7 +170,7 @@ export default function VendorOrderSidebar({
                       {item.quantity} {item.name}
                     </p>
                     <p className="shrink-0 text-[14px] font-semibold ">
-                      ${formatCurrency(item.price)}
+                      NOK {formatCurrency(item.price)}
                     </p>
                   </div>
 
@@ -207,7 +210,7 @@ export default function VendorOrderSidebar({
               <div className="flex items-center justify-between gap-3">
                 <span>Food &amp; beverage</span>
                 <span className="font-semibold ">
-                  ${formatCurrency(foodAndBeverage)}
+                  NOK {formatCurrency(foodAndBeverage)}
                 </span>
               </div>
               <p className="mt-1 type-para text-[#76706a]">{restaurantName}</p>
@@ -215,7 +218,7 @@ export default function VendorOrderSidebar({
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>Restaurant delivery fee</span>
                 <span className="font-semibold text-[#76706a]">
-                  ${formatCurrency(restaurantDeliveryFee)}
+                  NOK {formatCurrency(restaurantDeliveryFee)}
                 </span>
               </div>
               <p className="mt-1 type-para text-[#76706a]">
@@ -225,14 +228,14 @@ export default function VendorOrderSidebar({
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>Sales Tax</span>
                 <span className="font-semibold text-[#76706a]">
-                  ${formatCurrency(salesTax)}
+                  NOK {formatCurrency(salesTax)}
                 </span>
               </div>
 
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>Tip</span>
                 <span className="font-semibold ">
-                  ${formatCurrency(tipValue)}
+                  NOK {formatCurrency(tipValue)}
                 </span>
               </div>
             </div>
@@ -316,7 +319,7 @@ export default function VendorOrderSidebar({
               <div className="flex items-center justify-between gap-3">
                 <span className="type-h4 font-semibold ">Total</span>
                 <span className="type-h4  font-semibold ">
-                  ${formatCurrency(total)}
+                  NOK {formatCurrency(total)}
                 </span>
               </div>
 

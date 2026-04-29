@@ -17,19 +17,19 @@ export default function PriceDetailsCard({
       <div className="mt-3 space-y-2 text-[14px] text-[#2c2c2c]">
         <div className="flex items-center justify-between gap-3">
           <span>Food &amp; beverage</span>
-          <span className="font-semibold">${formatCurrency(subtotal)}</span>
+          <span className="font-semibold">NOK {formatCurrency(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <span>Restaurant delivery fee</span>
-          <span className="font-semibold">${formatCurrency(deliveryFee)}</span>
+          <span className="font-semibold">NOK {formatCurrency(deliveryFee)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <span>Sales Tax</span>
-          <span className="font-semibold">${formatCurrency(salesTax)}</span>
+          <span className="font-semibold">NOK {formatCurrency(salesTax)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <span>Tip</span>
-          <span className="font-semibold">${formatCurrency(tipValue)}</span>
+          <span className="font-semibold">NOK {formatCurrency(tipValue)}</span>
         </div>
       </div>
     </div>
