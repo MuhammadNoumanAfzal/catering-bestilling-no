@@ -8,12 +8,12 @@ import {
 } from "../../features/browse/data/browseData";
 import BrowseFilterControls from "./browseFilters/BrowseFilterControls";
 import {
-  createDefaultOtherFilters,
   DROPDOWN_CHIP_KEYS,
   FILTER_BAR_VARIANTS,
 } from "./browseFilters/browseFilterConfig";
 import OtherFiltersModal from "./browseFilters/OtherFiltersModal";
 import SelectedFilterChipsRow from "./browseFilters/SelectedFilterChipsRow";
+import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 
 export default function BrowseFilterBar({
   variant = "default",
@@ -21,12 +21,21 @@ export default function BrowseFilterBar({
 }) {
   const [activeFilters, setActiveFilters] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [selectedSort, setSelectedSort] = useState("Sort by");
-  const [selectedRating, setSelectedRating] = useState("Ratings");
-  const [selectedDietary, setSelectedDietary] = useState([]);
-  const [selectedOffers, setSelectedOffers] = useState([]);
-  const [selectedPricing, setSelectedPricing] = useState("Pricing");
-  const [otherFilters, setOtherFilters] = useState(createDefaultOtherFilters);
+  const {
+    clearBrowseFilters,
+    otherFilters,
+    selectedDietary,
+    selectedOffers,
+    selectedPricing,
+    selectedRating,
+    selectedSort,
+    setOtherFilters,
+    setSelectedDietary,
+    setSelectedOffers,
+    setSelectedPricing,
+    setSelectedRating,
+    setSelectedSort,
+  } = useBrowseFilters();
   const styles = FILTER_BAR_VARIANTS[variant] ?? FILTER_BAR_VARIANTS.default;
 
   const otherFilterCount = useMemo(
@@ -173,12 +182,7 @@ export default function BrowseFilterBar({
   const clearAllFilters = () => {
     setActiveFilters([]);
     setOpenDropdown(null);
-    setSelectedSort("Sort by");
-    setSelectedRating("Ratings");
-    setSelectedDietary([]);
-    setSelectedOffers([]);
-    setSelectedPricing("Pricing");
-    setOtherFilters(createDefaultOtherFilters());
+    clearBrowseFilters();
   };
 
   const toggleFilter = (key) => {
@@ -229,7 +233,11 @@ export default function BrowseFilterBar({
             pricingOptions={pricingOptions}
           />
 
-          <button type="button" className={styles.applyButtonClassName}>
+          <button
+            type="button"
+            onClick={() => setOpenDropdown(null)}
+            className={styles.applyButtonClassName}
+          >
             Apply
           </button>
         </div>

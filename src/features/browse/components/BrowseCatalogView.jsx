@@ -12,6 +12,14 @@ import {
   matchesCategorySelection,
   parseCategoryParamValue,
 } from "../utils/categoryFilters";
+import {
+  matchesDietaryFilter,
+  matchesOfferFilter,
+  matchesOtherFilters,
+  matchesPricingFilter,
+  matchesRatingFilter,
+  sortCatalogItems,
+} from "../utils/catalogFilters";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -20,7 +28,17 @@ export default function BrowseCatalogView({
   menuItems,
   moreOptions,
 }) {
-  const { attendeeCount, locationValue, searchQuery } = useBrowseFilters();
+  const {
+    attendeeCount,
+    locationValue,
+    otherFilters,
+    searchQuery,
+    selectedDietary,
+    selectedOffers,
+    selectedPricing,
+    selectedRating,
+    selectedSort,
+  } = useBrowseFilters();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState(() =>
     parseCategoryParamValue(searchParams.get("category")),
@@ -48,37 +66,48 @@ export default function BrowseCatalogView({
   };
 
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
-  const filteredMenuItems = filterItemsByVendorLocation(
-    menuItems,
-    locationValue,
-  ).filter((item) => {
-    const searchableText = [
-      item.title,
-      item.name,
-      item.description,
-      ...(item.categoryTags ?? []),
-      ...(item.detailLines ?? []),
-      item.vendorName,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    const matchesSearch = normalizedSearchQuery
-      ? searchableText.includes(normalizedSearchQuery)
-      : true;
-    const minimumGuests = item.minimumGuests ?? 0;
-    const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
-    const matchesAttendees =
-      attendeeCount <= 0
-        ? true
-        : attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
-    const matchesCategory = matchesCategorySelection(
-      item.categoryTags,
-      selectedCategory,
-    );
+  const filteredMenuItems = sortCatalogItems(
+    filterItemsByVendorLocation(menuItems, locationValue).filter((item) => {
+      const searchableText = [
+        item.title,
+        item.name,
+        item.description,
+        ...(item.categoryTags ?? []),
+        ...(item.detailLines ?? []),
+        ...(item.dietaryTags ?? []),
+        ...(item.offerTags ?? []),
+        item.vendorName,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      const matchesSearch = normalizedSearchQuery
+        ? searchableText.includes(normalizedSearchQuery)
+        : true;
+      const minimumGuests = item.minimumGuests ?? 0;
+      const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
+      const matchesAttendees =
+        attendeeCount <= 0
+          ? true
+          : attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
+      const matchesCategory = matchesCategorySelection(
+        item.categoryTags,
+        selectedCategory,
+      );
 
-    return matchesCategory && matchesAttendees && matchesSearch;
-  });
+      return (
+        matchesCategory &&
+        matchesAttendees &&
+        matchesSearch &&
+        matchesRatingFilter(item.rating, selectedRating) &&
+        matchesDietaryFilter(item, selectedDietary) &&
+        matchesOfferFilter(item, selectedOffers) &&
+        matchesPricingFilter(item, selectedPricing) &&
+        matchesOtherFilters(item, otherFilters)
+      );
+    }),
+    selectedSort,
+  );
 
   useEffect(() => {
     setCurrentPage(1);

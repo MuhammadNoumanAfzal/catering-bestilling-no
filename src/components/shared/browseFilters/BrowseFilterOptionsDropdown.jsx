@@ -21,6 +21,7 @@ export default function BrowseFilterOptionsDropdown({
   dietaryOptions,
   offerOptions,
   pricingOptions,
+  mobileAlign,
 }) {
   const toggleMultiSelect = (setter, option) => {
     setter((current) =>
@@ -34,6 +35,7 @@ export default function BrowseFilterOptionsDropdown({
     return (
       <FilterDropdown
         minWidthClassName="min-w-[190px]"
+        mobileAlign={mobileAlign}
         onClear={() => {
           setSelectedSort("Sort by");
           closeDropdown();
@@ -59,6 +61,7 @@ export default function BrowseFilterOptionsDropdown({
     return (
       <FilterDropdown
         minWidthClassName="min-w-[190px]"
+        mobileAlign={mobileAlign}
         onClear={() => {
           setSelectedRating("Ratings");
           closeDropdown();
@@ -88,6 +91,7 @@ export default function BrowseFilterOptionsDropdown({
     return (
       <FilterDropdown
         minWidthClassName="min-w-[190px]"
+        mobileAlign={mobileAlign}
         onClear={() => {
           setSelectedDietary([]);
           closeDropdown();
@@ -116,6 +120,7 @@ export default function BrowseFilterOptionsDropdown({
     return (
       <FilterDropdown
         minWidthClassName="min-w-[250px]"
+        mobileAlign={mobileAlign}
         onClear={() => {
           setSelectedOffers([]);
           closeDropdown();
@@ -144,6 +149,7 @@ export default function BrowseFilterOptionsDropdown({
     return (
       <FilterDropdown
         minWidthClassName="min-w-[190px]"
+        mobileAlign={mobileAlign}
         onClear={() => {
           setSelectedPricing("Pricing");
           closeDropdown();
