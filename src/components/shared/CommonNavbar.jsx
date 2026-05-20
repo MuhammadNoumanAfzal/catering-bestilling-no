@@ -54,7 +54,7 @@ export default function CommonNavbar({
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [draftDate, setDraftDate] = useState(new Date());
+  const [draftDate, setDraftDate] = useState(null);
   const [draftTime, setDraftTime] = useState("");
   const [calendarMonth, setCalendarMonth] = useState(() => {
     const today = new Date();
@@ -74,11 +74,12 @@ export default function CommonNavbar({
       const nextDropdown = current === key ? null : key;
 
       if (nextDropdown === "delivery") {
-        const nextDate = deliveryDate ?? new Date();
+        const nextDate = deliveryDate ?? null;
+        const monthSource = nextDate ?? new Date();
         setDraftDate(nextDate);
         setDraftTime(deliveryTime);
         setCalendarMonth(
-          new Date(nextDate.getFullYear(), nextDate.getMonth(), 1),
+          new Date(monthSource.getFullYear(), monthSource.getMonth(), 1),
         );
       }
 

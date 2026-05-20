@@ -23,6 +23,10 @@ export default function BrowseFilterOptionsDropdown({
   pricingOptions,
   mobileAlign,
 }) {
+  const toggleSingleSelect = (selectedValue, nextValue, resetValue, setter) => {
+    setter(selectedValue === nextValue ? resetValue : nextValue);
+  };
+
   const toggleMultiSelect = (setter, option) => {
     setter((current) =>
       current.includes(option)
@@ -46,7 +50,12 @@ export default function BrowseFilterOptionsDropdown({
             key={option}
             type="button"
             onClick={() => {
-              setSelectedSort(option);
+              toggleSingleSelect(
+                selectedSort,
+                option,
+                "Sort by",
+                setSelectedSort,
+              );
             }}
             className="type-para block w-full rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
           >
@@ -72,7 +81,12 @@ export default function BrowseFilterOptionsDropdown({
             key={option}
             type="button"
             onClick={() => {
-              setSelectedRating(option);
+              toggleSingleSelect(
+                selectedRating,
+                option,
+                "Ratings",
+                setSelectedRating,
+              );
             }}
             className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
           >
@@ -160,7 +174,12 @@ export default function BrowseFilterOptionsDropdown({
             key={option}
             type="button"
             onClick={() => {
-              setSelectedPricing(option);
+              toggleSingleSelect(
+                selectedPricing,
+                option,
+                "Pricing",
+                setSelectedPricing,
+              );
             }}
             className="type-para block w-full rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
           >
