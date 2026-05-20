@@ -12,6 +12,7 @@ export default function CommonNavbarFilters({
   calendarMonth,
   deliveryLabel,
   draftAttendeeCount,
+  draftAttendeeInput,
   draftDate,
   draftEventName,
   draftTime,
@@ -22,6 +23,7 @@ export default function CommonNavbarFilters({
   onApplyDelivery,
   onApplyEvent,
   onAttendeeChange,
+  onAttendeeInputChange,
   onDateSelect,
   onEventNameChange,
   onLocationChange,
@@ -124,9 +126,11 @@ export default function CommonNavbarFilters({
         {openDropdown === "event" ? (
           <EventDetailsPopover
             attendeeCount={draftAttendeeCount}
+            attendeeInput={draftAttendeeInput}
             eventName={draftEventName}
             onApply={onApplyEvent}
             onAttendeeChange={onAttendeeChange}
+            onAttendeeInputChange={onAttendeeInputChange}
             onEventNameChange={onEventNameChange}
           />
         ) : null}

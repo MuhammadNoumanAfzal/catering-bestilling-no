@@ -845,7 +845,7 @@ export function filterItemsByVendorLocation(
 }
 
 export function filterVendorsByDeliverySlot(vendors, date, time) {
-  if (!date || !time) {
+  if (!date && !time) {
     return vendors;
   }
 
@@ -858,23 +858,48 @@ function isDateValid(date) {
   return !Number.isNaN(new Date(date).getTime());
 }
 
+function normalizeSelectedDate(date) {
+  if (!date || !isDateValid(date)) {
+    return null;
+  }
+
+  if (date instanceof Date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  const normalizedDate = `${date}`.trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalizedDate)) {
+    const [year, month, day] = normalizedDate.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  const parsedDate = new Date(normalizedDate);
+  return new Date(
+    parsedDate.getFullYear(),
+    parsedDate.getMonth(),
+    parsedDate.getDate(),
+  );
+}
+
 export function isVendorDeliverySlotAvailable(vendor, date, time) {
   const matchedVendor = resolveVendorReference(vendor);
   const deliverySchedule =
     vendor?.availability?.delivery ?? matchedVendor?.availability?.delivery;
 
-  if (!deliverySchedule || !date || !time || !isDateValid(date)) {
+  if (!deliverySchedule) {
     return true;
   }
 
-  const selectedDate = new Date(`${date}T00:00:00`);
-  const selectedDay = selectedDate.getDay();
+  const selectedDate = normalizeSelectedDate(date);
+  const matchesDay = selectedDate
+    ? deliverySchedule.days.includes(selectedDate.getDay())
+    : true;
+  const matchesTime = time
+    ? time >= deliverySchedule.start && time <= deliverySchedule.end
+    : true;
 
-  return (
-    deliverySchedule.days.includes(selectedDay) &&
-    time >= deliverySchedule.start &&
-    time <= deliverySchedule.end
-  );
+  return matchesDay && matchesTime;
 }
 
 export function getAvailableVendorsForSlot(date, time, excludedVendorSlug) {

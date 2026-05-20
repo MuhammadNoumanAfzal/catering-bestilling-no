@@ -29,6 +29,24 @@ function formatEventLabel(attendeeCount, eventName) {
   return "Event details";
 }
 
+function normalizeAttendeeCount(value) {
+  if (`${value}`.trim() === "") {
+    return 0;
+  }
+
+  const parsedValue = Number.parseInt(`${value}`, 10);
+
+  if (Number.isNaN(parsedValue) || parsedValue < 0) {
+    return 0;
+  }
+
+  return parsedValue;
+}
+
+function formatAttendeeInputValue(value) {
+  return value > 0 ? `${value}` : "";
+}
+
 export default function CommonNavbar({
   hideLogo = false,
   className = "",
@@ -61,6 +79,7 @@ export default function CommonNavbar({
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
   const [draftAttendeeCount, setDraftAttendeeCount] = useState(0);
+  const [draftAttendeeInput, setDraftAttendeeInput] = useState("");
   const [draftEventName, setDraftEventName] = useState("");
   const dropdownRef = useRef(null);
   const actionMenuRef = useRef(null);
@@ -85,6 +104,7 @@ export default function CommonNavbar({
 
       if (nextDropdown === "event") {
         setDraftAttendeeCount(attendeeCount);
+        setDraftAttendeeInput(formatAttendeeInputValue(attendeeCount));
         setDraftEventName(eventName);
       }
 
@@ -177,6 +197,7 @@ export default function CommonNavbar({
               calendarMonth={calendarMonth}
               deliveryLabel={deliveryLabel}
               draftAttendeeCount={draftAttendeeCount}
+              draftAttendeeInput={draftAttendeeInput}
               draftDate={draftDate}
               draftEventName={draftEventName}
               draftTime={draftTime}
@@ -187,8 +208,16 @@ export default function CommonNavbar({
               onApplyDelivery={applyDeliverySelection}
               onApplyEvent={applyEventDetails}
               onAttendeeChange={(change) =>
-                setDraftAttendeeCount((current) => Math.max(0, current + change))
+                setDraftAttendeeCount((current) => {
+                  const nextValue = Math.max(0, current + change);
+                  setDraftAttendeeInput(formatAttendeeInputValue(nextValue));
+                  return nextValue;
+                })
               }
+              onAttendeeInputChange={(value) => {
+                setDraftAttendeeInput(value);
+                setDraftAttendeeCount(normalizeAttendeeCount(value));
+              }}
               onDateSelect={setDraftDate}
               onEventNameChange={setDraftEventName}
               onLocationChange={setLocationValue}

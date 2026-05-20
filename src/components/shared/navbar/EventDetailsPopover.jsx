@@ -2,9 +2,11 @@ import { FiMinus, FiPlus } from "react-icons/fi";
 
 export default function EventDetailsPopover({
   attendeeCount,
+  attendeeInput,
   eventName,
   onApply,
   onAttendeeChange,
+  onAttendeeInputChange,
   onEventNameChange,
 }) {
   return (
@@ -23,9 +25,17 @@ export default function EventDetailsPopover({
           >
             <FiMinus className="text-[22px]" />
           </button>
-          <div className="inline-flex min-w-[68px] items-center justify-center rounded-[6px] border border-[#cfc7bc] px-2 py-2 text-[12px] font-medium">
-            {attendeeCount}
-          </div>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            inputMode="numeric"
+            value={attendeeInput}
+            onChange={(event) => onAttendeeInputChange(event.target.value)}
+            className="inline-flex min-w-[68px] rounded-[6px] border border-[#cfc7bc] px-2 py-2 text-center text-[12px] font-medium outline-none transition focus:border-[#c85f33]"
+            aria-label="Attendee count"
+            placeholder="0"
+          />
           <button
             type="button"
             onClick={() => onAttendeeChange(1)}
