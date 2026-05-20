@@ -76,7 +76,9 @@ export default function DeliveryDatePopover({
               <button
                 key={date.toISOString()}
                 type="button"
-                onClick={() => onDateSelect(date)}
+                onClick={() =>
+                  onDateSelect(isSameDay(date, draftDate) ? null : date)
+                }
                 className={`mx-auto inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-[13px] transition ${
                   isSameDay(date, draftDate)
                     ? "bg-[#d56d41] font-semibold text-white"

@@ -254,6 +254,7 @@ export default function VendorOrdersPage() {
               <div className="flex w-full justify-stretch sm:justify-end">
                 <OrderDateFilter
                   customDateRange={customDateRange}
+                  defaultRange="last-month"
                   isOpen={isDateMenuOpen}
                   menuRef={dateMenuRef}
                   onSelect={(value) => {

@@ -1,6 +1,7 @@
 import { FiChevronDown } from "react-icons/fi";
 
 export default function InvoiceFilterMenu({
+  defaultValue,
   isOpen,
   label,
   onToggle,
@@ -36,7 +37,13 @@ export default function InvoiceFilterMenu({
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => onSelect(option.value)}
+                    onClick={() =>
+                      onSelect(
+                        option.value === selectedValue
+                          ? defaultValue ?? option.value
+                          : option.value,
+                      )
+                    }
                     className={[
                       "flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-sm transition",
                       isSelected

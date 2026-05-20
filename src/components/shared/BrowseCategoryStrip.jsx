@@ -114,7 +114,16 @@ export default function BrowseCategoryStrip({
       return;
     }
 
-    onCategoryChange?.(itemName);
+    const nextCategory =
+      Array.isArray(activeCategory)
+        ? activeCategory.includes(itemName)
+          ? null
+          : itemName
+        : activeCategory === itemName
+          ? null
+          : itemName;
+
+    onCategoryChange?.(nextCategory);
     setPanelOpen(false);
   };
 

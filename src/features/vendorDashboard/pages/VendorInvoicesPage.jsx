@@ -144,6 +144,7 @@ export default function VendorInvoicesPage() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <InvoiceFilterMenu
+              defaultValue="all"
               isOpen={isStatusMenuOpen}
               label="Status: All"
               onToggle={() => {
@@ -168,6 +169,7 @@ export default function VendorInvoicesPage() {
             </button>
 
             <InvoiceFilterMenu
+              defaultValue="7"
               isOpen={isDateMenuOpen}
               label={getInvoiceDateFilterLabel(
                 selectedDateRange,
@@ -196,8 +198,11 @@ export default function VendorInvoicesPage() {
                         key={option.value}
                         type="button"
                         onClick={() => {
-                          setSelectedDateRange(option.value);
-                          if (option.value !== "custom-date") {
+                          const nextValue =
+                            option.value === selectedDateRange ? "7" : option.value;
+
+                          setSelectedDateRange(nextValue);
+                          if (nextValue !== "custom-date") {
                             setIsDateMenuOpen(false);
                           }
                         }}

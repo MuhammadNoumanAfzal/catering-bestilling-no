@@ -3,6 +3,7 @@ import { getDateFilterLabel, ORDER_DATE_OPTIONS } from "./orderUtils";
 
 export default function OrderDateFilter({
   customDateRange,
+  defaultRange = "last-month",
   isOpen,
   menuRef,
   onSelect,
@@ -37,7 +38,11 @@ export default function OrderDateFilter({
               <button
                 key={option.value}
                 type="button"
-                onClick={() => onSelect(option.value)}
+                onClick={() =>
+                  onSelect(
+                    option.value === selectedRange ? defaultRange : option.value,
+                  )
+                }
                 className={[
                   "type-subpara flex w-full cursor-pointer items-center justify-between rounded-[8px] px-3 py-2 text-left transition",
                   isSelected

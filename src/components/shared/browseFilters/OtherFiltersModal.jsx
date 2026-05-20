@@ -106,7 +106,10 @@ export default function OtherFiltersModal({
                     )
                   }
                   onSelect={(option) => {
-                    updateOtherFilter("orderMinimum", option);
+                    updateOtherFilter(
+                      "orderMinimum",
+                      otherFilters.orderMinimum === option ? "Any price" : option,
+                    );
                     setOpenInlineDropdown(null);
                   }}
                   menuPosition="bottom"
@@ -123,7 +126,10 @@ export default function OtherFiltersModal({
                     )
                   }
                   onSelect={(option) => {
-                    updateOtherFilter("distance", option);
+                    updateOtherFilter(
+                      "distance",
+                      otherFilters.distance === option ? "Any distance" : option,
+                    );
                     setOpenInlineDropdown(null);
                   }}
                   menuPosition="top"
