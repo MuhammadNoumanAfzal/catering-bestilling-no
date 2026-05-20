@@ -28,6 +28,7 @@ import {
 import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
 
 export default function VendorProfilePage() {
+  const CATEGORY_BAR_TOP_OFFSET = 78;
   const { vendorSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,7 +39,12 @@ export default function VendorProfilePage() {
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
+  const [isCategoryBarFixed, setIsCategoryBarFixed] = useState(false);
+  const [categoryBarStyle, setCategoryBarStyle] = useState({});
   const sectionRefs = useRef({});
+  const categoryBarAnchorRef = useRef(null);
+  const categoryBarInnerRef = useRef(null);
+  const menuSectionsRef = useRef(null);
 
   useEffect(() => {
     if (!vendor) {
@@ -108,6 +114,47 @@ export default function VendorProfilePage() {
 
     return () => {
       observer.disconnect();
+    };
+  }, [orderSummary, vendor]);
+
+  useEffect(() => {
+    function updateCategoryBarPosition() {
+      const anchorElement = categoryBarAnchorRef.current;
+      const menuSectionsElement = menuSectionsRef.current;
+      const categoryBarElement = categoryBarInnerRef.current;
+
+      if (!anchorElement || !menuSectionsElement || !categoryBarElement) {
+        return;
+      }
+
+      const anchorRect = anchorElement.getBoundingClientRect();
+      const sectionsRect = menuSectionsElement.getBoundingClientRect();
+      const barHeight = categoryBarElement.offsetHeight;
+      const shouldFix =
+        anchorRect.top <= CATEGORY_BAR_TOP_OFFSET &&
+        sectionsRect.bottom > CATEGORY_BAR_TOP_OFFSET + barHeight;
+
+      setIsCategoryBarFixed(shouldFix);
+
+      if (!shouldFix) {
+        setCategoryBarStyle({});
+        return;
+      }
+
+      setCategoryBarStyle({
+        left: anchorRect.left,
+        top: CATEGORY_BAR_TOP_OFFSET,
+        width: anchorRect.width,
+      });
+    }
+
+    updateCategoryBarPosition();
+    window.addEventListener("scroll", updateCategoryBarPosition, { passive: true });
+    window.addEventListener("resize", updateCategoryBarPosition);
+
+    return () => {
+      window.removeEventListener("scroll", updateCategoryBarPosition);
+      window.removeEventListener("resize", updateCategoryBarPosition);
     };
   }, [orderSummary, vendor]);
 
@@ -232,15 +279,31 @@ export default function VendorProfilePage() {
                 </p>
               </div>
 
-              <div className="mt-6">
-                <VendorCategoryTabs
-                  categories={vendor.categories}
-                  activeCategory={activeCategory}
-                  onCategoryChange={handleCategoryChange}
-                />
+              <div
+                ref={categoryBarAnchorRef}
+                className="relative mt-6"
+                style={
+                  isCategoryBarFixed && categoryBarInnerRef.current
+                    ? { minHeight: categoryBarInnerRef.current.offsetHeight }
+                    : undefined
+                }
+              >
+                <div
+                  ref={categoryBarInnerRef}
+                  className={`border-b border-[#ece5dc] bg-white/95 px-4 py-3 backdrop-blur-[6px] sm:px-5 ${
+                    isCategoryBarFixed ? "fixed z-30 shadow-[0_8px_24px_rgba(24,24,24,0.08)]" : ""
+                  }`}
+                  style={isCategoryBarFixed ? categoryBarStyle : undefined}
+                >
+                  <VendorCategoryTabs
+                    categories={vendor.categories}
+                    activeCategory={activeCategory}
+                    onCategoryChange={handleCategoryChange}
+                  />
+                </div>
               </div>
 
-              <div className="mt-6 space-y-5">
+              <div ref={menuSectionsRef} className="mt-6 space-y-5">
                 {vendor.menuSections.map((section) => (
                   <div
                     key={section.id}

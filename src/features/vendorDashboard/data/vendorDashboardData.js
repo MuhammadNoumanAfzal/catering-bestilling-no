@@ -1,5 +1,4 @@
 import {
-  FiAward,
   FiCreditCard,
   FiEdit3,
   FiGrid,
@@ -36,11 +35,7 @@ export const vendorNavigationItems = [
     to: "/vendor-dashboard/invoices",
     icon: FiCreditCard,
   },
-  {
-    label: "Reward",
-    to: "/vendor-dashboard/rewards",
-    icon: FiAward,
-  },
+  // Rewards navigation disabled
   {
     label: "Address",
     to: "/vendor-dashboard/address",
@@ -64,11 +59,7 @@ export const vendorStats = [
     value: 73,
     icon: FiCreditCard,
   },
-  {
-    label: "Reward Points",
-    value: 22,
-    icon: FiStar,
-  },
+  // Rewards dashboard card disabled
 ];
 
 export const vendorRecentOrders = [
