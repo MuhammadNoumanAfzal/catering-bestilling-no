@@ -27,7 +27,6 @@ import VendorInvoiceDetailsPage from "../../features/vendorDashboard/pages/Vendo
 import VendorAddressPage from "../../features/vendorDashboard/pages/VendorAddressPage";
 import VendorOrdersPage from "../../features/vendorDashboard/pages/VendorOrdersPage";
 import VendorRestaurantsPage from "../../features/vendorDashboard/pages/VendorRestaurantsPage";
-import VendorRewardsPage from "../../features/vendorDashboard/pages/VendorRewardsPage";
 import VendorSettingsPage from "../../features/vendorDashboard/pages/VendorSettingsPage";
 import { BrowseFiltersProvider } from "../context/BrowseFiltersContext";
 
@@ -86,7 +85,11 @@ export default function AppRouter() {
           <Route path="restaurants" element={<VendorRestaurantsPage />} />
           <Route path="invoices" element={<VendorInvoicesPage />} />
           <Route path="invoices/:invoiceId" element={<VendorInvoiceDetailsPage />} />
-          <Route path="rewards" element={<VendorRewardsPage />} />
+          {/* Rewards screen disabled */}
+          <Route
+            path="rewards"
+            element={<Navigate to="/vendor-dashboard" replace />}
+          />
           <Route path="address" element={<VendorAddressPage />} />
           <Route path="settings" element={<VendorSettingsPage />} />
         </Route>
