@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import CheckoutHeader from "../components/CheckoutHeader";
 import CheckoutSummaryPanel from "../components/CheckoutSummaryPanel";
 import AdditionalInfoSection from "../components/checkoutPage/AdditionalInfoSection";
@@ -26,6 +26,7 @@ import {
   confirmRemoveItem,
   showOrderPlacedSuccess,
 } from "../../../utils/alerts";
+import { writePlacedOrderDraft } from "../../order/utils/placedOrderStorage";
 
 function formatAddressPreview(formState, prefix) {
   return [
@@ -39,7 +40,6 @@ function formatAddressPreview(formState, prefix) {
 }
 
 function CheckoutAddressControls({
-  type,
   title,
   selectedAddressId,
   savedAddresses,
@@ -79,6 +79,7 @@ function CheckoutAddressControls({
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { checkoutType } = useParams();
   const [carts, setCarts] = useState([]);
   const [formState, setFormState] = useState(() => createInitialFormState());
@@ -89,9 +90,14 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const storedCarts = readAllStoredOrderSummaries();
+    const prefilledFormState = location.state?.prefillCheckoutForm;
     setCarts(storedCarts);
-    setFormState(createInitialFormState(storedCarts[0]));
-  }, []);
+    setFormState((current) => ({
+      ...current,
+      ...createInitialFormState(storedCarts[0]),
+      ...(prefilledFormState ?? {}),
+    }));
+  }, [location.state]);
 
   useEffect(() => {
     carts.forEach(({ vendor, orderSummary }) => {
@@ -240,6 +246,11 @@ export default function CheckoutPage() {
       return;
     }
 
+    writePlacedOrderDraft({
+      checkoutType: normalizedType,
+      carts,
+      formState,
+    });
     clearAllStoredOrderSummaries();
     await showOrderPlacedSuccess();
     navigate("/order-confirmed");
@@ -269,7 +280,6 @@ export default function CheckoutPage() {
                   title="Delivery Address"
                   actions={
                     <CheckoutAddressControls
-                      type="delivery"
                       title="Edit address"
                       selectedAddressId={formState.selectedDeliveryAddressId}
                       savedAddresses={deliveryAddresses}
@@ -307,7 +317,6 @@ export default function CheckoutPage() {
                   title="Invoice Address"
                   actions={
                     <CheckoutAddressControls
-                      type="invoice"
                       title="Edit invoice address"
                       selectedAddressId={formState.selectedInvoiceAddressId}
                       savedAddresses={invoiceAddresses}

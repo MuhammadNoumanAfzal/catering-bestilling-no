@@ -1,8 +1,94 @@
+import { useMemo, useState } from "react";
 import { FaCheck } from "react-icons/fa";
-import { FiArrowRight, FiHome } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { FiArrowRight, FiEdit3, FiGrid, FiHome } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import ModifyOrderModal from "../components/ModifyOrderModal";
+import {
+  readPlacedOrderDraft,
+  writePlacedOrderDraft,
+} from "../utils/placedOrderStorage";
+import { writeOrderSummary } from "../../vendor/utils/orderSummaryStorage";
+
+function formatOrderPreview(orderDraft) {
+  const primaryCart = orderDraft?.carts?.[0];
+  const formState = orderDraft?.formState ?? {};
+
+  return {
+    address:
+      formState.deliveryAddress ||
+      primaryCart?.orderSummary?.deliveryAddress ||
+      "",
+    addressLine2: formState.deliveryAddressLine2 || "",
+    city: formState.deliveryCity || "",
+    postalCode: formState.deliveryPostalCode || "",
+    date: formState.date || primaryCart?.orderSummary?.deliveryDate || "",
+    time: formState.time || primaryCart?.orderSummary?.deliveryTime || "",
+    personCount:
+      formState.personCount || primaryCart?.orderSummary?.personCount || 20,
+    additionalDetails: formState.additionalInfo || "",
+  };
+}
 
 export default function OrderConfirmedPage() {
+  const navigate = useNavigate();
+  const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+  const placedOrderDraft = useMemo(() => readPlacedOrderDraft(), []);
+  const orderPreview = useMemo(
+    () => formatOrderPreview(placedOrderDraft),
+    [placedOrderDraft],
+  );
+
+  const handleModifySave = (nextValues) => {
+    if (!placedOrderDraft) {
+      setIsModifyModalOpen(false);
+      return;
+    }
+
+    const nextFormState = {
+      ...placedOrderDraft.formState,
+      deliveryAddress: nextValues.address,
+      deliveryAddressLine2: nextValues.addressLine2,
+      deliveryCity: nextValues.city,
+      deliveryPostalCode: nextValues.postalCode,
+      date: nextValues.date,
+      time: nextValues.time,
+      personCount: nextValues.personCount,
+      additionalInfo: nextValues.additionalDetails,
+    };
+
+    const nextCarts = placedOrderDraft.carts.map((cart) => {
+      const nextOrderSummary = {
+        ...cart.orderSummary,
+        deliveryAddress: nextValues.address,
+        deliveryDate: nextValues.date,
+        deliveryTime: nextValues.time,
+        personCount: nextValues.personCount,
+      };
+
+      writeOrderSummary(cart.vendor.slug, nextOrderSummary);
+
+      return {
+        ...cart,
+        orderSummary: nextOrderSummary,
+      };
+    });
+
+    writePlacedOrderDraft({
+      ...placedOrderDraft,
+      carts: nextCarts,
+      formState: nextFormState,
+    });
+
+    setIsModifyModalOpen(false);
+    navigate(`/checkout/${placedOrderDraft.checkoutType ?? "corporate"}`, {
+      state: {
+        prefillCheckoutForm: nextFormState,
+        modifiedOrder: true,
+        restoredCarts: nextCarts.length,
+      },
+    });
+  };
+
   return (
     <section className="min-h-[calc(100vh-120px)] bg-[linear-gradient(180deg,#faf6f1_0%,#fffdf9_100%)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
@@ -62,6 +148,37 @@ export default function OrderConfirmedPage() {
               </div>
             </div>
 
+            {placedOrderDraft ? (
+              <div className="mx-auto mt-5 grid max-w-2xl gap-4 rounded-[20px] border border-[#f0e5db] bg-white p-5 text-left sm:grid-cols-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                    Address
+                  </p>
+                  <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
+                    {orderPreview.address || "Not specified"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                    Date
+                  </p>
+                  <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
+                    {[orderPreview.date, orderPreview.time]
+                      .filter(Boolean)
+                      .join(" at ") || "Not specified"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                    Person Count
+                  </p>
+                  <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
+                    {orderPreview.personCount}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Link
                 to="/"
@@ -78,10 +195,37 @@ export default function OrderConfirmedPage() {
                 Browse Menus
                 <FiArrowRight className="text-[16px]" />
               </Link>
+
+              <Link
+                to="/vendor-dashboard"
+                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-[#d9cec3] bg-white px-6 py-3 text-[15px] font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
+              >
+                Browse Dashboard
+                <FiGrid className="text-[16px]" />
+              </Link>
+
+              {placedOrderDraft ? (
+                <button
+                  type="button"
+                  onClick={() => setIsModifyModalOpen(true)}
+                  className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-[#d9cec3] bg-white px-6 py-3 text-[15px] font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
+                >
+                  Modify Order
+                  <FiEdit3 className="text-[16px]" />
+                </button>
+              ) : null}
             </div>
           </div>
         </div>
       </div>
+
+      {isModifyModalOpen ? (
+        <ModifyOrderModal
+          initialValue={orderPreview}
+          onCancel={() => setIsModifyModalOpen(false)}
+          onSave={handleModifySave}
+        />
+      ) : null}
     </section>
   );
 }
