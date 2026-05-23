@@ -21,7 +21,7 @@ import {
 
 export default function VendorOrdersPage() {
   const [activeView, setActiveView] = useState("active");
-  const [selectedTabs, setSelectedTabs] = useState(["all"]);
+  const [selectedTabs, setSelectedTabs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [selectedRange, setSelectedRange] = useState("last-month");
   const [customDateRange, setCustomDateRange] = useState({
@@ -60,7 +60,7 @@ export default function VendorOrdersPage() {
       const matchesView =
         activeView === "active" ? isActiveOrder(order.status) : true;
       const matchesTab =
-        selectedTabs.includes("all")
+        selectedTabs.length === 0 || selectedTabs.includes("all")
           ? true
           : selectedTabs.includes(normalizeOrderStatus(order.status));
       const orderDate = parseOrderDate(order.date);
@@ -123,15 +123,14 @@ export default function VendorOrdersPage() {
   function handleTabChange(tab) {
     setSelectedTabs((current) => {
       if (tab === "all") {
-        return ["all"];
+        return [];
       }
 
-      const currentTabs = current.includes("all") ? [] : current;
-      const nextTabs = currentTabs.includes(tab)
-        ? currentTabs.filter((item) => item !== tab)
-        : [...currentTabs, tab];
+      const nextTabs = current.includes(tab)
+        ? current.filter((item) => item !== tab)
+        : [...current.filter((item) => item !== "all"), tab];
 
-      return nextTabs.length > 0 ? nextTabs : ["all"];
+      return nextTabs;
     });
     setCurrentPage(1);
   }
@@ -140,13 +139,13 @@ export default function VendorOrdersPage() {
     setActiveView(view);
     setSelectedTabs((current) => {
       if (view !== "active") {
-        return current;
+        return current.filter((tab) => tab !== "all");
       }
 
-      const allowedTabs = ["all", "draft", "scheduled"];
+      const allowedTabs = ["draft", "scheduled"];
       const nextTabs = current.filter((tab) => allowedTabs.includes(tab));
 
-      return nextTabs.length > 0 ? nextTabs : ["all"];
+      return nextTabs;
     });
     setCurrentPage(1);
   }
@@ -219,7 +218,10 @@ export default function VendorOrdersPage() {
                     )
                   : ORDER_TABS
                 ).map((tab) => {
-                  const isActive = selectedTabs.includes(tab.value);
+                  const isActive =
+                    tab.value === "all"
+                      ? activeView !== "active" && selectedTabs.length === 0
+                      : selectedTabs.includes(tab.value);
 
                   return (
                     <button
