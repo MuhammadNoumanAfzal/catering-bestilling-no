@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FiMoreHorizontal } from "react-icons/fi";
+import { FiMoreHorizontal, FiStar } from "react-icons/fi";
 import { getOrderStatusClasses } from "./orderUtils";
 
 export default function OrdersTable({ orders, onOpenDetails }) {
@@ -44,7 +44,17 @@ export default function OrdersTable({ orders, onOpenDetails }) {
               className="rounded-2xl bg-[#fcfbf9] text-sm text-[#232323] shadow-[0_2px_8px_rgba(20,20,20,0.03)]"
             >
               <td className="rounded-l-2xl px-3 py-3 text-[#8d857d]">{index + 1}</td>
-              <td className="px-3 py-3 font-semibold">{order.id}</td>
+              <td className="px-3 py-3 font-semibold">
+                <div className="flex items-center gap-2">
+                  <span>{order.id}</span>
+                  {order.isModified ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
+                      <FiStar className="fill-current text-[11px]" />
+                      Modified
+                    </span>
+                  ) : null}
+                </div>
+              </td>
               <td className="px-3 py-3">{order.vendor}</td>
               <td className="max-w-[180px] truncate px-3 py-3">{order.eventName}</td>
               <td className="px-3 py-3">{order.date}</td>
@@ -108,6 +118,12 @@ export default function OrdersTable({ orders, onOpenDetails }) {
                 <p className="mt-1 text-base font-semibold text-[#232323]">
                   {order.id}
                 </p>
+                {order.isModified ? (
+                  <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
+                    <FiStar className="fill-current text-[11px]" />
+                    Modified
+                  </span>
+                ) : null}
                 <p className="mt-1 text-sm text-[#6b635c]">{order.vendor}</p>
               </div>
 
