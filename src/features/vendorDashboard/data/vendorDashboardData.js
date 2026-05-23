@@ -216,6 +216,42 @@ export const vendorOrders = [
     person: 20,
     total: "NOK 548.73",
     status: "Scheduled",
+    isModified: true,
+    items: [
+      {
+        quantity: 20,
+        name: "Tasty Super Star Package",
+        price: "NOK 548.73",
+        image: "/home/hero1.webp",
+        details: [
+          "3 Meats: Smoked Pulled Pork, Gluten-Free Brisket, St. Louis Pork Ribs",
+          "3 Sides: Potato Salad, BBQ Pinto Beans, Mac & Cheese",
+          "Dessert: Banana Pudding",
+          "Add: Black BBQ Sauce, Honey Mustard Sauce",
+          "Packaging: Tray Packaging",
+        ],
+      },
+    ],
+    modifiedItems: [
+      {
+        id: "mod-12549-1",
+        name: "Tasty Super Star Package",
+        image: "/home/hero1.webp",
+        changeLabel: "Guest count updated",
+        summary: "Increased catering quantity to serve more attendees.",
+        previousValue: "15 persons",
+        newValue: "20 persons",
+      },
+      {
+        id: "mod-12549-2",
+        name: "Delivery Details",
+        image: "/home/hero2.webp",
+        changeLabel: "Time changed",
+        summary: "Vendor was asked to shift the delivery window for setup.",
+        previousValue: "11:30 AM",
+        newValue: "12:15 PM",
+      },
+    ],
   },
   {
     id: "#12549",
@@ -243,6 +279,18 @@ export const vendorOrders = [
     person: 15,
     total: "NOK 548.73",
     status: "Draft",
+    isModified: true,
+    modifiedItems: [
+      {
+        id: "mod-12549-3",
+        name: "Tray Packaging",
+        image: "/home/hero3.webp",
+        changeLabel: "Packaging updated",
+        summary: "Order was changed from bulk setup to individually packed trays.",
+        previousValue: "Bulk buffet setup",
+        newValue: "Tray packaging",
+      },
+    ],
   },
   {
     id: "#12549",
@@ -315,6 +363,18 @@ export const vendorOrders = [
     person: 60,
     total: "NOK 1,148.00",
     status: "Scheduled",
+    isModified: true,
+    modifiedItems: [
+      {
+        id: "mod-12553-1",
+        name: "Quarterly Meetup Menu",
+        image: "/home/v.webp",
+        changeLabel: "Menu item swapped",
+        summary: "One hot meal option was replaced after the customer request.",
+        previousValue: "Seafood platter",
+        newValue: "Vegetarian lunch boxes",
+      },
+    ],
   },
 ];
 

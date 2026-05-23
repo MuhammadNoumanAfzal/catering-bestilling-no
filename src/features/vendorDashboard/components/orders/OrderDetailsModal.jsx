@@ -1,4 +1,4 @@
-import { FiX } from "react-icons/fi";
+import { FiArrowRight, FiStar, FiX } from "react-icons/fi";
 import { getOrderStatusClasses } from "./orderUtils";
 
 function getOrderDetailItems(order) {
@@ -30,6 +30,10 @@ function getOrderMeta(order) {
   };
 }
 
+function getModifiedItems(order) {
+  return order.modifiedItems ?? [];
+}
+
 export default function OrderDetailsModal({ order, isOpen, onClose }) {
   if (!isOpen || !order) {
     return null;
@@ -37,6 +41,7 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
 
   const items = getOrderDetailItems(order);
   const meta = getOrderMeta(order);
+  const modifiedItems = getModifiedItems(order);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(31,22,15,0.45)] px-4 py-6 backdrop-blur-[6px]">
@@ -78,6 +83,12 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
                 >
                   {order.status}
                 </span>
+                {order.isModified ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-3 py-1 text-xs font-semibold text-[#cf6e38] shadow-[inset_0_-1px_0_rgba(255,255,255,0.35)]">
+                    <FiStar className="fill-current text-[12px]" />
+                    Modified Order
+                  </span>
+                ) : null}
                 <p>
                   Vendor:{" "}
                   <span className="font-semibold text-[#1f1f1f]">{order.vendor}</span>
@@ -144,6 +155,77 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
                 ))}
               </div>
             </section>
+
+            {modifiedItems.length > 0 ? (
+              <section className="rounded-[24px] border border-[#efe5db] bg-[linear-gradient(180deg,#fff9f5_0%,#ffffff_100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="type-h3 text-[#1f1f1f]">Modified Items</h3>
+                    <p className="mt-1 text-sm text-[#746b63]">
+                      Updated request details shown in a visual item format.
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
+                    <FiStar className="fill-current text-[12px]" />
+                    {modifiedItems.length} change{modifiedItems.length > 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {modifiedItems.map((item) => (
+                    <article
+                      key={item.id}
+                      className="overflow-hidden rounded-[22px] border border-[#efe3d7] bg-white shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-36 w-full object-cover"
+                      />
+
+                      <div className="space-y-3 p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-base font-semibold text-[#1f1f1f]">
+                              {item.name}
+                            </p>
+                            <span className="mt-2 inline-flex rounded-full bg-[#fff3ea] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
+                              {item.changeLabel}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-sm leading-6 text-[#71675e]">
+                          {item.summary}
+                        </p>
+
+                        <div className="rounded-[16px] bg-[#fcf7f2] p-3">
+                          <div className="flex items-center justify-between gap-3 text-sm">
+                            <div className="min-w-0">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a08d7d]">
+                                Previous
+                              </p>
+                              <p className="mt-1 text-[#5f554c]">{item.previousValue}</p>
+                            </div>
+
+                            <FiArrowRight className="shrink-0 text-[#cf6e38]" />
+
+                            <div className="min-w-0 text-right">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a08d7d]">
+                                Updated
+                              </p>
+                              <p className="mt-1 font-semibold text-[#1f1f1f]">
+                                {item.newValue}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             <section className="rounded-[24px] border border-[#efe5db] bg-[linear-gradient(180deg,#fffaf6_0%,#fff 100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
               <h3 className="type-h3 text-[#1f1f1f]">Order info</h3>
