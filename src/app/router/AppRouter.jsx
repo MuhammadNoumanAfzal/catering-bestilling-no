@@ -21,12 +21,12 @@ import ResetPasswordPage from "../../features/auth/pages/ResetPasswordPage";
 import CheckoutPage from "../../features/checkOut/pages/CheckoutPage";
 import VendorDashboardLayout from "../../features/vendorDashboard/layouts/VendorDashboardLayout";
 import VendorDashboardHomePage from "../../features/vendorDashboard/pages/VendorDashboardHomePage";
-import VendorPlaceholderPage from "../../features/vendorDashboard/pages/VendorPlaceholderPage";
 import VendorInvoicesPage from "../../features/vendorDashboard/pages/VendorInvoicesPage";
 import VendorInvoiceDetailsPage from "../../features/vendorDashboard/pages/VendorInvoiceDetailsPage";
 import VendorAddressPage from "../../features/vendorDashboard/pages/VendorAddressPage";
 import VendorOrdersPage from "../../features/vendorDashboard/pages/VendorOrdersPage";
 import VendorRestaurantsPage from "../../features/vendorDashboard/pages/VendorRestaurantsPage";
+import VendorNotificationsPage from "../../features/vendorDashboard/pages/VendorNotificationsPage";
 import VendorSettingsPage from "../../features/vendorDashboard/pages/VendorSettingsPage";
 import { BrowseFiltersProvider } from "../context/BrowseFiltersContext";
 
@@ -85,6 +85,7 @@ export default function AppRouter() {
           <Route path="restaurants" element={<VendorRestaurantsPage />} />
           <Route path="invoices" element={<VendorInvoicesPage />} />
           <Route path="invoices/:invoiceId" element={<VendorInvoiceDetailsPage />} />
+          <Route path="notifications" element={<VendorNotificationsPage />} />
           {/* Rewards screen disabled */}
           <Route
             path="rewards"

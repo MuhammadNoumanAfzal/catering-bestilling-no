@@ -1,4 +1,5 @@
 import {
+  FiBell,
   FiCreditCard,
   FiEdit3,
   FiGrid,
@@ -34,6 +35,11 @@ export const vendorNavigationItems = [
     label: "Invoice",
     to: "/vendor-dashboard/invoices",
     icon: FiCreditCard,
+  },
+  {
+    label: "Notifications",
+    to: "/vendor-dashboard/notifications",
+    icon: FiBell,
   },
   // Rewards navigation disabled
   {
@@ -629,4 +635,73 @@ export const vendorSettingsInitialState = {
   pushNotifications: false,
   orderConfirmationPush: false,
 };
+
+export const vendorClientNotifications = [
+  {
+    id: "client-notification-1",
+    title: "New Order #ORD-4025",
+    message:
+      "Your lunch order from Flint's Grill has been accepted and is being prepared.",
+    timeLabel: "10:24 AM",
+    dayLabel: "Today",
+    createdAt: "2026-05-23",
+    category: "unread",
+    type: "order-update",
+  },
+  {
+    id: "client-notification-2",
+    title: "New Order #ORD-4024",
+    message:
+      "Your catering request for the design team meeting has been confirmed for delivery.",
+    timeLabel: "9:10 AM",
+    dayLabel: "Today",
+    createdAt: "2026-05-23",
+    category: "unread",
+    type: "confirmation",
+  },
+  {
+    id: "client-notification-3",
+    title: "Payment Successful",
+    message:
+      "Payment for order #ORD-4018 was completed successfully. Your receipt is ready in invoices.",
+    timeLabel: "8:42 AM",
+    dayLabel: "Today",
+    createdAt: "2026-05-23",
+    category: "read",
+    type: "payment",
+  },
+  {
+    id: "client-notification-4",
+    title: "Menu Update",
+    message:
+      "Nordic Table has updated a few menu items in your saved favorites list.",
+    timeLabel: "Yesterday",
+    dayLabel: "Yesterday",
+    createdAt: "2026-05-22",
+    category: "read",
+    type: "menu",
+  },
+  {
+    id: "client-notification-5",
+    title: "New Offer for You",
+    message:
+      "Use the weekly office lunch deal and save 10% on your next team order.",
+    timeLabel: "Yesterday",
+    dayLabel: "Yesterday",
+    createdAt: "2026-05-22",
+    category: "read",
+    type: "offer",
+  },
+  {
+    id: "client-notification-6",
+    title: "Order Delivered",
+    message:
+      "Order #ORD-4012 from Bergen Bites has been delivered. You can now leave a review.",
+    timeLabel: "Monday",
+    dayLabel: "Earlier",
+    createdAt: "2026-05-18",
+    category: "read",
+    type: "delivery",
+  },
+];
 
