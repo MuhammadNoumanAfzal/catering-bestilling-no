@@ -3,6 +3,7 @@ import {
   FiCreditCard,
   FiEdit3,
   FiGrid,
+  FiHelpCircle,
   FiLock,
   FiMapPin,
   FiPackage,
@@ -40,6 +41,11 @@ export const vendorNavigationItems = [
     label: "Notifications",
     to: "/vendor-dashboard/notifications",
     icon: FiBell,
+  },
+  {
+    label: "Support",
+    to: "/vendor-dashboard/support",
+    icon: FiHelpCircle,
   },
   // Rewards navigation disabled
   {
