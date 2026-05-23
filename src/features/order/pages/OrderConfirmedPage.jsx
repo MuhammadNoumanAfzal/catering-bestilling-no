@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { FiArrowRight, FiEdit3, FiGrid, FiHome } from "react-icons/fi";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ModifyOrderModal from "../components/ModifyOrderModal";
 import {
   readPlacedOrderDraft,
   writePlacedOrderDraft,
 } from "../utils/placedOrderStorage";
 import { writeOrderSummary } from "../../vendor/utils/orderSummaryStorage";
+import { showSuccessToast } from "../../../utils/alerts";
 
 function formatOrderPreview(orderDraft) {
   const primaryCart = orderDraft?.carts?.[0];
@@ -30,15 +31,16 @@ function formatOrderPreview(orderDraft) {
 }
 
 export default function OrderConfirmedPage() {
-  const navigate = useNavigate();
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
-  const placedOrderDraft = useMemo(() => readPlacedOrderDraft(), []);
+  const [placedOrderDraft, setPlacedOrderDraft] = useState(() =>
+    readPlacedOrderDraft(),
+  );
   const orderPreview = useMemo(
     () => formatOrderPreview(placedOrderDraft),
     [placedOrderDraft],
   );
 
-  const handleModifySave = (nextValues) => {
+  const handleModifySave = async (nextValues) => {
     if (!placedOrderDraft) {
       setIsModifyModalOpen(false);
       return;
@@ -73,20 +75,17 @@ export default function OrderConfirmedPage() {
       };
     });
 
-    writePlacedOrderDraft({
+    const nextPlacedOrderDraft = {
       ...placedOrderDraft,
       carts: nextCarts,
       formState: nextFormState,
-    });
+    };
+
+    writePlacedOrderDraft(nextPlacedOrderDraft);
+    setPlacedOrderDraft(nextPlacedOrderDraft);
 
     setIsModifyModalOpen(false);
-    navigate(`/checkout/${placedOrderDraft.checkoutType ?? "corporate"}`, {
-      state: {
-        prefillCheckoutForm: nextFormState,
-        modifiedOrder: true,
-        restoredCarts: nextCarts.length,
-      },
-    });
+    await showSuccessToast("Modification request sent successfully");
   };
 
   return (
