@@ -28,6 +28,17 @@ export function showSuccessToast(title) {
   );
 }
 
+export function showAuthErrorAlert(message, title = "Something went wrong") {
+  return Swal.fire(
+    withBaseOptions({
+      icon: "error",
+      title,
+      text: message,
+      confirmButtonText: "Try again",
+    }),
+  );
+}
+
 export function confirmRemoveItem(itemName) {
   return Swal.fire(
     withBaseOptions({

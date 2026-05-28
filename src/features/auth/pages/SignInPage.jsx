@@ -4,37 +4,55 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthButton from "../components/AuthButton";
 import AuthCard from "../components/AuthCard";
 import AuthInput from "../components/AuthInput";
-import { DEMO_USER, useAuth } from "../context/AuthContext";
-import { showSuccessToast } from "../../../utils/alerts";
+import { loginUser } from "../api/authApi";
+import { useAuth } from "../context/useAuth";
+import {
+  showAuthErrorAlert,
+  showSuccessToast,
+} from "../../../utils/alerts";
 
 export default function SignInPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { setAuthSession } = useAuth();
   const [formData, setFormData] = useState({
-    email: DEMO_USER.email,
-    password: DEMO_USER.password,
+    email: location.state?.registeredEmail ?? "",
+    password: "",
   });
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
-    setErrorMessage("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
 
-    const result = signIn(formData);
+    try {
+      const result = await loginUser({
+        ...formData,
+        role: "user",
+      });
 
-    if (!result.success) {
-      setErrorMessage(result.message);
-      return;
+      setAuthSession({
+        accessToken: result.access,
+        user: result.user,
+      });
+
+      await showSuccessToast(
+        `Welcome back, ${result.user.firstName || result.user.email}`,
+      );
+      navigate(location.state?.from?.pathname ?? "/", { replace: true });
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error ? error.message : "Unable to sign in right now.",
+        "Sign in failed",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    await showSuccessToast(`Welcome back, ${result.user.name}`);
-    navigate(location.state?.from?.pathname ?? "/", { replace: true });
   };
 
   return (
@@ -80,9 +98,7 @@ export default function SignInPage() {
           required
         />
         <div className="flex items-center justify-between">
-          <p className="text-[13px] text-[#8a7f76]">
-            Demo login is prefilled
-          </p>
+          <p className="text-[13px] text-[#8a7f76]">Use your registered account</p>
           <Link
             to="/forgot-password"
             className="text-[14px] font-semibold text-[#c85f33]"
@@ -90,16 +106,12 @@ export default function SignInPage() {
             Forgot password?
           </Link>
         </div>
-        {errorMessage ? (
-          <p className="rounded-2xl border border-[#f2c7c2] bg-[#fff4f2] px-4 py-3 text-sm text-[#c43f32]">
-            {errorMessage}
-          </p>
-        ) : null}
         <AuthButton
           type="submit"
+          disabled={isSubmitting}
           className="inline-flex items-center justify-center gap-2"
         >
-          Sign in
+          {isSubmitting ? "Signing in..." : "Sign in"}
           <FiArrowRight className="text-[16px]" />
         </AuthButton>
       </form>

@@ -1,16 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { AuthContext } from "./authContext";
 
-const AUTH_STORAGE_KEY = "demo-auth-user";
+const AUTH_STORAGE_KEY = "auth-session";
 
-export const DEMO_USER = {
-  email: "demo@lunsjavtale.no",
-  password: "Demo@123",
-  name: "Nouman",
-};
-
-const AuthContext = createContext(null);
-
-function clearStoredUser() {
+function clearStoredSession() {
   if (typeof window === "undefined") {
     return;
   }
@@ -19,85 +12,64 @@ function clearStoredUser() {
   window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
 }
 
-function readStoredUser() {
+function readStoredSession() {
   if (typeof window === "undefined") {
     return null;
   }
 
   try {
-    const savedUser = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
-    return savedUser ? JSON.parse(savedUser) : null;
+    const savedSession = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
+    return savedSession ? JSON.parse(savedSession) : null;
   } catch {
     return null;
   }
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => readStoredUser());
+  const [session, setSession] = useState(() => readStoredSession());
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    // Remove legacy persisted auth so users are not auto-logged in from old sessions.
     window.localStorage.removeItem(AUTH_STORAGE_KEY);
 
-    if (user) {
-      window.sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+    if (session) {
+      window.sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
       return;
     }
 
     window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
-  }, [user]);
+  }, [session]);
 
   const value = useMemo(
     () => ({
-      user,
-      isLoggedIn: Boolean(user),
-      signIn: (credentials) => {
-        const normalizedEmail = credentials.email.trim().toLowerCase();
-        const password = credentials.password.trim();
-
-        const isValidUser =
-          normalizedEmail === DEMO_USER.email && password === DEMO_USER.password;
-
-        if (!isValidUser) {
-          return {
-            success: false,
-            message: "Use the demo email and password shown on the page.",
-          };
-        }
-
-        const nextUser = {
-          email: DEMO_USER.email,
-          name: DEMO_USER.name,
+      session,
+      user: session?.user ?? null,
+      accessToken: session?.accessToken ?? null,
+      isLoggedIn: Boolean(session?.accessToken && session?.user),
+      setAuthSession: ({ accessToken, user }) => {
+        const normalizedUser = {
+          ...user,
+          name:
+            [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+            user?.email ||
+            "User",
         };
 
-        setUser(nextUser);
-
-        return {
-          success: true,
-          user: nextUser,
-        };
+        setSession({
+          accessToken,
+          user: normalizedUser,
+        });
       },
       signOut: () => {
-        clearStoredUser();
-        setUser(null);
+        clearStoredSession();
+        setSession(null);
       },
     }),
-    [user],
+    [session],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-
-  return context;
 }
