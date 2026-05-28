@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FiBell, FiChevronDown, FiSearch, FiShoppingCart, FiUser } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/context/AuthContext";
+import { useAuth } from "../../auth/context/useAuth";
 import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
 import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCartSummary";

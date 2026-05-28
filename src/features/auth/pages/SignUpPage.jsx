@@ -4,7 +4,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthButton from "../components/AuthButton";
 import AuthCard from "../components/AuthCard";
 import AuthInput from "../components/AuthInput";
-import { showSuccessToast } from "../../../utils/alerts";
+import { registerUser } from "../api/authApi";
+import {
+  showAuthErrorAlert,
+  showSuccessToast,
+} from "../../../utils/alerts";
 
 const initialFormState = {
   firstName: "",
@@ -12,12 +16,14 @@ const initialFormState = {
   email: "",
   password: "",
   phone: "",
+  postCode: "",
 };
 
 export default function SignUpPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [formState, setFormState] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -26,9 +32,33 @@ export default function SignUpPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await showSuccessToast("Account created successfully");
-    setFormState(initialFormState);
-    navigate(location.state?.from?.pathname ?? "/signin");
+    setIsSubmitting(true);
+
+    try {
+      const result = await registerUser({
+        ...formState,
+        role: "user",
+      });
+
+      await showSuccessToast(result.message || "Account created successfully");
+      setFormState(initialFormState);
+      navigate("/signin", {
+        replace: true,
+        state: {
+          ...location.state,
+          registeredEmail: result.user.email,
+        },
+      });
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error
+          ? error.message
+          : "Unable to create your account right now.",
+        "Sign up failed",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -102,6 +132,17 @@ export default function SignUpPage() {
           placeholder="Enter phone number"
           value={formState.phone}
           onChange={handleChange}
+          required
+        />
+
+        <AuthInput
+          label="Post code"
+          name="postCode"
+          type="text"
+          placeholder="Enter post code"
+          value={formState.postCode}
+          onChange={handleChange}
+          required
         />
 
         <AuthButton type="button" variant="secondary" className="py-3">
@@ -110,9 +151,10 @@ export default function SignUpPage() {
 
         <AuthButton
           type="submit"
+          disabled={isSubmitting}
           className="inline-flex items-center justify-center gap-2"
         >
-          Create account
+          {isSubmitting ? "Creating account..." : "Create account"}
           <FiArrowRight className="text-[16px]" />
         </AuthButton>
 

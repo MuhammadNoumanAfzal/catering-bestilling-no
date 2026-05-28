@@ -5,7 +5,7 @@ import TablewareModal, {
 } from "../../../components/shared/TablewareModal";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/context/AuthContext";
+import { useAuth } from "../../auth/context/useAuth";
 import { promptSignInRequired } from "../../../utils/alerts";
 
 const TIP_OPTIONS = [

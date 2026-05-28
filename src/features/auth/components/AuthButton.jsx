@@ -3,6 +3,8 @@ export default function AuthButton({
   type = "button",
   variant = "primary",
   className = "",
+  disabled = false,
+  ...props
 }) {
   const variantClassName =
     variant === "secondary"
@@ -12,7 +14,9 @@ export default function AuthButton({
   return (
     <button
       type={type}
-      className={`w-full rounded-full px-5 py-3.5 text-[15px] font-semibold transition ${variantClassName} ${className}`}
+      disabled={disabled}
+      className={`w-full rounded-full px-5 py-3.5 text-[15px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${variantClassName} ${className}`}
+      {...props}
     >
       {children}
     </button>

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
-import { useAuth } from "../../auth/context/AuthContext";
+import { useAuth } from "../../auth/context/useAuth";
 import { vendorNavigationItems } from "../data/vendorDashboardData";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 

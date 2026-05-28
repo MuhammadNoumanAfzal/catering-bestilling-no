@@ -9,7 +9,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../../auth/context/AuthContext";
+import { useAuth } from "../../auth/context/useAuth";
 import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
 import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCartSummary";
