@@ -1,5 +1,5 @@
 const DEFAULT_GRAPHQL_ENDPOINT =
-  "https://lunsjavtale-backend.onrender.com/graphql/";
+  "https://lunsjavtale-backend-w2cf.onrender.com/graphql/";
 
 export const GRAPHQL_ENDPOINT =
   import.meta.env.VITE_GRAPHQL_URL ?? DEFAULT_GRAPHQL_ENDPOINT;

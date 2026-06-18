@@ -1,12 +1,26 @@
-import { useContext } from "react";
-import { AuthContext } from "./authContext";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthSession as setSessionAction, signOut as signOutAction } from "../authSlice";
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const { user, accessToken } = useSelector((state) => state.auth);
 
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  const isLoggedIn = Boolean(accessToken && user);
 
-  return context;
+  const setAuthSession = ({ accessToken, user }) => {
+    dispatch(setSessionAction({ accessToken, user }));
+  };
+
+  const signOut = () => {
+    dispatch(signOutAction());
+  };
+
+  return {
+    user,
+    accessToken,
+    isLoggedIn,
+    setAuthSession,
+    signOut,
+  };
 }
+

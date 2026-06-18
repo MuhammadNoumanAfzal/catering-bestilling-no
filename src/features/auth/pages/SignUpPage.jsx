@@ -145,9 +145,6 @@ export default function SignUpPage() {
           required
         />
 
-        <AuthButton type="button" variant="secondary" className="py-3">
-          Continue with Google
-        </AuthButton>
 
         <AuthButton
           type="submit"
