@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import HeroSection from "../components/HeroSection";
 import FoodBrowsePreviewSection from "../components/FoodBrowsePreviewSection";
 import HowItWorksSection from "../components/HowItWorksSection";
@@ -13,11 +14,7 @@ import {
   getVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
 } from "../../vendor/data/vendorData";
-import {
-  featuredVendors,
-  popularProducts,
-  popularVendors,
-} from "../data/homeData";
+import { fetchHomeData } from "../homeSlice";
 import { foodTypeMenuItems } from "../../browse/data/browseData";
 import {
   formatCategoryLabel,
@@ -64,6 +61,14 @@ function matchesGuestRange(item, attendeeCount) {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { popularVendors, featuredVendors, popularProducts } = useSelector(
+    (state) => state.home,
+  );
+
+  useEffect(() => {
+    dispatch(fetchHomeData());
+  }, [dispatch]);
   const {
     attendeeCount,
     deliveryAddress,
@@ -158,6 +163,7 @@ export default function HomePage() {
         );
       }),
     [
+      popularVendors,
       activeHomeLocationFilter,
       deliveryDate,
       deliveryTime,
@@ -181,6 +187,7 @@ export default function HomePage() {
         );
       }),
     [
+      featuredVendors,
       activeHomeLocationFilter,
       deliveryDate,
       deliveryTime,
@@ -206,6 +213,7 @@ export default function HomePage() {
         );
       }),
     [
+      popularProducts,
       activeHomeLocationFilter,
       deliveryDate,
       deliveryTime,

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import VendorCard from "../components/VendorCard";
-import { getVendorCollectionBySlug } from "../data/homeData";
+import { fetchHomeData } from "../homeSlice";
 import { filterVendorsByLocation } from "../../vendor/data/vendorData";
 import {
   formatCategoryLabel,
@@ -14,9 +15,16 @@ const PAGE_SIZE = 8;
 
 export default function VendorListingPage() {
   const { vendorType } = useParams();
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const { locationValue, searchQuery } = useBrowseFilters();
-  const vendorCollection = getVendorCollectionBySlug(vendorType);
+  const { popularVendors, featuredVendors } = useSelector((state) => state.home);
+
+  useEffect(() => {
+    if (popularVendors.length === 0 || featuredVendors.length === 0) {
+      dispatch(fetchHomeData());
+    }
+  }, [dispatch, popularVendors.length, featuredVendors.length]);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
   const activeCategoryLabel = formatCategoryLabel(selectedCategory);
@@ -25,11 +33,18 @@ export default function VendorListingPage() {
     setVisibleCount(PAGE_SIZE);
   }, [selectedCategory, vendorType]);
 
-  if (!vendorCollection) {
+  const isPopular = vendorType === "popular";
+  const isFeatured = vendorType === "featured";
+
+  if (!isPopular && !isFeatured) {
     return <Navigate to="/" replace />;
   }
 
-  const { title, description, vendors } = vendorCollection;
+  const title = isPopular ? "Popular Vendors" : "Featured Vendors";
+  const description = isPopular
+    ? "Explore the vendors customers order from most often for everyday lunches and office catering."
+    : "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.";
+  const vendors = isPopular ? popularVendors : featuredVendors;
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredVendors = useMemo(
     () =>

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { ProductItem } from "../components/ProductShowcaseSection";
-import { getProductCollectionBySlug } from "../data/homeData";
+import { fetchHomeData } from "../homeSlice";
 import { filterItemsByVendorLocation } from "../../vendor/data/vendorData";
 import {
   formatCategoryLabel,
@@ -14,9 +15,16 @@ const PAGE_SIZE = 8;
 
 export default function ProductListingPage() {
   const { productType } = useParams();
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const { locationValue, searchQuery } = useBrowseFilters();
-  const productCollection = getProductCollectionBySlug(productType);
+  const { popularProducts } = useSelector((state) => state.home);
+
+  useEffect(() => {
+    if (popularProducts.length === 0) {
+      dispatch(fetchHomeData());
+    }
+  }, [dispatch, popularProducts.length]);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
   const activeCategoryLabel = formatCategoryLabel(selectedCategory);
@@ -25,11 +33,13 @@ export default function ProductListingPage() {
     setVisibleCount(PAGE_SIZE);
   }, [productType, selectedCategory]);
 
-  if (!productCollection) {
+  if (productType !== "popular") {
     return <Navigate to="/" replace />;
   }
 
-  const { title, description, products } = productCollection;
+  const title = "Popular Products";
+  const description = "Browse the most-ordered meals and catering picks that teams keep coming back to.";
+  const products = popularProducts;
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredProducts = useMemo(
     () =>
