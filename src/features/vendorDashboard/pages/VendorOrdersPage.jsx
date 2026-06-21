@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { FiSearch } from "react-icons/fi";
 import OrderDateFilter from "../components/orders/OrderDateFilter";
 import OrderDetailsModal from "../components/orders/OrderDetailsModal";
 import OrderStatusSummaryCard from "../components/orders/OrderStatusSummaryCard";
 import OrdersPagination from "../components/orders/OrdersPagination";
 import OrdersTable from "../components/orders/OrdersTable";
-import {
-  vendorOrders,
-  vendorOrderStatusSummary,
-} from "../data/vendorDashboardData";
+import { fetchClientOrders } from "../ordersSlice";
 import {
   getRangeDays,
   isActiveOrder,
@@ -33,10 +31,18 @@ export default function VendorOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const dateMenuRef = useRef(null);
 
+  const dispatch = useDispatch();
+  const { orders, statusSummary, isLoading, error } = useSelector((state) => state.orders);
+
+  useEffect(() => {
+    dispatch(fetchClientOrders());
+  }, [dispatch]);
+
   const referenceDate = useMemo(() => {
-    const timestamps = vendorOrders.map((order) => parseOrderDate(order.date).getTime());
+    if (orders.length === 0) return new Date();
+    const timestamps = orders.map((order) => parseOrderDate(order.date).getTime());
     return new Date(Math.max(...timestamps));
-  }, []);
+  }, [orders]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -56,7 +62,7 @@ export default function VendorOrdersPage() {
     const query = searchValue.trim().toLowerCase();
     const rangeDays = getRangeDays(selectedRange);
 
-    return vendorOrders.filter((order) => {
+    return orders.filter((order) => {
       const matchesView =
         activeView === "active" ? isActiveOrder(order.status) : true;
       const matchesTab =
@@ -116,9 +122,25 @@ export default function VendorOrdersPage() {
   const startIndex =
     filteredOrders.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
   const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, filteredOrders.length);
-  const activeOrdersCount = vendorOrders.filter((order) =>
+  const activeOrdersCount = orders.filter((order) =>
     isActiveOrder(order.status),
   ).length;
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center text-sm text-red-600">
+        {error}
+      </div>
+    );
+  }
 
   function handleTabChange(tab) {
     setSelectedTabs((current) => {
@@ -167,7 +189,7 @@ export default function VendorOrdersPage() {
       <section>
         <h2 className="type-h3 font-extrabold text-[#121212]">Quick Status</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {vendorOrderStatusSummary.map((item) => (
+          {statusSummary.map((item) => (
             <OrderStatusSummaryCard key={item.label} {...item} />
           ))}
         </div>
@@ -181,7 +203,7 @@ export default function VendorOrdersPage() {
                 {ORDER_VIEW_TABS.map((tab) => {
                   const isActive = tab.value === activeView;
                   const count =
-                    tab.value === "active" ? activeOrdersCount : vendorOrders.length;
+                    tab.value === "active" ? activeOrdersCount : orders.length;
 
                   return (
                     <button
