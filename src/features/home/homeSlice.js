@@ -119,15 +119,15 @@ export const fetchHomeData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await graphqlRequest({ query: FETCH_HOME_DATA_QUERY });
-      
+
       const featured = (response.featured?.edges || []).map((edge, index) =>
         mapVendorNode(edge.node, index)
       );
-      
+
       const popularVendors = (response.popularVendors?.edges || []).map((edge, index) =>
         mapVendorNode(edge.node, index + 10)
       );
-      
+
       const popularProducts = (response.popularProducts?.edges || []).map((edge, index) =>
         mapProductNode(edge.node, index)
       );

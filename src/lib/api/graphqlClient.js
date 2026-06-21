@@ -68,12 +68,28 @@ function buildGraphqlErrorMessage(errors) {
 }
 
 export async function graphqlRequest({ query, variables = {} }) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Accept-Language": "en",
+  };
+
+  if (typeof window !== "undefined") {
+    try {
+      const savedSession = window.sessionStorage.getItem("auth-session");
+      if (savedSession) {
+        const parsed = JSON.parse(savedSession);
+        if (parsed?.accessToken) {
+          headers["Authorization"] = `JWT ${parsed.accessToken}`;
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
   const response = await fetch(GRAPHQL_ENDPOINT, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept-Language": "en",
-    },
+    headers,
     body: JSON.stringify({
       query,
       variables,
