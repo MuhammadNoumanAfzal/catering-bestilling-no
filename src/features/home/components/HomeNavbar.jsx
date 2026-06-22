@@ -13,7 +13,7 @@ import { useAuth } from "../../auth";
 import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
 import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCartSummary";
-import { vendorNavigationItems } from "../../vendorDashboard/data/vendorDashboardData";
+import { vendorNavigationItems } from "../../vendorDashboard/data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
 const homeProfileMenuItems = [

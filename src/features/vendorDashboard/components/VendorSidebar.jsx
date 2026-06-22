@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "../../auth";
-import { vendorNavigationItems } from "../data/vendorDashboardData";
+import { vendorNavigationItems } from "../data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
 function getLinkClasses({ isActive }) {

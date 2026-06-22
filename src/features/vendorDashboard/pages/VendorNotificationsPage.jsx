@@ -7,9 +7,9 @@ import {
   groupNotificationsByDay,
   isNotificationWithinDateRange,
 } from "../components/notification/notificationUtils";
-import { vendorClientNotifications } from "../data/vendorDashboardData";
 
 export default function VendorNotificationsPage() {
+  const notifications = [];
   const [activeTab, setActiveTab] = useState("all");
   const [selectedRange, setSelectedRange] = useState("last-month");
   const [customDateRange, setCustomDateRange] = useState({
@@ -35,19 +35,19 @@ export default function VendorNotificationsPage() {
 
   const counts = useMemo(
     () => ({
-      all: vendorClientNotifications.length,
-      unread: vendorClientNotifications.filter(
+      all: notifications.length,
+      unread: notifications.filter(
         (notification) => notification.category === "unread",
       ).length,
-      read: vendorClientNotifications.filter(
+      read: notifications.filter(
         (notification) => notification.category === "read",
       ).length,
     }),
-    [],
+    [notifications],
   );
 
   const groupedNotifications = useMemo(() => {
-    const filteredNotifications = vendorClientNotifications.filter((notification) => {
+    const filteredNotifications = notifications.filter((notification) => {
       const matchesTab =
         activeTab === "all" ? true : notification.category === activeTab;
       const matchesDate = isNotificationWithinDateRange(
@@ -61,7 +61,7 @@ export default function VendorNotificationsPage() {
     });
 
     return groupNotificationsByDay(filteredNotifications);
-  }, [activeTab, customDateRange, selectedRange]);
+  }, [activeTab, customDateRange, notifications, selectedRange]);
 
   return (
     <div className="space-y-6">
@@ -126,10 +126,10 @@ export default function VendorNotificationsPage() {
           ) : (
             <div className="rounded-[22px] border border-dashed border-[#e4d8ce] bg-[#fcfaf8] px-6 py-14 text-center">
               <h2 className="text-lg font-semibold text-[#1f1f1f]">
-                No notifications here
+                No notifications available
               </h2>
               <p className="mt-2 text-sm text-[#746b63]">
-                Switch tabs to review a different set of client updates.
+                Notification data is not available yet for this account.
               </p>
             </div>
           )}
