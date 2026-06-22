@@ -1,97 +1,92 @@
-export function escapeGraphqlString(value) {
-  return String(value)
-    .replace(/\\/g, "\\\\")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, "\\n")
-    .replace(/\r/g, "\\r");
-}
-
-export function buildRegisterUserMutation(input) {
-  return `
-    mutation {
-      registerUser(input: {
-        email: "${escapeGraphqlString(input.email)}"
-        phone: "${escapeGraphqlString(input.phone)}"
-        password: "${escapeGraphqlString(input.password)}"
-        role: "${escapeGraphqlString(input.role)}"
-        firstName: "${escapeGraphqlString(input.firstName)}"
-        lastName: "${escapeGraphqlString(input.lastName)}"
-        postCode: ${input.postCode}
-      }) {
-        success
-        message
-        user {
-          id
-          email
-        }
+export const REGISTER_USER_MUTATION = `
+  mutation RegisterUser(
+    $email: String!
+    $phone: String!
+    $password: String!
+    $role: String!
+    $firstName: String!
+    $lastName: String!
+    $postCode: Int!
+  ) {
+    registerUser(
+      input: {
+        email: $email
+        phone: $phone
+        password: $password
+        role: $role
+        firstName: $firstName
+        lastName: $lastName
+        postCode: $postCode
+      }
+    ) {
+      success
+      message
+      user {
+        id
+        email
       }
     }
-  `;
-}
+  }
+`;
 
-export function buildLoginUserMutation(input) {
-  return `
-    mutation LoginUser {
-      loginUser(
-        email: "${escapeGraphqlString(input.email)}"
-        password: "${escapeGraphqlString(input.password)}"
-        role: "${escapeGraphqlString(input.role)}"
-      ) {
-        success
-        access
-        user {
-          id
-          email
-          firstName
-          lastName
-          role
-          isActive
-        }
+export const LOGIN_USER_MUTATION = `
+  mutation LoginUser(
+    $email: String!
+    $password: String!
+    $role: String!
+  ) {
+    loginUser(
+      email: $email
+      password: $password
+      role: $role
+    ) {
+      success
+      access
+      user {
+        id
+        email
+        firstName
+        lastName
+        role
+        isActive
       }
     }
-  `;
-}
+  }
+`;
 
-export function buildPasswordResetMailMutation(input) {
-  return `
-    mutation {
-      passwordResetMail(
-        email: "${escapeGraphqlString(input.email)}",
-        role: "${escapeGraphqlString(input.role)}"
-      ) {
-        success
-        message
-      }
+export const PASSWORD_RESET_MAIL_MUTATION = `
+  mutation PasswordResetMail($email: String!, $role: String!) {
+    passwordResetMail(email: $email, role: $role) {
+      success
+      message
     }
-  `;
-}
+  }
+`;
 
-export function buildVerifyResetCodeMutation(input) {
-  return `
-    mutation {
-      verifyResetCode(
-        email: "${escapeGraphqlString(input.email)}",
-        pin: "${escapeGraphqlString(input.pin)}"
-      ) {
-        success
-        message
-      }
+export const VERIFY_RESET_CODE_MUTATION = `
+  mutation VerifyResetCode($email: String!, $pin: String!) {
+    verifyResetCode(email: $email, pin: $pin) {
+      success
+      message
     }
-  `;
-}
+  }
+`;
 
-export function buildResetPasswordMutation(input) {
-  return `
-    mutation {
-      resetPassword(
-        email: "${escapeGraphqlString(input.email)}",
-        token: "${escapeGraphqlString(input.token)}",
-        password1: "${escapeGraphqlString(input.password1)}",
-        password2: "${escapeGraphqlString(input.password2)}"
-      ) {
-        success
-        message
-      }
+export const RESET_PASSWORD_MUTATION = `
+  mutation ResetPassword(
+    $email: String!
+    $token: String!
+    $password1: String!
+    $password2: String!
+  ) {
+    resetPassword(
+      email: $email
+      token: $token
+      password1: $password1
+      password2: $password2
+    ) {
+      success
+      message
     }
-  `;
-}
+  }
+`;

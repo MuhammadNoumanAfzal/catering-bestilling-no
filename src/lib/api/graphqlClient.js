@@ -1,3 +1,5 @@
+import { getStoredAccessToken } from "../../features/auth/utils/authSession";
+
 const DEFAULT_GRAPHQL_ENDPOINT =
   "https://live-api.lunsjavtale.no/graphql/";
 
@@ -73,18 +75,10 @@ export async function graphqlRequest({ query, variables = {} }) {
     "Accept-Language": "en",
   };
 
-  if (typeof window !== "undefined") {
-    try {
-      const savedSession = window.sessionStorage.getItem("auth-session");
-      if (savedSession) {
-        const parsed = JSON.parse(savedSession);
-        if (parsed?.accessToken) {
-          headers["Authorization"] = `JWT ${parsed.accessToken}`;
-        }
-      }
-    } catch {
-      // Ignore
-    }
+  const accessToken = getStoredAccessToken();
+
+  if (accessToken) {
+    headers.Authorization = `JWT ${accessToken}`;
   }
 
   const response = await fetch(GRAPHQL_ENDPOINT, {
