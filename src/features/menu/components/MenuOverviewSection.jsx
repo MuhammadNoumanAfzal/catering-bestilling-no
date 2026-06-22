@@ -1,6 +1,6 @@
 import { FiClock, FiMapPin, FiStar, FiTruck } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
-import { formatDistance } from "./menuDetailsUtils";
+import { formatDistance } from "../utils/formatters";
 
 function InfoCard({ icon, label, value, subvalue }) {
   return (

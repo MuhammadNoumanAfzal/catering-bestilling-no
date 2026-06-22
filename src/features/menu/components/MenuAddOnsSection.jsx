@@ -1,4 +1,4 @@
-import { formatCurrency } from "./menuDetailsUtils";
+import { formatCurrency } from "../utils/formatters";
 
 function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
   return (
