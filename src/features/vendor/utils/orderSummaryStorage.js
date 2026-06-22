@@ -1,4 +1,3 @@
-import { getFallbackVendorProfiles } from "../services";
 import { getDefaultTableware } from "../../../components/shared/TablewareModal";
 
 const STORAGE_PREFIX = "vendor-order-summary:";
@@ -30,6 +29,81 @@ function getStorageKey(vendorSlug) {
   return `${STORAGE_PREFIX}${vendorSlug}`;
 }
 
+function listStorageKeys() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  return Object.keys(window.sessionStorage).filter((key) =>
+    key.startsWith(STORAGE_PREFIX),
+  );
+}
+
+function buildStoredPayload(orderSummary, vendorSnapshot) {
+  return {
+    orderSummary,
+    vendor: vendorSnapshot ?? null,
+  };
+}
+
+function parseStoredPayload(storedValue) {
+  const parsedValue = JSON.parse(storedValue);
+
+  if (
+    parsedValue &&
+    typeof parsedValue === "object" &&
+    "orderSummary" in parsedValue
+  ) {
+    return {
+      orderSummary: parsedValue.orderSummary ?? {},
+      vendor: parsedValue.vendor ?? null,
+    };
+  }
+
+  return {
+    orderSummary: parsedValue ?? {},
+    vendor: null,
+  };
+}
+
+function toVendorSnapshot(vendor) {
+  if (!vendor) {
+    return null;
+  }
+
+  return {
+    id: vendor.id || "",
+    slug: vendor.slug || "",
+    name: vendor.name || "",
+    image: vendor.image || vendor.banner || vendor.logo || "",
+    logo: vendor.logo || "",
+    banner: vendor.banner || vendor.image || "",
+    heroSideImage: vendor.heroSideImage || vendor.banner || vendor.image || "",
+    rating: vendor.rating || "0.0",
+    reviewCount: vendor.reviewCount || 0,
+    cuisine: vendor.cuisine || "",
+    addressLine: vendor.addressLine || "",
+    city: vendor.city || "",
+    servicePostalCodes: Array.isArray(vendor.servicePostalCodes)
+      ? vendor.servicePostalCodes
+      : [],
+    deliveryFee: vendor.deliveryFee || "",
+    leadTime: vendor.leadTime || "",
+    availability: vendor.availability || null,
+    categories: Array.isArray(vendor.categories) ? vendor.categories : [],
+    categoryTags: Array.isArray(vendor.categoryTags) ? vendor.categoryTags : [],
+    orderSummary: vendor.orderSummary || {
+      items: [],
+      deliveryDate: "",
+      deliveryTime: "",
+      personCount: 1,
+      deliveryAddress: "",
+      invoiceAddress: "",
+      total: "0.00",
+    },
+  };
+}
+
 export function readOrderSummary(vendor) {
   const fallback = createInitialOrderSummary(vendor);
 
@@ -44,15 +118,15 @@ export function readOrderSummary(vendor) {
       return fallback;
     }
 
-    const parsedValue = JSON.parse(storedValue);
+    const { orderSummary } = parseStoredPayload(storedValue);
 
     return {
       ...fallback,
-      ...parsedValue,
-      items: Array.isArray(parsedValue?.items) ? parsedValue.items : [],
+      ...orderSummary,
+      items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
       tableware: {
         ...fallback.tableware,
-        ...(parsedValue?.tableware ?? {}),
+        ...(orderSummary?.tableware ?? {}),
       },
     };
   } catch {
@@ -60,14 +134,40 @@ export function readOrderSummary(vendor) {
   }
 }
 
-export function writeOrderSummary(vendorSlug, orderSummary) {
+export function writeOrderSummary(vendorOrSlug, orderSummary, vendorSnapshot) {
   if (typeof window === "undefined") {
     return;
   }
 
+  const vendorSlug =
+    typeof vendorOrSlug === "string" ? vendorOrSlug : vendorOrSlug?.slug;
+
+  if (!vendorSlug) {
+    return;
+  }
+
+  const existingValue = window.sessionStorage.getItem(getStorageKey(vendorSlug));
+  let existingVendor = null;
+
+  if (existingValue) {
+    try {
+      existingVendor = parseStoredPayload(existingValue).vendor;
+    } catch {
+      existingVendor = null;
+    }
+  }
+
   window.sessionStorage.setItem(
     getStorageKey(vendorSlug),
-    JSON.stringify(orderSummary),
+    JSON.stringify(
+      buildStoredPayload(
+        orderSummary,
+        vendorSnapshot ??
+          (typeof vendorOrSlug === "string"
+            ? existingVendor
+            : toVendorSnapshot(vendorOrSlug)),
+      ),
+    ),
   );
   emitOrderSummaryUpdated();
 }
@@ -77,16 +177,40 @@ export function readAllStoredOrderSummaries() {
     return [];
   }
 
-  return getFallbackVendorProfiles()
-    .map((vendor) => {
-      const orderSummary = readOrderSummary(vendor);
+  return listStorageKeys()
+    .map((key) => {
+      try {
+        const storedValue = window.sessionStorage.getItem(key);
 
-      return {
-        vendor,
-        orderSummary,
-      };
+        if (!storedValue) {
+          return null;
+        }
+
+        const { orderSummary, vendor } = parseStoredPayload(storedValue);
+
+        if (!vendor) {
+          return null;
+        }
+
+        return {
+          vendor,
+          orderSummary: {
+            ...createInitialOrderSummary(vendor),
+            ...orderSummary,
+            items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
+            tableware: {
+              ...getDefaultTableware(),
+              ...(orderSummary?.tableware ?? {}),
+            },
+          },
+        };
+      } catch {
+        return null;
+      }
     })
-    .filter(({ orderSummary }) => orderSummary.items.length > 0);
+    .filter(
+      (entry) => entry && Array.isArray(entry.orderSummary.items) && entry.orderSummary.items.length > 0,
+    );
 }
 
 export function clearStoredOrderSummary(vendorSlug) {
@@ -103,12 +227,12 @@ export function clearOtherStoredOrderSummaries(activeVendorSlug) {
     return;
   }
 
-  getFallbackVendorProfiles().forEach((vendor) => {
-    if (vendor.slug === activeVendorSlug) {
+  listStorageKeys().forEach((key) => {
+    if (key === getStorageKey(activeVendorSlug)) {
       return;
     }
 
-    window.sessionStorage.removeItem(getStorageKey(vendor.slug));
+    window.sessionStorage.removeItem(key);
   });
 
   emitOrderSummaryUpdated();
@@ -119,8 +243,8 @@ export function clearAllStoredOrderSummaries() {
     return;
   }
 
-  getFallbackVendorProfiles().forEach((vendor) => {
-    window.sessionStorage.removeItem(getStorageKey(vendor.slug));
+  listStorageKeys().forEach((key) => {
+    window.sessionStorage.removeItem(key);
   });
   emitOrderSummaryUpdated();
 }

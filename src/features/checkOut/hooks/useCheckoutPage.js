@@ -110,7 +110,7 @@ export function useCheckoutPage() {
 
   useEffect(() => {
     carts.forEach(({ vendor, orderSummary }) => {
-      writeOrderSummary(vendor.slug, orderSummary);
+      writeOrderSummary(vendor, orderSummary);
     });
   }, [carts]);
 

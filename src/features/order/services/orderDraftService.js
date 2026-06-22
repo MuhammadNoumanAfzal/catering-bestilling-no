@@ -24,7 +24,7 @@ export function buildUpdatedPlacedOrderDraft(placedOrderDraft, nextValues) {
       personCount: nextValues.personCount,
     };
 
-    writeOrderSummary(cart.vendor.slug, nextOrderSummary);
+    writeOrderSummary(cart.vendor, nextOrderSummary);
 
     return {
       ...cart,

@@ -1,2 +1,6 @@
 export { adaptApiProductToMenuItem, adaptApiVendorToProfile } from "./vendorMappers";
-export { fetchVendorProfileBySlug, fetchVendors } from "./vendorService";
+export {
+  fetchVendorProfileBySlug,
+  fetchVendorProfiles,
+  fetchVendors,
+} from "./vendorService";

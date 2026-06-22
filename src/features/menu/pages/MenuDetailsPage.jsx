@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
+  fetchVendorProfiles,
   getAvailableVendorsForSlot,
   isVendorDeliverySlotAvailable,
 } from "../../vendor";
@@ -52,6 +53,7 @@ export default function MenuDetailsPage() {
   const [isSaved, setIsSaved] = useState(false);
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
+  const [vendorOptions, setVendorOptions] = useState([]);
   const addOnsSliderRef = useRef(null);
   const minimumPersons = menuItem?.serves ?? 1;
   const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
@@ -83,11 +85,35 @@ export default function MenuDetailsPage() {
   }, [menuItem, minimumPersons, vendor]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    async function loadVendorOptions() {
+      try {
+        const nextVendors = await fetchVendorProfiles();
+
+        if (isMounted) {
+          setVendorOptions(nextVendors);
+        }
+      } catch {
+        if (isMounted) {
+          setVendorOptions([]);
+        }
+      }
+    }
+
+    loadVendorOptions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!vendor || !orderSummary) {
       return;
     }
 
-    writeOrderSummary(vendor.slug, orderSummary);
+    writeOrderSummary(vendor, orderSummary);
   }, [orderSummary, vendor]);
 
   const addOnItems = useMemo(() => {
@@ -276,6 +302,7 @@ export default function MenuDetailsPage() {
     orderSummary.deliveryTime,
   );
   const availableRestaurants = getAvailableVendorsForSlot(
+    vendorOptions,
     orderSummary.deliveryDate,
     orderSummary.deliveryTime,
     vendor.slug,

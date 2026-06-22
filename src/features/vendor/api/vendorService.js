@@ -14,9 +14,14 @@ export async function fetchVendors() {
   return (response.vendors?.edges || []).map((edge) => edge.node);
 }
 
-export async function fetchVendorProfileBySlug(vendorSlug) {
+export async function fetchVendorProfiles() {
   const vendors = await fetchVendors();
-  const matchedVendor = vendors.find(
+  return vendors.map((vendor) => adaptApiVendorToProfile(vendor));
+}
+
+export async function fetchVendorProfileBySlug(vendorSlug) {
+  const vendorProfiles = await fetchVendorProfiles();
+  const matchedVendor = vendorProfiles.find(
     (vendor) => slugify(vendor.name) === vendorSlug,
   );
 
@@ -24,5 +29,5 @@ export async function fetchVendorProfileBySlug(vendorSlug) {
     throw new Error("Vendor profile not found in API.");
   }
 
-  return adaptApiVendorToProfile(matchedVendor);
+  return matchedVendor;
 }

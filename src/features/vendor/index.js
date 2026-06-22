@@ -5,6 +5,7 @@ export {
   adaptApiProductToMenuItem,
   adaptApiVendorToProfile,
   fetchVendorProfileBySlug,
+  fetchVendorProfiles,
   fetchVendors,
 } from "./api";
 export {

@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
-import { foodTypeMenuItems } from "../../browse/data/browseData";
 import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
 import {
   FoodBrowsePreviewSection,
@@ -86,8 +85,8 @@ export default function HomePage() {
   );
 
   const filteredMenuItems = useMemo(
-    () => filterHomePreviewMenuItems(foodTypeMenuItems, sharedFilters),
-    [sharedFilters],
+    () => filterHomePreviewMenuItems(popularProducts, sharedFilters),
+    [popularProducts, sharedFilters],
   );
   const previewMenuItems = useMemo(
     () => filteredMenuItems.slice(0, 6),
