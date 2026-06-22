@@ -10,7 +10,7 @@ import {
 import BrowseFoodTypePage from "../../features/browse/pages/BrowseFoodTypePage";
 import BrowseOccasionPage from "../../features/browse/pages/BrowseOccasionPage";
 import ContactPage from "../../features/contact/pages/ContactPage";
-import OrderConfirmedPage from "../../features/order/pages/OrderConfirmedPage";
+import { OrderConfirmedPage } from "../../features/order";
 import { MenuDetailsPage } from "../../features/menu";
 import { VendorProfilePage, VendorReviewsPage } from "../../features/vendor";
 import {

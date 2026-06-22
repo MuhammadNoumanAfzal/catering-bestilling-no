@@ -1,4 +1,8 @@
 import { useMemo, useState } from "react";
+import {
+  createInitialModifyOrderFormState,
+  MODIFY_ORDER_PLACEHOLDERS,
+} from "../constants/modifyOrderForm";
 
 function formatDisplayDate(value) {
   if (!value) {
@@ -23,16 +27,9 @@ export default function ModifyOrderModal({
   onCancel,
   onSave,
 }) {
-  const [formState, setFormState] = useState(() => ({
-    address: initialValue?.address ?? "",
-    addressLine2: initialValue?.addressLine2 ?? "",
-    city: initialValue?.city ?? "",
-    postalCode: initialValue?.postalCode ?? "",
-    date: initialValue?.date ?? "",
-    time: initialValue?.time ?? "",
-    personCount: Math.max(1, Number(initialValue?.personCount ?? 1)),
-    additionalDetails: initialValue?.additionalDetails ?? "",
-  }));
+  const [formState, setFormState] = useState(() =>
+    createInitialModifyOrderFormState(initialValue),
+  );
 
   const formattedDate = useMemo(
     () => formatDisplayDate(formState.date),
@@ -95,7 +92,7 @@ export default function ModifyOrderModal({
             <input
               value={formState.address}
               onChange={(event) => updateField("address", event.target.value)}
-              placeholder="xxxx-xxxx-xxx"
+              placeholder={MODIFY_ORDER_PLACEHOLDERS.address}
               className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
             />
           </label>
@@ -142,7 +139,7 @@ export default function ModifyOrderModal({
                 onChange={(event) =>
                   updateField("addressLine2", event.target.value)
                 }
-                placeholder="5"
+                placeholder={MODIFY_ORDER_PLACEHOLDERS.addressLine2}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
             </label>
@@ -156,7 +153,7 @@ export default function ModifyOrderModal({
               <input
                 value={formState.city}
                 onChange={(event) => updateField("city", event.target.value)}
-                placeholder="Bergen"
+                placeholder={MODIFY_ORDER_PLACEHOLDERS.city}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
             </label>
@@ -170,7 +167,7 @@ export default function ModifyOrderModal({
                 onChange={(event) =>
                   updateField("postalCode", event.target.value)
                 }
-                placeholder="1235"
+                placeholder={MODIFY_ORDER_PLACEHOLDERS.postalCode}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
             </label>
@@ -185,7 +182,7 @@ export default function ModifyOrderModal({
               onChange={(event) =>
                 updateField("additionalDetails", event.target.value)
               }
-              placeholder="Please explain the changes you would like to make..."
+              placeholder={MODIFY_ORDER_PLACEHOLDERS.additionalDetails}
               className="min-h-[88px] w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 py-2.5 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
             />
           </label>
