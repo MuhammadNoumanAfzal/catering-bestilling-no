@@ -10,10 +10,23 @@ export const FETCH_HOME_DATA_QUERY = `
           logoUrl
           coverPhotoUrl
           categoryTags
+          reviewsCount
+          businessSettings {
+            businessAddress
+            businessHours
+          }
+          serviceAreas {
+            id
+            name
+            postCode
+            isActive
+          }
           deliverySettings {
             minDeliveryTime
             maxDeliveryTime
             baseDeliveryFee
+            deliveryDays
+            deliveryTimeSlots
           }
         }
       }
@@ -28,10 +41,23 @@ export const FETCH_HOME_DATA_QUERY = `
           logoUrl
           coverPhotoUrl
           categoryTags
+          reviewsCount
+          businessSettings {
+            businessAddress
+            businessHours
+          }
+          serviceAreas {
+            id
+            name
+            postCode
+            isActive
+          }
           deliverySettings {
             minDeliveryTime
             maxDeliveryTime
             baseDeliveryFee
+            deliveryDays
+            deliveryTimeSlots
           }
         }
       }
@@ -41,11 +67,14 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          description
           averageRating
           ordersCount
           badge
           deliveryFee
           deliveryTime
+          priceWithTax
+          pricingType
           categoryTags
           dietaryTags
           minimumGuests
@@ -55,6 +84,28 @@ export const FETCH_HOME_DATA_QUERY = `
           vendor {
             id
             name
+            rating
+            reviewsCount
+            logoUrl
+            coverPhotoUrl
+            categoryTags
+            businessSettings {
+              businessAddress
+              businessHours
+            }
+            serviceAreas {
+              id
+              name
+              postCode
+              isActive
+            }
+            deliverySettings {
+              minDeliveryTime
+              maxDeliveryTime
+              baseDeliveryFee
+              deliveryDays
+              deliveryTimeSlots
+            }
           }
         }
       }

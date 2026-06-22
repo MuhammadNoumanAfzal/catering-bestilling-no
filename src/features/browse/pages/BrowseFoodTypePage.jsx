@@ -1,17 +1,18 @@
 import BrowseCatalogView from "../components/BrowseCatalogView";
+import { useBrowseCatalogItems } from "../hooks/useBrowseCatalogItems";
 import {
   foodTypeCategories,
-  foodTypeMenuItems,
   moreFoodTypeOptions,
 } from "../data/browseData";
 
 export default function BrowseFoodTypePage() {
+  const { items, isLoading } = useBrowseCatalogItems();
+
   return (
     <BrowseCatalogView
-      title="Food Type"
-      subtitle="Explore lunch options by category and keep the same shared desktop layout while browsing."
+      isLoading={isLoading}
       categories={foodTypeCategories}
-      menuItems={foodTypeMenuItems}
+      menuItems={items}
       moreOptions={moreFoodTypeOptions}
     />
   );

@@ -15,7 +15,6 @@ import {
   filterItemsByVendorLocation,
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,
-  getFallbackVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
 } from "../../vendor";
 
@@ -79,9 +78,11 @@ export function filterHomePreviewMenuItems(items, filters) {
   } = filters;
 
   return sortCatalogItems(
-    filterItemsByVendorLocation(items, locationFilter).filter((item) => {
-      const vendor = getFallbackVendorProfileBySlug(item.vendorSlug);
-
+    filterItemsByVendorLocation(
+      items,
+      locationFilter,
+      (item) => item?.vendorData ?? item?.vendor ?? null,
+    ).filter((item) => {
       return (
         matchesCategorySelection(item.categoryTags, category) &&
         matchesGuestRange(item, attendeeCount) &&
@@ -101,7 +102,11 @@ export function filterHomePreviewMenuItems(items, filters) {
         matchesOfferFilter(item, selectedOffers) &&
         matchesPricingFilter(item, selectedPricing) &&
         matchesOtherFilters(item, otherFilters) &&
-        isVendorDeliverySlotAvailable(vendor, deliveryDate, deliveryTime)
+        isVendorDeliverySlotAvailable(
+          item.vendorData ?? item.vendor,
+          deliveryDate,
+          deliveryTime,
+        )
       );
     }),
     selectedSort,
@@ -141,10 +146,12 @@ export function filterHomeProducts(products, filters) {
   const { category, deliveryDate, deliveryTime, locationFilter, searchQuery } =
     filters;
 
-  return filterItemsByVendorLocation(products, locationFilter).filter(
+  return filterItemsByVendorLocation(
+    products,
+    locationFilter,
+    (product) => product?.vendorData ?? product?.vendor ?? null,
+  ).filter(
     (product) => {
-      const vendor = getFallbackVendorProfileBySlug(product.vendorSlug);
-
       return (
         matchesCategorySelection(product.categoryTags, category) &&
         matchesSearchText(
@@ -156,7 +163,11 @@ export function filterHomeProducts(products, filters) {
           ],
           searchQuery,
         ) &&
-        isVendorDeliverySlotAvailable(vendor, deliveryDate, deliveryTime)
+        isVendorDeliverySlotAvailable(
+          product.vendorData ?? product.vendor,
+          deliveryDate,
+          deliveryTime,
+        )
       );
     },
   );

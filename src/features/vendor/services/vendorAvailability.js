@@ -1,9 +1,3 @@
-import {
-  getFallbackVendorProfileByName,
-  getFallbackVendorProfileBySlug,
-  getFallbackVendorProfiles,
-} from "./vendorCatalog";
-
 function normalizePostalCode(postalCode = "") {
   return `${postalCode}`.replace(/\D/g, "").slice(0, 4);
 }
@@ -13,15 +7,7 @@ function normalizeLocationQuery(locationQuery = "") {
 }
 
 function resolveVendorReference(vendor) {
-  if (!vendor) {
-    return null;
-  }
-
-  if (vendor.slug) {
-    return getFallbackVendorProfileBySlug(vendor.slug);
-  }
-
-  return getFallbackVendorProfileByName(vendor.name);
+  return vendor ?? null;
 }
 
 function resolveVendorPostalCoverage(vendor) {
@@ -29,7 +15,7 @@ function resolveVendorPostalCoverage(vendor) {
     return vendor.servicePostalCodes;
   }
 
-  return resolveVendorReference(vendor)?.servicePostalCodes ?? [];
+  return [];
 }
 
 function isDateValid(date) {
@@ -110,11 +96,10 @@ export function filterVendorsByLocation(vendors, locationQuery) {
 export function filterItemsByVendorLocation(
   items,
   locationQuery,
-  getVendorSlug = (item) => item?.vendorSlug,
+  getVendor = (item) => item?.vendor ?? null,
 ) {
   return items.filter((item) => {
-    const vendorSlug = getVendorSlug(item);
-    const vendor = vendorSlug ? getFallbackVendorProfileBySlug(vendorSlug) : null;
+    const vendor = getVendor(item);
 
     return vendor ? isVendorAvailableForLocation(vendor, locationQuery) : true;
   });
@@ -162,8 +147,13 @@ export function filterVendorsByDeliverySlot(vendors, date, time) {
   );
 }
 
-export function getAvailableVendorsForSlot(date, time, excludedVendorSlug) {
-  return getFallbackVendorProfiles().filter(
+export function getAvailableVendorsForSlot(
+  vendors,
+  date,
+  time,
+  excludedVendorSlug,
+) {
+  return (vendors ?? []).filter(
     (vendor) =>
       vendor.slug !== excludedVendorSlug &&
       isVendorDeliverySlotAvailable(vendor, date, time),

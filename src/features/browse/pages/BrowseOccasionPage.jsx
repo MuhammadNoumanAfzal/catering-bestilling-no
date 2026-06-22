@@ -1,17 +1,18 @@
 import BrowseCatalogView from "../components/BrowseCatalogView";
+import { useBrowseCatalogItems } from "../hooks/useBrowseCatalogItems";
 import {
   occasionCategories,
-  occasionMenuItems,
   moreOccasionOptions,
 } from "../data/browseData";
 
 export default function BrowseOccasionPage() {
+  const { items, isLoading } = useBrowseCatalogItems();
+
   return (
     <BrowseCatalogView
-      title="By Occasion"
-      subtitle="Browse curated catering and lunch menus for celebrations, office events, and special gatherings."
+      isLoading={isLoading}
       categories={occasionCategories}
-      menuItems={occasionMenuItems}
+      menuItems={items}
       moreOptions={moreOccasionOptions}
     />
   );

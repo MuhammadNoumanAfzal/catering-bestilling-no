@@ -10,6 +10,7 @@ import {
   getAvailableVendorsForSlot,
   isVendorDeliverySlotAvailable,
 } from "../services";
+import { fetchVendorProfiles } from "../api";
 import {
   isVendorSaved,
   toggleSavedVendor,
@@ -44,6 +45,7 @@ export default function VendorProfilePage() {
     useState(false);
   const [isCategoryBarFixed, setIsCategoryBarFixed] = useState(false);
   const [categoryBarStyle, setCategoryBarStyle] = useState({});
+  const [vendorOptions, setVendorOptions] = useState([]);
   const sectionRefs = useRef({});
   const categoryBarAnchorRef = useRef(null);
   const categoryBarInnerRef = useRef(null);
@@ -73,7 +75,7 @@ export default function VendorProfilePage() {
       return;
     }
 
-    writeOrderSummary(vendor.slug, orderSummary);
+    writeOrderSummary(vendor, orderSummary);
   }, [orderSummary, vendor]);
 
   useEffect(() => {
@@ -119,6 +121,30 @@ export default function VendorProfilePage() {
       observer.disconnect();
     };
   }, [orderSummary, vendor]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadVendorOptions() {
+      try {
+        const nextVendors = await fetchVendorProfiles();
+
+        if (isMounted) {
+          setVendorOptions(nextVendors);
+        }
+      } catch {
+        if (isMounted) {
+          setVendorOptions([]);
+        }
+      }
+    }
+
+    loadVendorOptions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     function updateCategoryBarPosition() {
@@ -183,6 +209,7 @@ export default function VendorProfilePage() {
     orderSummary.deliveryTime,
   );
   const availableRestaurants = getAvailableVendorsForSlot(
+    vendorOptions,
     orderSummary.deliveryDate,
     orderSummary.deliveryTime,
     vendor.slug,

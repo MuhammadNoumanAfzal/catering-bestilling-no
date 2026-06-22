@@ -1,17 +1,3 @@
-const FALLBACK_VENDOR_IMAGES = [
-  "/home/v.webp",
-  "/home/hero1.webp",
-  "/home/hero2.webp",
-  "/home/hero3.webp",
-];
-
-const FALLBACK_PRODUCT_IMAGES = [
-  "/home/hero1.webp",
-  "/home/hero2.webp",
-  "/home/hero3.webp",
-  "/home/v.webp",
-];
-
 function slugify(text) {
   return String(text)
     .toLowerCase()
@@ -19,15 +5,31 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, "");
 }
 
+const DAY_MAP = { su: 0, mo: 1, tu: 2, we: 3, th: 4, fr: 5, sa: 6 };
+
+function extractCityFromAddress(address) {
+  const segments = `${address ?? ""}`
+    .split(",")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  if (segments.length >= 2) {
+    return segments[segments.length - 2];
+  }
+
+  return segments[0] || "";
+}
+
 function formatRating(value) {
   return parseFloat(value || 0).toFixed(1);
 }
 
 function formatDeliveryFee(value) {
-  return `${parseFloat(value || 0)} NOK Delivery fee`;
+  const amount = Number.parseFloat(value || 0);
+  return Number.isFinite(amount) ? `${amount} NOK Delivery fee` : "";
 }
 
-function formatDeliveryTime(minTime, maxTime, fallback = "15-45 minutes") {
+function formatDeliveryTime(minTime, maxTime) {
   if (
     Number.isFinite(minTime) &&
     Number.isFinite(maxTime) &&
@@ -37,27 +39,34 @@ function formatDeliveryTime(minTime, maxTime, fallback = "15-45 minutes") {
     return `${minTime}-${maxTime} minutes`;
   }
 
-  return fallback;
+  return "";
 }
 
 function normalizeTags(tags, fallback = []) {
   return Array.isArray(tags) && tags.length > 0 ? tags : fallback;
 }
 
-export function mapVendorNode(node, index) {
+function mapVendorNode(node) {
   const name = node?.name || "Vendor";
   const minTime = node?.deliverySettings?.minDeliveryTime;
   const maxTime = node?.deliverySettings?.maxDeliveryTime;
   const fee = node?.deliverySettings?.baseDeliveryFee ?? 0;
+  const address = node?.businessSettings?.businessAddress || "";
+  const deliveryDays = (node?.deliverySettings?.deliveryDays || [])
+    .map((day) => DAY_MAP[`${day}`.toLowerCase()])
+    .filter((day) => day !== undefined);
+  const deliverySlots = Array.isArray(node?.deliverySettings?.deliveryTimeSlots)
+    ? node.deliverySettings.deliveryTimeSlots
+    : [];
 
   return {
-    id: node?.id || `vendor-${index}`,
+    id: node?.id || "",
     slug: slugify(name),
     name,
-    image:
-      node?.coverPhotoUrl ||
-      node?.logoUrl ||
-      FALLBACK_VENDOR_IMAGES[index % FALLBACK_VENDOR_IMAGES.length],
+    image: node?.coverPhotoUrl || node?.logoUrl || "",
+    logo: node?.logoUrl || "",
+    banner: node?.coverPhotoUrl || node?.logoUrl || "",
+    heroSideImage: node?.coverPhotoUrl || node?.logoUrl || "",
     rating: formatRating(node?.rating),
     deliveryTime: formatDeliveryTime(minTime, maxTime),
     deliveryFee: formatDeliveryFee(fee),
@@ -66,43 +75,75 @@ export function mapVendorNode(node, index) {
         ? `${node.discountPercentage}% Discount`
         : null,
     categoryTags: normalizeTags(node?.categoryTags),
+    reviewCount: Number(node?.reviewsCount || 0),
+    addressLine: address,
+    city: extractCityFromAddress(address),
+    servicePostalCodes: (node?.serviceAreas || [])
+      .filter((area) => area?.isActive)
+      .map((area) => `${area?.postCode ?? ""}`.padStart(4, "0"))
+      .filter(Boolean),
+    availability: {
+      delivery: {
+        days: deliveryDays,
+        slots: deliverySlots,
+        start: deliverySlots[0]?.start || "",
+        end: deliverySlots[deliverySlots.length - 1]?.end || "",
+      },
+    },
+    orderSummary: {
+      items: [],
+      deliveryDate: "",
+      deliveryTime: "",
+      personCount: 1,
+      deliveryAddress: "",
+      invoiceAddress: "",
+      total: "0.00",
+    },
   };
 }
 
-export function mapProductNode(node, index) {
+export function mapProductNode(node) {
   const name = node?.name || "Product";
-  const vendorName = node?.vendor?.name || "";
+  const vendor = node?.vendor ? mapVendorNode(node.vendor) : null;
+  const basePrice = Number.parseFloat(node?.priceWithTax || 0);
+  const guestCount = Math.max(1, Number(node?.minimumGuests ?? 1));
+  const displayPrice =
+    node?.pricingType === "per-person" ? basePrice / guestCount : basePrice;
 
   return {
-    id: node?.id || `product-${index}`,
+    id: node?.id || "",
     slug: slugify(name),
-    vendorSlug: slugify(vendorName),
+    vendorSlug: vendor?.slug || "",
     name,
     title: name,
-    vendorName,
-    image:
-      node?.coverImage?.fileUrl ||
-      FALLBACK_PRODUCT_IMAGES[index % FALLBACK_PRODUCT_IMAGES.length],
+    description: node?.description || "",
+    vendorName: vendor?.name || "",
+    vendor: vendor?.name || "",
+    vendorData: vendor,
+    image: node?.coverImage?.fileUrl || vendor?.image || "",
     rating: formatRating(node?.averageRating),
-    deliveryTime: node?.deliveryTime || "15-45 minutes",
-    deliveryFee: formatDeliveryFee(node?.deliveryFee),
+    deliveryTime:
+      node?.deliveryTime || vendor?.deliveryTime || "",
+    deliveryFee:
+      formatDeliveryFee(node?.deliveryFee) || vendor?.deliveryFee || "",
     discount: node?.badge || null,
     categoryTags: normalizeTags(node?.categoryTags),
     dietaryTags: normalizeTags(node?.dietaryTags),
     minimumGuests: node?.minimumGuests ?? 0,
+    price: Number.isFinite(displayPrice) ? `NOK ${displayPrice.toFixed(2)}` : "",
   };
 }
 
 export function mapHomeResponse(response) {
   return {
-    featuredVendors: (response?.featured?.edges || []).map((edge, index) =>
-      mapVendorNode(edge.node, index),
+    featuredVendors: (response?.featured?.edges || []).map((edge) =>
+      mapVendorNode(edge.node),
     ),
     popularVendors: (response?.popularVendors?.edges || []).map(
-      (edge, index) => mapVendorNode(edge.node, index + 10),
+      (edge) => mapVendorNode(edge.node),
     ),
     popularProducts: (response?.popularProducts?.edges || []).map(
-      (edge, index) => mapProductNode(edge.node, index),
+      (edge) => mapProductNode(edge.node),
     ),
   };
 }

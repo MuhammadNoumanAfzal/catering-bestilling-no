@@ -1,5 +1,4 @@
 import { buildCheckoutAddressFields } from "../../../utils/customerProfileStorage";
-import { getFallbackVendorProfileBySlug } from "../../vendor";
 import {
   SALES_TAX_RATE,
   getVendorTotals,
@@ -104,7 +103,7 @@ function formatEventTime(value) {
 }
 
 function resolveVendorId(cart) {
-  return cart.vendor.id || getFallbackVendorProfileBySlug(cart.vendor.slug)?.id || "";
+  return cart.vendor.id || "";
 }
 
 function resolveProductId(item) {

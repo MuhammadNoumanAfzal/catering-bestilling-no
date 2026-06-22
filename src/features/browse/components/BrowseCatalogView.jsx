@@ -25,6 +25,7 @@ const ITEMS_PER_PAGE = 6;
 
 export default function BrowseCatalogView({
   categories,
+  isLoading = false,
   menuItems,
   moreOptions,
 }) {
@@ -67,7 +68,11 @@ export default function BrowseCatalogView({
 
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredMenuItems = sortCatalogItems(
-    filterItemsByVendorLocation(menuItems, locationValue).filter((item) => {
+    filterItemsByVendorLocation(
+      menuItems,
+      locationValue,
+      (item) => item?.vendorData ?? item?.vendor ?? null,
+    ).filter((item) => {
       const searchableText = [
         item.title,
         item.name,
@@ -133,6 +138,16 @@ export default function BrowseCatalogView({
     startIndex + ITEMS_PER_PAGE,
   );
   const activeCategoryLabel = formatCategoryLabel(selectedCategory);
+
+  if (isLoading) {
+    return (
+      <section className="w-full px-6 py-12 md:px-20">
+        <div className="mx-auto flex min-h-[40vh] w-full max-w-7xl items-center justify-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="w-full px-6 py-12 md:px-20">

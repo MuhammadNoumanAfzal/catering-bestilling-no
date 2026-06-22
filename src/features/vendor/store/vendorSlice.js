@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchVendorProfileBySlug } from "../api";
-import { getFallbackVendorProfileBySlug } from "../services";
 
 export const fetchVendorProfile = createAsyncThunk(
   "vendor/fetchVendorProfile",
@@ -8,12 +7,6 @@ export const fetchVendorProfile = createAsyncThunk(
     try {
       return await fetchVendorProfileBySlug(vendorSlug);
     } catch (error) {
-      const fallbackVendor = getFallbackVendorProfileBySlug(vendorSlug);
-
-      if (fallbackVendor) {
-        return fallbackVendor;
-      }
-
       return rejectWithValue(error.message || "Failed to fetch vendor profile.");
     }
   },
