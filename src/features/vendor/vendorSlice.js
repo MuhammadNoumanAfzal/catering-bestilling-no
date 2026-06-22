@@ -1,105 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { graphqlRequest } from "../../lib/api/graphqlClient";
-import { getVendorProfileBySlug, adaptApiVendorToProfile } from "./data/vendorData";
-
-const FETCH_VENDORS_QUERY = `
-  query FetchVendors {
-    vendors {
-      edges {
-        node {
-          id
-          name
-          rating
-          reviewsCount
-          logoUrl
-          coverPhotoUrl
-          categoryTags
-          deliverySettings {
-            id
-            baseDeliveryFee
-            minDeliveryTime
-            maxDeliveryTime
-            deliveryDays
-            deliveryTimeSlots
-          }
-          businessSettings {
-            id
-            businessAddress
-            businessHours
-          }
-          serviceAreas {
-            id
-            name
-            postCode
-            isActive
-          }
-          menuCategories {
-            id
-            name
-            description
-            vendorProducts {
-              id
-              name
-              description
-              priceWithTax
-              averageRating
-              ordersCount
-              badge
-              isPopular
-              isFeatured
-              slug
-              categoryTags
-              contains
-              dietaryTags
-              allergens
-              minLeadTimeDays
-              minLeadTimeHours
-              minimumGuests
-              pricingType
-              isAvailabilityWindowEnabled
-              availableFrom
-              availableUntil
-              coverImage {
-                id
-                fileUrl
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-const slugify = (text) => {
-  return String(text)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
-};
+import { getVendorProfileFromApi } from "./api/vendorApi";
+import { getVendorProfileBySlug } from "./data/vendorData";
 
 export const fetchVendorProfile = createAsyncThunk(
   "vendor/fetchVendorProfile",
   async (vendorSlug, { rejectWithValue }) => {
     try {
-      const response = await graphqlRequest({ query: FETCH_VENDORS_QUERY });
-      const allVendors = (response.vendors?.edges || []).map((edge) => edge.node);
-      const apiVendorNode = allVendors.find(
-        (node) => slugify(node.name) === vendorSlug,
-      );
-
-      if (apiVendorNode) {
-        return adaptApiVendorToProfile(apiVendorNode);
-      }
-
-      // Local fallback
-      const localVendor = getVendorProfileBySlug(vendorSlug);
-      if (localVendor) {
-        return localVendor;
-      }
-      throw new Error("Vendor not found");
+      return await getVendorProfileFromApi(vendorSlug);
     } catch (error) {
-      // Local fallback on API error
+      // Local fallback on API or profile not found error
       const localVendor = getVendorProfileBySlug(vendorSlug);
       if (localVendor) {
         return localVendor;
