@@ -1,0 +1,128 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { graphqlRequest } from "../../lib/api/graphqlClient";
+import {
+  getVendorMenuItemById,
+  getVendorProfileBySlug,
+  adaptApiProductToMenuItem,
+  adaptApiVendorToProfile,
+} from "../vendor/data/vendorData";
+
+const FETCH_PRODUCT_QUERY = `
+  query FetchProduct($id: ID!) {
+    product(id: $id) {
+      id
+      name
+      description
+      priceWithTax
+      averageRating
+      minimumGuests
+      isAvailabilityWindowEnabled
+      availableFrom
+      availableUntil
+      dietaryTags
+      allergens
+      coverImage {
+        id
+        fileUrl
+      }
+      menuItems {
+        id
+        title
+        description
+        imageUrl
+        allergens
+      }
+      vendor {
+        id
+        name
+        logoUrl
+        coverPhotoUrl
+        rating
+        reviewsCount
+        deliverySettings {
+          id
+          baseDeliveryFee
+          minDeliveryTime
+          maxDeliveryTime
+        }
+        businessSettings {
+          id
+          businessAddress
+        }
+      }
+    }
+  }
+`;
+
+export const fetchProductDetails = createAsyncThunk(
+  "menu/fetchProductDetails",
+  async ({ itemId, vendorSlug }, { rejectWithValue }) => {
+    try {
+      const response = await graphqlRequest({
+        query: FETCH_PRODUCT_QUERY,
+        variables: { id: itemId }
+      });
+
+      if (response.product) {
+        const product = adaptApiProductToMenuItem(response.product);
+        const vendor = adaptApiVendorToProfile(response.product.vendor);
+        return { product, vendor };
+      }
+
+      // Local fallback
+      const localVendor = getVendorProfileBySlug(vendorSlug);
+      const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
+      if (localVendor && localMenuItem) {
+        return { product: localMenuItem, vendor: localVendor };
+      }
+      throw new Error("Product not found");
+    } catch (error) {
+      // Local fallback on API error
+      const localVendor = getVendorProfileBySlug(vendorSlug);
+      const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
+      if (localVendor && localMenuItem) {
+        return { product: localMenuItem, vendor: localVendor };
+      }
+      return rejectWithValue(error.message || "Failed to fetch product details.");
+    }
+  }
+);
+
+const initialState = {
+  currentProduct: null,
+  associatedVendor: null,
+  isLoading: false,
+  error: null,
+};
+
+const menuSlice = createSlice({
+  name: "menu",
+  initialState,
+  reducers: {
+    clearMenuState: (state) => {
+      state.currentProduct = null;
+      state.associatedVendor = null;
+      state.isLoading = false;
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchProductDetails.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductDetails.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentProduct = action.payload.product;
+        state.associatedVendor = action.payload.vendor;
+      })
+      .addCase(fetchProductDetails.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Failed to load product details.";
+      });
+  },
+});
+
+export const { clearMenuState } = menuSlice.actions;
+export default menuSlice.reducer;

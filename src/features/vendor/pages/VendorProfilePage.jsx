@@ -14,9 +14,7 @@ import VendorAvailabilityPopup from "../components/VendorAvailabilityPopup";
 import VendorLocationModal from "../components/VendorLocationModal";
 import {
   getAvailableVendorsForSlot,
-  getVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
-  adaptApiVendorToProfile,
 } from "../data/vendorData";
 import {
   isVendorSaved,
@@ -27,77 +25,19 @@ import {
   writeOrderSummary,
 } from "../utils/orderSummaryStorage";
 import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
-import { graphqlRequest } from "../../../lib/api/graphqlClient";
-
-const FETCH_VENDORS_QUERY = `
-  query FetchVendors {
-    vendors {
-      edges {
-        node {
-          id
-          name
-          rating
-          reviewsCount
-          logoUrl
-          coverPhotoUrl
-          categoryTags
-          deliverySettings {
-            id
-            baseDeliveryFee
-            minDeliveryTime
-            maxDeliveryTime
-          }
-          businessSettings {
-            id
-            businessAddress
-          }
-          menuCategories {
-            id
-            name
-            description
-            vendorProducts {
-              id
-              name
-              description
-              priceWithTax
-              averageRating
-              ordersCount
-              badge
-              isPopular
-              isFeatured
-              slug
-              categoryTags
-              contains
-              dietaryTags
-              allergens
-              minLeadTimeDays
-              minLeadTimeHours
-              minimumGuests
-              pricingType
-              isAvailabilityWindowEnabled
-              availableFrom
-              availableUntil
-              coverImage {
-                id
-                fileUrl
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import { useDispatch, useSelector } from "react-redux";
+import { fetchVendorProfile } from "../vendorSlice";
 
 export default function VendorProfilePage() {
   const CATEGORY_BAR_TOP_OFFSET = 78;
   const { vendorSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const [vendor, setVendor] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { currentVendor: vendor, isLoading: loading, error } = useSelector(
+    (state) => state.vendor
+  );
 
   const [activeCategory, setActiveCategory] = useState("All - in - One Order");
   const [orderSummary, setOrderSummary] = useState(null);
@@ -113,55 +53,8 @@ export default function VendorProfilePage() {
   const menuSectionsRef = useRef(null);
 
   useEffect(() => {
-    let active = true;
-    async function loadVendor() {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await graphqlRequest({ query: FETCH_VENDORS_QUERY });
-        const allVendors = (response.vendors?.edges || []).map((edge) => edge.node);
-        const apiVendorNode = allVendors.find(
-          (node) =>
-            node.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") ===
-            vendorSlug,
-        );
-
-        if (apiVendorNode) {
-          if (active) {
-            setVendor(adaptApiVendorToProfile(apiVendorNode));
-            setLoading(false);
-          }
-          return;
-        }
-
-        const localVendor = getVendorProfileBySlug(vendorSlug);
-        if (localVendor) {
-          if (active) {
-            setVendor(localVendor);
-            setLoading(false);
-          }
-        } else {
-          throw new Error("Vendor not found");
-        }
-      } catch (err) {
-        const localVendor = getVendorProfileBySlug(vendorSlug);
-        if (localVendor) {
-          if (active) {
-            setVendor(localVendor);
-            setLoading(false);
-          }
-        } else if (active) {
-          setError(err.message || "Failed to load vendor profile.");
-          setLoading(false);
-        }
-      }
-    }
-
-    loadVendor();
-    return () => {
-      active = false;
-    };
-  }, [vendorSlug]);
+    dispatch(fetchVendorProfile(vendorSlug));
+  }, [dispatch, vendorSlug]);
 
   useEffect(() => {
     if (!vendor) {

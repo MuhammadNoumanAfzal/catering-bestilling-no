@@ -9,11 +9,7 @@ import VendorAvailabilityPopup from "../../vendor/components/VendorAvailabilityP
 import VendorOrderSidebar from "../../vendor/components/VendorOrderSidebar";
 import {
   getAvailableVendorsForSlot,
-  getVendorMenuItemById,
-  getVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
-  adaptApiVendorToProfile,
-  adaptApiProductToMenuItem,
 } from "../../vendor/data/vendorData";
 import {
   isVendorSaved,
@@ -30,65 +26,19 @@ import {
   promptSignInRequired,
   showSuccessToast,
 } from "../../../utils/alerts";
-import { graphqlRequest } from "../../../lib/api/graphqlClient";
-
-const FETCH_PRODUCT_QUERY = `
-  query FetchProduct($id: ID!) {
-    product(id: $id) {
-      id
-      name
-      description
-      priceWithTax
-      averageRating
-      minimumGuests
-      isAvailabilityWindowEnabled
-      availableFrom
-      availableUntil
-      dietaryTags
-      allergens
-      coverImage {
-        id
-        fileUrl
-      }
-      menuItems {
-        id
-        title
-        description
-        imageUrl
-        allergens
-      }
-      vendor {
-        id
-        name
-        logoUrl
-        coverPhotoUrl
-        rating
-        reviewsCount
-        deliverySettings {
-          id
-          baseDeliveryFee
-          minDeliveryTime
-          maxDeliveryTime
-        }
-        businessSettings {
-          id
-          businessAddress
-        }
-      }
-    }
-  }
-`;
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProductDetails } from "../menuSlice";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
-  
-  const [vendor, setVendor] = useState(null);
-  const [menuItem, setMenuItem] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+
+  const { currentProduct: menuItem, associatedVendor: vendor, isLoading: loading, error } = useSelector(
+    (state) => state.menu
+  );
   
   const [orderSummary, setOrderSummary] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState("1 order");
@@ -102,59 +52,8 @@ export default function MenuDetailsPage() {
   const minimumPersons = menuItem?.serves ?? 1;
 
   useEffect(() => {
-    let active = true;
-    async function loadProduct() {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await graphqlRequest({
-          query: FETCH_PRODUCT_QUERY,
-          variables: { id: itemId }
-        });
-
-        if (response.product) {
-          if (active) {
-            setVendor(adaptApiVendorToProfile(response.product.vendor));
-            setMenuItem(adaptApiProductToMenuItem(response.product));
-            setLoading(false);
-          }
-          return;
-        }
-
-        // Fallback to local mock data
-        const localVendor = getVendorProfileBySlug(vendorSlug);
-        const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
-        if (localVendor && localMenuItem) {
-          if (active) {
-            setVendor(localVendor);
-            setMenuItem(localMenuItem);
-            setLoading(false);
-          }
-        } else {
-          throw new Error("Item not found");
-        }
-      } catch (err) {
-        // Fallback to local mock data on error
-        const localVendor = getVendorProfileBySlug(vendorSlug);
-        const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
-        if (localVendor && localMenuItem) {
-          if (active) {
-            setVendor(localVendor);
-            setMenuItem(localMenuItem);
-            setLoading(false);
-          }
-        } else if (active) {
-          setError(err.message || "Failed to load product details.");
-          setLoading(false);
-        }
-      }
-    }
-
-    loadProduct();
-    return () => {
-      active = false;
-    };
-  }, [vendorSlug, itemId]);
+    dispatch(fetchProductDetails({ itemId, vendorSlug }));
+  }, [dispatch, itemId, vendorSlug]);
 
   useEffect(() => {
     if (!vendor || !menuItem) {
