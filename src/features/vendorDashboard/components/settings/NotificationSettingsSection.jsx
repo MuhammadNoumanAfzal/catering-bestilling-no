@@ -48,15 +48,6 @@ export default function NotificationSettingsSection({ formState, updateField }) 
           }
         />
       </div>
-
-      <div className="mt-5 flex justify-end">
-        <button
-          type="button"
-          className="type-h6 w-full cursor-pointer rounded-[8px] bg-[#cf6e38] px-5 py-2.5 text-white transition hover:bg-[#ba5f2e] sm:w-auto"
-        >
-          Save Changes
-        </button>
-      </div>
     </SettingsSection>
   );
 }

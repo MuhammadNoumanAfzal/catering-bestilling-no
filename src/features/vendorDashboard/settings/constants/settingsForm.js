@@ -1,0 +1,15 @@
+export const vendorSettingsInitialState = {
+  firstName: "",
+  lastName: "",
+  primaryEmail: "",
+  secondaryEmail: "",
+  mobilePhone: "",
+  workPhone: "",
+  company: "",
+  jobTitle: "",
+  industry: "",
+  textNotifications: false,
+  emailNotifications: false,
+  pushNotifications: false,
+  orderConfirmationPush: false,
+};
