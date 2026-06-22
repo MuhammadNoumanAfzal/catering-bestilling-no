@@ -158,11 +158,20 @@ export default function MenuDetailsPage() {
     if (!menuItem || !menuItem.menuItems) {
       return [];
     }
-    return menuItem.menuItems.map((item) => ({
-      label: item.title || item.name,
-      description: item.description || (item.allergens && item.allergens.length > 0 ? `Allergens: ${item.allergens.join(", ")}.` : ""),
-      image: item.imageUrl || item.image || menuItem.image || vendor.banner,
-    }));
+    return menuItem.menuItems.map((item) => {
+      const descParts = [];
+      if (item.description) {
+        descParts.push(item.description);
+      }
+      if (item.allergens && item.allergens.length > 0) {
+        descParts.push(`Allergens: ${item.allergens.join(", ")}.`);
+      }
+      return {
+        label: item.title || item.name,
+        description: descParts.join(" "),
+        image: item.imageUrl || item.image || menuItem.image || vendor.banner,
+      };
+    });
   }, [menuItem, vendor]);
 
   if (loading) {
