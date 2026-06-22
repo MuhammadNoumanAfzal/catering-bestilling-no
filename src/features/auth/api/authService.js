@@ -1,10 +1,10 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import {
-  buildLoginUserMutation,
-  buildPasswordResetMailMutation,
-  buildRegisterUserMutation,
-  buildResetPasswordMutation,
-  buildVerifyResetCodeMutation,
+  LOGIN_USER_MUTATION,
+  PASSWORD_RESET_MAIL_MUTATION,
+  REGISTER_USER_MUTATION,
+  RESET_PASSWORD_MUTATION,
+  VERIFY_RESET_CODE_MUTATION,
 } from "./authMutations";
 import {
   normalizeForgotPasswordInput,
@@ -13,30 +13,57 @@ import {
   normalizeResetPasswordInput,
   normalizeVerifyResetCodeInput,
 } from "./authNormalizers";
+import { normalizeAuthenticatedUser } from "../utils/authSession";
 
-async function runAuthMutation({
-  query,
-  dataKey,
-  fallbackMessage,
-  validate,
-}) {
-  const data = await graphqlRequest({ query });
-  const result = data?.[dataKey];
-
+function ensureSuccessResult(result, fallbackMessage) {
   if (!result?.success) {
     throw new Error(result?.message ?? fallbackMessage);
   }
+}
 
+function ensureActiveUser(user, contextLabel) {
+  if (!user) {
+    throw new Error(`${contextLabel} did not include a user object.`);
+  }
+
+  if (user.isActive === false) {
+    throw new Error("This account is inactive. Please contact support.");
+  }
+}
+
+function ensureAccessToken(accessToken, contextLabel) {
+  const normalizedToken = `${accessToken ?? ""}`.trim();
+
+  if (!normalizedToken) {
+    throw new Error(`${contextLabel} did not include an access token.`);
+  }
+
+  return normalizedToken;
+}
+
+async function runAuthMutation({
+  query,
+  variables,
+  dataKey,
+  fallbackMessage,
+  validate,
+  mapResult,
+}) {
+  const data = await graphqlRequest({ query, variables });
+  const result = data?.[dataKey];
+
+  ensureSuccessResult(result, fallbackMessage);
   validate?.(result);
 
-  return result;
+  return mapResult ? mapResult(result) : result;
 }
 
 export async function registerUser(input) {
-  const normalizedInput = normalizeRegisterUserInput(input);
+  const variables = normalizeRegisterUserInput(input);
 
   return runAuthMutation({
-    query: buildRegisterUserMutation(normalizedInput),
+    query: REGISTER_USER_MUTATION,
+    variables,
     dataKey: "registerUser",
     fallbackMessage: "Registration failed.",
     validate: (result) => {
@@ -44,51 +71,61 @@ export async function registerUser(input) {
         throw new Error("Registration response did not include a user object.");
       }
     },
+    mapResult: (result) => ({
+      ...result,
+      user: normalizeAuthenticatedUser(result.user),
+    }),
   });
 }
 
 export async function loginUser(input) {
-  const normalizedInput = normalizeLoginUserInput(input);
+  const variables = normalizeLoginUserInput(input);
 
   return runAuthMutation({
-    query: buildLoginUserMutation(normalizedInput),
+    query: LOGIN_USER_MUTATION,
+    variables,
     dataKey: "loginUser",
     fallbackMessage: "Login failed.",
     validate: (result) => {
-      if (!result?.access || !result?.user) {
-        throw new Error(
-          "Login response did not include the expected session data.",
-        );
-      }
+      ensureActiveUser(result?.user, "Login response");
+      ensureAccessToken(result?.access, "Login response");
     },
+    mapResult: (result) => ({
+      ...result,
+      access: ensureAccessToken(result.access, "Login response"),
+      user: normalizeAuthenticatedUser(result.user),
+    }),
   });
 }
 
 export async function passwordResetMail(input) {
-  const normalizedInput = normalizeForgotPasswordInput(input);
+  const variables = normalizeForgotPasswordInput(input);
 
   return runAuthMutation({
-    query: buildPasswordResetMailMutation(normalizedInput),
+    query: PASSWORD_RESET_MAIL_MUTATION,
+    variables,
     dataKey: "passwordResetMail",
     fallbackMessage: "Unable to send reset code.",
   });
 }
 
 export async function verifyResetCode(input) {
-  const normalizedInput = normalizeVerifyResetCodeInput(input);
+  const variables = normalizeVerifyResetCodeInput(input);
 
   return runAuthMutation({
-    query: buildVerifyResetCodeMutation(normalizedInput),
+    query: VERIFY_RESET_CODE_MUTATION,
+    variables,
     dataKey: "verifyResetCode",
     fallbackMessage: "Unable to verify reset code.",
   });
 }
 
 export async function resetPassword(input) {
-  const normalizedInput = normalizeResetPasswordInput(input);
+  const variables = normalizeResetPasswordInput(input);
 
   return runAuthMutation({
-    query: buildResetPasswordMutation(normalizedInput),
+    query: RESET_PASSWORD_MUTATION,
+    variables,
     dataKey: "resetPassword",
     fallbackMessage: "Unable to reset password.",
   });
