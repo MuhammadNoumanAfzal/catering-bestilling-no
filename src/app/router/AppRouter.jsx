@@ -12,8 +12,7 @@ import BrowseOccasionPage from "../../features/browse/pages/BrowseOccasionPage";
 import ContactPage from "../../features/contact/pages/ContactPage";
 import OrderConfirmedPage from "../../features/order/pages/OrderConfirmedPage";
 import MenuDetailsPage from "../../features/menu/pages/MenuDetailsPage";
-import VendorProfilePage from "../../features/vendor/pages/VendorProfilePage";
-import VendorReviewsPage from "../../features/vendor/pages/VendorReviewsPage";
+import { VendorProfilePage, VendorReviewsPage } from "../../features/vendor";
 import {
   AuthLayout,
   ForgotPasswordOtpPage,

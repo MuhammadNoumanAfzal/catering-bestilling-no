@@ -15,9 +15,9 @@ import {
   filterItemsByVendorLocation,
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,
-  getVendorProfileBySlug,
+  getFallbackVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
-} from "../../vendor/data/vendorData";
+} from "../../vendor";
 
 export function buildCategoryQuery(selectedCategory) {
   const categoryValue = getCategoryParamValue(selectedCategory);
@@ -80,7 +80,7 @@ export function filterHomePreviewMenuItems(items, filters) {
 
   return sortCatalogItems(
     filterItemsByVendorLocation(items, locationFilter).filter((item) => {
-      const vendor = getVendorProfileBySlug(item.vendorSlug);
+      const vendor = getFallbackVendorProfileBySlug(item.vendorSlug);
 
       return (
         matchesCategorySelection(item.categoryTags, category) &&
@@ -143,7 +143,7 @@ export function filterHomeProducts(products, filters) {
 
   return filterItemsByVendorLocation(products, locationFilter).filter(
     (product) => {
-      const vendor = getVendorProfileBySlug(product.vendorSlug);
+      const vendor = getFallbackVendorProfileBySlug(product.vendorSlug);
 
       return (
         matchesCategorySelection(product.categoryTags, category) &&

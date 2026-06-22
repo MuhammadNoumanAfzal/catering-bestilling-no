@@ -1,9 +1,9 @@
 import { FiChevronLeft, FiMapPin, FiMessageSquare, FiStar } from "react-icons/fi";
 import { Link, Navigate, useParams } from "react-router-dom";
 import {
-  getVendorProfileBySlug,
-  getVendorReviewsBySlug,
-} from "../data/vendorData";
+  getFallbackVendorProfileBySlug,
+  getFallbackVendorReviewsBySlug,
+} from "../services";
 
 const REVIEW_HIGHLIGHTS = [
   {
@@ -73,8 +73,10 @@ function ReviewCard({ review, isFeatured = false }) {
             </h2>
 
             <div className="mt-2 flex flex-wrap items-center gap-2 text-[14px] text-[#74685d]">
-              <span className="font-medium text-[#28211c]">{review.author}</span>
-              <span>•</span>
+              <span className="font-medium text-[#28211c]">
+                {review.author}
+              </span>
+              <span>&bull;</span>
               <span>{review.date}</span>
             </div>
           </div>
@@ -95,11 +97,11 @@ function ReviewCard({ review, isFeatured = false }) {
 
 export default function VendorReviewsPage() {
   const { vendorSlug } = useParams();
-  const vendor = getVendorProfileBySlug(vendorSlug);
-  const reviews = getVendorReviewsBySlug(vendorSlug);
+  const vendor = getFallbackVendorProfileBySlug(vendorSlug);
+  const reviews = getFallbackVendorReviewsBySlug(vendorSlug);
   const featuredReview = reviews[0] ?? null;
   const otherReviews = reviews.slice(1);
-  const averageRating = vendor?.rating?.toFixed(1) ?? "0.0";
+  const averageRating = Number(vendor?.rating ?? 0).toFixed(1);
 
   if (!vendor) {
     return <Navigate to="/" replace />;
@@ -158,10 +160,7 @@ export default function VendorReviewsPage() {
                 value={`${vendor.reviewCount}+`}
                 accent="warm"
               />
-              <StatCard
-                label="Cuisine"
-                value={vendor.cuisine}
-              />
+              <StatCard label="Cuisine" value={vendor.cuisine} />
             </div>
           </div>
         </div>

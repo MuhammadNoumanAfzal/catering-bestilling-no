@@ -5,12 +5,10 @@ import MenuDeliveryForm from "../components/MenuDeliveryForm";
 import MenuHeroBanner from "../components/MenuHeroBanner";
 import MenuIncludedSection from "../components/MenuIncludedSection";
 import MenuOverviewSection from "../components/MenuOverviewSection";
-import VendorAvailabilityPopup from "../../vendor/components/VendorAvailabilityPopup";
-import VendorOrderSidebar from "../../vendor/components/VendorOrderSidebar";
 import {
   getAvailableVendorsForSlot,
   isVendorDeliverySlotAvailable,
-} from "../../vendor/data/vendorData";
+} from "../../vendor";
 import {
   isVendorSaved,
   toggleSavedVendor,
@@ -28,6 +26,10 @@ import {
 } from "../../../utils/alerts";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductDetails } from "../menuSlice";
+import {
+  VendorAvailabilityPopup,
+  VendorOrderSidebar,
+} from "../../vendor/components";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
