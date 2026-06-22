@@ -12,6 +12,8 @@ import {
   getVendorMenuItemById,
   getVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
+  adaptApiVendorToProfile,
+  adaptApiProductToMenuItem,
 } from "../../vendor/data/vendorData";
 import {
   isVendorSaved,
@@ -28,14 +30,66 @@ import {
   promptSignInRequired,
   showSuccessToast,
 } from "../../../utils/alerts";
+import { graphqlRequest } from "../../../lib/api/graphqlClient";
+
+const FETCH_PRODUCT_QUERY = `
+  query FetchProduct($id: ID!) {
+    product(id: $id) {
+      id
+      name
+      description
+      priceWithTax
+      averageRating
+      minimumGuests
+      isAvailabilityWindowEnabled
+      availableFrom
+      availableUntil
+      dietaryTags
+      allergens
+      coverImage {
+        id
+        fileUrl
+      }
+      menuItems {
+        id
+        title
+        description
+        imageUrl
+        allergens
+      }
+      vendor {
+        id
+        name
+        logoUrl
+        coverPhotoUrl
+        rating
+        reviewsCount
+        deliverySettings {
+          id
+          baseDeliveryFee
+          minDeliveryTime
+          maxDeliveryTime
+        }
+        businessSettings {
+          id
+          businessAddress
+        }
+      }
+    }
+  }
+`;
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
-  const vendor = getVendorProfileBySlug(vendorSlug);
-  const menuItem = getVendorMenuItemById(vendorSlug, itemId);
+  
+  const [vendor, setVendor] = useState(null);
+  const [menuItem, setMenuItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [orderSummary, setOrderSummary] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState("1 order");
   const [selectedRequired, setSelectedRequired] = useState("");
@@ -48,11 +102,66 @@ export default function MenuDetailsPage() {
   const minimumPersons = menuItem?.serves ?? 1;
 
   useEffect(() => {
+    let active = true;
+    async function loadProduct() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await graphqlRequest({
+          query: FETCH_PRODUCT_QUERY,
+          variables: { id: itemId }
+        });
+
+        if (response.product) {
+          if (active) {
+            setVendor(adaptApiVendorToProfile(response.product.vendor));
+            setMenuItem(adaptApiProductToMenuItem(response.product));
+            setLoading(false);
+          }
+          return;
+        }
+
+        // Fallback to local mock data
+        const localVendor = getVendorProfileBySlug(vendorSlug);
+        const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
+        if (localVendor && localMenuItem) {
+          if (active) {
+            setVendor(localVendor);
+            setMenuItem(localMenuItem);
+            setLoading(false);
+          }
+        } else {
+          throw new Error("Item not found");
+        }
+      } catch (err) {
+        // Fallback to local mock data on error
+        const localVendor = getVendorProfileBySlug(vendorSlug);
+        const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
+        if (localVendor && localMenuItem) {
+          if (active) {
+            setVendor(localVendor);
+            setMenuItem(localMenuItem);
+            setLoading(false);
+          }
+        } else if (active) {
+          setError(err.message || "Failed to load product details.");
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProduct();
+    return () => {
+      active = false;
+    };
+  }, [vendorSlug, itemId]);
+
+  useEffect(() => {
     if (!vendor || !menuItem) {
       return;
     }
 
-    setOrderSummary((current) => {
+    setOrderSummary(() => {
       const storedSummary = readOrderSummary(vendor);
       return {
         ...storedSummary,
@@ -63,7 +172,7 @@ export default function MenuDetailsPage() {
       };
     });
     setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");
-    setSelectedRequired(menuItem.modal.requiredSelection.options[0] ?? "");
+    setSelectedRequired(menuItem.modal.requiredSelection?.options?.[0] ?? "");
     setSelectedOptional({});
     setVendorNote("");
     setIsSaved(isVendorSaved(vendor.slug));
@@ -145,38 +254,26 @@ export default function MenuDetailsPage() {
     });
   }, [addOnItems, menuItem, selectedOptional]);
 
-  const includedMenuItems = useMemo(
-    () => [
-      {
-        label: "Main menu selection",
-        description: `${menuItem.description} Allergens: Gluten, dairy.`,
-        image: vendor.banner,
-      },
-      {
-        label: "Seasonal salad",
-        description: "Fresh greens, herbs, and house vinaigrette. Allergens: Mustard.",
-        image: menuItem.image,
-      },
-      {
-        label: "Fresh bread",
-        description: "Bakery bread with whipped butter. Allergens: Gluten, dairy.",
-        image: vendor.heroSideImage ?? menuItem.image,
-      },
-      {
-        label: "Dessert bite",
-        description: "Chef's sweet finish for the menu. Allergens: Egg, dairy.",
-        image: menuItem.image,
-      },
-      {
-        label: "Serving setup",
-        description: "Servingware and setup items included for easy presentation.",
-        image: vendor.heroSideImage ?? vendor.banner,
-      },
-    ],
-    [menuItem, vendor],
-  );
+  const includedMenuItems = useMemo(() => {
+    if (!menuItem || !menuItem.menuItems) {
+      return [];
+    }
+    return menuItem.menuItems.map((item) => ({
+      label: item.title || item.name,
+      description: item.description || (item.allergens && item.allergens.length > 0 ? `Allergens: ${item.allergens.join(", ")}.` : ""),
+      image: item.imageUrl || item.image || menuItem.image || vendor.banner,
+    }));
+  }, [menuItem, vendor]);
 
-  if (!vendor || !menuItem) {
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error || !vendor || !menuItem) {
     return <Navigate to={vendor ? `/vendor/${vendor.slug}` : "/"} replace />;
   }
 

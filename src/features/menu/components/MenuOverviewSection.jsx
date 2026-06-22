@@ -44,26 +44,26 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         <InfoCard
           icon={<FiMapPin />}
           label="Location"
-          value="Bergen City Center"
+          value={vendor.addressLine ? (vendor.addressLine.split(',')[1]?.trim() || vendor.addressLine) : "Oslo"}
           subvalue={formatDistance(vendor.addressLine)}
         />
         <InfoCard
           icon={<FiTruck />}
           label="Delivery"
-          value={vendor.deliveryFee.replace("fee", "").trim()}
-          subvalue="15% off large orders"
+          value={vendor.deliveryFee ? vendor.deliveryFee.replace("fee", "").trim() : "Free Delivery"}
+          subvalue="Reliable & secure transport"
         />
         <InfoCard
           icon={<FiClock />}
           label="Timing"
-          value={vendor.leadTime}
+          value={vendor.leadTime || "24-48 hours"}
           subvalue="Catering | Lunch | Office Events"
         />
       </div>
 
       <div className="mt-5 rounded-[16px] bg-white pb-4">
         <p className="text-[16px] leading-9 text-[#1d1713]">
-          Price: {menuItem.price} per person
+          Price: NOK {Number(menuItem.modal?.pricePerPerson || menuItem.price || 0).toFixed(2)} per person
         </p>
         <p className="text-[16px] leading-9 text-[#1d1713]">
           Vendor: {vendor.name}

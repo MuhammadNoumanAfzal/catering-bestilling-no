@@ -42,6 +42,10 @@ export default function MenuIncludedSection({
   menuItem,
   includedMenuItems,
 }) {
+  if (!includedMenuItems || includedMenuItems.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mt-6 rounded-[16px] border border-[#e8ddd2] bg-white p-4">
       <h2 className="text-[18px] font-semibold text-[#1c1713]">

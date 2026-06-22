@@ -16,6 +16,7 @@ import {
   getAvailableVendorsForSlot,
   getVendorProfileBySlug,
   isVendorDeliverySlotAvailable,
+  adaptApiVendorToProfile,
 } from "../data/vendorData";
 import {
   isVendorSaved,
@@ -26,13 +27,78 @@ import {
   writeOrderSummary,
 } from "../utils/orderSummaryStorage";
 import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
+import { graphqlRequest } from "../../../lib/api/graphqlClient";
+
+const FETCH_VENDORS_QUERY = `
+  query FetchVendors {
+    vendors {
+      edges {
+        node {
+          id
+          name
+          rating
+          reviewsCount
+          logoUrl
+          coverPhotoUrl
+          categoryTags
+          deliverySettings {
+            id
+            baseDeliveryFee
+            minDeliveryTime
+            maxDeliveryTime
+          }
+          businessSettings {
+            id
+            businessAddress
+          }
+          menuCategories {
+            id
+            name
+            description
+            vendorProducts {
+              id
+              name
+              description
+              priceWithTax
+              averageRating
+              ordersCount
+              badge
+              isPopular
+              isFeatured
+              slug
+              categoryTags
+              contains
+              dietaryTags
+              allergens
+              minLeadTimeDays
+              minLeadTimeHours
+              minimumGuests
+              pricingType
+              isAvailabilityWindowEnabled
+              availableFrom
+              availableUntil
+              coverImage {
+                id
+                fileUrl
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export default function VendorProfilePage() {
   const CATEGORY_BAR_TOP_OFFSET = 78;
   const { vendorSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const vendor = getVendorProfileBySlug(vendorSlug);
+
+  const [vendor, setVendor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [activeCategory, setActiveCategory] = useState("All - in - One Order");
   const [orderSummary, setOrderSummary] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
@@ -47,13 +113,64 @@ export default function VendorProfilePage() {
   const menuSectionsRef = useRef(null);
 
   useEffect(() => {
+    let active = true;
+    async function loadVendor() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await graphqlRequest({ query: FETCH_VENDORS_QUERY });
+        const allVendors = (response.vendors?.edges || []).map((edge) => edge.node);
+        const apiVendorNode = allVendors.find(
+          (node) =>
+            node.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") ===
+            vendorSlug,
+        );
+
+        if (apiVendorNode) {
+          if (active) {
+            setVendor(adaptApiVendorToProfile(apiVendorNode));
+            setLoading(false);
+          }
+          return;
+        }
+
+        const localVendor = getVendorProfileBySlug(vendorSlug);
+        if (localVendor) {
+          if (active) {
+            setVendor(localVendor);
+            setLoading(false);
+          }
+        } else {
+          throw new Error("Vendor not found");
+        }
+      } catch (err) {
+        const localVendor = getVendorProfileBySlug(vendorSlug);
+        if (localVendor) {
+          if (active) {
+            setVendor(localVendor);
+            setLoading(false);
+          }
+        } else if (active) {
+          setError(err.message || "Failed to load vendor profile.");
+          setLoading(false);
+        }
+      }
+    }
+
+    loadVendor();
+    return () => {
+      active = false;
+    };
+  }, [vendorSlug]);
+
+  useEffect(() => {
     if (!vendor) {
       return;
     }
 
     setOrderSummary(readOrderSummary(vendor));
     setIsSaved(isVendorSaved(vendor.slug));
-    setActiveCategory("All - in - One Order");
+    setActiveCategory(vendor.categories?.[0] || "All - in - One Order");
     setIsAvailabilityPopupDismissed(false);
   }, [vendor]);
 
@@ -158,7 +275,15 @@ export default function VendorProfilePage() {
     };
   }, [orderSummary, vendor]);
 
-  if (!vendor) {
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error || !vendor) {
     return <Navigate to="/" replace />;
   }
 
