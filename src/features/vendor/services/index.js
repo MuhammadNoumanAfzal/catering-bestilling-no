@@ -3,7 +3,6 @@ export {
   getFallbackVendorProfileByName,
   getFallbackVendorProfileBySlug,
   getFallbackVendorProfiles,
-  getFallbackVendorReviewsBySlug,
 } from "./vendorCatalog";
 export {
   filterItemsByVendorLocation,

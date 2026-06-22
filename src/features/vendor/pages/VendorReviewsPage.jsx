@@ -1,46 +1,33 @@
-import { FiChevronLeft, FiMapPin, FiMessageSquare, FiStar } from "react-icons/fi";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { useMemo, useState } from "react";
 import {
-  getFallbackVendorProfileBySlug,
-  getFallbackVendorReviewsBySlug,
-} from "../services";
+  FiChevronLeft,
+  FiMapPin,
+  FiMessageSquare,
+  FiPlus,
+  FiStar,
+  FiTruck,
+} from "react-icons/fi";
+import { Link, Navigate, useParams } from "react-router-dom";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { useVendorProfile } from "../hooks/useVendorProfile";
+import VendorReviewModal from "../components/VendorReviewModal";
+import {
+  buildVendorReviewSubmissionPayload,
+  createPendingVendorReview,
+  getVendorReviewSummaryCards,
+} from "../utils/vendorReviewForm";
 
-const REVIEW_HIGHLIGHTS = [
-  {
-    label: "Delivery Timing",
-    score: "4.9/5",
-    note: "Orders usually arrive on time and event-ready.",
-  },
-  {
-    label: "Food Quality",
-    score: "4.8/5",
-    note: "Guests consistently praise freshness and flavor.",
-  },
-  {
-    label: "Presentation",
-    score: "4.7/5",
-    note: "Packaging and setup feel polished for office events.",
-  },
-];
-
-function StatCard({ label, value, accent = "default" }) {
-  const accentClasses =
-    accent === "warm"
-      ? "bg-[#fff2e8] text-[#cf6e38]"
-      : accent === "gold"
-        ? "bg-[#fff7dd] text-[#8b6a11]"
-        : "bg-white text-[#1a1714]";
-
+function SummaryCard({ icon: Icon, label, value, note }) {
   return (
-    <div className="rounded-[18px] border border-[#eadfd2] bg-white/80 p-4 shadow-[0_10px_24px_rgba(31,19,8,0.04)] backdrop-blur">
-      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#8a7d71]">
-        {label}
-      </p>
-      <div
-        className={`mt-3 inline-flex rounded-full px-3 py-1.5 text-[16px] font-semibold ${accentClasses}`}
-      >
-        {value}
+    <div className="rounded-[22px] border border-[#eadfd2] bg-[#f8f2eb] p-5 shadow-[0_10px_22px_rgba(31,19,8,0.04)]">
+      <div className="flex items-center gap-2 text-[#171512]">
+        <Icon className="text-[16px]" />
+        <p className="text-[16px] font-medium">{label}</p>
       </div>
+      <p className="mt-3 text-[31px] font-semibold leading-none tracking-[-0.04em] text-[#171512]">
+        {value}
+      </p>
+      <p className="mt-3 text-[14px] leading-6 text-[#665b51]">{note}</p>
     </div>
   );
 }
@@ -59,11 +46,16 @@ function ReviewCard({ review, isFeatured = false }) {
           <div className="max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex rounded-full bg-[#f6efe7] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#7b6c61]">
-                {review.occasion}
+                {review.occasion || "General"}
               </span>
+              {review.status === "pending" ? (
+                <span className="inline-flex rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#cf6e38]">
+                  Pending review
+                </span>
+              ) : null}
               {isFeatured ? (
                 <span className="inline-flex rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#cf6e38]">
-                  Featured Review
+                  Featured review
                 </span>
               ) : null}
             </div>
@@ -83,7 +75,7 @@ function ReviewCard({ review, isFeatured = false }) {
 
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#fff6dc] px-4 py-2 text-[15px] font-semibold text-[#805c05]">
             <FiStar className="fill-current" />
-            {review.rating.toFixed(1)}
+            {Number(review.rating ?? 0).toFixed(1)}
           </div>
         </div>
 
@@ -95,17 +87,92 @@ function ReviewCard({ review, isFeatured = false }) {
   );
 }
 
+function EmptyReviewsState({ onAddReview }) {
+  return (
+    <div className="rounded-[28px] border border-dashed border-[#e3d7ca] bg-[linear-gradient(180deg,#fffaf6_0%,#fff4eb_100%)] p-8 text-center shadow-[0_14px_36px_rgba(31,19,8,0.05)]">
+      <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-[20px] bg-white text-[#cf6e38] shadow-[0_10px_24px_rgba(31,19,8,0.06)]">
+        <FiMessageSquare className="text-[26px]" />
+      </div>
+      <h2 className="mt-5 text-[28px] font-semibold tracking-[-0.03em] text-[#171512]">
+        No reviews published yet
+      </h2>
+      <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-[#665b51]">
+        This vendor already has API-backed rating and review-count summary, but
+        the backend is not yet returning individual review entries. You can
+        still prepare the review submission flow from here.
+      </p>
+      <button
+        type="button"
+        onClick={onAddReview}
+        className="mt-6 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
+      >
+        <FiPlus className="text-[16px]" />
+        Add the first review
+      </button>
+    </div>
+  );
+}
+
 export default function VendorReviewsPage() {
   const { vendorSlug } = useParams();
-  const vendor = getFallbackVendorProfileBySlug(vendorSlug);
-  const reviews = getFallbackVendorReviewsBySlug(vendorSlug);
+  const { vendor, isLoading, error } = useVendorProfile(vendorSlug);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [submittedReviews, setSubmittedReviews] = useState([]);
+
+  const reviews = useMemo(() => {
+    const apiReviews = Array.isArray(vendor?.reviews) ? vendor.reviews : [];
+    return [...submittedReviews, ...apiReviews];
+  }, [submittedReviews, vendor?.reviews]);
+
   const featuredReview = reviews[0] ?? null;
   const otherReviews = reviews.slice(1);
   const averageRating = Number(vendor?.rating ?? 0).toFixed(1);
+  const summaryCards = useMemo(
+    () =>
+      getVendorReviewSummaryCards(vendor).map((card, index) => ({
+        ...card,
+        icon:
+          index === 0
+            ? FiStar
+            : index === 1
+              ? FiMapPin
+              : index === 2
+                ? FiTruck
+                : FiMessageSquare,
+      })),
+    [vendor],
+  );
 
-  if (!vendor) {
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error || !vendor) {
     return <Navigate to="/" replace />;
   }
+
+  const handleReviewSubmit = async (formState) => {
+    const payload = buildVendorReviewSubmissionPayload(vendor, formState);
+
+    if (!payload.authorName || !payload.authorEmail || !payload.title || !payload.comment) {
+      await showAuthErrorAlert(
+        "Please complete name, email, title, and review details before submitting.",
+        "Missing review details",
+      );
+      return;
+    }
+
+    setSubmittedReviews((current) => [
+      createPendingVendorReview(payload),
+      ...current,
+    ]);
+    setIsReviewModalOpen(false);
+    await showSuccessToast("Review captured and ready for backend integration");
+  };
 
   return (
     <section className="relative overflow-hidden px-4 py-5 md:px-6 lg:px-8">
@@ -121,46 +188,56 @@ export default function VendorReviewsPage() {
         </Link>
 
         <div className="mt-5 overflow-hidden rounded-[30px] border border-[#eadfd2] bg-[linear-gradient(135deg,#fffaf6_0%,#fff2e9_45%,#fff9f3_100%)] shadow-[0_24px_56px_rgba(31,19,8,0.08)]">
-          <div className="grid gap-8 p-6 lg:grid-cols-[minmax(0,1.2fr)_320px] lg:p-8">
-            <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#cf6e38]">
-                Guest Feedback
-              </p>
-              <h1 className="mt-3 max-w-2xl text-[36px] font-semibold leading-[1.02] tracking-[-0.04em] text-[#171512] sm:text-[48px]">
-                Reviews for {vendor.name}
-              </h1>
-              <p className="mt-4 max-w-2xl text-[16px] leading-7 text-[#62564c]">
-                A full look at how teams rate this vendor for food quality,
-                reliability, packaging, and event delivery experience.
-              </p>
+          <div className="p-6 lg:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#cf6e38]">
+                  Guest Feedback
+                </p>
+                <h1 className="mt-3 text-[36px] font-semibold leading-[1.02] tracking-[-0.04em] text-[#171512] sm:text-[48px]">
+                  Reviews for {vendor.name}
+                </h1>
+                <p className="mt-4 text-[16px] leading-7 text-[#62564c]">
+                  Real vendor summary data from the API, plus a structured
+                  review submission flow ready to connect with backend review
+                  endpoints.
+                </p>
 
-              <div className="mt-6 flex flex-wrap items-center gap-4 text-[15px] text-[#4f4740]">
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
-                  <FiStar className="fill-[#f4b400] text-[#f4b400]" />
-                  <span className="font-semibold text-[#171512]">
-                    {averageRating}
+                <div className="mt-6 flex flex-wrap items-center gap-4 text-[15px] text-[#4f4740]">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
+                    <FiStar className="fill-[#f4b400] text-[#f4b400]" />
+                    <span className="font-semibold text-[#171512]">
+                      {averageRating}
+                    </span>
+                    <span>from {vendor.reviewCount} reviews</span>
                   </span>
-                  <span>from {vendor.reviewCount} reviews</span>
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
-                  <FiMapPin className="text-[14px]" />
-                  {vendor.addressLine}
-                </span>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
+                    <FiMapPin className="text-[14px]" />
+                    {vendor.addressLine}
+                  </span>
+                </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() => setIsReviewModalOpen(true)}
+                className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
+              >
+                <FiPlus className="text-[16px]" />
+                Write a review
+              </button>
             </div>
 
-            <div className="grid gap-3 self-start">
-              <StatCard
-                label="Average Rating"
-                value={`${averageRating} / 5`}
-                accent="gold"
-              />
-              <StatCard
-                label="Total Reviews"
-                value={`${vendor.reviewCount}+`}
-                accent="warm"
-              />
-              <StatCard label="Cuisine" value={vendor.cuisine} />
+            <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {summaryCards.map((card) => (
+                <SummaryCard
+                  key={card.label}
+                  icon={card.icon}
+                  label={card.label}
+                  value={card.value}
+                  note={card.note}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -169,98 +246,28 @@ export default function VendorReviewsPage() {
           <div className="mt-8">
             <ReviewCard review={featuredReview} isFeatured />
           </div>
-        ) : null}
+        ) : (
+          <div className="mt-8">
+            <EmptyReviewsState onAddReview={() => setIsReviewModalOpen(true)} />
+          </div>
+        )}
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-          <aside className="lg:sticky lg:top-28 lg:self-start">
-            <div className="overflow-hidden rounded-[28px] border border-[#eadfd2] bg-[linear-gradient(180deg,#fffaf6_0%,#fff5ed_100%)] shadow-[0_22px_48px_rgba(31,19,8,0.08)]">
-              <div className="border-b border-[#f0e2d5] px-5 py-6">
-                <div className="inline-flex h-14 w-14 items-center justify-center rounded-[18px] bg-[#fff1e8] text-[#cf6e38] shadow-[0_10px_24px_rgba(207,110,56,0.14)]">
-                  <FiMessageSquare className="text-[22px]" />
-                </div>
-
-                <h2 className="mt-4 text-[26px] font-semibold tracking-[-0.03em] text-[#171512]">
-                  Review Snapshot
-                </h2>
-                <p className="mt-3 text-[15px] leading-7 text-[#665b51]">
-                  A quick summary of what customers consistently highlight about
-                  this vendor.
-                </p>
-
-                <div className="mt-5 rounded-[20px] border border-[#efdccd] bg-white/85 p-4">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#8a7d71]">
-                    Overall Score
-                  </p>
-                  <div className="mt-3 flex items-end justify-between gap-3">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-[#fff7dd] px-4 py-2 text-[18px] font-semibold text-[#8b6a11]">
-                      <FiStar className="fill-current" />
-                      {averageRating}
-                    </div>
-                    <p className="text-right text-[13px] leading-5 text-[#7a6d61]">
-                      Based on
-                      <br />
-                      {vendor.reviewCount} verified reviews
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="px-5 py-5">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#8a7d71]">
-                  Top Signals
-                </p>
-
-                <div className="mt-4 space-y-3">
-                  {REVIEW_HIGHLIGHTS.map((highlight) => (
-                    <div
-                      key={highlight.label}
-                      className="rounded-[20px] border border-[#eedfd2] bg-white/90 p-4"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-[15px] font-semibold text-[#211c18]">
-                          {highlight.label}
-                        </p>
-                        <span className="inline-flex rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
-                          {highlight.score}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-[13px] leading-6 text-[#6d6258]">
-                        {highlight.note}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-5 rounded-[20px] bg-[#f7efe7] px-4 py-4">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#8a7d71]">
-                    Most Mentioned
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="rounded-full bg-white px-3 py-1.5 text-[13px] font-medium text-[#5d5147]">
-                      Reliable delivery
-                    </span>
-                    <span className="rounded-full bg-white px-3 py-1.5 text-[13px] font-medium text-[#5d5147]">
-                      Fresh ingredients
-                    </span>
-                    <span className="rounded-full bg-white px-3 py-1.5 text-[13px] font-medium text-[#5d5147]">
-                      Clean presentation
-                    </span>
-                    <span className="rounded-full bg-white px-3 py-1.5 text-[13px] font-medium text-[#5d5147]">
-                      Office-friendly setup
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          <div className="grid gap-4">
+        {otherReviews.length > 0 ? (
+          <div className="mt-6 grid gap-4">
             {otherReviews.map((review) => (
               <ReviewCard key={review.id} review={review} />
             ))}
           </div>
-        </div>
+        ) : null}
       </div>
+
+      {isReviewModalOpen ? (
+        <VendorReviewModal
+          vendor={vendor}
+          onCancel={() => setIsReviewModalOpen(false)}
+          onSubmit={handleReviewSubmit}
+        />
+      ) : null}
     </section>
   );
 }
