@@ -40,7 +40,7 @@ export default function VendorMenuItemModal({ item, onClose }) {
   );
   const [showQuantityOptions, setShowQuantityOptions] = useState(false);
   const [selectedRequired, setSelectedRequired] = useState(
-    item.modal.requiredSelection.options[0],
+    item.modal.requiredSelection?.options?.[0] ?? "",
   );
   const [selectedOptional, setSelectedOptional] = useState({});
   const [instructionsOpen, setInstructionsOpen] = useState(false);
@@ -155,25 +155,27 @@ export default function VendorMenuItemModal({ item, onClose }) {
             </div>
           </div>
 
-          <div className="border-t border-[#ececec] px-5 py-4 sm:px-6">
-            <h3 className="text-[16px] font-semibold text-[#1d1d1d]">
-              {item.modal.requiredSelection.title}
-            </h3>
-            <p className="mt-1 text-[14px] text-[#666]">
-              {item.modal.requiredSelection.subtitle}
-            </p>
+          {item.modal.requiredSelection ? (
+            <div className="border-t border-[#ececec] px-5 py-4 sm:px-6">
+              <h3 className="text-[16px] font-semibold text-[#1d1d1d]">
+                {item.modal.requiredSelection.title}
+              </h3>
+              <p className="mt-1 text-[14px] text-[#666]">
+                {item.modal.requiredSelection.subtitle}
+              </p>
 
-            <div className="mt-2">
-              {item.modal.requiredSelection.options.map((option) => (
-                <OptionRow
-                  key={option}
-                  option={option}
-                  selected={selectedRequired === option}
-                  onToggle={() => setSelectedRequired(option)}
-                />
-              ))}
+              <div className="mt-2">
+                {item.modal.requiredSelection.options.map((option) => (
+                  <OptionRow
+                    key={option}
+                    option={option}
+                    selected={selectedRequired === option}
+                    onToggle={() => setSelectedRequired(option)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           {item.modal.optionalSelections.map((group) => (
             <div
@@ -233,7 +235,7 @@ export default function VendorMenuItemModal({ item, onClose }) {
             className="flex w-full cursor-pointer items-center justify-between rounded-full bg-[#cf6e38] px-6 py-4 text-left text-white"
           >
             <span className="text-[16px] font-semibold">
-              Make 1 required selection
+              {item.modal.requiredSelection ? "Make 1 required selection" : "Add to order"}
             </span>
             <span className="text-right">
               <span className="block text-[18px] font-bold">

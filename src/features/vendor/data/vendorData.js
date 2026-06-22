@@ -894,7 +894,22 @@ const menuSeedByVendor = [
   return accumulator;
 }, {});
 
-export const vendorPreviewCards = [...popularVendors, ...featuredVendors];
+export const vendorPreviewCards = [
+  ...popularVendors,
+  ...featuredVendors,
+  {
+    id: 8,
+    slug: "fresh-bites-kitchen",
+    name: "Fresh Bites Kitchen",
+    image: "/home/hero1.webp",
+    rating: 0.0,
+    deliveryTime: "15-45 min",
+    deliveryFee: "NOK 0 Delivery fee",
+    discount: null,
+    categoryTags: ["Catering Packages"],
+  }
+];
+
 
 function buildMenuSections(vendor) {
   const seeds = menuSeedByVendor[vendor.slug] ?? createFallbackSeed(vendor);
@@ -953,26 +968,334 @@ function createOrderSummary(menuSections) {
   };
 }
 
-export const vendorProfiles = vendorDirectory.map((vendor) => {
-  const previewCard = vendorPreviewCards.find(
-    (item) => item.slug === vendor.slug,
-  );
-  const menuSections = buildMenuSections(vendor);
-  const reviews = createVendorReviews(vendor);
+export const freshBitesKitchenPayload = {
+  id: "8",
+  name: "Fresh Bites Kitchen",
+  logoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdrEAgRBptuEGkDenW-UkBRrWFgwCnTgn89q0rHIELshGNDS9Gpn7mibBn&s=10",
+  coverPhotoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4uwcPXm4Q1OvgdJizrYTSw2_XWBI4AUvQp4CZmpdpEmtNsOTu_kD-VBqQ&s=10",
+  rating: "0.0",
+  reviewsCount: 0,
+  categoryTags: [
+    "All-in-one",
+    "Catering Packages"
+  ],
+  deliverySettings: {
+    id: "7",
+    baseDeliveryFee: "0",
+    minDeliveryTime: 15,
+    maxDeliveryTime: 45
+  },
+  businessSettings: {
+    id: "7",
+    businessAddress: "Grünerløkka Plaza, Oslo, Norway"
+  },
+  menuCategories: [
+    {
+      id: "9",
+      name: "Catering Packages",
+      description: "Main catering packages for weddings, corporate, and private parties",
+      vendorProducts: [
+        {
+          id: "49",
+          name: "Royal Wedding Grand Buffet",
+          description: "General details about this catering package, including the culinary experience, key highlights, and service style.",
+          priceWithTax: "120.00",
+          averageRating: "0.0",
+          ordersCount: 0,
+          badge: null,
+          isPopular: false,
+          isFeatured: false,
+          slug: "royal-wedding-grand-buffet",
+          categoryTags: [
+            "Catering Packages",
+            "Vegetarian",
+            "Halal",
+            "Gluten-Free",
+            "Vegan"
+          ],
+          contains: null,
+          dietaryTags: [
+            "Vegetarian",
+            "Halal",
+            "Gluten-Free",
+            "Vegan"
+          ],
+          allergens: [
+            "Gluten",
+            "Eggs",
+            "Vegess"
+          ],
+          minLeadTimeDays: 24,
+          minLeadTimeHours: 24,
+          minimumGuests: 20,
+          pricingType: "per-person",
+          isAvailabilityWindowEnabled: true,
+          availableFrom: "2026-06-25",
+          availableUntil: "2026-07-25",
+          coverImage: {
+            id: "109",
+            fileUrl: "https://img.magnific.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19739.jpg?semt=ais_hybrid&w=740&q=80"
+          },
+          menuItems: [
+            {
+              id: "1",
+              title: "Grilled Chicken",
+              description: null,
+              imageUrl: "https://img.magnific.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19739.jpg?semt=ais_hybrid&w=740&q=80",
+              allergens: [
+                "Eggs"
+              ]
+            },
+            {
+              id: "2",
+              title: "Penne Pasta",
+              description: null,
+              imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR4OcTwtNZJtp6y8QY5TwulzzahHuYTH9iwQ&s",
+              allergens: [
+                "Gluten"
+              ]
+            },
+            {
+              id: "3",
+              title: "Garden Fresh Salad",
+              description: null,
+              imageUrl: "https://img.magnific.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19739.jpg?semt=ais_hybrid&w=740&q=80",
+              allergens: [
+                "Vegess"
+              ]
+            }
+          ],
+          optionalAddOns: []
+        }
+      ]
+    },
+    {
+      id: "10",
+      name: "All-in-one",
+      description: "All pakages for weddings, corporate, and private parties",
+      vendorProducts: [
+        {
+          id: "50",
+          name: "Grand Corporate Gala Buffet",
+          description: "Ek shandaar corporate event ke liye premium buffet, jismein shamil hain gourmet main courses, artisanal sides, aur professional presentation.",
+          priceWithTax: "150.00",
+          averageRating: "0.0",
+          ordersCount: 0,
+          badge: null,
+          isPopular: false,
+          isFeatured: false,
+          slug: "grand-corporate-gala-buffet",
+          categoryTags: [
+            "All-in-one",
+            "Vegetarian",
+            "Halal",
+            "Gluten-Free",
+            "Vegan"
+          ],
+          contains: null,
+          dietaryTags: [
+            "Vegetarian",
+            "Halal",
+            "Gluten-Free",
+            "Vegan"
+          ],
+          allergens: [
+            "None"
+          ],
+          minLeadTimeDays: 48,
+          minLeadTimeHours: 24,
+          minimumGuests: 35,
+          pricingType: "per-person",
+          isAvailabilityWindowEnabled: true,
+          availableFrom: "2026-07-01",
+          availableUntil: "2026-09-01",
+          coverImage: {
+            id: "112",
+            fileUrl: "https://img.magnific.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19739.jpg?semt=ais_hybrid&w=740&q=80"
+          },
+          menuItems: [],
+          optionalAddOns: []
+        }
+      ]
+    }
+  ]
+};
+
+export function adaptApiProductToMenuItem(prod, subcategory = "Menu Item") {
+  if (!prod) return null;
+  const price = parseFloat(prod.priceWithTax || 0);
+  const serves = prod.minimumGuests || 1;
+
+  const detailLines = [
+    prod.description || "",
+    prod.allergens?.length ? `Allergens: ${prod.allergens.join(", ")}` : "",
+  ].filter(Boolean);
+
+  const optionalSelections = (prod.optionalAddOns || []).map((group) => ({
+    title: group.name || group.title || "Add-ons",
+    options: (group.options || group.items || []).map((opt) => ({
+      label: opt.name || opt.label,
+      price: parseFloat(opt.price || 0),
+    })),
+  }));
 
   return {
-    ...vendor,
-    logo: vendor.logo ?? previewCard?.image,
-    categories: DEFAULT_SECTIONS,
+    id: prod.id,
+    title: prod.name,
+    image: prod.coverImage?.fileUrl || "",
+    serves,
+    subcategory,
+    tag: prod.isPopular ? "Popular" : prod.isFeatured ? "Featured" : "",
+    description: prod.description || "",
+    detailLines,
+    dietaryLabels: prod.dietaryTags || [],
+    allergens: prod.allergens || [],
+    price,
+    menuItems: prod.menuItems || [],
+    modal: {
+      heading: prod.name,
+      pricePerPerson: prod.pricingType === "per-person" ? (price / Math.max(serves, 1)).toFixed(2) : price.toFixed(2),
+      badge: subcategory,
+      quantityOptions: ["1 order", "2 orders", "5 orders", "10 orders"],
+      requiredSelection: null,
+      optionalSelections,
+      instructionPlaceholder: "",
+    },
+  };
+}
+
+export function adaptApiVendorToProfile(apiVendor) {
+  if (!apiVendor) return null;
+
+  const slug = String(apiVendor.name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
+  const minTime = apiVendor.deliverySettings?.minDeliveryTime ?? 0;
+  const maxTime = apiVendor.deliverySettings?.maxDeliveryTime ?? 0;
+  const fee = apiVendor.deliverySettings?.baseDeliveryFee ?? "0";
+
+  const banner = apiVendor.coverPhotoUrl || "";
+  const logo = apiVendor.logoUrl || "";
+  const rating = parseFloat(apiVendor.rating || 0);
+
+  const address = apiVendor.businessSettings?.businessAddress || "";
+  const servicePostalCodes = [];
+  const cuisine = apiVendor.categoryTags?.[0] || "";
+
+  const categories = (apiVendor.menuCategories || []).map((cat) => cat.name);
+
+  const menuSections = (apiVendor.menuCategories || []).map((cat, catIdx) => {
+    const items = (cat.vendorProducts || []).map((prod, prodIdx) => {
+      const price = parseFloat(prod.priceWithTax || 0);
+      const serves = prod.minimumGuests || 1;
+      const subcategory = cat.name;
+
+      const detailLines = [
+        prod.description || "",
+        prod.allergens?.length ? `Allergens: ${prod.allergens.join(", ")}` : "",
+      ].filter(Boolean);
+
+      const optionalSelections = (prod.optionalAddOns || []).map((group) => ({
+        title: group.name || group.title || "Add-ons",
+        options: (group.options || group.items || []).map((opt) => ({
+          label: opt.name || opt.label,
+          price: parseFloat(opt.price || 0),
+        })),
+      }));
+
+      return {
+        id: prod.id || `${slug}-${cat.id}-${prodIdx}`,
+        title: prod.name,
+        image: prod.coverImage?.fileUrl || "",
+        serves,
+        subcategory,
+        tag: prod.isPopular ? "Popular" : prod.isFeatured ? "Featured" : "",
+        description: prod.description || "",
+        detailLines,
+        dietaryLabels: prod.dietaryTags || [],
+        allergens: prod.allergens || [],
+        price,
+        menuItems: prod.menuItems || [],
+        modal: {
+          heading: prod.name,
+          pricePerPerson: prod.pricingType === "per-person" ? (price / Math.max(serves, 1)).toFixed(2) : price.toFixed(2),
+          badge: subcategory,
+          quantityOptions: ["1 order", "2 orders", "5 orders", "10 orders"],
+          requiredSelection: null,
+          optionalSelections,
+          instructionPlaceholder: "",
+        },
+      };
+    });
+
+    return {
+      id: cat.id || `${slug}-${catIdx}`,
+      title: cat.name,
+      items,
+    };
+  });
+
+  const reviews = [];
+
+  const orderSummary = {
+    items: [],
+    breakdown: [],
+    deliveryDate: "",
+    personCount: 1,
+    deliveryAddress: "",
+    invoiceAddress: "",
+    total: "0.00",
+  };
+
+  return {
+    slug,
+    name: apiVendor.name,
+    logo,
+    banner,
+    heroSideImage: banner,
+    rating: rating.toFixed(1),
+    reviewCount: apiVendor.reviewsCount || 0,
+    cuisine,
+    addressLine: address,
+    city: "",
+    servicePostalCodes,
+    deliveryFee: `NOK ${parseFloat(fee).toFixed(0)} Delivery fee`,
+    leadTime: minTime || maxTime ? `${minTime}-${maxTime} min` : "",
+    availability: null,
+    categories,
     menuSections,
     reviews,
-    orderSummary: createOrderSummary(menuSections),
+    orderSummary,
   };
-});
+}
+
+
+export const vendorProfiles = [
+  ...vendorDirectory.map((vendor) => {
+    const previewCard = vendorPreviewCards.find(
+      (item) => item.slug === vendor.slug,
+    );
+    const menuSections = buildMenuSections(vendor);
+    const reviews = createVendorReviews(vendor);
+
+    return {
+      ...vendor,
+      logo: vendor.logo ?? previewCard?.image,
+      categories: DEFAULT_SECTIONS,
+      menuSections,
+      reviews,
+      orderSummary: createOrderSummary(menuSections),
+    };
+  }),
+  adaptApiVendorToProfile(freshBitesKitchenPayload)
+];
 
 export function getVendorProfileBySlug(slug) {
   return vendorProfiles.find((vendor) => vendor.slug === slug) ?? null;
 }
+
 
 export function getVendorMenuItemById(vendorSlug, itemId) {
   const vendor = getVendorProfileBySlug(vendorSlug);
