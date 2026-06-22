@@ -96,9 +96,10 @@ export default function MenuDetailsPage() {
         ...option,
         id: `${group.title}-${option.label}`,
         image:
-          optionIndex % 2 === 0
+          option.image ||
+          (optionIndex % 2 === 0
             ? vendor.banner
-            : vendor.heroSideImage ?? menuItem.image,
+            : vendor.heroSideImage ?? menuItem.image),
         groupTitle: group.title,
         order: groupIndex,
       })),
