@@ -21,7 +21,7 @@ import {
   SignInPage,
   SignUpPage,
 } from "../../features/auth";
-import CheckoutPage from "../../features/checkOut/pages/CheckoutPage";
+import { CheckoutPage } from "../../features/checkOut";
 import VendorDashboardLayout from "../../features/vendorDashboard/layouts/VendorDashboardLayout";
 import VendorDashboardHomePage from "../../features/vendorDashboard/pages/VendorDashboardHomePage";
 import VendorInvoicesPage from "../../features/vendorDashboard/pages/VendorInvoicesPage";

@@ -10,7 +10,7 @@ import {
   getItemPrice,
   getVendorTotals,
   sortSummaryItems,
-} from "./checkoutSummary.utils";
+} from "./checkoutSummaryUtils";
 
 export default function VendorSummaryCard({
   cart,

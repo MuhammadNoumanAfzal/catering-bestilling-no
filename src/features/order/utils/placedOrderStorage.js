@@ -14,6 +14,17 @@ function normalizeCarts(carts) {
     : [];
 }
 
+function normalizePlacedOrders(placedOrders) {
+  return Array.isArray(placedOrders)
+    ? placedOrders.map((order) => ({
+        vendorSlug: order.vendorSlug,
+        vendorName: order.vendorName,
+        orderId: order.orderId,
+        message: order.message,
+      }))
+    : [];
+}
+
 export function writePlacedOrderDraft(value) {
   if (typeof window === "undefined") {
     return;
@@ -23,6 +34,7 @@ export function writePlacedOrderDraft(value) {
     checkoutType: value?.checkoutType ?? "corporate",
     formState: value?.formState ?? {},
     carts: normalizeCarts(value?.carts),
+    placedOrders: normalizePlacedOrders(value?.placedOrders),
     createdAt: value?.createdAt ?? new Date().toISOString(),
   };
 
@@ -50,6 +62,7 @@ export function readPlacedOrderDraft() {
       checkoutType: parsedValue?.checkoutType ?? "corporate",
       formState: parsedValue?.formState ?? {},
       carts: normalizeCarts(parsedValue?.carts),
+      placedOrders: normalizePlacedOrders(parsedValue?.placedOrders),
       createdAt: parsedValue?.createdAt ?? null,
     };
   } catch {

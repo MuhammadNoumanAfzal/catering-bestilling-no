@@ -1,5 +1,5 @@
 import CheckoutField from "./CheckoutField";
-import { PLACEHOLDERS } from "./checkoutPage.constants";
+import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
 
 export default function CheckoutAddressFields({
   mode,
@@ -21,7 +21,7 @@ export default function CheckoutAddressFields({
         label="Address"
         value={formState[`${prefix}Address`]}
         onChange={(event) => updateField(`${prefix}Address`, event.target.value)}
-        placeholder={PLACEHOLDERS.address}
+        placeholder={CHECKOUT_PLACEHOLDERS.address}
         className="sm:col-span-2"
       />
       <CheckoutField
@@ -31,7 +31,9 @@ export default function CheckoutAddressFields({
           updateField(`${prefix}AddressLine2`, event.target.value)
         }
         placeholder={
-          mode === "corporate" ? PLACEHOLDERS.addressLine2 : PLACEHOLDERS.apartment
+          mode === "corporate"
+            ? CHECKOUT_PLACEHOLDERS.addressLine2
+            : CHECKOUT_PLACEHOLDERS.apartment
         }
       />
       <CheckoutField
@@ -39,7 +41,9 @@ export default function CheckoutAddressFields({
         value={formState[firstRowKey]}
         onChange={(event) => updateField(firstRowKey, event.target.value)}
         placeholder={
-          mode === "corporate" ? PLACEHOLDERS.city : PLACEHOLDERS.postalCode
+          mode === "corporate"
+            ? CHECKOUT_PLACEHOLDERS.city
+            : CHECKOUT_PLACEHOLDERS.postalCode
         }
       />
       <CheckoutField
@@ -47,7 +51,9 @@ export default function CheckoutAddressFields({
         value={formState[secondRowKey]}
         onChange={(event) => updateField(secondRowKey, event.target.value)}
         placeholder={
-          mode === "corporate" ? PLACEHOLDERS.postalCode : PLACEHOLDERS.city
+          mode === "corporate"
+            ? CHECKOUT_PLACEHOLDERS.postalCode
+            : CHECKOUT_PLACEHOLDERS.city
         }
       />
     </div>

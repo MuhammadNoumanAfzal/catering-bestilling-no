@@ -11,6 +11,8 @@ export function attachAddOnsToMenuItem(menuItem, addOns) {
         {
           title: "Select Add-ons",
           options: addOns.map((item) => ({
+            id: item.id,
+            productId: item.id,
             label: item.name,
             price: parseFloat(item.priceWithTax || 0),
             image: item.coverImage?.fileUrl || "",

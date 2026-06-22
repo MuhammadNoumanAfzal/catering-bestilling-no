@@ -13,8 +13,14 @@ import { showSuccessToast } from "../../../utils/alerts";
 function formatOrderPreview(orderDraft) {
   const primaryCart = orderDraft?.carts?.[0];
   const formState = orderDraft?.formState ?? {};
+  const placedOrders = orderDraft?.placedOrders ?? [];
+  const orderIds = placedOrders
+    .map((order) => `${order.orderId ?? ""}`.trim())
+    .filter(Boolean)
+    .map((orderId) => (orderId.startsWith("#") ? orderId : `#${orderId}`));
 
   return {
+    orderIds,
     address:
       formState.deliveryAddress ||
       primaryCart?.orderSummary?.deliveryAddress ||
@@ -39,6 +45,7 @@ export default function OrderConfirmedPage() {
     () => formatOrderPreview(placedOrderDraft),
     [placedOrderDraft],
   );
+  const primaryOrderId = orderPreview.orderIds[0] || "#23459";
 
   const handleModifySave = async (nextValues) => {
     if (!placedOrderDraft) {
@@ -134,7 +141,7 @@ export default function OrderConfirmedPage() {
                   Order ID
                 </p>
                 <p className="mt-2 text-[15px] font-semibold text-[#cf6e38]">
-                  #23459
+                  {primaryOrderId}
                 </p>
               </div>
               <div>

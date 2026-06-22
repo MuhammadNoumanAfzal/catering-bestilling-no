@@ -1,7 +1,7 @@
 import {
   formatCurrency,
   getItemServes,
-} from "./checkoutSummary.utils";
+} from "./checkoutSummaryUtils";
 
 export default function OrderItemCard({
   item,

@@ -1,6 +1,6 @@
 import CheckoutField from "./CheckoutField";
 import CheckoutSection from "./CheckoutSection";
-import { PLACEHOLDERS } from "./checkoutPage.constants";
+import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
 
 export default function ContactInfoSection({
   mode,
@@ -15,7 +15,7 @@ export default function ContactInfoSection({
             label="CompanyName"
             value={formState.companyName}
             onChange={(event) => updateField("companyName", event.target.value)}
-            placeholder={PLACEHOLDERS.companyName}
+            placeholder={CHECKOUT_PLACEHOLDERS.companyName}
             className="sm:col-span-2"
           />
           <CheckoutField
@@ -24,7 +24,7 @@ export default function ContactInfoSection({
             onChange={(event) =>
               updateField("organizationNumber", event.target.value)
             }
-            placeholder={PLACEHOLDERS.organizationNumber}
+            placeholder={CHECKOUT_PLACEHOLDERS.organizationNumber}
           />
           <CheckoutField
             label="Invoice Reference"
@@ -32,20 +32,20 @@ export default function ContactInfoSection({
             onChange={(event) =>
               updateField("invoiceReference", event.target.value)
             }
-            placeholder={PLACEHOLDERS.invoiceReference}
+            placeholder={CHECKOUT_PLACEHOLDERS.invoiceReference}
           />
           <CheckoutField
             label="Email"
             type="email"
             value={formState.email}
             onChange={(event) => updateField("email", event.target.value)}
-            placeholder={PLACEHOLDERS.email}
+            placeholder={CHECKOUT_PLACEHOLDERS.email}
           />
           <CheckoutField
             label="Phone"
             value={formState.phone}
             onChange={(event) => updateField("phone", event.target.value)}
-            placeholder={PLACEHOLDERS.phone}
+            placeholder={CHECKOUT_PLACEHOLDERS.phone}
           />
         </div>
       ) : (
@@ -54,13 +54,13 @@ export default function ContactInfoSection({
             label="First Name"
             value={formState.firstName}
             onChange={(event) => updateField("firstName", event.target.value)}
-            placeholder={PLACEHOLDERS.firstName}
+            placeholder={CHECKOUT_PLACEHOLDERS.firstName}
           />
           <CheckoutField
             label="Last Name"
             value={formState.lastName}
             onChange={(event) => updateField("lastName", event.target.value)}
-            placeholder={PLACEHOLDERS.lastName}
+            placeholder={CHECKOUT_PLACEHOLDERS.lastName}
           />
           <CheckoutField
             label="Invoice Reference"
@@ -68,20 +68,20 @@ export default function ContactInfoSection({
             onChange={(event) =>
               updateField("invoiceReference", event.target.value)
             }
-            placeholder={PLACEHOLDERS.invoiceReference}
+            placeholder={CHECKOUT_PLACEHOLDERS.invoiceReference}
           />
           <CheckoutField
             label="Phone"
             value={formState.phone}
             onChange={(event) => updateField("phone", event.target.value)}
-            placeholder={PLACEHOLDERS.phone}
+            placeholder={CHECKOUT_PLACEHOLDERS.phone}
           />
           <CheckoutField
             label="Email"
             type="email"
             value={formState.email}
             onChange={(event) => updateField("email", event.target.value)}
-            placeholder={PLACEHOLDERS.email}
+            placeholder={CHECKOUT_PLACEHOLDERS.email}
             className="sm:col-span-2"
           />
         </div>
