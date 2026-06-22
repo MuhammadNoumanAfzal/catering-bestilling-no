@@ -5,7 +5,7 @@ import BrowseTabs from "./BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
 import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
 import BrowseMenuSection from "./BrowseMenuSection";
-import { filterItemsByVendorLocation } from "../../vendor/data/vendorData";
+import { filterItemsByVendorLocation } from "../../vendor";
 import {
   formatCategoryLabel,
   getCategoryParamValue,

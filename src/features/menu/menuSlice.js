@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import {
-  getVendorMenuItemById,
-  getVendorProfileBySlug,
   adaptApiProductToMenuItem,
   adaptApiVendorToProfile,
-} from "../vendor/data/vendorData";
+  getFallbackVendorMenuItemById,
+  getFallbackVendorProfileBySlug,
+} from "../vendor";
 
 const FETCH_PRODUCT_QUERY = `
   query FetchProduct($id: ID!) {
@@ -120,16 +120,16 @@ export const fetchProductDetails = createAsyncThunk(
       }
 
       // Local fallback
-      const localVendor = getVendorProfileBySlug(vendorSlug);
-      const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
+      const localVendor = getFallbackVendorProfileBySlug(vendorSlug);
+      const localMenuItem = getFallbackVendorMenuItemById(vendorSlug, itemId);
       if (localVendor && localMenuItem) {
         return { product: localMenuItem, vendor: localVendor };
       }
       throw new Error("Product not found");
     } catch (error) {
       // Local fallback on API error
-      const localVendor = getVendorProfileBySlug(vendorSlug);
-      const localMenuItem = getVendorMenuItemById(vendorSlug, itemId);
+      const localVendor = getFallbackVendorProfileBySlug(vendorSlug);
+      const localMenuItem = getFallbackVendorMenuItemById(vendorSlug, itemId);
       if (localVendor && localMenuItem) {
         return { product: localMenuItem, vendor: localVendor };
       }

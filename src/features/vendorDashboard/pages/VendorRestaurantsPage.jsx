@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { FiHeart, FiStar } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { vendorProfiles } from "../../vendor/data/vendorData";
 import {
   readSavedVendorSlugs,
   toggleSavedVendor,
 } from "../../vendor/utils/savedVendorsStorage";
+import { getFallbackVendorProfiles } from "../../vendor";
 import { showSuccessToast } from "../../../utils/alerts";
 
 function RatingRow({ rating, reviewCount }) {
@@ -25,6 +25,7 @@ function RatingRow({ rating, reviewCount }) {
 export default function VendorRestaurantsPage() {
   const navigate = useNavigate();
   const [savedSlugs, setSavedSlugs] = useState([]);
+  const fallbackVendors = useMemo(() => getFallbackVendorProfiles(), []);
 
   useEffect(() => {
     setSavedSlugs(readSavedVendorSlugs());
@@ -33,9 +34,9 @@ export default function VendorRestaurantsPage() {
   const savedRestaurants = useMemo(
     () =>
       savedSlugs
-        .map((slug) => vendorProfiles.find((vendor) => vendor.slug === slug))
+        .map((slug) => fallbackVendors.find((vendor) => vendor.slug === slug))
         .filter(Boolean),
-    [savedSlugs],
+    [fallbackVendors, savedSlugs],
   );
 
   const handleToggleSaved = (event, restaurant) => {

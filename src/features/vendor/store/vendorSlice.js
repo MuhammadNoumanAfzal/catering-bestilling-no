@@ -1,26 +1,27 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getVendorProfileFromApi } from "./api/vendorApi";
-import { getVendorProfileBySlug } from "./data/vendorData";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { fetchVendorProfileBySlug } from "../api";
+import { getFallbackVendorProfileBySlug } from "../services";
 
 export const fetchVendorProfile = createAsyncThunk(
   "vendor/fetchVendorProfile",
   async (vendorSlug, { rejectWithValue }) => {
     try {
-      return await getVendorProfileFromApi(vendorSlug);
+      return await fetchVendorProfileBySlug(vendorSlug);
     } catch (error) {
-      // Local fallback on API or profile not found error
-      const localVendor = getVendorProfileBySlug(vendorSlug);
-      if (localVendor) {
-        return localVendor;
+      const fallbackVendor = getFallbackVendorProfileBySlug(vendorSlug);
+
+      if (fallbackVendor) {
+        return fallbackVendor;
       }
+
       return rejectWithValue(error.message || "Failed to fetch vendor profile.");
     }
-  }
+  },
 );
 
 const initialState = {
   currentVendor: null,
-  isLoading: false,
+  status: "idle",
   error: null,
 };
 
@@ -28,24 +29,24 @@ const vendorSlice = createSlice({
   name: "vendor",
   initialState,
   reducers: {
-    clearVendorState: (state) => {
+    clearVendorState(state) {
       state.currentVendor = null;
-      state.isLoading = false;
+      state.status = "idle";
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchVendorProfile.pending, (state) => {
-        state.isLoading = true;
+        state.status = "loading";
         state.error = null;
       })
       .addCase(fetchVendorProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.status = "succeeded";
         state.currentVendor = action.payload;
       })
       .addCase(fetchVendorProfile.rejected, (state, action) => {
-        state.isLoading = false;
+        state.status = "failed";
         state.error = action.payload || "Failed to load vendor profile.";
       });
   },

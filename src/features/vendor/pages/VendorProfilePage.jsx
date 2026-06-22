@@ -6,16 +6,10 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-import VendorProfileHeader from "../components/VendorProfileHeader";
-import VendorCategoryTabs from "../components/VendorCategoryTabs";
-import VendorMenuSection from "../components/VendorMenuSection";
-import VendorOrderSidebar from "../components/VendorOrderSidebar";
-import VendorAvailabilityPopup from "../components/VendorAvailabilityPopup";
-import VendorLocationModal from "../components/VendorLocationModal";
 import {
   getAvailableVendorsForSlot,
   isVendorDeliverySlotAvailable,
-} from "../data/vendorData";
+} from "../services";
 import {
   isVendorSaved,
   toggleSavedVendor,
@@ -25,21 +19,24 @@ import {
   writeOrderSummary,
 } from "../utils/orderSummaryStorage";
 import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchVendorProfile } from "../vendorSlice";
+import {
+  VendorAvailabilityPopup,
+  VendorCategoryTabs,
+  VendorLocationModal,
+  VendorMenuSection,
+  VendorOrderSidebar,
+  VendorProfileHeader,
+} from "../components";
+import { useVendorProfile } from "../hooks/useVendorProfile";
 
 export default function VendorProfilePage() {
   const CATEGORY_BAR_TOP_OFFSET = 78;
   const { vendorSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
+  const { vendor, isLoading: loading, error } = useVendorProfile(vendorSlug);
 
-  const { currentVendor: vendor, isLoading: loading, error } = useSelector(
-    (state) => state.vendor
-  );
-
-  const [activeCategory, setActiveCategory] = useState("All - in - One Order");
+  const [activeCategory, setActiveCategory] = useState("");
   const [orderSummary, setOrderSummary] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
@@ -51,10 +48,6 @@ export default function VendorProfilePage() {
   const categoryBarAnchorRef = useRef(null);
   const categoryBarInnerRef = useRef(null);
   const menuSectionsRef = useRef(null);
-
-  useEffect(() => {
-    dispatch(fetchVendorProfile(vendorSlug));
-  }, [dispatch, vendorSlug]);
 
   useEffect(() => {
     if (!vendor) {

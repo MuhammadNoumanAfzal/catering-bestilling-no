@@ -1,4 +1,4 @@
-import { vendorProfiles } from "../data/vendorData";
+import { getFallbackVendorProfiles } from "../services";
 import { getDefaultTableware } from "../../../components/shared/TablewareModal";
 
 const STORAGE_PREFIX = "vendor-order-summary:";
@@ -16,8 +16,8 @@ export function createInitialOrderSummary(vendor) {
   return {
     ...vendor.orderSummary,
     items: [],
-    deliveryDate: "2026-03-25",
-    deliveryTime: "14:30",
+    deliveryDate: vendor.orderSummary.deliveryDate || "",
+    deliveryTime: vendor.orderSummary.deliveryTime || "",
     personCount: vendor.orderSummary.personCount,
     deliveryAddress: vendor.orderSummary.deliveryAddress,
     invoiceAddress: vendor.orderSummary.invoiceAddress,
@@ -77,7 +77,7 @@ export function readAllStoredOrderSummaries() {
     return [];
   }
 
-  return vendorProfiles
+  return getFallbackVendorProfiles()
     .map((vendor) => {
       const orderSummary = readOrderSummary(vendor);
 
@@ -103,7 +103,7 @@ export function clearOtherStoredOrderSummaries(activeVendorSlug) {
     return;
   }
 
-  vendorProfiles.forEach((vendor) => {
+  getFallbackVendorProfiles().forEach((vendor) => {
     if (vendor.slug === activeVendorSlug) {
       return;
     }
@@ -119,7 +119,7 @@ export function clearAllStoredOrderSummaries() {
     return;
   }
 
-  vendorProfiles.forEach((vendor) => {
+  getFallbackVendorProfiles().forEach((vendor) => {
     window.sessionStorage.removeItem(getStorageKey(vendor.slug));
   });
   emitOrderSummaryUpdated();
