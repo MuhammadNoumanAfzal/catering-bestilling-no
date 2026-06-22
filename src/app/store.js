@@ -4,6 +4,8 @@ import homeReducer from "../features/home/homeSlice";
 import dashboardReducer from "../features/vendorDashboard/dashboardSlice";
 import ordersReducer from "../features/vendorDashboard/ordersSlice";
 import invoicesReducer from "../features/vendorDashboard/invoicesSlice";
+import vendorReducer from "../features/vendor/vendorSlice";
+import menuReducer from "../features/menu/menuSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +14,8 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     orders: ordersReducer,
     invoices: invoicesReducer,
+    vendor: vendorReducer,
+    menu: menuReducer,
   },
 });
 
