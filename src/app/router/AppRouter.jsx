@@ -12,12 +12,14 @@ import OrderConfirmedPage from "../../features/order/pages/OrderConfirmedPage";
 import MenuDetailsPage from "../../features/menu/pages/MenuDetailsPage";
 import VendorProfilePage from "../../features/vendor/pages/VendorProfilePage";
 import VendorReviewsPage from "../../features/vendor/pages/VendorReviewsPage";
-import AuthLayout from "../../features/auth/components/AuthLayout";
-import SignUpPage from "../../features/auth/pages/SignUpPage";
-import SignInPage from "../../features/auth/pages/SignInPage";
-import ForgotPasswordPage from "../../features/auth/pages/ForgotPasswordPage";
-import ForgotPasswordOtpPage from "../../features/auth/pages/ForgotPasswordOtpPage";
-import ResetPasswordPage from "../../features/auth/pages/ResetPasswordPage";
+import {
+  AuthLayout,
+  ForgotPasswordOtpPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
+  SignInPage,
+  SignUpPage,
+} from "../../features/auth";
 import CheckoutPage from "../../features/checkOut/pages/CheckoutPage";
 import VendorDashboardLayout from "../../features/vendorDashboard/layouts/VendorDashboardLayout";
 import VendorDashboardHomePage from "../../features/vendorDashboard/pages/VendorDashboardHomePage";

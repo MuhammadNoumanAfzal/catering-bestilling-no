@@ -6,8 +6,10 @@ const readStoredSession = () => {
   if (typeof window === "undefined") {
     return { accessToken: null, user: null };
   }
+
   try {
     const savedSession = window.sessionStorage.getItem(AUTH_STORAGE_KEY);
+
     if (savedSession) {
       const parsed = JSON.parse(savedSession);
       return {
@@ -16,8 +18,9 @@ const readStoredSession = () => {
       };
     }
   } catch {
-    // Ignore error and fall back
+    // Ignore storage parsing errors and fall back to an empty session.
   }
+
   return { accessToken: null, user: null };
 };
 
@@ -46,7 +49,7 @@ const authSlice = createSlice({
         if (accessToken && normalizedUser) {
           window.sessionStorage.setItem(
             AUTH_STORAGE_KEY,
-            JSON.stringify({ accessToken, user: normalizedUser })
+            JSON.stringify({ accessToken, user: normalizedUser }),
           );
         } else {
           window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
@@ -56,6 +59,7 @@ const authSlice = createSlice({
     signOut(state) {
       state.accessToken = null;
       state.user = null;
+
       if (typeof window !== "undefined") {
         window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
       }

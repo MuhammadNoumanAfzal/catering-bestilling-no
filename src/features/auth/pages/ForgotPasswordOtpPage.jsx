@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import AuthButton from "../components/AuthButton";
-import AuthCard from "../components/AuthCard";
-import OtpInput from "../components/OtpInput";
-import { verifyResetCode } from "../api/authApi";
-import {
-  showAuthErrorAlert,
-  showSuccessToast,
-} from "../../../utils/alerts";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { verifyResetCode } from "../api";
+import { PASSWORD_RESET_OTP_LENGTH } from "../constants/authForms";
+import { AuthButton, AuthCard, OtpInput } from "../components";
 
 export default function ForgotPasswordOtpPage() {
   const location = useLocation();
@@ -52,7 +48,7 @@ export default function ForgotPasswordOtpPage() {
   return (
     <AuthCard
       title="Forgot password"
-      subtitle="Enter the 4-digit code sent to your email."
+      subtitle={`Enter the ${PASSWORD_RESET_OTP_LENGTH}-digit code sent to your email.`}
       footer={
         <p className="type-para text-[#7c746d]">
           Didn&apos;t get the code?{" "}
@@ -67,10 +63,14 @@ export default function ForgotPasswordOtpPage() {
       }
     >
       <form className="space-y-5" onSubmit={handleSubmit}>
-        <OtpInput length={4} value={otpCode} onChange={setOtpCode} />
+        <OtpInput
+          length={PASSWORD_RESET_OTP_LENGTH}
+          value={otpCode}
+          onChange={setOtpCode}
+        />
         <AuthButton
           type="submit"
-          disabled={isSubmitting || otpCode.length !== 4}
+          disabled={isSubmitting || otpCode.length !== PASSWORD_RESET_OTP_LENGTH}
         >
           {isSubmitting ? "Verifying..." : "Verify"}
         </AuthButton>

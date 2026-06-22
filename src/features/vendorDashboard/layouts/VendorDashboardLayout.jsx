@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import CommonNavbar from "../../../components/shared/CommonNavbar";
 import VendorSidebar from "../components/VendorSidebar";
-import { useAuth } from "../../auth/context/useAuth";
+import { useAuth } from "../../auth";
 
 export default function VendorDashboardLayout() {
   const location = useLocation();

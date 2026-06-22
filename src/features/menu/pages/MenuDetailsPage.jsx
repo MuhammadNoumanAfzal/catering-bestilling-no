@@ -20,7 +20,7 @@ import {
   readOrderSummary,
   writeOrderSummary,
 } from "../../vendor/utils/orderSummaryStorage";
-import { useAuth } from "../../auth/context/useAuth";
+import { useAuth } from "../../auth";
 import {
   confirmRemoveItem,
   promptSignInRequired,

@@ -21,7 +21,8 @@ export default function AuthLayout() {
                 Simple access for orders, vendors, and team lunches.
               </h1>
               <p className="mt-5 text-[16px] leading-7 text-white/76">
-                A cleaner place to sign in, create an account, and get back to your catering flow.
+                A cleaner place to sign in, create an account, and get back to
+                your catering flow.
               </p>
               <div className="mt-8 grid gap-3">
                 <div className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] text-white/82 backdrop-blur-sm">

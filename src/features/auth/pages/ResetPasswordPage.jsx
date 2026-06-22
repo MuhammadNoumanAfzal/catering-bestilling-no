@@ -1,21 +1,14 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import AuthButton from "../components/AuthButton";
-import AuthCard from "../components/AuthCard";
-import AuthInput from "../components/AuthInput";
-import { resetPassword } from "../api/authApi";
-import {
-  showAuthErrorAlert,
-  showSuccessToast,
-} from "../../../utils/alerts";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { resetPassword } from "../api";
+import { RESET_PASSWORD_INITIAL_FORM_STATE } from "../constants/authForms";
+import { AuthButton, AuthCard, AuthInput } from "../components";
 
 export default function ResetPasswordPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [formState, setFormState] = useState({
-    password1: "",
-    password2: "",
-  });
+  const [formState, setFormState] = useState(RESET_PASSWORD_INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const email = location.state?.email ?? "";
   const token = location.state?.token ?? "";
