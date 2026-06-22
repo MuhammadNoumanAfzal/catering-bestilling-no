@@ -1,28 +1,20 @@
 import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import AuthButton from "../components/AuthButton";
-import AuthCard from "../components/AuthCard";
-import AuthInput from "../components/AuthInput";
-import { registerUser } from "../api/authApi";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { registerUser } from "../api";
+import { AUTH_ROLE, SIGN_UP_INITIAL_FORM_STATE } from "../constants/authForms";
 import {
-  showAuthErrorAlert,
-  showSuccessToast,
-} from "../../../utils/alerts";
-
-const initialFormState = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  password: "",
-  phone: "",
-  postCode: "",
-};
+  AuthButton,
+  AuthCard,
+  AuthInput,
+  AuthPageFooter,
+} from "../components";
 
 export default function SignUpPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [formState, setFormState] = useState(initialFormState);
+  const [formState, setFormState] = useState(SIGN_UP_INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
@@ -37,11 +29,11 @@ export default function SignUpPage() {
     try {
       const result = await registerUser({
         ...formState,
-        role: "user",
+        role: AUTH_ROLE,
       });
 
       await showSuccessToast(result.message || "Account created successfully");
-      setFormState(initialFormState);
+      setFormState(SIGN_UP_INITIAL_FORM_STATE);
       navigate("/signin", {
         replace: true,
         state: {
@@ -67,21 +59,12 @@ export default function SignUpPage() {
       title="Create your account"
       subtitle="Join quickly and start ordering with a cleaner, simpler flow."
       footer={
-        <div className="flex flex-col gap-3 text-left sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[15px] text-[#6f665f]">
-            Already have an account?{" "}
-            <Link
-              to="/signin"
-              state={location.state}
-              className="font-semibold text-[#c85f33]"
-            >
-              Sign in
-            </Link>
-          </p>
-          <Link to="/" className="text-[15px] font-semibold text-[#c85f33]">
-            I&apos;m a Caterer
-          </Link>
-        </div>
+        <AuthPageFooter
+          prompt="Already have an account?"
+          actionLabel="Sign in"
+          actionTo="/signin"
+          actionState={location.state}
+        />
       }
     >
       <form className="space-y-4" onSubmit={handleSubmit}>

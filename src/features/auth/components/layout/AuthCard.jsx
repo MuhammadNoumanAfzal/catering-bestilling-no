@@ -21,7 +21,9 @@ export default function AuthCard({
 
       {children}
 
-      {footer ? <div className="mt-6 border-t border-[#efe4da] pt-5">{footer}</div> : null}
+      {footer ? (
+        <div className="mt-6 border-t border-[#efe4da] pt-5">{footer}</div>
+      ) : null}
     </section>
   );
 }

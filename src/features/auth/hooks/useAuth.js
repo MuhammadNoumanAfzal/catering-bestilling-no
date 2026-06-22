@@ -1,5 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthSession as setSessionAction, signOut as signOutAction } from "../authSlice";
+import {
+  setAuthSession as setSessionAction,
+  signOut as signOutAction,
+} from "../store/authSlice";
 
 export function useAuth() {
   const dispatch = useDispatch();
@@ -23,4 +26,3 @@ export function useAuth() {
     signOut,
   };
 }
-

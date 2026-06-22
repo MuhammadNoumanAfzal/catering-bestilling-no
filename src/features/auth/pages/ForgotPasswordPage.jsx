@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthButton from "../components/AuthButton";
-import AuthCard from "../components/AuthCard";
-import AuthInput from "../components/AuthInput";
-import { passwordResetMail } from "../api/authApi";
-import {
-  showAuthErrorAlert,
-  showSuccessToast,
-} from "../../../utils/alerts";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { passwordResetMail } from "../api";
+import { AUTH_ROLE } from "../constants/authForms";
+import { AuthButton, AuthCard, AuthInput } from "../components";
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -21,7 +17,7 @@ export default function ForgotPasswordPage() {
     try {
       const result = await passwordResetMail({
         email,
-        role: "user",
+        role: AUTH_ROLE,
       });
 
       await showSuccessToast(result.message || "Verification code sent");

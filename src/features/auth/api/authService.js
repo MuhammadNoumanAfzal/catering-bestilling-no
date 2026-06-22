@@ -1,18 +1,18 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import {
-  buildRegisterUserMutation,
   buildLoginUserMutation,
   buildPasswordResetMailMutation,
-  buildVerifyResetCodeMutation,
+  buildRegisterUserMutation,
   buildResetPasswordMutation,
+  buildVerifyResetCodeMutation,
 } from "./authMutations";
 import {
-  normalizeRegisterUserInput,
-  normalizeLoginUserInput,
   normalizeForgotPasswordInput,
-  normalizeVerifyResetCodeInput,
+  normalizeLoginUserInput,
+  normalizeRegisterUserInput,
   normalizeResetPasswordInput,
-} from "./authNormalization";
+  normalizeVerifyResetCodeInput,
+} from "./authNormalizers";
 
 async function runAuthMutation({
   query,
@@ -34,6 +34,7 @@ async function runAuthMutation({
 
 export async function registerUser(input) {
   const normalizedInput = normalizeRegisterUserInput(input);
+
   return runAuthMutation({
     query: buildRegisterUserMutation(normalizedInput),
     dataKey: "registerUser",
@@ -48,6 +49,7 @@ export async function registerUser(input) {
 
 export async function loginUser(input) {
   const normalizedInput = normalizeLoginUserInput(input);
+
   return runAuthMutation({
     query: buildLoginUserMutation(normalizedInput),
     dataKey: "loginUser",
@@ -64,6 +66,7 @@ export async function loginUser(input) {
 
 export async function passwordResetMail(input) {
   const normalizedInput = normalizeForgotPasswordInput(input);
+
   return runAuthMutation({
     query: buildPasswordResetMailMutation(normalizedInput),
     dataKey: "passwordResetMail",
@@ -73,6 +76,7 @@ export async function passwordResetMail(input) {
 
 export async function verifyResetCode(input) {
   const normalizedInput = normalizeVerifyResetCodeInput(input);
+
   return runAuthMutation({
     query: buildVerifyResetCodeMutation(normalizedInput),
     dataKey: "verifyResetCode",
@@ -82,6 +86,7 @@ export async function verifyResetCode(input) {
 
 export async function resetPassword(input) {
   const normalizedInput = normalizeResetPasswordInput(input);
+
   return runAuthMutation({
     query: buildResetPasswordMutation(normalizedInput),
     dataKey: "resetPassword",

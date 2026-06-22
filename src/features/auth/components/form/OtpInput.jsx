@@ -1,12 +1,7 @@
 import { useEffect, useRef } from "react";
 
-export default function OtpInput({
-  length = 4,
-  value = "",
-  onChange,
-}) {
+export default function OtpInput({ length = 4, value = "", onChange }) {
   const inputRefs = useRef([]);
-
   const digits = Array.from({ length }, (_, index) => value[index] ?? "");
 
   useEffect(() => {
@@ -15,7 +10,10 @@ export default function OtpInput({
 
   const handleDigitChange = (index, nextValue) => {
     const sanitizedValue = nextValue.replace(/\D/g, "");
-    if (!sanitizedValue) return;
+
+    if (!sanitizedValue) {
+      return;
+    }
 
     const char = sanitizedValue.slice(-1);
     const nextDigits = [...digits];
@@ -28,32 +26,40 @@ export default function OtpInput({
   };
 
   const handleKeyDown = (index, event) => {
-    if (event.key === "Backspace") {
-      if (!digits[index]) {
-        if (index > 0) {
-          const nextDigits = [...digits];
-          nextDigits[index - 1] = "";
-          onChange?.(nextDigits.join(""));
-          inputRefs.current[index - 1]?.focus();
-        }
-      } else {
-        // Clear current field
-        const nextDigits = [...digits];
-        nextDigits[index] = "";
-        onChange?.(nextDigits.join(""));
-      }
-      event.preventDefault();
+    if (event.key !== "Backspace") {
+      return;
     }
+
+    if (!digits[index]) {
+      if (index > 0) {
+        const nextDigits = [...digits];
+        nextDigits[index - 1] = "";
+        onChange?.(nextDigits.join(""));
+        inputRefs.current[index - 1]?.focus();
+      }
+    } else {
+      const nextDigits = [...digits];
+      nextDigits[index] = "";
+      onChange?.(nextDigits.join(""));
+    }
+
+    event.preventDefault();
   };
 
   const handlePaste = (event) => {
     event.preventDefault();
-    const pasteData = event.clipboardData.getData("text/plain").replace(/\D/g, "").slice(0, length);
-    if (pasteData) {
-      onChange?.(pasteData);
-      const targetIndex = Math.min(pasteData.length, length - 1);
-      inputRefs.current[targetIndex]?.focus();
+    const pasteData = event.clipboardData
+      .getData("text/plain")
+      .replace(/\D/g, "")
+      .slice(0, length);
+
+    if (!pasteData) {
+      return;
     }
+
+    onChange?.(pasteData);
+    const targetIndex = Math.min(pasteData.length, length - 1);
+    inputRefs.current[targetIndex]?.focus();
   };
 
   return (
@@ -61,8 +67,8 @@ export default function OtpInput({
       {digits.map((digit, index) => (
         <input
           key={index}
-          ref={(el) => {
-            inputRefs.current[index] = el;
+          ref={(element) => {
+            inputRefs.current[index] = element;
           }}
           type="text"
           maxLength={1}
