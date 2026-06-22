@@ -1,5 +1,5 @@
 import { FiTruck } from "react-icons/fi";
-import { formatCurrency } from "./checkoutSummary.utils";
+import { formatCurrency } from "./checkoutSummaryUtils";
 
 export default function PriceDetailsCard({
   subtotal,

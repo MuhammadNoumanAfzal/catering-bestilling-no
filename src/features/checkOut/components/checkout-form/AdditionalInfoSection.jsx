@@ -1,5 +1,5 @@
 import CheckoutSection from "./CheckoutSection";
-import { PLACEHOLDERS } from "./checkoutPage.constants";
+import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
 
 export default function AdditionalInfoSection({ value, onChange }) {
   return (
@@ -11,7 +11,7 @@ export default function AdditionalInfoSection({ value, onChange }) {
         <textarea
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          placeholder={PLACEHOLDERS.additionalInfo}
+          placeholder={CHECKOUT_PLACEHOLDERS.additionalInfo}
           className="type-subpara min-h-[76px] w-full rounded-[2px] border border-[#d9d1c7] bg-white px-2 py-2 text-[#2d2d2d] outline-none placeholder:text-[#a49b92]"
         />
       </label>

@@ -1,6 +1,6 @@
 import CheckoutField from "./CheckoutField";
 import CheckoutSection from "./CheckoutSection";
-import { PLACEHOLDERS } from "./checkoutPage.constants";
+import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
 
 export default function EventDetailsSection({
   mode,
@@ -11,7 +11,9 @@ export default function EventDetailsSection({
   const eventLabel = mode === "corporate" ? "Event Name" : "Occasion";
   const eventKey = mode === "corporate" ? "eventName" : "occasion";
   const eventPlaceholder =
-    mode === "corporate" ? PLACEHOLDERS.eventName : PLACEHOLDERS.occasion;
+    mode === "corporate"
+      ? CHECKOUT_PLACEHOLDERS.eventName
+      : CHECKOUT_PLACEHOLDERS.occasion;
 
   const adjustPersonCount = (delta) => {
     const nextPersonCount = Math.max(1, Number(formState.personCount) + delta);

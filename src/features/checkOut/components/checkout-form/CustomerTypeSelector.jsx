@@ -1,5 +1,8 @@
 import { FiBriefcase, FiUser } from "react-icons/fi";
-import { MODE_LABELS, VALID_TYPES } from "./checkoutPage.constants";
+import {
+  CHECKOUT_MODE_LABELS,
+  VALID_CHECKOUT_TYPES,
+} from "../../constants/checkoutForm";
 
 export default function CustomerTypeSelector({
   normalizedType,
@@ -13,7 +16,7 @@ export default function CustomerTypeSelector({
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-4 type-h5">
-        {VALID_TYPES.map((type) => {
+        {VALID_CHECKOUT_TYPES.map((type) => {
           const isActive = normalizedType === type;
           const Icon = type === "corporate" ? FiBriefcase : FiUser;
 
@@ -29,7 +32,7 @@ export default function CustomerTypeSelector({
               }`}
             >
               <Icon className="type-h3" />
-              <span>{MODE_LABELS[type]}</span>
+              <span>{CHECKOUT_MODE_LABELS[type]}</span>
             </button>
           );
         })}

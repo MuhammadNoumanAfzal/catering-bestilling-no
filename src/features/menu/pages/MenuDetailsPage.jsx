@@ -129,6 +129,7 @@ export default function MenuDetailsPage() {
 
           return {
             id: `addon-${menuItem.id}-${key}`,
+            productId: matchedOption.productId ?? matchedOption.id,
             addOnKey: key,
             parentMenuItemId: menuItem.id,
             name: matchedOption.label,
@@ -230,6 +231,7 @@ export default function MenuDetailsPage() {
 
     const summaryItem = {
       id: `${menuItem.id}-${Date.now()}`,
+      productId: menuItem.id,
       name: itemName,
       quantity: quantityCount,
       serves: menuItem.serves,

@@ -2,10 +2,11 @@ import VendorSummaryCard from "./summary/VendorSummaryCard";
 import {
   formatCurrency,
   getCheckoutTotals,
-} from "./summary/checkoutSummary.utils";
+} from "./summary/checkoutSummaryUtils";
 
 export default function CheckoutSummaryPanel({
   carts,
+  isSubmitting = false,
   onTipChange,
   onRemoveItem,
   onTablewareChange,
@@ -71,9 +72,10 @@ export default function CheckoutSummaryPanel({
             <button
               type="button"
               onClick={onPlaceOrder}
-              className="type-h5 mt-3 w-full cursor-pointer rounded-[6px] bg-[#cf6e38] px-4 py-3 text-white transition hover:bg-[#bb602d]"
+              disabled={isSubmitting}
+              className="type-h5 mt-3 w-full rounded-[6px] bg-[#cf6e38] px-4 py-3 text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Place Order
+              {isSubmitting ? "Placing order..." : "Place Order"}
             </button>
           </div>
         </div>

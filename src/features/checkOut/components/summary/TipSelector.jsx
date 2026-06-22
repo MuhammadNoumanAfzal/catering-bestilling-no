@@ -1,4 +1,4 @@
-import { TIP_OPTIONS } from "./checkoutSummary.utils";
+import { TIP_OPTIONS } from "./checkoutSummaryUtils";
 
 export default function TipSelector({ selectedTipRate, onSelect }) {
   return (

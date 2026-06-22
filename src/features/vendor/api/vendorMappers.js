@@ -206,6 +206,7 @@ export function adaptApiVendorToProfile(apiVendor) {
   );
 
   return {
+    id: apiVendor.id,
     slug,
     name: apiVendor.name,
     logo,

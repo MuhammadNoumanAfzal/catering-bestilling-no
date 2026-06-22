@@ -2,16 +2,16 @@ import {
   buildCheckoutAddressFields,
   getDefaultSavedAddress,
   readSavedSettings,
-} from "../../../../utils/customerProfileStorage";
+} from "../../../utils/customerProfileStorage";
 
-export const VALID_TYPES = ["corporate", "private"];
+export const VALID_CHECKOUT_TYPES = ["corporate", "private"];
 
-export const MODE_LABELS = {
+export const CHECKOUT_MODE_LABELS = {
   corporate: "Corporate",
   private: "Private",
 };
 
-export const PLACEHOLDERS = {
+export const CHECKOUT_PLACEHOLDERS = {
   companyName: "ABC Company",
   organizationNumber: "123 456 789",
   invoiceReference: "Reference",
@@ -29,7 +29,7 @@ export const PLACEHOLDERS = {
   additionalInfo: "Add notes...",
 };
 
-export function createInitialFormState(primaryCart) {
+export function createInitialCheckoutFormState(primaryCart) {
   const orderSummary = primaryCart?.orderSummary;
   const savedSettings = readSavedSettings();
   const defaultDeliveryAddress = getDefaultSavedAddress("delivery");
@@ -55,8 +55,8 @@ export function createInitialFormState(primaryCart) {
     ),
     eventName: "",
     occasion: "",
-    date: orderSummary?.deliveryDate ?? "2026-03-25",
-    time: orderSummary?.deliveryTime ?? "14:30",
+    date: orderSummary?.deliveryDate ?? "",
+    time: orderSummary?.deliveryTime ?? "",
     personCount: orderSummary?.personCount ?? 20,
     additionalInfo: "",
   };
