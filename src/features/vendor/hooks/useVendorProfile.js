@@ -12,6 +12,7 @@ export function useVendorProfile(vendorSlug) {
   const vendor = useSelector(selectCurrentVendor);
   const status = useSelector(selectVendorStatus);
   const error = useSelector(selectVendorError);
+  const isLoading = Boolean(vendorSlug) && (status === "idle" || status === "loading");
 
   useEffect(() => {
     if (!vendorSlug) {
@@ -25,6 +26,6 @@ export function useVendorProfile(vendorSlug) {
     vendor,
     status,
     error,
-    isLoading: status === "loading",
+    isLoading,
   };
 }

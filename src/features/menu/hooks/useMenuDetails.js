@@ -14,6 +14,9 @@ export function useMenuDetails({ itemId, vendorSlug }) {
   const vendor = useSelector(selectAssociatedVendor);
   const status = useSelector(selectMenuStatus);
   const error = useSelector(selectMenuError);
+  const isLoading =
+    Boolean(itemId && vendorSlug) &&
+    (status === "idle" || status === "loading");
 
   useEffect(() => {
     if (!itemId || !vendorSlug) {
@@ -28,6 +31,6 @@ export function useMenuDetails({ itemId, vendorSlug }) {
     vendor,
     status,
     error,
-    isLoading: status === "loading",
+    isLoading,
   };
 }
