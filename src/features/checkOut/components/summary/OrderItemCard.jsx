@@ -17,7 +17,9 @@ export default function OrderItemCard({
             {item.quantity} x {item.name}
           </p>
           <p className="mt-1 type-para text-[#8b8580]">
-            Serves {getItemServes(item, personCount)}
+            {item.isAddOn
+              ? `Qty ${item.quantity}`
+              : `Serves ${getItemServes(item, personCount)}`}
           </p>
         </div>
 

@@ -5,6 +5,7 @@ export const FETCH_PRODUCT_QUERY = `
       name
       description
       priceWithTax
+      pricingType
       averageRating
       minimumGuests
       isAvailabilityWindowEnabled

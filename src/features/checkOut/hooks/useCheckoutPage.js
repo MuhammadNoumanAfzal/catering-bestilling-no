@@ -121,10 +121,10 @@ export function useCheckoutPage() {
 
   const totalPersonCount = useMemo(
     () =>
-      carts.reduce(
-        (total, cart) => total + Number(cart.orderSummary.personCount ?? 0),
-        0,
-      ) || 20,
+      carts.reduce((highestCount, cart) => {
+        const nextCount = Number(cart.orderSummary.personCount ?? 0);
+        return Math.max(highestCount, nextCount);
+      }, 0) || 20,
     [carts],
   );
 

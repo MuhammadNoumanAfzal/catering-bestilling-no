@@ -54,6 +54,10 @@ export default function MenuDetailsPage() {
     useState(false);
   const addOnsSliderRef = useRef(null);
   const minimumPersons = menuItem?.serves ?? 1;
+  const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
+  const baseItemUnitPrice = Number(
+    menuItem?.modal?.unitPrice ?? menuItem?.modal?.pricePerPerson ?? 0,
+  );
 
   useEffect(() => {
     if (!vendor || !menuItem) {
@@ -134,10 +138,11 @@ export default function MenuDetailsPage() {
             parentMenuItemId: menuItem.id,
             name: matchedOption.label,
             quantity,
-            serves: current.personCount,
-            totalServes: current.personCount,
-            unitPrice: Number(matchedOption.price) * quantity,
-            price: Number(matchedOption.price) * quantity * current.personCount,
+            serves: quantity,
+            totalServes: quantity,
+            unitPrice: Number(matchedOption.price),
+            price: Number(matchedOption.price) * quantity,
+            pricingType: "fixed",
             isAddOn: true,
             details: [`Qty: ${quantity}`, "Add-on item"],
           };
@@ -228,6 +233,10 @@ export default function MenuDetailsPage() {
     const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
     const totalServes = menuItem.serves * quantityCount;
     const itemName = menuItem.modal?.heading ?? menuItem.title ?? "Item";
+    const linePrice =
+      baseItemPricingType === "per-person"
+        ? baseItemUnitPrice * totalServes
+        : baseItemUnitPrice * quantityCount;
 
     const summaryItem = {
       id: `${menuItem.id}-${Date.now()}`,
@@ -236,8 +245,9 @@ export default function MenuDetailsPage() {
       quantity: quantityCount,
       serves: menuItem.serves,
       totalServes,
-      unitPrice: Number(menuItem.modal.pricePerPerson),
-      price: Number(menuItem.modal.pricePerPerson) * totalServes,
+      unitPrice: baseItemUnitPrice,
+      price: linePrice,
+      pricingType: baseItemPricingType,
       details: [
         `Serves ${menuItem.serves}`,
         selectedQuantity,

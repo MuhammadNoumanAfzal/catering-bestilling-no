@@ -21,6 +21,11 @@ function InfoCard({ icon, label, value, subvalue }) {
 }
 
 export default function MenuOverviewSection({ vendor, menuItem }) {
+  const priceLabel = menuItem.modal?.priceLabel ?? "per person";
+  const unitPrice = Number(
+    menuItem.modal?.unitPrice ?? menuItem.modal?.pricePerPerson ?? menuItem.price ?? 0,
+  );
+
   return (
     <>
       <div>
@@ -61,7 +66,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
 
       <div className="mt-5 rounded-[16px] bg-white pb-4">
         <p className="text-[16px] leading-9 text-[#1d1713]">
-          Price: NOK {Number(menuItem.modal?.pricePerPerson || menuItem.price || 0).toFixed(2)} per person
+          Price: NOK {unitPrice.toFixed(2)} {priceLabel}
         </p>
         <p className="text-[16px] leading-9 text-[#1d1713]">
           Vendor: {vendor.name}

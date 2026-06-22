@@ -45,6 +45,11 @@ export default function VendorMenuItemModal({ item, onClose }) {
   const [selectedOptional, setSelectedOptional] = useState({});
   const [instructionsOpen, setInstructionsOpen] = useState(false);
   const [instructions, setInstructions] = useState("");
+  const pricingType = item.modal?.pricingType ?? item.pricingType ?? "per-person";
+  const unitPrice = Number(
+    item.modal?.unitPrice ?? item.modal?.pricePerPerson ?? 0,
+  );
+  const priceLabel = item.modal?.priceLabel ?? "per person";
 
   const toggleOptional = (groupTitle, optionLabel) => {
     setSelectedOptional((current) => {
@@ -70,8 +75,12 @@ export default function VendorMenuItemModal({ item, onClose }) {
       quantity: quantityCount,
       serves: item.serves,
       totalServes,
-      unitPrice: Number(item.modal.pricePerPerson),
-      price: Number(item.modal.pricePerPerson) * totalServes,
+      unitPrice,
+      price:
+        pricingType === "per-person"
+          ? unitPrice * totalServes
+          : unitPrice * quantityCount,
+      pricingType,
       details: [
         `Serves ${item.serves}`,
         selectedQuantity,
@@ -106,7 +115,7 @@ export default function VendorMenuItemModal({ item, onClose }) {
               {item.modal.heading}
             </h2>
             <p className="mt-2 text-[16px] text-[#151515]">
-              <span className="font-bold">NOK {item.modal.pricePerPerson}</span> / person
+              <span className="font-bold">NOK {unitPrice.toFixed(2)}</span> {priceLabel}
             </p>
             <span className="mt-4 inline-flex rounded-[8px] bg-[#efefef] px-3 py-1 text-[14px] font-semibold text-[#1f1f1f]">
               {item.modal.badge}
@@ -239,10 +248,10 @@ export default function VendorMenuItemModal({ item, onClose }) {
             </span>
             <span className="text-right">
               <span className="block text-[18px] font-bold">
-                NOK {item.modal.pricePerPerson}
+                NOK {unitPrice.toFixed(2)}
               </span>
               <span className="block text-[14px]">
-                NOK {item.modal.pricePerPerson} / person
+                NOK {unitPrice.toFixed(2)} {priceLabel}
               </span>
             </span>
           </button>

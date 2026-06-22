@@ -25,11 +25,26 @@ export function getTipValue(summary, subtotal) {
 
 export function getItemServes(item, personCount) {
   const baseServes = Number(item.totalServes ?? item.serves ?? 0);
-  return Math.max(baseServes, Number(personCount ?? 0) || 0);
+
+  if (baseServes > 0) {
+    return baseServes;
+  }
+
+  return Math.max(1, Number(personCount ?? 0) || 1);
 }
 
 export function getItemPrice(item, personCount) {
+  const pricingType = item.pricingType === "fixed" ? "fixed" : "per-person";
   const unitPrice = Number(item.unitPrice ?? 0);
+  const quantity = Math.max(1, Number(item.quantity ?? 1));
+
+  if (pricingType === "fixed") {
+    if (unitPrice > 0) {
+      return unitPrice * quantity;
+    }
+
+    return Number(item.price ?? 0);
+  }
 
   if (unitPrice > 0) {
     return unitPrice * getItemServes(item, personCount);

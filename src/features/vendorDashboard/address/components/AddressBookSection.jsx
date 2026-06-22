@@ -1,4 +1,5 @@
 import { FiPlus } from "react-icons/fi";
+import { ADDRESS_FIELD_LIMITS } from "../constants/addressFieldLimits";
 import AddressCard from "./AddressCard";
 import AddressField from "./AddressField";
 import AddressTextarea from "./AddressTextarea";
@@ -74,6 +75,7 @@ export default function AddressBookSection({
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <AddressField
             label="Location name"
+            maxLength={ADDRESS_FIELD_LIMITS.label}
             value={activeAddress.label}
             onChange={(event) =>
               onChangeField(activeAddress.id, "label", event.target.value)
@@ -124,6 +126,7 @@ export default function AddressBookSection({
 
           <AddressField
             label="Postal code"
+            maxLength={ADDRESS_FIELD_LIMITS.postalCode}
             value={activeAddress.postalCode}
             onChange={(event) =>
               onChangeField(activeAddress.id, "postalCode", event.target.value)
@@ -144,6 +147,7 @@ export default function AddressBookSection({
 
           <AddressField
             label="Receiving name"
+            maxLength={ADDRESS_FIELD_LIMITS.contactName}
             value={activeAddress.contactName}
             onChange={(event) =>
               onChangeField(activeAddress.id, "contactName", event.target.value)

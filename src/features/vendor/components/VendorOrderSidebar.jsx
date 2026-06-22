@@ -7,6 +7,12 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
 import { promptSignInRequired } from "../../../utils/alerts";
+import {
+  getItemPrice,
+  getItemServes,
+  SALES_TAX_RATE,
+  sortSummaryItems,
+} from "../../checkOut/components/summary/checkoutSummaryUtils";
 
 const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
@@ -25,31 +31,6 @@ function formatCurrency(value) {
 function extractAmount(value) {
   const matched = `${value ?? ""}`.match(/(\d+(?:\.\d+)?)/);
   return matched ? Number(matched[1]) : 0;
-}
-
-function getItemServes(item, personCount) {
-  const baseServes = Number(item.totalServes ?? item.serves ?? 0);
-  return Math.max(baseServes, Number(personCount ?? 0) || 0);
-}
-
-function getItemPrice(item, personCount) {
-  const unitPrice = Number(item.unitPrice ?? 0);
-
-  if (unitPrice > 0) {
-    return unitPrice * getItemServes(item, personCount);
-  }
-
-  return Number(item.price ?? 0);
-}
-
-function sortSummaryItems(items) {
-  return [...items].sort((left, right) => {
-    if (left.isAddOn === right.isAddOn) {
-      return 0;
-    }
-
-    return left.isAddOn ? 1 : -1;
-  });
 }
 
 function formatDateTime(date, time) {
@@ -129,7 +110,7 @@ export default function VendorOrderSidebar({
   }));
   const foodAndBeverage = items.reduce((total, item) => total + item.price, 0);
   const restaurantDeliveryFee = extractAmount(vendor?.deliveryFee);
-  const salesTax = foodAndBeverage * 0.15;
+  const salesTax = foodAndBeverage * SALES_TAX_RATE;
   const tipValue =
     typeof orderSummary.tipRate === "number"
       ? foodAndBeverage * orderSummary.tipRate
@@ -187,7 +168,9 @@ export default function VendorOrderSidebar({
 
                   <div className="mt-3 flex items-center justify-between gap-3">
                     <p className="type-para text-[#76706a]">
-                      Serves {item.effectiveServes}
+                      {item.isAddOn
+                        ? `Qty ${item.quantity}`
+                        : `Serves ${item.effectiveServes}`}
                     </p>
                     <button
                       type="button"
