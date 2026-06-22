@@ -54,6 +54,23 @@ const FETCH_PRODUCT_QUERY = `
   }
 `;
 
+const FETCH_ADDONS_QUERY = `
+  query FetchAddOns {
+    products(productType: "add-on") {
+      edges {
+        node {
+          id
+          name
+          priceWithTax
+          coverImage {
+            fileUrl
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const fetchProductDetails = createAsyncThunk(
   "menu/fetchProductDetails",
   async ({ itemId, vendorSlug }, { rejectWithValue }) => {
@@ -63,9 +80,33 @@ export const fetchProductDetails = createAsyncThunk(
         variables: { id: itemId }
       });
 
+      let apiAddOns = [];
+      try {
+        const addOnsResponse = await graphqlRequest({
+          query: FETCH_ADDONS_QUERY
+        });
+        apiAddOns = (addOnsResponse.products?.edges || []).map((edge) => edge.node);
+      } catch (err) {
+        console.warn("Failed to fetch add-ons", err);
+      }
+
       if (response.product) {
         const product = adaptApiProductToMenuItem(response.product);
         const vendor = adaptApiVendorToProfile(response.product.vendor);
+
+        if (apiAddOns.length > 0) {
+          product.modal.optionalSelections = [
+            {
+              title: "Select Add-ons",
+              options: apiAddOns.map((item) => ({
+                label: item.name,
+                price: parseFloat(item.priceWithTax || 0),
+                image: item.coverImage?.fileUrl || "",
+              })),
+            }
+          ];
+        }
+
         return { product, vendor };
       }
 
