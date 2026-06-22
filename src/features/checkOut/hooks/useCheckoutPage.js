@@ -19,7 +19,7 @@ import {
   showAuthErrorAlert,
   showOrderPlacedSuccess,
 } from "../../../utils/alerts";
-import { writePlacedOrderDraft } from "../../order/utils/placedOrderStorage";
+import { writePlacedOrderDraft } from "../../order/services";
 import {
   fetchCheckoutAutofillProfile,
   placeCheckoutOrders,
