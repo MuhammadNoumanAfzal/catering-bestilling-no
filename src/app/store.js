@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authReducer } from "../features/auth";
-import homeReducer from "../features/home/homeSlice";
+import { homeReducer } from "../features/home";
 import dashboardReducer from "../features/vendorDashboard/dashboardSlice";
 import ordersReducer from "../features/vendorDashboard/ordersSlice";
 import invoicesReducer from "../features/vendorDashboard/invoicesSlice";

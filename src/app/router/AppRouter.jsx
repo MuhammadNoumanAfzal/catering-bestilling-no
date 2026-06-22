@@ -2,9 +2,11 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
 import CheckoutLayout from "../layouts/CheckoutLayout";
 import RouteScrollManager from "./RouteScrollManager";
-import HomePage from "../../features/home/pages/HomePage";
-import ProductListingPage from "../../features/home/pages/ProductListingPage";
-import VendorListingPage from "../../features/home/pages/VendorListingPage";
+import {
+  HomePage,
+  ProductListingPage,
+  VendorListingPage,
+} from "../../features/home";
 import BrowseFoodTypePage from "../../features/browse/pages/BrowseFoodTypePage";
 import BrowseOccasionPage from "../../features/browse/pages/BrowseOccasionPage";
 import ContactPage from "../../features/contact/pages/ContactPage";

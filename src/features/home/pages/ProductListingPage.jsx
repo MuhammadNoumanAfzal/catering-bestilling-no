@@ -1,36 +1,33 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
-import { ProductItem } from "../components/ProductShowcaseSection";
-import { fetchHomeData } from "../homeSlice";
-import { filterItemsByVendorLocation } from "../../vendor/data/vendorData";
 import {
   formatCategoryLabel,
-  matchesCategorySelection,
   parseCategoryParamValue,
 } from "../../browse/utils/categoryFilters";
-
-const PAGE_SIZE = 8;
+import {
+  CatalogListingPageLayout,
+  ProductItem,
+} from "../components";
+import { HOME_LISTING_PAGE_SIZE } from "../constants/homeConstants";
+import { useHomeData } from "../hooks/useHomeData";
+import {
+  buildAvailabilityEmptyMessage,
+  filterProductListingItems,
+  normalizeSearchQuery,
+} from "../utils/homeCatalog";
 
 export default function ProductListingPage() {
   const { productType } = useParams();
-  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const { locationValue, searchQuery } = useBrowseFilters();
-  const { popularProducts } = useSelector((state) => state.home);
-
-  useEffect(() => {
-    if (popularProducts.length === 0) {
-      dispatch(fetchHomeData());
-    }
-  }, [dispatch, popularProducts.length]);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const { popularProducts } = useHomeData();
+  const [visibleCount, setVisibleCount] = useState(HOME_LISTING_PAGE_SIZE);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
   const activeCategoryLabel = formatCategoryLabel(selectedCategory);
 
   useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
+    setVisibleCount(HOME_LISTING_PAGE_SIZE);
   }, [productType, selectedCategory]);
 
   if (productType !== "popular") {
@@ -38,97 +35,45 @@ export default function ProductListingPage() {
   }
 
   const title = "Popular Products";
-  const description = "Browse the most-ordered meals and catering picks that teams keep coming back to.";
-  const products = popularProducts;
-  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const description =
+    "Browse the most-ordered meals and catering picks that teams keep coming back to.";
+  const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const filteredProducts = useMemo(
     () =>
-      filterItemsByVendorLocation(products, locationValue).filter((product) => {
-        if (!matchesCategorySelection(product.categoryTags, selectedCategory)) {
-          return false;
-        }
-
-        if (!normalizedSearchQuery) {
-          return true;
-        }
-
-        const searchableText = [
-          product.name,
-          product.title,
-          product.description,
-          product.vendorName,
-          ...(product.categoryTags ?? []),
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        return searchableText.includes(normalizedSearchQuery);
+      filterProductListingItems(popularProducts, {
+        category: selectedCategory,
+        locationValue,
+        searchQuery: normalizedSearchQuery,
       }),
-    [locationValue, normalizedSearchQuery, products, selectedCategory],
+    [locationValue, normalizedSearchQuery, popularProducts, selectedCategory],
   );
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
 
   return (
-    <section className="bg-white px-4 py-8 sm:px-6 lg:px-20">
-      <div className="mx-auto w-full max-w-7xl">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#8b7d70]">
-              Products
-            </p>
-            <h1 className="mt-2 type-h2 text-[#191919]">{title}</h1>
-            <p className="mt-2 max-w-[720px] text-[14px] leading-7 text-[#4f4f4f]">
-              {description}
-            </p>
-            {activeCategoryLabel ? (
-              <p className="mt-3 inline-flex rounded-full bg-[#fff1eb] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#c85f33]">
-                Showing category: {activeCategoryLabel}
-              </p>
-            ) : null}
-          </div>
-
-          <Link
-            to="/"
-            className="rounded-full border border-[#d7cec3] px-4 py-2 text-[13px] font-semibold text-[#2b2b2b] transition hover:border-[#c85f33] hover:text-[#c85f33]"
-          >
-            Back to home
-          </Link>
-        </div>
-
+    <CatalogListingPageLayout
+      badge="Products"
+      title={title}
+      description={description}
+      activeCategoryLabel={activeCategoryLabel}
+      emptyMessage={buildAvailabilityEmptyMessage({
+        activeCategoryLabel,
+        locationFilter: locationValue,
+        type: "products",
+      })}
+      hasItems={filteredProducts.length > 0}
+      hasMore={hasMore}
+      onShowMore={() =>
+        setVisibleCount((current) =>
+          Math.min(current + HOME_LISTING_PAGE_SIZE, filteredProducts.length),
+        )
+      }
+    >
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {visibleProducts.map((product) => (
             <ProductItem key={product.id ?? product.name} {...product} />
           ))}
         </div>
-
-        {filteredProducts.length === 0 ? (
-          <div className="mt-6 rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
-            {activeCategoryLabel
-              ? `No products are currently available for ${activeCategoryLabel}${locationValue ? ` in ${locationValue}` : ""}.`
-              : locationValue
-                ? `No products are currently available for ${locationValue}.`
-                : "No products are available right now."}
-          </div>
-        ) : null}
-
-        {hasMore ? (
-          <div className="mt-8 flex justify-center">
-            <button
-              type="button"
-              onClick={() =>
-                setVisibleCount((current) =>
-                  Math.min(current + PAGE_SIZE, filteredProducts.length),
-                )
-              }
-              className="rounded-full bg-[#c85f33] px-6 py-3 text-[14px] font-semibold text-white transition hover:bg-[#b6542c]"
-            >
-              Show 8 more
-            </button>
-          </div>
-        ) : null}
-      </div>
-    </section>
+    </CatalogListingPageLayout>
   );
 }

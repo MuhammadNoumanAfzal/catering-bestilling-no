@@ -1,74 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import HeroSection from "../components/HeroSection";
-import FoodBrowsePreviewSection from "../components/FoodBrowsePreviewSection";
-import HowItWorksSection from "../components/HowItWorksSection";
-import VendorShowcaseSection from "../components/VendorShowcaseSection";
-import ProductShowcaseSection from "../components/ProductShowcaseSection";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
-import {
-  filterItemsByVendorLocation,
-  filterVendorsByDeliverySlot,
-  filterVendorsByLocation,
-  getVendorProfileBySlug,
-  isVendorDeliverySlotAvailable,
-} from "../../vendor/data/vendorData";
-import { fetchHomeData } from "../homeSlice";
 import { foodTypeMenuItems } from "../../browse/data/browseData";
+import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
 import {
-  formatCategoryLabel,
-  getCategoryParamValue,
-  matchesCategorySelection,
-  normalizeCategorySelection,
-} from "../../browse/utils/categoryFilters";
+  FoodBrowsePreviewSection,
+  HeroSection,
+  HowItWorksSection,
+  ProductShowcaseSection,
+  VendorShowcaseSection,
+} from "../components";
+import { useHomeData } from "../hooks/useHomeData";
 import {
-  matchesDietaryFilter,
-  matchesOfferFilter,
-  matchesOtherFilters,
-  matchesPricingFilter,
-  matchesRatingFilter,
-  sortCatalogItems,
-} from "../../browse/utils/catalogFilters";
-
-function buildCategoryQuery(selectedCategory) {
-  const categoryValue = getCategoryParamValue(selectedCategory);
-  return categoryValue ? `?category=${encodeURIComponent(categoryValue)}` : "";
-}
-
-function matchesSearchText(searchableValues, searchQuery) {
-  if (!searchQuery) {
-    return true;
-  }
-
-  return searchableValues
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase()
-    .includes(searchQuery);
-}
-
-function matchesGuestRange(item, attendeeCount) {
-  if (attendeeCount <= 0) {
-    return true;
-  }
-
-  const minimumGuests = item.minimumGuests ?? 0;
-  const maximumGuests = item.maximumGuests ?? Number.POSITIVE_INFINITY;
-
-  return attendeeCount >= minimumGuests && attendeeCount <= maximumGuests;
-}
+  buildActiveCategoryLabel,
+  buildAvailabilityEmptyMessage,
+  buildCategoryQuery,
+  buildHomeSectionTitle,
+  buildLocationFilter,
+  filterHomePreviewMenuItems,
+  filterHomeProducts,
+  filterHomeVendors,
+  normalizePostalCode,
+  normalizeSearchQuery,
+} from "../utils/homeCatalog";
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { popularVendors, featuredVendors, popularProducts } = useSelector(
-    (state) => state.home,
-  );
-
-  useEffect(() => {
-    dispatch(fetchHomeData());
-  }, [dispatch]);
+  const { popularVendors, featuredVendors, popularProducts } = useHomeData();
   const {
     attendeeCount,
     deliveryAddress,
@@ -86,55 +44,39 @@ export default function HomePage() {
   } = useBrowseFilters();
   const [postalCode, setPostalCode] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const normalizedPostalCode = postalCode.replace(/\D/g, "").slice(0, 4);
-  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const normalizedPostalCode = normalizePostalCode(postalCode);
+  const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const normalizedCategoryFilter = normalizeCategorySelection(selectedCategory);
-  const activeCategoryLabel = formatCategoryLabel(normalizedCategoryFilter);
-  const activeHomeLocationFilter =
-    normalizedPostalCode || deliveryAddress.trim() || locationValue;
+  const activeCategoryLabel = buildActiveCategoryLabel(normalizedCategoryFilter);
+  const activeHomeLocationFilter = buildLocationFilter({
+    postalCode: normalizedPostalCode,
+    deliveryAddress,
+    locationValue,
+  });
   const menuQuery = buildCategoryQuery(normalizedCategoryFilter);
-
-  const filteredMenuItems = useMemo(
-    () =>
-      sortCatalogItems(
-        filterItemsByVendorLocation(
-          foodTypeMenuItems,
-          activeHomeLocationFilter,
-        ).filter((item) => {
-          const vendor = getVendorProfileBySlug(item.vendorSlug);
-
-          return (
-            matchesCategorySelection(item.categoryTags, normalizedCategoryFilter) &&
-            matchesGuestRange(item, attendeeCount) &&
-            matchesSearchText(
-              [
-                item.title,
-                item.vendor,
-                item.description,
-                ...(item.categoryTags ?? []),
-                ...(item.dietaryTags ?? []),
-                ...(item.offerTags ?? []),
-              ],
-              normalizedSearchQuery,
-            ) &&
-            matchesRatingFilter(item.rating, selectedRating) &&
-            matchesDietaryFilter(item, selectedDietary) &&
-            matchesOfferFilter(item, selectedOffers) &&
-            matchesPricingFilter(item, selectedPricing) &&
-            matchesOtherFilters(item, otherFilters) &&
-            isVendorDeliverySlotAvailable(vendor, deliveryDate, deliveryTime)
-          );
-        }),
-        selectedSort,
-      ),
+  const sharedFilters = useMemo(
+    () => ({
+      attendeeCount,
+      category: normalizedCategoryFilter,
+      deliveryDate,
+      deliveryTime,
+      locationFilter: activeHomeLocationFilter,
+      otherFilters,
+      searchQuery: normalizedSearchQuery,
+      selectedDietary,
+      selectedOffers,
+      selectedPricing,
+      selectedRating,
+      selectedSort,
+    }),
     [
       activeHomeLocationFilter,
       attendeeCount,
       deliveryDate,
       deliveryTime,
-      otherFilters,
       normalizedCategoryFilter,
       normalizedSearchQuery,
+      otherFilters,
       selectedDietary,
       selectedOffers,
       selectedPricing,
@@ -142,84 +84,27 @@ export default function HomePage() {
       selectedSort,
     ],
   );
+
+  const filteredMenuItems = useMemo(
+    () => filterHomePreviewMenuItems(foodTypeMenuItems, sharedFilters),
+    [sharedFilters],
+  );
   const previewMenuItems = useMemo(
     () => filteredMenuItems.slice(0, 6),
     [filteredMenuItems],
   );
 
   const filteredPopularVendors = useMemo(
-    () =>
-      filterVendorsByDeliverySlot(
-        filterVendorsByLocation(popularVendors, activeHomeLocationFilter),
-        deliveryDate,
-        deliveryTime,
-      ).filter((vendor) => {
-        return (
-          matchesCategorySelection(vendor.categoryTags, normalizedCategoryFilter) &&
-          matchesSearchText(
-            [vendor.name, vendor.deliveryFee, vendor.discount, ...(vendor.categoryTags ?? [])],
-            normalizedSearchQuery,
-          )
-        );
-      }),
-    [
-      popularVendors,
-      activeHomeLocationFilter,
-      deliveryDate,
-      deliveryTime,
-      normalizedCategoryFilter,
-      normalizedSearchQuery,
-    ],
+    () => filterHomeVendors(popularVendors, sharedFilters),
+    [popularVendors, sharedFilters],
   );
   const filteredFeaturedVendors = useMemo(
-    () =>
-      filterVendorsByDeliverySlot(
-        filterVendorsByLocation(featuredVendors, activeHomeLocationFilter),
-        deliveryDate,
-        deliveryTime,
-      ).filter((vendor) => {
-        return (
-          matchesCategorySelection(vendor.categoryTags, normalizedCategoryFilter) &&
-          matchesSearchText(
-            [vendor.name, vendor.deliveryFee, vendor.discount, ...(vendor.categoryTags ?? [])],
-            normalizedSearchQuery,
-          )
-        );
-      }),
-    [
-      featuredVendors,
-      activeHomeLocationFilter,
-      deliveryDate,
-      deliveryTime,
-      normalizedCategoryFilter,
-      normalizedSearchQuery,
-    ],
+    () => filterHomeVendors(featuredVendors, sharedFilters),
+    [featuredVendors, sharedFilters],
   );
   const filteredPopularProducts = useMemo(
-    () =>
-      filterItemsByVendorLocation(
-        popularProducts,
-        activeHomeLocationFilter,
-      ).filter((product) => {
-        const vendor = getVendorProfileBySlug(product.vendorSlug);
-
-        return (
-          matchesCategorySelection(product.categoryTags, normalizedCategoryFilter) &&
-          matchesSearchText(
-            [product.name, product.vendorName, product.discount, ...(product.categoryTags ?? [])],
-            normalizedSearchQuery,
-          ) &&
-          isVendorDeliverySlotAvailable(vendor, deliveryDate, deliveryTime)
-        );
-      }),
-    [
-      popularProducts,
-      activeHomeLocationFilter,
-      deliveryDate,
-      deliveryTime,
-      normalizedCategoryFilter,
-      normalizedSearchQuery,
-    ],
+    () => filterHomeProducts(popularProducts, sharedFilters),
+    [popularProducts, sharedFilters],
   );
   const availableVendorCount =
     filteredPopularVendors.length + filteredFeaturedVendors.length;
@@ -242,51 +127,33 @@ export default function HomePage() {
         onSeeAllClick={() => navigate(`/browse/food-type${menuQuery}`)}
       />
       <VendorShowcaseSection
-        title={
-          activeCategoryLabel
-            ? `Popular ${activeCategoryLabel} Vendors`
-            : "Popular Vendors"
-        }
+        title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
         vendors={filteredPopularVendors}
-        emptyMessage={
-          activeCategoryLabel
-            ? `No popular vendors are currently available for ${activeCategoryLabel}${activeHomeLocationFilter ? ` in ${activeHomeLocationFilter}` : ""}.`
-            : activeHomeLocationFilter
-              ? `No popular vendors are currently available for ${activeHomeLocationFilter}.`
-              : undefined
-        }
+        emptyMessage={buildAvailabilityEmptyMessage({
+          activeCategoryLabel,
+          locationFilter: activeHomeLocationFilter,
+          type: "vendors",
+        })}
         onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
       />
       <VendorShowcaseSection
-        title={
-          activeCategoryLabel
-            ? `Featured ${activeCategoryLabel} Vendors`
-            : "Featured Vendors"
-        }
+        title={buildHomeSectionTitle("Featured Vendors", activeCategoryLabel)}
         vendors={filteredFeaturedVendors}
-        emptyMessage={
-          activeCategoryLabel
-            ? `No featured vendors are currently available for ${activeCategoryLabel}${activeHomeLocationFilter ? ` in ${activeHomeLocationFilter}` : ""}.`
-            : activeHomeLocationFilter
-              ? `No featured vendors are currently available for ${activeHomeLocationFilter}.`
-              : undefined
-        }
+        emptyMessage={buildAvailabilityEmptyMessage({
+          activeCategoryLabel,
+          locationFilter: activeHomeLocationFilter,
+          type: "vendors",
+        })}
         onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
       />
       <ProductShowcaseSection
-        title={
-          activeCategoryLabel
-            ? `Popular ${activeCategoryLabel} Products`
-            : "Popular Products"
-        }
+        title={buildHomeSectionTitle("Popular Products", activeCategoryLabel)}
         products={filteredPopularProducts}
-        emptyMessage={
-          activeCategoryLabel
-            ? `No products are available for ${activeCategoryLabel}${activeHomeLocationFilter ? ` in ${activeHomeLocationFilter}` : ""}.`
-            : activeHomeLocationFilter
-              ? `No products are currently available for ${activeHomeLocationFilter}.`
-              : undefined
-        }
+        emptyMessage={buildAvailabilityEmptyMessage({
+          activeCategoryLabel,
+          locationFilter: activeHomeLocationFilter,
+          type: "products",
+        })}
         onSeeAllClick={() => navigate(`/products/popular${menuQuery}`)}
       />
       <HowItWorksSection />
