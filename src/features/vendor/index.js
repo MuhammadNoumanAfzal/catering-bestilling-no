@@ -13,9 +13,6 @@ export {
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,
   getAvailableVendorsForSlot,
-  getFallbackVendorMenuItemById,
-  getFallbackVendorProfileBySlug,
-  getFallbackVendorProfiles,
   isVendorDeliverySlotAvailable,
 } from "./services";
 export { default as VendorProfilePage } from "./pages/VendorProfilePage";

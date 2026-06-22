@@ -5,7 +5,7 @@ import {
   readSavedVendorSlugs,
   toggleSavedVendor,
 } from "../../vendor/utils/savedVendorsStorage";
-import { getFallbackVendorProfiles } from "../../vendor";
+import { fetchVendorProfiles } from "../../vendor";
 import { showSuccessToast } from "../../../utils/alerts";
 
 function RatingRow({ rating, reviewCount }) {
@@ -25,18 +25,49 @@ function RatingRow({ rating, reviewCount }) {
 export default function VendorRestaurantsPage() {
   const navigate = useNavigate();
   const [savedSlugs, setSavedSlugs] = useState([]);
-  const fallbackVendors = useMemo(() => getFallbackVendorProfiles(), []);
+  const [vendors, setVendors] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setSavedSlugs(readSavedVendorSlugs());
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadVendors() {
+      setIsLoading(true);
+
+      try {
+        const nextVendors = await fetchVendorProfiles();
+
+        if (isMounted) {
+          setVendors(nextVendors);
+        }
+      } catch {
+        if (isMounted) {
+          setVendors([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    loadVendors();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const savedRestaurants = useMemo(
     () =>
       savedSlugs
-        .map((slug) => fallbackVendors.find((vendor) => vendor.slug === slug))
+        .map((slug) => vendors.find((vendor) => vendor.slug === slug))
         .filter(Boolean),
-    [fallbackVendors, savedSlugs],
+    [savedSlugs, vendors],
   );
 
   const handleToggleSaved = (event, restaurant) => {
@@ -50,6 +81,14 @@ export default function VendorRestaurantsPage() {
         : `${restaurant.name} removed from saved restaurants`,
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

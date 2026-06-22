@@ -7,7 +7,7 @@ import { navbarNotifications } from "./navbar/notificationData";
 import { formatNavbarDate } from "./navbar/navbarDateUtils";
 import useNavbarCartSummary from "./navbar/useNavbarCartSummary";
 import { useAuth } from "../../features/auth";
-import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardData";
+import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardConfig";
 import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 import { confirmLogout, showSuccessToast } from "../../utils/alerts";
 

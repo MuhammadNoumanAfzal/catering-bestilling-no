@@ -13,7 +13,7 @@ import VendorSectionCard from "../components/VendorSectionCard";
 import { fetchDashboardData } from "../dashboardSlice";
 import {
   vendorSettingsLinks,
-} from "../data/vendorDashboardData";
+} from "../data/vendorDashboardConfig";
 
 function getStatusClasses(status) {
   const normalizedStatus = status.toLowerCase();

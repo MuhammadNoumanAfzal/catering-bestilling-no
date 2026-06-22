@@ -1,10 +1,4 @@
 export {
-  getFallbackVendorMenuItemById,
-  getFallbackVendorProfileByName,
-  getFallbackVendorProfileBySlug,
-  getFallbackVendorProfiles,
-} from "./vendorCatalog";
-export {
   filterItemsByVendorLocation,
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,
