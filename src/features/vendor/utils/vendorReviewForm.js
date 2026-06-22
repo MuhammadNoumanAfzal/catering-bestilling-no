@@ -53,22 +53,22 @@ export function getVendorReviewSummaryCards(vendor) {
     {
       label: "Rating",
       value: `${Number(vendor?.rating ?? 0).toFixed(1)} / 5`,
-      note: `${vendor?.reviewCount ?? 0} reviews so far`,
+      note: vendor?.reviewCount ? `${vendor.reviewCount} reviews` : "",
     },
     {
       label: "Location",
       value: vendor?.city || vendor?.addressLine || "Not available",
-      note: vendor?.addressLine || "Business address not available",
+      note: vendor?.addressLine || "",
     },
     {
       label: "Delivery",
       value: vendor?.deliveryFee || "Not available",
-      note: "Reliable and secure transport",
+      note: "",
     },
     {
       label: "Timing",
       value: vendor?.leadTime || "Not available",
-      note: vendor?.availability?.delivery?.label || "Delivery schedule unavailable",
+      note: vendor?.availability?.delivery?.label || "",
     },
   ];
 }

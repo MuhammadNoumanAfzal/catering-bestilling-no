@@ -1,6 +1,5 @@
 import { FiClock, FiMapPin, FiStar, FiTruck } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
-import { formatDistance } from "../utils/formatters";
 
 function InfoCard({ icon, label, value, subvalue }) {
   return (
@@ -39,25 +38,24 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
           icon={<FiStar className="fill-[#f4b400] text-[#f4b400]" />}
           label="Rating"
           value={`${vendor.rating} / 5`}
-          subvalue="Top-rated vendor in this area"
+          subvalue={vendor.reviewCount ? `${vendor.reviewCount} reviews` : ""}
         />
         <InfoCard
           icon={<FiMapPin />}
           label="Location"
-          value={vendor.addressLine ? (vendor.addressLine.split(',')[1]?.trim() || vendor.addressLine) : "Oslo"}
-          subvalue={formatDistance(vendor.addressLine)}
+          value={vendor.city || vendor.addressLine || "Not available"}
+          subvalue={vendor.addressLine || ""}
         />
         <InfoCard
           icon={<FiTruck />}
           label="Delivery"
-          value={vendor.deliveryFee ? vendor.deliveryFee.replace("fee", "").trim() : "Free Delivery"}
-          subvalue="Reliable & secure transport"
+          value={vendor.deliveryFee ? vendor.deliveryFee.replace(" fee", "").trim() : "Not available"}
         />
         <InfoCard
           icon={<FiClock />}
           label="Timing"
-          value={vendor.leadTime || "24-48 hours"}
-          subvalue="Catering | Lunch | Office Events"
+          value={vendor.leadTime || "Not available"}
+          subvalue={vendor.availability?.delivery?.label || ""}
         />
       </div>
 
