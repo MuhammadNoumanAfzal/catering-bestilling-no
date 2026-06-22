@@ -16,6 +16,19 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, "");
 }
 
+function extractCityFromAddress(address) {
+  const segments = `${address ?? ""}`
+    .split(",")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  if (segments.length >= 2) {
+    return segments[segments.length - 2];
+  }
+
+  return segments[0] || "";
+}
+
 function formatDaysRange(days) {
   if (!days || days.length === 0) {
     return "";
@@ -116,6 +129,7 @@ export function adaptApiVendorToProfile(apiVendor) {
   const rating = parseFloat(apiVendor.rating || 0);
   const address = apiVendor.businessSettings?.businessAddress || "";
   const cuisine = apiVendor.categoryTags?.[0] || "";
+  const city = extractCityFromAddress(address);
 
   const deliveryDays =
     apiVendor.deliverySettings?.deliveryDays || [
@@ -216,7 +230,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     reviewCount: apiVendor.reviewsCount || 0,
     cuisine,
     addressLine: address,
-    city: "",
+    city,
     servicePostalCodes,
     deliveryFee: `NOK ${parseFloat(fee).toFixed(0)} Delivery fee`,
     leadTime: minTime || maxTime ? `${minTime}-${maxTime} min` : "",

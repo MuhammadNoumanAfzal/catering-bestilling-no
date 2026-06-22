@@ -15,7 +15,6 @@ export {
   getFallbackVendorMenuItemById,
   getFallbackVendorProfileBySlug,
   getFallbackVendorProfiles,
-  getFallbackVendorReviewsBySlug,
   isVendorDeliverySlotAvailable,
 } from "./services";
 export { default as VendorProfilePage } from "./pages/VendorProfilePage";

@@ -6,3 +6,4 @@ export { default as VendorMenuItemModal } from "./VendorMenuItemModal";
 export { default as VendorMenuSection } from "./VendorMenuSection";
 export { default as VendorOrderSidebar } from "./VendorOrderSidebar";
 export { default as VendorProfileHeader } from "./VendorProfileHeader";
+export { default as VendorReviewModal } from "./VendorReviewModal";

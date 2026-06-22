@@ -36,7 +36,3 @@ export function getFallbackVendorMenuItemById(vendorSlug, itemId) {
       .find((item) => item.id === itemId) ?? null
   );
 }
-
-export function getFallbackVendorReviewsBySlug(slug) {
-  return getFallbackVendorProfileBySlug(slug)?.reviews ?? [];
-}
