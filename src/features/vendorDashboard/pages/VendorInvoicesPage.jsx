@@ -1,16 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiDownload, FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import InvoiceFilterMenu from "../components/invoices/InvoiceFilterMenu";
 import InvoiceOverviewCard from "../components/invoices/InvoiceOverviewCard";
 import InvoicePagination from "../components/invoices/InvoicePagination";
 import InvoiceTable from "../components/invoices/InvoiceTable";
 import InvoiceTotalCard from "../components/invoices/InvoiceTotalCard";
-import {
-  vendorInvoiceOverview,
-  vendorInvoiceRecords,
-  vendorInvoiceTotals,
-} from "../data/vendorDashboardData";
+import { fetchInvoices } from "../invoicesSlice";
 import {
   DATE_OPTIONS,
   getInvoiceDateFilterLabel,
@@ -21,6 +18,9 @@ import {
 
 export default function VendorInvoicesPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { records, overview, totals, isLoading, error } = useSelector((state) => state.invoices);
+
   const [searchValue, setSearchValue] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedDateRange, setSelectedDateRange] = useState("7");
@@ -33,6 +33,10 @@ export default function VendorInvoicesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const statusMenuRef = useRef(null);
   const dateMenuRef = useRef(null);
+
+  useEffect(() => {
+    dispatch(fetchInvoices());
+  }, [dispatch]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -55,7 +59,7 @@ export default function VendorInvoicesPage() {
   const filteredInvoices = useMemo(() => {
     const query = searchValue.trim().toLowerCase();
 
-    return vendorInvoiceRecords.filter((invoice) => {
+    return records.filter((invoice) => {
       const matchesStatus =
         selectedStatus === "all"
           ? true
@@ -87,11 +91,8 @@ export default function VendorInvoicesPage() {
         .toLowerCase()
         .includes(query);
     });
-  }, [customDateRange, searchValue, selectedDateRange, selectedStatus]);
+  }, [records, customDateRange, searchValue, selectedDateRange, selectedStatus]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [customDateRange, searchValue, selectedStatus, selectedDateRange]);
 
   const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
@@ -106,6 +107,22 @@ export default function VendorInvoicesPage() {
     filteredInvoices.length,
   );
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center text-sm text-red-600">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <section>
@@ -116,14 +133,14 @@ export default function VendorInvoicesPage() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {vendorInvoiceOverview.map((item) => (
+        {overview.map((item) => (
           <InvoiceOverviewCard key={item.label} {...item} />
         ))}
       </section>
 
       <section className="rounded-[28px] border border-[#ddd4cb] bg-white p-4 shadow-[0_16px_34px_rgba(28,28,28,0.06)] md:p-5">
         <div className="grid gap-3 border-b border-[#ece4dc] pb-4 md:grid-cols-2 xl:grid-cols-4">
-          {vendorInvoiceTotals.map((item) => (
+          {totals.map((item) => (
             <InvoiceTotalCard key={item.label} {...item} />
           ))}
         </div>
@@ -155,6 +172,7 @@ export default function VendorInvoicesPage() {
               selectedValue={selectedStatus}
               onSelect={(value) => {
                 setSelectedStatus(value);
+                setCurrentPage(1);
                 setIsStatusMenuOpen(false);
               }}
               menuRef={statusMenuRef}
@@ -183,6 +201,7 @@ export default function VendorInvoicesPage() {
               selectedValue={selectedDateRange}
               onSelect={(value) => {
                 setSelectedDateRange(value);
+                setCurrentPage(1);
                 if (value !== "custom-date") {
                   setIsDateMenuOpen(false);
                 }
@@ -202,6 +221,7 @@ export default function VendorInvoicesPage() {
                             option.value === selectedDateRange ? "7" : option.value;
 
                           setSelectedDateRange(nextValue);
+                          setCurrentPage(1);
                           if (nextValue !== "custom-date") {
                             setIsDateMenuOpen(false);
                           }
@@ -232,12 +252,13 @@ export default function VendorInvoicesPage() {
                             type="date"
                             value={customDateRange.from}
                             max={customDateRange.to || undefined}
-                            onChange={(event) =>
+                            onChange={(event) => {
                               setCustomDateRange((current) => ({
                                 ...current,
                                 from: event.target.value,
-                              }))
-                            }
+                              }));
+                              setCurrentPage(1);
+                            }}
                             className="w-full rounded-xl border border-[#e7d8cb] bg-white px-3 py-2 text-sm text-[#2d2d2d] outline-none"
                           />
                         </label>
@@ -250,12 +271,13 @@ export default function VendorInvoicesPage() {
                             type="date"
                             value={customDateRange.to}
                             min={customDateRange.from || undefined}
-                            onChange={(event) =>
+                            onChange={(event) => {
                               setCustomDateRange((current) => ({
                                 ...current,
                                 to: event.target.value,
-                              }))
-                            }
+                              }));
+                              setCurrentPage(1);
+                            }}
                             className="w-full rounded-xl border border-[#e7d8cb] bg-white px-3 py-2 text-sm text-[#2d2d2d] outline-none"
                           />
                         </label>
@@ -264,7 +286,10 @@ export default function VendorInvoicesPage() {
                       <div className="mt-3 flex justify-end">
                         <button
                           type="button"
-                          onClick={() => setIsDateMenuOpen(false)}
+                          onClick={() => {
+                            setIsDateMenuOpen(false);
+                            setCurrentPage(1);
+                          }}
                           className="rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#bc602d]"
                         >
                           Apply
@@ -277,6 +302,7 @@ export default function VendorInvoicesPage() {
             />
           </div>
         </div>
+
 
         <InvoiceTable
           invoices={visibleInvoices}
@@ -297,3 +323,4 @@ export default function VendorInvoicesPage() {
     </div>
   );
 }
+

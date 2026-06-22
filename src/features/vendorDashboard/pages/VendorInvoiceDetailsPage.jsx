@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { FiArrowLeft, FiDownload, FiFileText } from "react-icons/fi";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { getVendorInvoiceById } from "../data/vendorDashboardData";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchInvoices } from "../invoicesSlice";
 
 function buildInvoiceExportContent(invoice) {
   return [
@@ -11,8 +13,14 @@ function buildInvoiceExportContent(invoice) {
     `Event: ${invoice.event}`,
     `Delivered On: ${invoice.deliveredOn}`,
     `Due On: ${invoice.dueOn}`,
-    `Amount: ${invoice.amount}`,
     `Status: ${invoice.status}`,
+    "",
+    "Breakdown:",
+    `Subtotal: ${invoice.subtotal || "NOK 0.00"}`,
+    `Delivery Fee: ${invoice.deliveryFee || "NOK 0.00"}`,
+    `Tax: ${invoice.tax || "NOK 0.00"}`,
+    `Tip: ${invoice.tip || "NOK 0.00"}`,
+    `Total Amount: ${invoice.amount}`,
   ].join("\n");
 }
 
@@ -48,7 +56,33 @@ function DetailRow({ label, value }) {
 export default function VendorInvoiceDetailsPage() {
   const { invoiceId } = useParams();
   const decodedInvoiceId = invoiceId ? decodeURIComponent(invoiceId) : "";
-  const invoice = getVendorInvoiceById(decodedInvoiceId);
+  const dispatch = useDispatch();
+
+  const { records, isLoading, error } = useSelector((state) => state.invoices);
+
+  useEffect(() => {
+    if (records.length === 0) {
+      dispatch(fetchInvoices());
+    }
+  }, [dispatch, records.length]);
+
+  const invoice = records.find((rec) => rec.id === decodedInvoiceId);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center text-sm text-red-600">
+        {error}
+      </div>
+    );
+  }
 
   if (!invoice) {
     return <Navigate to="/vendor-dashboard/invoices" replace />;
@@ -117,7 +151,18 @@ export default function VendorInvoiceDetailsPage() {
           <DetailRow label="Delivered On" value={invoice.deliveredOn} />
           <DetailRow label="Due On" value={invoice.dueOn} />
         </div>
+
+        <div className="mt-6 border-t border-[#ece4dc] pt-6">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#9c897d] mb-4">Amount Breakdown</h3>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <DetailRow label="Subtotal" value={invoice.subtotal || "NOK 0.00"} />
+            <DetailRow label="Delivery Fee" value={invoice.deliveryFee || "NOK 0.00"} />
+            <DetailRow label="Tax" value={invoice.tax || "NOK 0.00"} />
+            <DetailRow label="Tip" value={invoice.tip || "NOK 0.00"} />
+          </div>
+        </div>
       </section>
     </div>
   );
 }
+
