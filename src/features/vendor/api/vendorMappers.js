@@ -72,6 +72,9 @@ function buildOptionalSelections(product) {
 function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const price = parseFloat(product.priceWithTax || 0);
   const serves = product.minimumGuests || 1;
+  const pricingType = product.pricingType === "per-person" ? "per-person" : "fixed";
+  const unitPrice =
+    pricingType === "per-person" ? price / Math.max(serves, 1) : price;
   const detailLines = [
     product.description || "",
     product.allergens?.length
@@ -91,13 +94,14 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
     dietaryLabels: product.dietaryTags || [],
     allergens: product.allergens || [],
     price,
+    pricingType,
     menuItems: product.menuItems || [],
     modal: {
       heading: product.name,
-      pricePerPerson:
-        product.pricingType === "per-person"
-          ? (price / Math.max(serves, 1)).toFixed(2)
-          : price.toFixed(2),
+      pricingType,
+      unitPrice: unitPrice.toFixed(2),
+      pricePerPerson: unitPrice.toFixed(2),
+      priceLabel: pricingType === "per-person" ? "per person" : "per order",
       badge: subcategory,
       quantityOptions: ["1 order", "2 orders", "5 orders", "10 orders"],
       requiredSelection: null,
