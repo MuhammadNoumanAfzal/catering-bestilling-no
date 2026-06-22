@@ -44,10 +44,19 @@ const FETCH_PRODUCT_QUERY = `
           baseDeliveryFee
           minDeliveryTime
           maxDeliveryTime
+          deliveryDays
+          deliveryTimeSlots
         }
         businessSettings {
           id
           businessAddress
+          businessHours
+        }
+        serviceAreas {
+          id
+          name
+          postCode
+          isActive
         }
       }
     }

@@ -19,10 +19,19 @@ const FETCH_VENDORS_QUERY = `
             baseDeliveryFee
             minDeliveryTime
             maxDeliveryTime
+            deliveryDays
+            deliveryTimeSlots
           }
           businessSettings {
             id
             businessAddress
+            businessHours
+          }
+          serviceAreas {
+            id
+            name
+            postCode
+            isActive
           }
           menuCategories {
             id
