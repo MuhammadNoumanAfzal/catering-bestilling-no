@@ -5,7 +5,7 @@ import dashboardReducer from "../features/vendorDashboard/dashboardSlice";
 import ordersReducer from "../features/vendorDashboard/ordersSlice";
 import invoicesReducer from "../features/vendorDashboard/invoicesSlice";
 import { vendorReducer } from "../features/vendor";
-import menuReducer from "../features/menu/menuSlice";
+import { menuReducer } from "../features/menu";
 
 export const store = configureStore({
   reducer: {

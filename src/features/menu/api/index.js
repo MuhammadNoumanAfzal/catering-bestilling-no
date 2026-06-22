@@ -1,0 +1,1 @@
+export { fetchMenuDetails } from "./menuService";

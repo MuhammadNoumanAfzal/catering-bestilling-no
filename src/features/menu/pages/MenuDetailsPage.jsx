@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
-import MenuAddOnsSection from "../components/MenuAddOnsSection";
-import MenuDeliveryForm from "../components/MenuDeliveryForm";
-import MenuHeroBanner from "../components/MenuHeroBanner";
-import MenuIncludedSection from "../components/MenuIncludedSection";
-import MenuOverviewSection from "../components/MenuOverviewSection";
 import {
   getAvailableVendorsForSlot,
   isVendorDeliverySlotAvailable,
@@ -24,23 +19,30 @@ import {
   promptSignInRequired,
   showSuccessToast,
 } from "../../../utils/alerts";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProductDetails } from "../menuSlice";
 import {
   VendorAvailabilityPopup,
   VendorOrderSidebar,
 } from "../../vendor/components";
+import {
+  MenuAddOnsSection,
+  MenuDeliveryForm,
+  MenuHeroBanner,
+  MenuIncludedSection,
+  MenuOverviewSection,
+} from "../components";
+import { useMenuDetails } from "../hooks/useMenuDetails";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
-  const dispatch = useDispatch();
-
-  const { currentProduct: menuItem, associatedVendor: vendor, isLoading: loading, error } = useSelector(
-    (state) => state.menu
-  );
+  const {
+    menuItem,
+    vendor,
+    isLoading: loading,
+    error,
+  } = useMenuDetails({ itemId, vendorSlug });
   
   const [orderSummary, setOrderSummary] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState("1 order");
@@ -52,10 +54,6 @@ export default function MenuDetailsPage() {
     useState(false);
   const addOnsSliderRef = useRef(null);
   const minimumPersons = menuItem?.serves ?? 1;
-
-  useEffect(() => {
-    dispatch(fetchProductDetails({ itemId, vendorSlug }));
-  }, [dispatch, itemId, vendorSlug]);
 
   useEffect(() => {
     if (!vendor || !menuItem) {
