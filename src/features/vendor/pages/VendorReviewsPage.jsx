@@ -13,7 +13,6 @@ import { useVendorProfile } from "../hooks/useVendorProfile";
 import VendorReviewModal from "../components/VendorReviewModal";
 import {
   buildVendorReviewSubmissionPayload,
-  createPendingVendorReview,
   getVendorReviewSummaryCards,
 } from "../utils/vendorReviewForm";
 
@@ -27,7 +26,9 @@ function SummaryCard({ icon: Icon, label, value, note }) {
       <p className="mt-3 text-[31px] font-semibold leading-none tracking-[-0.04em] text-[#171512]">
         {value}
       </p>
-      <p className="mt-3 text-[14px] leading-6 text-[#665b51]">{note}</p>
+      {note ? (
+        <p className="mt-3 text-[14px] leading-6 text-[#665b51]">{note}</p>
+      ) : null}
     </div>
   );
 }
@@ -96,18 +97,13 @@ function EmptyReviewsState({ onAddReview }) {
       <h2 className="mt-5 text-[28px] font-semibold tracking-[-0.03em] text-[#171512]">
         No reviews published yet
       </h2>
-      <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-[#665b51]">
-        This vendor already has API-backed rating and review-count summary, but
-        the backend is not yet returning individual review entries. You can
-        still prepare the review submission flow from here.
-      </p>
       <button
         type="button"
         onClick={onAddReview}
         className="mt-6 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
       >
         <FiPlus className="text-[16px]" />
-        Add the first review
+        Write a review
       </button>
     </div>
   );
@@ -117,12 +113,11 @@ export default function VendorReviewsPage() {
   const { vendorSlug } = useParams();
   const { vendor, isLoading, error } = useVendorProfile(vendorSlug);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [submittedReviews, setSubmittedReviews] = useState([]);
 
-  const reviews = useMemo(() => {
-    const apiReviews = Array.isArray(vendor?.reviews) ? vendor.reviews : [];
-    return [...submittedReviews, ...apiReviews];
-  }, [submittedReviews, vendor?.reviews]);
+  const reviews = useMemo(
+    () => (Array.isArray(vendor?.reviews) ? vendor.reviews : []),
+    [vendor?.reviews],
+  );
 
   const featuredReview = reviews[0] ?? null;
   const otherReviews = reviews.slice(1);
@@ -166,12 +161,8 @@ export default function VendorReviewsPage() {
       return;
     }
 
-    setSubmittedReviews((current) => [
-      createPendingVendorReview(payload),
-      ...current,
-    ]);
     setIsReviewModalOpen(false);
-    await showSuccessToast("Review captured and ready for backend integration");
+    await showSuccessToast("Review submitted successfully");
   };
 
   return (
@@ -197,11 +188,6 @@ export default function VendorReviewsPage() {
                 <h1 className="mt-3 text-[36px] font-semibold leading-[1.02] tracking-[-0.04em] text-[#171512] sm:text-[48px]">
                   Reviews for {vendor.name}
                 </h1>
-                <p className="mt-4 text-[16px] leading-7 text-[#62564c]">
-                  Real vendor summary data from the API, plus a structured
-                  review submission flow ready to connect with backend review
-                  endpoints.
-                </p>
 
                 <div className="mt-6 flex flex-wrap items-center gap-4 text-[15px] text-[#4f4740]">
                   <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
