@@ -1,7 +1,7 @@
 import {
   vendorAddressInitialState,
-  vendorSettingsInitialState,
 } from "../features/vendorDashboard/data/vendorDashboardData";
+import { vendorSettingsInitialState } from "../features/vendorDashboard/settings/constants/settingsForm";
 
 const STORAGE_KEY = "customer-profile-storage";
 

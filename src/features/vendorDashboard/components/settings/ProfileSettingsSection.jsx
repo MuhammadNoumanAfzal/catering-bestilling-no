@@ -26,6 +26,7 @@ export default function ProfileSettingsSection({ formState, updateField }) {
           onChange={(event) => updateField("primaryEmail", event.target.value)}
           placeholder=""
           type="email"
+          disabled
         />
         <SettingsField
           id="secondaryEmail"

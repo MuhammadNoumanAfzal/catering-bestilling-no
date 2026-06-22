@@ -1,59 +1,45 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import NotificationSettingsSection from "../components/settings/NotificationSettingsSection";
-import PasswordSettingsSection from "../components/settings/PasswordSettingsSection";
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
 import SettingsActions from "../components/settings/SettingsActions";
-import { vendorSettingsInitialState } from "../data/vendorDashboardData";
-import {
-  readSavedSettings,
-  writeSavedSettings,
-} from "../../../utils/customerProfileStorage";
+import { useVendorSettingsPage } from "../settings/hooks/useVendorSettingsPage";
 
 export default function VendorSettingsPage() {
-  const location = useLocation();
-  const [formState, setFormState] = useState(() => readSavedSettings());
+  const {
+    formState,
+    handleReset,
+    handleSave,
+    isDirty,
+    isLoading,
+    isSaving,
+    updateField,
+  } = useVendorSettingsPage();
 
-  useEffect(() => {
-    if (!location.hash) {
-      return;
-    }
-
-    const sectionId = location.hash.replace("#", "");
-    const element = document.getElementById(sectionId);
-
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [location.hash]);
-
-  function updateField(key, value) {
-    setFormState((current) => {
-      const nextState = { ...current, [key]: value };
-      writeSavedSettings(nextState);
-      return nextState;
-    });
-  }
-
-  function handleReset() {
-    setFormState(vendorSettingsInitialState);
-    writeSavedSettings(vendorSettingsInitialState);
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">Setting</h1>
+        <h1 className="type-h2 text-[#191919]">Settings</h1>
       </section>
 
       <div className="space-y-6">
         <ProfileSettingsSection formState={formState} updateField={updateField} />
-        <PasswordSettingsSection formState={formState} updateField={updateField} />
         <NotificationSettingsSection
           formState={formState}
           updateField={updateField}
         />
-        <SettingsActions onReset={handleReset} />
+        <SettingsActions
+          isDirty={isDirty}
+          isSaving={isSaving}
+          onReset={handleReset}
+          onSave={handleSave}
+        />
       </div>
     </div>
   );
