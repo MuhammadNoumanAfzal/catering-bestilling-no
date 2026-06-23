@@ -1,6 +1,6 @@
-export { default as AuthButton } from "./form/AuthButton";
-export { default as AuthInput } from "./form/AuthInput";
-export { default as OtpInput } from "./form/OtpInput";
-export { default as AuthCard } from "./layout/AuthCard";
-export { default as AuthLayout } from "./layout/AuthLayout";
-export { default as AuthPageFooter } from "./navigation/AuthPageFooter";
+export { default as AuthButton } from "./AuthButton";
+export { default as AuthInput } from "./AuthInput";
+export { default as OtpInput } from "./OtpInput";
+export { default as AuthCard } from "./AuthCard";
+export { default as AuthLayout } from "./AuthLayout";
+export { default as AuthPageFooter } from "./AuthPageFooter";

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
-import { passwordResetMail } from "../api";
-import { AUTH_ROLE } from "../constants/authForms";
-import { AuthButton, AuthCard, AuthInput } from "../components";
+import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
+import { passwordResetMail } from "../../api";
+import { AuthButton, AuthCard, AuthInput } from "../../components";
+import { AUTH_ROLE } from "../../constants/authForms";
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { getStoredAccessToken } from "../../features/auth/utils/authSession";
+import { getStoredAccessToken } from "../auth/authSession";
 
 const DEFAULT_GRAPHQL_ENDPOINT =
   "https://live-api.lunsjavtale.no/graphql/";
