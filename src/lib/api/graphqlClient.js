@@ -69,7 +69,7 @@ function buildGraphqlErrorMessage(errors) {
   return translateNorwegianToEnglish(rawMessage);
 }
 
-export async function graphqlRequest({ query, variables = {} }) {
+export async function graphqlRequest({ query, variables = {}, signal }) {
   const headers = {
     "Content-Type": "application/json",
     "Accept-Language": "en",
@@ -84,6 +84,7 @@ export async function graphqlRequest({ query, variables = {} }) {
   const response = await fetch(GRAPHQL_ENDPOINT, {
     method: "POST",
     headers,
+    signal,
     body: JSON.stringify({
       query,
       variables,

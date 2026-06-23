@@ -1,15 +1,19 @@
 import { useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
 import {
   FoodBrowsePreviewSection,
   HeroSection,
+  HomeLoadingSection,
+  HomeStatusBanner,
   HowItWorksSection,
   ProductShowcaseSection,
   VendorShowcaseSection,
 } from "../components";
 import { useHomeData } from "../hooks/useHomeData";
+import { fetchHomeData } from "../store/homeSlice";
 import {
   buildActiveCategoryLabel,
   buildAvailabilityEmptyMessage,
@@ -47,6 +51,7 @@ function extractAreaName(address) {
 }
 
 export default function HomePage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     attendeeCount,
@@ -68,7 +73,14 @@ export default function HomePage() {
   const [draftDeliveryAddress, setDraftDeliveryAddress] = useState(deliveryAddress);
   const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { popularVendors, featuredVendors, popularProducts } =
+  const {
+    popularVendors,
+    featuredVendors,
+    popularProducts,
+    status,
+    error,
+    hasLoadedOnce,
+  } =
     useHomeData(appliedSearchFilters);
   const normalizedPostalCode = normalizePostalCode(postalCode);
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
@@ -146,6 +158,8 @@ export default function HomePage() {
   );
   const availableVendorCount =
     filteredPopularVendors.length + filteredFeaturedVendors.length;
+  const isInitialLoading = status === "loading" && !hasLoadedOnce;
+  const isRefreshing = status === "loading" && hasLoadedOnce;
 
   return (
     <div>
@@ -157,6 +171,19 @@ export default function HomePage() {
         availableVendorCount={availableVendorCount}
         onSearch={handleHomeSearch}
       />
+      {error ? (
+        <HomeStatusBanner
+          message={error}
+          actionLabel="Try again"
+          onAction={() => dispatch(fetchHomeData(appliedSearchFilters))}
+        />
+      ) : null}
+      {isRefreshing ? (
+        <HomeStatusBanner
+          tone="info"
+          message="Refreshing vendors and products for your latest search."
+        />
+      ) : null}
       <FoodBrowsePreviewSection
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
@@ -165,36 +192,50 @@ export default function HomePage() {
         activeCategoryLabel={activeCategoryLabel}
         onSeeAllClick={() => navigate(`/browse/food-type${menuQuery}`)}
       />
-      <VendorShowcaseSection
-        title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
-        vendors={filteredPopularVendors}
-        emptyMessage={buildAvailabilityEmptyMessage({
-          activeCategoryLabel,
-          locationFilter: activeHomeLocationFilter,
-          type: "vendors",
-        })}
-        onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
-      />
-      <VendorShowcaseSection
-        title={buildHomeSectionTitle("Featured Vendors", activeCategoryLabel)}
-        vendors={filteredFeaturedVendors}
-        emptyMessage={buildAvailabilityEmptyMessage({
-          activeCategoryLabel,
-          locationFilter: activeHomeLocationFilter,
-          type: "vendors",
-        })}
-        onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
-      />
-      <ProductShowcaseSection
-        title={buildHomeSectionTitle("Popular Products", activeCategoryLabel)}
-        products={filteredPopularProducts}
-        emptyMessage={buildAvailabilityEmptyMessage({
-          activeCategoryLabel,
-          locationFilter: activeHomeLocationFilter,
-          type: "products",
-        })}
-        onSeeAllClick={() => navigate(`/products/popular${menuQuery}`)}
-      />
+      {isInitialLoading ? (
+        <>
+          <HomeLoadingSection title="Popular Vendors" />
+          <HomeLoadingSection title="Featured Vendors" />
+          <HomeLoadingSection
+            title="Popular Products"
+            compact
+            columnsClassName="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          />
+        </>
+      ) : (
+        <>
+          <VendorShowcaseSection
+            title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
+            vendors={filteredPopularVendors}
+            emptyMessage={buildAvailabilityEmptyMessage({
+              activeCategoryLabel,
+              locationFilter: activeHomeLocationFilter,
+              type: "vendors",
+            })}
+            onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
+          />
+          <VendorShowcaseSection
+            title={buildHomeSectionTitle("Featured Vendors", activeCategoryLabel)}
+            vendors={filteredFeaturedVendors}
+            emptyMessage={buildAvailabilityEmptyMessage({
+              activeCategoryLabel,
+              locationFilter: activeHomeLocationFilter,
+              type: "vendors",
+            })}
+            onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
+          />
+          <ProductShowcaseSection
+            title={buildHomeSectionTitle("Popular Products", activeCategoryLabel)}
+            products={filteredPopularProducts}
+            emptyMessage={buildAvailabilityEmptyMessage({
+              activeCategoryLabel,
+              locationFilter: activeHomeLocationFilter,
+              type: "products",
+            })}
+            onSeeAllClick={() => navigate(`/products/popular${menuQuery}`)}
+          />
+        </>
+      )}
       <HowItWorksSection />
     </div>
   );
