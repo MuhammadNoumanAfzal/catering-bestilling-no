@@ -124,7 +124,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     return null;
   }
 
-  const slug = slugify(apiVendor.name);
+  const slug = apiVendor.slug || slugify(apiVendor.name);
   const minTime = apiVendor.deliverySettings?.minDeliveryTime ?? 0;
   const maxTime = apiVendor.deliverySettings?.maxDeliveryTime ?? 0;
   const fee = apiVendor.deliverySettings?.baseDeliveryFee ?? "0";
@@ -213,6 +213,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     (category, categoryIndex) => ({
       id: category.id || `${slug}-${categoryIndex}`,
       title: category.name,
+      description: category.description || "",
       items: (category.vendorProducts || []).map((product, productIndex) =>
         buildMenuItem(
           product,
@@ -251,5 +252,20 @@ export function adaptApiVendorToProfile(apiVendor) {
       invoiceAddress: "",
       total: "0.00",
     },
+  };
+}
+
+export function adaptApiVendorReview(review) {
+  return {
+    id: review?.id || "",
+    rating: Number(review?.rating || 0),
+    title: review?.title || "Untitled review",
+    comment: review?.comment || "",
+    occasion: review?.occasion || "",
+    author: review?.authorName || "Anonymous",
+    date: review?.eventDate || review?.createdOn || "",
+    createdOn: review?.createdOn || "",
+    status: review?.status || "",
+    orderId: review?.orderId || "",
   };
 }

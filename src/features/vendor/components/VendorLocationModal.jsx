@@ -99,7 +99,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
               Service Area
             </p>
             <p className="mt-2 text-[14px] text-[#6f675f]">
-              Serves all local postal codes
+              Service area information is not available yet.
             </p>
           </div>
         )}

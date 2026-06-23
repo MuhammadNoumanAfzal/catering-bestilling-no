@@ -17,6 +17,18 @@ export const FETCH_PRODUCT_QUERY = `
         id
         fileUrl
       }
+      optionalAddOns {
+        id
+        name
+        minSelect
+        maxSelect
+        isRequired
+        options {
+          id
+          name
+          price
+        }
+      }
       menuItems {
         id
         title
@@ -26,6 +38,7 @@ export const FETCH_PRODUCT_QUERY = `
       }
       vendor {
         id
+        slug
         name
         logoUrl
         coverPhotoUrl
@@ -49,23 +62,6 @@ export const FETCH_PRODUCT_QUERY = `
           name
           postCode
           isActive
-        }
-      }
-    }
-  }
-`;
-
-export const FETCH_ADD_ONS_QUERY = `
-  query FetchAddOns {
-    products(productType: "add-on") {
-      edges {
-        node {
-          id
-          name
-          priceWithTax
-          coverImage {
-            fileUrl
-          }
         }
       }
     }

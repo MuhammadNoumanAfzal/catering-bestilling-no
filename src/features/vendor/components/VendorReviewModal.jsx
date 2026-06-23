@@ -27,7 +27,12 @@ function RatingPicker({ value, onChange }) {
   );
 }
 
-export default function VendorReviewModal({ vendor, onCancel, onSubmit }) {
+export default function VendorReviewModal({
+  vendor,
+  onCancel,
+  onSubmit,
+  isSubmitting = false,
+}) {
   const [formState, setFormState] = useState(() =>
     createInitialVendorReviewFormState(),
   );
@@ -186,9 +191,10 @@ export default function VendorReviewModal({ vendor, onCancel, onSubmit }) {
           <button
             type="button"
             onClick={handleSubmit}
+            disabled={isSubmitting}
             className="rounded-[12px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
           >
-            Submit review
+            {isSubmitting ? "Submitting..." : "Submit review"}
           </button>
         </div>
       </div>

@@ -6,10 +6,6 @@ import {
   isVendorDeliverySlotAvailable,
 } from "../../vendor";
 import {
-  isVendorSaved,
-  toggleSavedVendor,
-} from "../../vendor/utils/savedVendorsStorage";
-import {
   clearOtherStoredOrderSummaries,
   readOrderSummary,
   writeOrderSummary,
@@ -18,6 +14,7 @@ import { useAuth } from "../../auth";
 import {
   confirmRemoveItem,
   promptSignInRequired,
+  showAuthErrorAlert,
   showSuccessToast,
 } from "../../../utils/alerts";
 import {
@@ -32,6 +29,7 @@ import {
   MenuOverviewSection,
 } from "../components";
 import { useMenuDetails } from "../hooks/useMenuDetails";
+import { useSavedVendorStatus } from "../../vendor/hooks/useSavedVendorStatus";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
@@ -50,11 +48,11 @@ export default function MenuDetailsPage() {
   const [selectedRequired, setSelectedRequired] = useState("");
   const [selectedOptional, setSelectedOptional] = useState({});
   const [vendorNote, setVendorNote] = useState("");
-  const [isSaved, setIsSaved] = useState(false);
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
   const [vendorOptions, setVendorOptions] = useState([]);
   const addOnsSliderRef = useRef(null);
+  const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
   const minimumPersons = menuItem?.serves ?? 1;
   const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
   const baseItemUnitPrice = Number(
@@ -80,7 +78,6 @@ export default function MenuDetailsPage() {
     setSelectedRequired(menuItem.modal.requiredSelection?.options?.[0] ?? "");
     setSelectedOptional({});
     setVendorNote("");
-    setIsSaved(isVendorSaved(vendor.slug));
     setIsAvailabilityPopupDismissed(false);
   }, [menuItem, minimumPersons, vendor]);
 
@@ -88,6 +85,23 @@ export default function MenuDetailsPage() {
     let isMounted = true;
 
     async function loadVendorOptions() {
+      if (!vendor || !orderSummary) {
+        return;
+      }
+
+      const isAvailabilityBlocked = !isVendorDeliverySlotAvailable(
+        vendor,
+        orderSummary.deliveryDate,
+        orderSummary.deliveryTime,
+      );
+
+      if (!isAvailabilityBlocked) {
+        if (isMounted) {
+          setVendorOptions([]);
+        }
+        return;
+      }
+
       try {
         const nextVendors = await fetchVendorProfiles();
 
@@ -106,7 +120,7 @@ export default function MenuDetailsPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [orderSummary, vendor]);
 
   useEffect(() => {
     if (!vendor || !orderSummary) {
@@ -219,7 +233,11 @@ export default function MenuDetailsPage() {
   }
 
   if (!orderSummary) {
-    return null;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+      </div>
+    );
   }
 
   const updateOptionalQuantity = (groupTitle, optionLabel, delta) => {
@@ -322,14 +340,20 @@ export default function MenuDetailsPage() {
     });
   };
 
-  const handleSaveToggle = () => {
-    const nextSavedState = toggleSavedVendor(vendor.slug);
-    setIsSaved(nextSavedState);
-    showSuccessToast(
-      nextSavedState
-        ? `${vendor.name} saved successfully`
-        : `${vendor.name} removed from saved restaurants`,
-    );
+  const handleSaveToggle = async () => {
+    try {
+      const nextSavedState = await toggleSavedState();
+      showSuccessToast(
+        nextSavedState
+          ? `${vendor.name} saved successfully`
+          : `${vendor.name} removed from saved restaurants`,
+      );
+    } catch (saveError) {
+      await showAuthErrorAlert(
+        saveError.message || "Unable to update saved vendor right now.",
+        "Save vendor failed",
+      );
+    }
   };
 
   return (

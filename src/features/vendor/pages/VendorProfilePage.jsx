@@ -12,14 +12,14 @@ import {
 } from "../services";
 import { fetchVendorProfiles } from "../api";
 import {
-  isVendorSaved,
-  toggleSavedVendor,
-} from "../utils/savedVendorsStorage";
-import {
   readOrderSummary,
   writeOrderSummary,
 } from "../utils/orderSummaryStorage";
-import { confirmRemoveItem, showSuccessToast } from "../../../utils/alerts";
+import {
+  confirmRemoveItem,
+  showAuthErrorAlert,
+  showSuccessToast,
+} from "../../../utils/alerts";
 import {
   VendorAvailabilityPopup,
   VendorCategoryTabs,
@@ -29,6 +29,31 @@ import {
   VendorProfileHeader,
 } from "../components";
 import { useVendorProfile } from "../hooks/useVendorProfile";
+import { useSavedVendorStatus } from "../hooks/useSavedVendorStatus";
+
+function VendorPageStatus({ message, onRetry }) {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6] px-4">
+      <div className="w-full max-w-lg rounded-[24px] border border-[#eadfd2] bg-white p-6 text-center shadow-[0_18px_40px_rgba(31,19,8,0.08)]">
+        <p className="text-[24px] font-semibold text-[#171512]">
+          Unable to load vendor page
+        </p>
+        <p className="mt-3 text-[15px] leading-6 text-[#6c6259]">
+          {message}
+        </p>
+        {onRetry ? (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="mt-5 rounded-full bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
+          >
+            Try again
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 export default function VendorProfilePage() {
   const CATEGORY_BAR_TOP_OFFSET = 78;
@@ -39,7 +64,6 @@ export default function VendorProfilePage() {
 
   const [activeCategory, setActiveCategory] = useState("");
   const [orderSummary, setOrderSummary] = useState(null);
-  const [isSaved, setIsSaved] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
@@ -50,6 +74,7 @@ export default function VendorProfilePage() {
   const categoryBarAnchorRef = useRef(null);
   const categoryBarInnerRef = useRef(null);
   const menuSectionsRef = useRef(null);
+  const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
 
   useEffect(() => {
     if (!vendor) {
@@ -57,7 +82,6 @@ export default function VendorProfilePage() {
     }
 
     setOrderSummary(readOrderSummary(vendor));
-    setIsSaved(isVendorSaved(vendor.slug));
     setActiveCategory(vendor.categories?.[0] || "All - in - One Order");
     setIsAvailabilityPopupDismissed(false);
   }, [vendor]);
@@ -126,6 +150,23 @@ export default function VendorProfilePage() {
     let isMounted = true;
 
     async function loadVendorOptions() {
+      if (!vendor || !orderSummary) {
+        return;
+      }
+
+      const isAvailabilityBlocked = !isVendorDeliverySlotAvailable(
+        vendor,
+        orderSummary.deliveryDate,
+        orderSummary.deliveryTime,
+      );
+
+      if (!isAvailabilityBlocked) {
+        if (isMounted) {
+          setVendorOptions([]);
+        }
+        return;
+      }
+
       try {
         const nextVendors = await fetchVendorProfiles();
 
@@ -144,7 +185,7 @@ export default function VendorProfilePage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [orderSummary, vendor]);
 
   useEffect(() => {
     function updateCategoryBarPosition() {
@@ -196,11 +237,20 @@ export default function VendorProfilePage() {
   }
 
   if (error || !vendor) {
-    return <Navigate to="/" replace />;
+    return (
+      <VendorPageStatus
+        message={error || "This vendor could not be found."}
+        onRetry={() => window.location.reload()}
+      />
+    );
   }
 
   if (!orderSummary) {
-    return null;
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+      </div>
+    );
   }
 
   const showAvailabilityPopup = !isVendorDeliverySlotAvailable(
@@ -216,14 +266,20 @@ export default function VendorProfilePage() {
   );
   const isVendorAvailable = !showAvailabilityPopup;
 
-  const handleSaveToggle = () => {
-    const nextSavedState = toggleSavedVendor(vendor.slug);
-    setIsSaved(nextSavedState);
-    showSuccessToast(
-      nextSavedState
-        ? `${vendor.name} saved successfully`
-        : `${vendor.name} removed from saved restaurants`,
-    );
+  const handleSaveToggle = async () => {
+    try {
+      const nextSavedState = await toggleSavedState();
+      showSuccessToast(
+        nextSavedState
+          ? `${vendor.name} saved successfully`
+          : `${vendor.name} removed from saved restaurants`,
+      );
+    } catch (saveError) {
+      await showAuthErrorAlert(
+        saveError.message || "Unable to update saved vendor right now.",
+        "Save vendor failed",
+      );
+    }
   };
 
   const handleShare = async () => {

@@ -69,6 +69,31 @@ function buildGraphqlErrorMessage(errors) {
   return translateNorwegianToEnglish(rawMessage);
 }
 
+function looksLikeHtmlDocument(value) {
+  if (!value || typeof value !== "string") {
+    return false;
+  }
+
+  const normalizedValue = value.trim().toLowerCase();
+  return (
+    normalizedValue.startsWith("<!doctype html") ||
+    normalizedValue.startsWith("<html") ||
+    normalizedValue.includes("<body")
+  );
+}
+
+function sanitizeServerErrorMessage(message, fallbackMessage) {
+  if (!message || typeof message !== "string") {
+    return fallbackMessage;
+  }
+
+  if (looksLikeHtmlDocument(message)) {
+    return fallbackMessage;
+  }
+
+  return message.trim();
+}
+
 export async function graphqlRequest({ query, variables = {}, signal }) {
   const headers = {
     "Content-Type": "application/json",
@@ -102,9 +127,10 @@ export async function graphqlRequest({ query, variables = {}, signal }) {
 
   if (!response.ok) {
     throw new Error(
-      payload?.message ??
-        rawBody?.trim() ??
-        "Request failed. Please try again.",
+      sanitizeServerErrorMessage(
+        payload?.message ?? rawBody?.trim(),
+        "Server error. Please try again shortly.",
+      ),
     );
   }
 
@@ -114,9 +140,10 @@ export async function graphqlRequest({ query, variables = {}, signal }) {
 
   if (!payload?.data) {
     throw new Error(
-      payload?.message ??
-        rawBody?.trim() ??
+      sanitizeServerErrorMessage(
+        payload?.message ?? rawBody?.trim(),
         "Backend returned an unexpected response.",
+      ),
     );
   }
 
