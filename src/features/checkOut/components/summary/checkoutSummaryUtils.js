@@ -24,13 +24,19 @@ export function getTipValue(summary, subtotal) {
 }
 
 export function getItemServes(item, personCount) {
+  const pricingType = item.pricingType === "fixed" ? "fixed" : "per-person";
   const baseServes = Number(item.totalServes ?? item.serves ?? 0);
+  const normalizedPersonCount = Math.max(1, Number(personCount ?? 0) || 1);
+
+  if (pricingType === "per-person") {
+    return Math.max(baseServes, normalizedPersonCount);
+  }
 
   if (baseServes > 0) {
     return baseServes;
   }
 
-  return Math.max(1, Number(personCount ?? 0) || 1);
+  return normalizedPersonCount;
 }
 
 export function getItemPrice(item, personCount) {
