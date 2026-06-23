@@ -5,20 +5,22 @@ import {
   FiCreditCard,
   FiPackage,
   FiSettings,
-  FiStar,
   FiTruck,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../auth";
 import VendorSectionCard from "../components/VendorSectionCard";
 import { fetchDashboardData } from "../dashboardSlice";
-import {
-  vendorSettingsLinks,
-} from "../data/vendorDashboardConfig";
+import { vendorSettingsLinks } from "../data/vendorDashboardConfig";
 
 function getStatusClasses(status) {
-  const normalizedStatus = status.toLowerCase();
+  const normalizedStatus = `${status ?? ""}`.toLowerCase();
 
-  if (normalizedStatus === "completed" || normalizedStatus === "delivered" || normalizedStatus === "ready") {
+  if (
+    normalizedStatus === "completed" ||
+    normalizedStatus === "delivered" ||
+    normalizedStatus === "ready"
+  ) {
     return "bg-[#e7f8eb] text-[#1f8f47]";
   }
 
@@ -29,13 +31,19 @@ function getStatusClasses(status) {
   return "bg-[#fff1eb] text-[#cf6e38]";
 }
 
+function joinMeta(parts) {
+  return parts.filter(Boolean).join(" • ");
+}
+
 function VendorStatCard({ label, value, icon: Icon }) {
   return (
     <article className="rounded-[24px] border border-[#d9d9d9] bg-white p-4 shadow-[0_10px_24px_rgba(30,30,30,0.06)] sm:p-5">
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-transparent text-[#cf5c2f] sm:h-16 sm:w-16">
         <Icon className="text-[34px] sm:text-[54px]" />
       </div>
-      <p className="mt-4 text-sm font-semibold text-[#2a2a2a] sm:mt-5 sm:text-base">{label}</p>
+      <p className="mt-4 text-sm font-semibold text-[#2a2a2a] sm:mt-5 sm:text-base">
+        {label}
+      </p>
       <p className="mt-3 text-[24px] font-extrabold leading-none text-[#1f1f1f] sm:mt-4 sm:text-[30px]">
         {value}
       </p>
@@ -43,12 +51,30 @@ function VendorStatCard({ label, value, icon: Icon }) {
   );
 }
 
+function DashboardErrorState({ message, onRetry }) {
+  return (
+    <div className="rounded-[24px] border border-[#f1c8bb] bg-[#fff5f1] p-6 text-center shadow-[0_12px_24px_rgba(32,32,32,0.04)]">
+      <h2 className="text-lg font-semibold text-[#3a2218]">
+        Unable to load dashboard
+      </h2>
+      <p className="mt-2 text-sm text-[#8a5642]">{message}</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="mt-5 rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b94f26]"
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+
 export default function VendorDashboardHomePage() {
   const dispatch = useDispatch();
+  const { user } = useAuth();
   const {
     totalOrders,
     pendingInvoices,
-    rewardPoints,
     recentOrders,
     recentInvoices,
     isLoading,
@@ -66,16 +92,16 @@ export default function VendorDashboardHomePage() {
       icon: FiTruck,
     },
     {
-      label: "Pending Invoice",
+      label: "Pending Invoices",
       value: pendingInvoices,
       icon: FiCreditCard,
     },
-    {
-      label: "Reward Points",
-      value: rewardPoints,
-      icon: FiStar,
-    },
   ];
+
+  const userDisplayName =
+    user?.firstName?.trim() || user?.name?.trim() || "there";
+  const normalizedOrders = Array.isArray(recentOrders) ? recentOrders : [];
+  const normalizedInvoices = Array.isArray(recentInvoices) ? recentInvoices : [];
 
   if (isLoading) {
     return (
@@ -87,22 +113,24 @@ export default function VendorDashboardHomePage() {
 
   if (error) {
     return (
-      <div className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center text-sm text-red-600">
-        {error}
-      </div>
+      <DashboardErrorState
+        message={error}
+        onRetry={() => dispatch(fetchDashboardData())}
+      />
     );
   }
 
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2">Dashboard</h1>
-        <p className="mt-4 type-para">
-          Welcome back, Nouman. Here&apos;s an overview of your activity.
+        <h1 className="type-h2 text-[#191919]">Dashboard</h1>
+        <p className="mt-4 type-para text-[#5f5a54]">
+          Welcome back, {userDisplayName}. Here&apos;s an overview of your
+          account activity.
         </p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2">
         {stats.map((item) => (
           <VendorStatCard key={item.label} {...item} />
         ))}
@@ -116,21 +144,23 @@ export default function VendorDashboardHomePage() {
             footerTo="/vendor-dashboard/orders"
           >
             <div className="space-y-3">
-              {recentOrders.length > 0 ? (
-                recentOrders.map((order, index) => (
+              {normalizedOrders.length > 0 ? (
+                normalizedOrders.map((order, index) => (
                   <div
                     key={`${order.id}-${index}`}
                     className="flex flex-col gap-3 rounded-2xl border border-[#efefef] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="type-h5">
-                        {order.eventName}
+                      <p className="type-h5">{order.eventName}</p>
+                      <p className="mt-1 type-para text-[#8d8d8d]">
+                        {joinMeta([order.date, order.id])}
                       </p>
-                      <p className="mt-1 type-para text-[#8d8d8d]">{order.date} • {order.id}</p>
                     </div>
 
                     <div className="flex items-center gap-3 self-start sm:self-center">
-                      <span className="type-h5 font-semibold text-[#1a1a1a]">{order.amount}</span>
+                      <span className="type-h5 font-semibold text-[#1a1a1a]">
+                        {order.amount}
+                      </span>
                       <span
                         className={`rounded-full px-3 py-1 type-h6 font-semibold ${getStatusClasses(order.status)}`}
                       >
@@ -177,21 +207,21 @@ export default function VendorDashboardHomePage() {
           footerTo="/vendor-dashboard/invoices"
         >
           <div className="space-y-3">
-            {recentInvoices.length > 0 ? (
-              recentInvoices.map((invoice, index) => (
+            {normalizedInvoices.length > 0 ? (
+              normalizedInvoices.map((invoice, index) => (
                 <div
                   key={`${invoice.id}-${index}`}
                   className="grid gap-3 rounded-2xl border border-[#efefef] px-4 py-3 sm:grid-cols-[auto_1fr_auto] sm:items-center"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f]">
-                    <FiStar className="text-[22px]" />
+                    <FiCreditCard className="text-[22px]" />
                   </div>
 
                   <div className="min-w-0">
-                    <p className="type-h5">
-                      {invoice.eventName}
+                    <p className="type-h5">{invoice.eventName}</p>
+                    <p className="mt-1 type-para text-[#8d8d8d]">
+                      {joinMeta([invoice.date, invoice.id])}
                     </p>
-                    <p className="mt-1 type-para text-[#8d8d8d]">{invoice.date} • {invoice.id}</p>
                   </div>
 
                   <div className="text-left sm:text-right">
