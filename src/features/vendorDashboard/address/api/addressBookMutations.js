@@ -1,48 +1,54 @@
-function escapeGraphqlString(value) {
-  return `${value ?? ""}`
-    .replace(/\\/g, "\\\\")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, "\\n");
-}
-
-export function buildAddressMutation(addressType, address) {
-  const idLine = address.id && !`${address.id}`.startsWith("local-")
-    ? `id: "${escapeGraphqlString(address.id)}"`
-    : `id: ""`;
-
-  return `
-    mutation SaveAddress {
-      addressMutation(input: {
-        ${idLine}
-        addressType: "${escapeGraphqlString(addressType)}"
-        locationName: "${escapeGraphqlString(address.label)}"
-        address: "${escapeGraphqlString(address.addressLine1)}"
-        unitFloor: "${escapeGraphqlString(address.addressLine2)}"
-        city: "${escapeGraphqlString(address.city)}"
-        state: "${escapeGraphqlString(address.state)}"
-        postCode: "${escapeGraphqlString(address.postalCode)}"
-        phone: "${escapeGraphqlString(address.phoneNumber)}"
-        receivingName: "${escapeGraphqlString(address.contactName)}"
-        instruction: "${escapeGraphqlString(address.instructions)}"
-        default: ${address.isDefault ? "true" : "false"}
-      }) {
-        success
+export const SAVE_ADDRESS_BOOK_MUTATION = `
+  mutation SaveAddressBook(
+    $delivery: [AddressInput!]!
+    $invoice: [AddressInput!]!
+  ) {
+    saveAddressBook(delivery: $delivery, invoice: $invoice) {
+      success
+      message
+      delivery {
+        id
+        addressType
+        locationName
+        address
+        unitFloor
+        city
+        state
+        postCode
+        phone
+        receivingName
+        instruction
+        default
+      }
+      invoice {
+        id
+        addressType
+        locationName
+        address
+        unitFloor
+        city
+        state
+        postCode
+        phone
+        receivingName
+        instruction
+        default
+      }
+      errors {
+        field
         message
-        instance {
-          id
-          locationName
-          address
-          unitFloor
-          city
-          state
-          postCode
-          addressType
-          phone
-          receivingName
-          instruction
-          default
-        }
+        addressType
+        addressId
       }
     }
-  `;
-}
+  }
+`;
+
+export const DELETE_ADDRESS_MUTATION = `
+  mutation DeleteAddress($addressId: ID!) {
+    deleteAddress(addressId: $addressId) {
+      success
+      message
+    }
+  }
+`;

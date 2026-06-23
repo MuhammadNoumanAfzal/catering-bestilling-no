@@ -2,34 +2,55 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 
 const FETCH_CLIENT_ORDERS_QUERY = `
-  query FetchClientOrders {
-    orderQuickSummary {
-      totalOrders
-      completed
-      scheduled
-      drafts
-    }
-    clientOrders {
+  query FetchClientOrders($tab: String, $first: Int, $after: String) {
+    clientOrders(tab: $tab, first: $first, after: $after) {
+      totalCount
       edges {
+        cursor
         node {
           id
-          eventName
-          eventDate
-          createdOn
-          deliveryAddressStr
-          personCount
-          grandTotal
+          invoiceNumber
           status
+          totalAmount
+          taxAmount
+          deliveryFee
+          grandTotal
+          createdOn
+          dueDate
+          eventDate
+          eventTime
+          personCount
+          orderNotes
           vendor {
-            companyName
+            id
+            name
+            slug
+            coverPhotoUrl
+            logoUrl
           }
           items {
             id
-            quantity
             productName
+            quantity
+            unitPrice
             totalPrice
+            specialInstructions
+            selectedOptions
+            selectedAddons
+          }
+          modifiedItems {
+            id
+            name
+            changeLabel
+            summary
+            previousValue
+            newValue
           }
         }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
@@ -145,13 +166,23 @@ function mapListOrder(node) {
     quantity: item.quantity || 1,
     name: item.productName || "Catering Meal",
     price: formatAmount(item.totalPrice),
-    details: [],
+    details: [
+      item.specialInstructions ? `Note: ${item.specialInstructions}` : "",
+      ...Object.entries(item.selectedOptions || {}).map(
+        ([key, value]) => `${key}: ${value}`,
+      ),
+      ...(item.selectedAddons || []).map((addon) =>
+        addon?.name
+          ? `Add-on: ${addon.name}${addon.price ? ` (+${formatAmount(addon.price)})` : ""}`
+          : "",
+      ),
+    ].filter(Boolean),
   }));
 
   return {
     id: formatId(node.id),
     rawId: node.id || "",
-    vendor: node.vendor?.companyName || "Catering partner",
+    vendor: node.vendor?.name || "Catering partner",
     eventName: node.eventName || "Corporate Event",
     date: formatDate(node.eventDate),
     eventDateRaw: node.eventDate || "",
@@ -159,12 +190,19 @@ function mapListOrder(node) {
     person: formatNumber(node.personCount, 1),
     total: formatAmount(node.grandTotal),
     status: node.status || "Ready",
-    isModified: false,
+    isModified: Array.isArray(node.modifiedItems) && node.modifiedItems.length > 0,
     orderedDate: formatDate(node.createdOn),
-    deliveredDate: formatDate(node.eventDate),
+    deliveredDate: formatDate(node.dueDate || node.eventDate),
     location: node.deliveryAddressStr || "Not provided",
-    invoiceId: node.id ? `#INV-${node.id}` : "",
+    invoiceId: node.invoiceNumber || "",
+    image: node.vendor?.coverPhotoUrl || node.vendor?.logoUrl || "/home/hero1.webp",
+    subtotal: formatAmount(node.totalAmount),
+    taxAmount: formatAmount(node.taxAmount),
+    deliveryFee: formatAmount(node.deliveryFee),
+    orderNotes: node.orderNotes || "",
+    eventTime: node.eventTime || "",
     items: mappedItems,
+    modifiedItems: Array.isArray(node.modifiedItems) ? node.modifiedItems : [],
   };
 }
 
@@ -195,18 +233,34 @@ export const fetchClientOrders = createAsyncThunk(
   "orders/fetchClientOrders",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await graphqlRequest({ query: FETCH_CLIENT_ORDERS_QUERY });
-      
+      const response = await graphqlRequest({
+        query: FETCH_CLIENT_ORDERS_QUERY,
+        variables: {
+          tab: null,
+          first: 100,
+          after: null,
+        },
+      });
       const orders = (response.clientOrders?.edges || []).map((edge) =>
         mapListOrder(edge.node),
       );
-
-      const summary = response.orderQuickSummary || { totalOrders: 0, completed: 0, scheduled: 0, drafts: 0 };
+      const completedCount = orders.filter(
+        (order) => `${order.status}`.toLowerCase() === "completed",
+      ).length;
+      const scheduledCount = orders.filter(
+        (order) => `${order.status}`.toLowerCase() === "scheduled",
+      ).length;
+      const draftsCount = orders.filter(
+        (order) => `${order.status}`.toLowerCase() === "draft",
+      ).length;
       const statusSummary = [
-        { label: "Total Orders", value: summary.totalOrders },
-        { label: "Completed", value: summary.completed },
-        { label: "Scheduled", value: summary.scheduled },
-        { label: "Drafts", value: summary.drafts },
+        {
+          label: "Total Orders",
+          value: response.clientOrders?.totalCount ?? orders.length,
+        },
+        { label: "Completed", value: completedCount },
+        { label: "Scheduled", value: scheduledCount },
+        { label: "Drafts", value: draftsCount },
       ];
 
       return { orders, statusSummary };

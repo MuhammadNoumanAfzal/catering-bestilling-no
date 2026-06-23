@@ -9,6 +9,7 @@ export default function VendorAddressPage() {
     deliveryAddresses,
     handleAdd,
     handleChangeField,
+    handleDelete,
     handleReset,
     handleSave,
     handleSetDefault,
@@ -38,6 +39,7 @@ export default function VendorAddressPage() {
         activeId={activeDeliveryId}
         onSelect={setActiveDeliveryId}
         onAdd={() => handleAdd("delivery")}
+        onDelete={(addressId) => handleDelete("delivery", addressId)}
         onSetDefault={(addressId) => handleSetDefault("delivery", addressId)}
         onChangeField={(addressId, key, value) =>
           handleChangeField("delivery", addressId, key, value)
@@ -52,6 +54,7 @@ export default function VendorAddressPage() {
         activeId={activeInvoiceId}
         onSelect={setActiveInvoiceId}
         onAdd={() => handleAdd("invoice")}
+        onDelete={(addressId) => handleDelete("invoice", addressId)}
         onSetDefault={(addressId) => handleSetDefault("invoice", addressId)}
         onChangeField={(addressId, key, value) =>
           handleChangeField("invoice", addressId, key, value)

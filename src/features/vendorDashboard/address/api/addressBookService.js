@@ -1,6 +1,9 @@
 import { graphqlRequest } from "../../../../lib/api/graphqlClient";
 import { ADDRESS_FIELD_LIMITS } from "../constants/addressFieldLimits";
-import { buildAddressMutation } from "./addressBookMutations";
+import {
+  DELETE_ADDRESS_MUTATION,
+  SAVE_ADDRESS_BOOK_MUTATION,
+} from "./addressBookMutations";
 import {
   mapAddressEdgesToAddressBook,
   mapApiAddressToBookEntry,
@@ -65,33 +68,65 @@ export async function fetchAddressBook() {
   return mapAddressEdgesToAddressBook(response.me.addresses?.edges);
 }
 
-async function saveAddress(addressType, address) {
-  validateAddress(addressType, address);
-
-  const query = buildAddressMutation(addressType, address);
-  const response = await graphqlRequest({ query });
-  const result = response?.addressMutation;
-
-  if (!result?.success || !result?.instance) {
-    throw new Error(result?.message || `Unable to save ${addressType} address.`);
-  }
-
-  return mapApiAddressToBookEntry(result.instance);
+function normalizeAddressInput(address) {
+  return {
+    id: address.id && !`${address.id}`.startsWith("local-") ? address.id : null,
+    locationName: `${address.label ?? ""}`.trim(),
+    address: `${address.addressLine1 ?? ""}`.trim(),
+    unitFloor: `${address.addressLine2 ?? ""}`.trim(),
+    city: `${address.city ?? ""}`.trim(),
+    state: `${address.state ?? ""}`.trim(),
+    postCode: `${address.postalCode ?? ""}`.trim(),
+    phone: `${address.phoneNumber ?? ""}`.trim(),
+    receivingName: `${address.contactName ?? ""}`.trim(),
+    instruction: `${address.instructions ?? ""}`.trim(),
+    default: Boolean(address.isDefault),
+  };
 }
 
 export async function saveAddressBook(addressBook) {
-  const savedAddressBook = {
-    delivery: [],
-    invoice: [],
-  };
-
   for (const address of addressBook.delivery) {
-    savedAddressBook.delivery.push(await saveAddress("delivery", address));
+    validateAddress("delivery", address);
   }
 
   for (const address of addressBook.invoice) {
-    savedAddressBook.invoice.push(await saveAddress("invoice", address));
+    validateAddress("invoice", address);
   }
 
-  return savedAddressBook;
+  const response = await graphqlRequest({
+    query: SAVE_ADDRESS_BOOK_MUTATION,
+    variables: {
+      delivery: addressBook.delivery.map(normalizeAddressInput),
+      invoice: addressBook.invoice.map(normalizeAddressInput),
+    },
+  });
+
+  const result = response?.saveAddressBook;
+
+  if (!result?.success) {
+    const firstError = result?.errors?.[0];
+    throw new Error(
+      firstError?.message || result?.message || "Unable to save address book.",
+    );
+  }
+
+  return {
+    delivery: (result?.delivery || []).map(mapApiAddressToBookEntry),
+    invoice: (result?.invoice || []).map(mapApiAddressToBookEntry),
+  };
+}
+
+export async function deleteAddress(addressId) {
+  const response = await graphqlRequest({
+    query: DELETE_ADDRESS_MUTATION,
+    variables: { addressId },
+  });
+
+  const result = response?.deleteAddress;
+
+  if (!result?.success) {
+    throw new Error(result?.message || "Unable to delete address.");
+  }
+
+  return result;
 }

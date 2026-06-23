@@ -1,1 +1,5 @@
-export { fetchAddressBook, saveAddressBook } from "./addressBookService";
+export {
+  deleteAddress,
+  fetchAddressBook,
+  saveAddressBook,
+} from "./addressBookService";

@@ -48,6 +48,26 @@ export function createPendingVendorReview(payload) {
 }
 
 export function getVendorReviewSummaryCards(vendor) {
+  const reviewSummary = vendor?.reviewSummary || null;
+  const ratingBreakdown = Array.isArray(reviewSummary?.ratingBreakdown)
+    ? reviewSummary.ratingBreakdown
+    : [];
+  const topRatingBand = ratingBreakdown.reduce(
+    (bestMatch, item) => {
+      const count = Number(item?.count ?? 0);
+
+      if (count > bestMatch.count) {
+        return {
+          stars: Number(item?.stars ?? 0),
+          count,
+        };
+      }
+
+      return bestMatch;
+    },
+    { stars: 0, count: 0 },
+  );
+
   return [
     {
       label: "Rating",
@@ -67,7 +87,10 @@ export function getVendorReviewSummaryCards(vendor) {
     {
       label: "Timing",
       value: vendor?.leadTime || "Not available",
-      note: vendor?.availability?.delivery?.label || "",
+      note:
+        topRatingBand.count > 0
+          ? `Most reviews are ${topRatingBand.stars}-star ratings`
+          : vendor?.availability?.delivery?.label || "",
     },
   ];
 }
