@@ -10,6 +10,7 @@ import {
 import { Link, Navigate, useParams } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { useVendorProfile } from "../hooks/useVendorProfile";
+import { useVendorReviews } from "../hooks/useVendorReviews";
 import VendorReviewModal from "../components/VendorReviewModal";
 import {
   buildVendorReviewSubmissionPayload,
@@ -113,11 +114,17 @@ export default function VendorReviewsPage() {
   const { vendorSlug } = useParams();
   const { vendor, isLoading, error } = useVendorProfile(vendorSlug);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-
-  const reviews = useMemo(
-    () => (Array.isArray(vendor?.reviews) ? vendor.reviews : []),
-    [vendor?.reviews],
-  );
+  const {
+    reviews,
+    totalCount,
+    isLoading: isReviewsLoading,
+    isLoadingMore,
+    isSubmitting,
+    error: reviewsError,
+    loadMore,
+    createReview,
+    pageInfo,
+  } = useVendorReviews(vendorSlug);
 
   const featuredReview = reviews[0] ?? null;
   const otherReviews = reviews.slice(1);
@@ -138,7 +145,7 @@ export default function VendorReviewsPage() {
     [vendor],
   );
 
-  if (isLoading) {
+  if (isLoading || isReviewsLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
@@ -161,8 +168,9 @@ export default function VendorReviewsPage() {
       return;
     }
 
+    const response = await createReview(payload);
     setIsReviewModalOpen(false);
-    await showSuccessToast("Review submitted successfully");
+    await showSuccessToast(response.message || "Review submitted successfully");
   };
 
   return (
@@ -195,7 +203,7 @@ export default function VendorReviewsPage() {
                     <span className="font-semibold text-[#171512]">
                       {averageRating}
                     </span>
-                    <span>from {vendor.reviewCount} reviews</span>
+                    <span>from {totalCount || vendor.reviewCount} reviews</span>
                   </span>
                   <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
                     <FiMapPin className="text-[14px]" />
@@ -245,6 +253,25 @@ export default function VendorReviewsPage() {
             ))}
           </div>
         ) : null}
+
+        {reviewsError ? (
+          <div className="mt-6 rounded-[20px] border border-[#eadfd2] bg-white p-4 text-sm text-[#8b3f1f]">
+            {reviewsError}
+          </div>
+        ) : null}
+
+        {pageInfo.hasNextPage ? (
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              className="rounded-[12px] border border-[#d8ccc0] bg-white px-5 py-3 text-[14px] font-semibold text-[#27211c] transition hover:bg-[#faf5f0] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isLoadingMore ? "Loading..." : "Load more reviews"}
+            </button>
+          </div>
+        ) : null}
       </div>
 
       {isReviewModalOpen ? (
@@ -252,6 +279,7 @@ export default function VendorReviewsPage() {
           vendor={vendor}
           onCancel={() => setIsReviewModalOpen(false)}
           onSubmit={handleReviewSubmit}
+          isSubmitting={isSubmitting}
         />
       ) : null}
     </section>

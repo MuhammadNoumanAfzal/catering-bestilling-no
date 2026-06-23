@@ -9,10 +9,12 @@ import { fetchVendorProfile } from "../store/vendorSlice";
 
 export function useVendorProfile(vendorSlug) {
   const dispatch = useDispatch();
-  const vendor = useSelector(selectCurrentVendor);
+  const storedVendor = useSelector(selectCurrentVendor);
   const status = useSelector(selectVendorStatus);
   const error = useSelector(selectVendorError);
-  const isLoading = Boolean(vendorSlug) && (status === "idle" || status === "loading");
+  const vendor = storedVendor?.slug === vendorSlug ? storedVendor : null;
+  const isLoading =
+    Boolean(vendorSlug) && (status === "idle" || status === "loading");
 
   useEffect(() => {
     if (!vendorSlug) {

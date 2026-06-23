@@ -252,16 +252,9 @@ export default function VendorOrderSidebar({
                 <p className="type-para font-semibold ">
                   Delivery Date &amp; Time
                 </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onDeliveryDateChange(orderSummary.deliveryDate);
-                    onDeliveryTimeChange(orderSummary.deliveryTime);
-                  }}
-                  className="mt-2 w-full border border-[#ddd6cf] px-3 py-3 text-left text-[14px] text-[#66605b]"
-                >
-                  {formattedDateTime}
-                </button>
+                <div className="mt-2 w-full border border-[#ddd6cf] px-3 py-3 text-left text-[14px] text-[#66605b]">
+                  {formattedDateTime || "Select delivery date and time during checkout"}
+                </div>
               </div>
 
               <div className="mt-4">
@@ -294,7 +287,10 @@ export default function VendorOrderSidebar({
               </div>
 
               <div className="mt-4 text-center type-para text-[#55514d]">
-                <p>Location: {orderSummary.deliveryAddress}</p>
+                <p>
+                  Location:{" "}
+                  {orderSummary.deliveryAddress || "Add delivery address during checkout"}
+                </p>
               </div>
             </div>
 
