@@ -1,6 +1,7 @@
 import { useState } from "react";
 import SupportTicketForm from "../components/support/SupportTicketForm";
-import { showSuccessToast } from "../../../utils/alerts";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { createSupportTicket } from "../support/api";
 
 const AUDIENCE_OPTIONS = [
   { label: "Customer", value: "customer" },
@@ -32,6 +33,8 @@ const INITIAL_FORM_STATE = {
 export default function VendorSupportPage() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [selectedFileName, setSelectedFileName] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function updateField(key, value) {
     setFormState((current) => ({
@@ -40,13 +43,50 @@ export default function VendorSupportPage() {
     }));
   }
 
+  function getSubjectLabel(subjectValue) {
+    return (
+      SUBJECT_OPTIONS.find((option) => option.value === subjectValue)?.label ||
+      subjectValue
+    );
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
 
-    await showSuccessToast("Support ticket submitted successfully");
+    setIsSubmitting(true);
 
-    setFormState(INITIAL_FORM_STATE);
-    setSelectedFileName("");
+    try {
+      const response = await createSupportTicket({
+        userRole: formState.audience,
+        subject: getSubjectLabel(formState.subject),
+        relatedOrderId: formState.orderId,
+        description: formState.description,
+        attachmentUrl: null,
+        attachmentFileId: null,
+      });
+
+      await showSuccessToast(
+        response.message || "Support ticket submitted successfully",
+      );
+
+      if (selectedFile) {
+        await showAuthErrorAlert(
+          "Your ticket was submitted, but file upload is not connected yet. Please share attachments once backend upload API is available.",
+          "Attachment not uploaded",
+        );
+      }
+
+      setFormState(INITIAL_FORM_STATE);
+      setSelectedFileName("");
+      setSelectedFile(null);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error?.message || "Unable to submit support ticket right now.",
+        "Support ticket failed",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -62,11 +102,14 @@ export default function VendorSupportPage() {
         audienceOptions={AUDIENCE_OPTIONS}
         fileName={selectedFileName}
         formState={formState}
+        isSubmitting={isSubmitting}
         onAudienceChange={(value) => updateField("audience", value)}
         onFieldChange={updateField}
-        onFileChange={(event) =>
-          setSelectedFileName(event.target.files?.[0]?.name ?? "")
-        }
+        onFileChange={(event) => {
+          const nextFile = event.target.files?.[0] ?? null;
+          setSelectedFile(nextFile);
+          setSelectedFileName(nextFile?.name ?? "");
+        }}
         onSubmit={handleSubmit}
         subjectOptions={SUBJECT_OPTIONS}
       />
