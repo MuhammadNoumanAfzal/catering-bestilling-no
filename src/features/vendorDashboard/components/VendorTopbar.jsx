@@ -3,8 +3,8 @@ import { FiBell, FiChevronDown, FiSearch, FiShoppingCart, FiUser } from "react-i
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
 import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
-import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCartSummary";
+import useUserNotifications from "../../../components/shared/navbar/useUserNotifications";
 
 function FilterButton({ label }) {
   return (
@@ -22,11 +22,9 @@ export default function VendorTopbar() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
+  const { notifications, unreadNotificationCount } = useUserNotifications();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notificationRef = useRef(null);
-  const unreadNotificationCount = navbarNotifications.filter(
-    (item) => item.unread,
-  ).length;
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -85,7 +83,7 @@ export default function VendorTopbar() {
             </button>
 
             {isNotificationOpen ? (
-              <NotificationPopover notifications={navbarNotifications} />
+              <NotificationPopover notifications={notifications} />
             ) : null}
           </div>
 

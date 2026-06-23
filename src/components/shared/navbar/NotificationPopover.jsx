@@ -18,6 +18,16 @@ export default function NotificationPopover({
       </div>
 
       <div className="max-h-[320px] overflow-y-auto bg-[#fbf9f6]">
+        {notifications.length === 0 ? (
+          <div className="px-4 py-8 text-center">
+            <p className="text-sm font-medium text-[#3a332d]">
+              No notifications yet
+            </p>
+            <p className="mt-1 text-xs text-[#8d837a]">
+              New order and status updates will appear here.
+            </p>
+          </div>
+        ) : null}
         {notifications.map((notification, index) => (
           <article
             key={notification.id}

@@ -1,6 +1,10 @@
 export const FETCH_HOME_DATA_QUERY = `
-  query FetchHomeData {
-    featured: vendors(isFeatured: true) {
+  query FetchHomeData($postCode: String, $areaName: String) {
+    featured: vendors(
+      isFeatured: true
+      postCode: $postCode
+      areaName: $areaName
+    ) {
       edges {
         node {
           id
@@ -31,7 +35,11 @@ export const FETCH_HOME_DATA_QUERY = `
         }
       }
     }
-    popularVendors: vendors(isPopular: true) {
+    popularVendors: vendors(
+      isPopular: true
+      postCode: $postCode
+      areaName: $areaName
+    ) {
       edges {
         node {
           id

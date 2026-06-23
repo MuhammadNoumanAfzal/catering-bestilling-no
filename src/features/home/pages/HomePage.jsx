@@ -23,9 +23,31 @@ import {
   normalizeSearchQuery,
 } from "../utils/homeCatalog";
 
+function extractAreaName(address) {
+  const trimmedAddress = `${address ?? ""}`.trim();
+
+  if (!trimmedAddress) {
+    return "";
+  }
+
+  const segments = trimmedAddress
+    .split(",")
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  if (segments.length >= 2) {
+    const lastSegment = segments.at(-1)?.toLowerCase() ?? "";
+
+    if (["norway", "norge"].includes(lastSegment)) {
+      return segments.at(-2) ?? trimmedAddress;
+    }
+  }
+
+  return segments.at(-1) ?? trimmedAddress;
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
-  const { popularVendors, featuredVendors, popularProducts } = useHomeData();
   const {
     attendeeCount,
     deliveryAddress,
@@ -40,19 +62,36 @@ export default function HomePage() {
     selectedRating,
     selectedSort,
     setDeliveryAddress,
+    setLocationValue,
   } = useBrowseFilters();
   const [postalCode, setPostalCode] = useState("");
+  const [draftDeliveryAddress, setDraftDeliveryAddress] = useState(deliveryAddress);
+  const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const { popularVendors, featuredVendors, popularProducts } =
+    useHomeData(appliedSearchFilters);
   const normalizedPostalCode = normalizePostalCode(postalCode);
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const normalizedCategoryFilter = normalizeCategorySelection(selectedCategory);
   const activeCategoryLabel = buildActiveCategoryLabel(normalizedCategoryFilter);
   const activeHomeLocationFilter = buildLocationFilter({
     postalCode: normalizedPostalCode,
-    deliveryAddress,
+    deliveryAddress: draftDeliveryAddress,
     locationValue,
   });
   const menuQuery = buildCategoryQuery(normalizedCategoryFilter);
+
+  const handleHomeSearch = () => {
+    const nextPostalCode = normalizePostalCode(postalCode);
+    const nextAreaName = nextPostalCode ? "" : extractAreaName(draftDeliveryAddress);
+
+    setDeliveryAddress(draftDeliveryAddress.trim());
+    setLocationValue(nextPostalCode || nextAreaName);
+    setAppliedSearchFilters({
+      postCode: nextPostalCode || undefined,
+      areaName: nextAreaName || undefined,
+    });
+  };
   const sharedFilters = useMemo(
     () => ({
       attendeeCount,
@@ -111,11 +150,12 @@ export default function HomePage() {
   return (
     <div>
       <HeroSection
-        deliveryAddress={deliveryAddress}
-        onDeliveryAddressChange={setDeliveryAddress}
+        deliveryAddress={draftDeliveryAddress}
+        onDeliveryAddressChange={setDraftDeliveryAddress}
         postalCode={normalizedPostalCode}
         onPostalCodeChange={setPostalCode}
         availableVendorCount={availableVendorCount}
+        onSearch={handleHomeSearch}
       />
       <FoodBrowsePreviewSection
         selectedCategory={selectedCategory}
