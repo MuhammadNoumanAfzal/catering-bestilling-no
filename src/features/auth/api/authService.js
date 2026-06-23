@@ -1,5 +1,6 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import {
+  LOGOUT_USER_MUTATION,
   LOGIN_USER_MUTATION,
   PASSWORD_RESET_MAIL_MUTATION,
   REGISTER_USER_MUTATION,
@@ -128,5 +129,13 @@ export async function resetPassword(input) {
     variables,
     dataKey: "resetPassword",
     fallbackMessage: "Unable to reset password.",
+  });
+}
+
+export async function logoutUser() {
+  return runAuthMutation({
+    query: LOGOUT_USER_MUTATION,
+    dataKey: "logoutUser",
+    fallbackMessage: "Unable to log out right now.",
   });
 }

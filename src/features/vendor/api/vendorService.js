@@ -20,6 +20,48 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, "");
 }
 
+function shouldHydrateRatingFromReviews(vendor) {
+  if (!vendor) {
+    return false;
+  }
+
+  const reviewCount = Number(vendor.reviewCount ?? vendor.reviewsCount ?? 0);
+  const rating = Number(vendor.rating ?? 0);
+
+  return reviewCount > 0 && rating <= 0;
+}
+
+async function hydrateVendorRatingFromReviews(vendorProfile, vendorSlug) {
+  if (!shouldHydrateRatingFromReviews(vendorProfile) || !vendorSlug) {
+    return vendorProfile;
+  }
+
+  try {
+    const reviewConnection = await fetchVendorReviews(vendorSlug, { first: 50 });
+    const ratings = (reviewConnection.reviews || [])
+      .map((review) => Number(review.rating ?? 0))
+      .filter((rating) => rating > 0);
+
+    if (ratings.length === 0) {
+      return vendorProfile;
+    }
+
+    const averageRating =
+      ratings.reduce((total, rating) => total + rating, 0) / ratings.length;
+
+    return {
+      ...vendorProfile,
+      rating: averageRating.toFixed(1),
+      reviewCount: Math.max(
+        Number(vendorProfile.reviewCount ?? 0),
+        Number(reviewConnection.totalCount ?? ratings.length),
+      ),
+    };
+  } catch {
+    return vendorProfile;
+  }
+}
+
 export async function fetchVendors() {
   const response = await graphqlRequest({ query: FETCH_VENDORS_QUERY });
   return (response.vendors?.edges || []).map((edge) => edge.node);
@@ -33,6 +75,13 @@ export async function fetchVendorProfiles() {
   if (!vendorProfilesPromise) {
     vendorProfilesPromise = fetchVendors()
       .then((vendors) => vendors.map((vendor) => adaptApiVendorToProfile(vendor)))
+      .then((profiles) =>
+        Promise.all(
+          profiles.map((profile) =>
+            hydrateVendorRatingFromReviews(profile, profile?.slug),
+          ),
+        ),
+      )
       .then((profiles) => {
         vendorProfilesCache = profiles;
         return profiles;
@@ -51,7 +100,10 @@ export async function fetchVendorProfileBySlug(vendorSlug) {
       query: FETCH_VENDOR_BY_SLUG_QUERY,
       variables: { slug: vendorSlug },
     });
-    const matchedVendor = adaptApiVendorToProfile(response.vendor);
+    const matchedVendor = await hydrateVendorRatingFromReviews(
+      adaptApiVendorToProfile(response.vendor),
+      vendorSlug,
+    );
 
     if (!matchedVendor?.id) {
       throw new Error("Vendor profile not found in API.");

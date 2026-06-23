@@ -23,7 +23,7 @@ export default function VendorSidebar() {
       return;
     }
 
-    signOut();
+    await signOut();
     await showSuccessToast("Logged out successfully");
   };
 

@@ -90,3 +90,12 @@ export const RESET_PASSWORD_MUTATION = `
     }
   }
 `;
+
+export const LOGOUT_USER_MUTATION = `
+  mutation LogoutUser {
+    logoutUser {
+      success
+      message
+    }
+  }
+`;

@@ -3,6 +3,7 @@ export { useAuth } from "./hooks/useAuth";
 export { AuthLayout } from "./components";
 export {
   loginUser,
+  logoutUser,
   passwordResetMail,
   registerUser,
   resetPassword,

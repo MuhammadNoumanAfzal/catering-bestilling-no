@@ -166,7 +166,7 @@ export default function CommonNavbar({
       return;
     }
 
-    signOut();
+    await signOut();
     setIsActionMenuOpen(false);
     await showSuccessToast("Logged out successfully");
   };
