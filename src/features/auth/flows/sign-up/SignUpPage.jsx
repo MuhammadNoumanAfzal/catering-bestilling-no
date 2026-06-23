@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
-import { registerUser } from "../api";
-import { AUTH_ROLE, SIGN_UP_INITIAL_FORM_STATE } from "../constants/authForms";
+import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
+import { registerUser } from "../../api";
 import {
   AuthButton,
   AuthCard,
   AuthInput,
   AuthPageFooter,
-} from "../components";
+} from "../../components";
+import {
+  AUTH_ROLE,
+  SIGN_UP_INITIAL_FORM_STATE,
+} from "../../constants/authForms";
 
 export default function SignUpPage() {
   const location = useLocation();
@@ -127,7 +130,6 @@ export default function SignUpPage() {
           onChange={handleChange}
           required
         />
-
 
         <AuthButton
           type="submit"

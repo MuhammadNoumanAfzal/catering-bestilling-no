@@ -4,7 +4,7 @@ import {
   normalizeAuthenticatedUser,
   readStoredSession,
   writeStoredSession,
-} from "../utils/authSession";
+} from "../../../lib/auth/authSession";
 
 const initialState = readStoredSession();
 

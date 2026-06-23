@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
-import { verifyResetCode } from "../api";
-import { PASSWORD_RESET_OTP_LENGTH } from "../constants/authForms";
-import { AuthButton, AuthCard, OtpInput } from "../components";
+import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
+import { verifyResetCode } from "../../api";
+import { AuthButton, AuthCard, OtpInput } from "../../components";
+import { PASSWORD_RESET_OTP_LENGTH } from "../../constants/authForms";
 
 export default function ForgotPasswordOtpPage() {
   const location = useLocation();

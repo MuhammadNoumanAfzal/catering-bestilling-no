@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
-import { resetPassword } from "../api";
-import { RESET_PASSWORD_INITIAL_FORM_STATE } from "../constants/authForms";
-import { AuthButton, AuthCard, AuthInput } from "../components";
+import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
+import { resetPassword } from "../../api";
+import { AuthButton, AuthCard, AuthInput } from "../../components";
+import { RESET_PASSWORD_INITIAL_FORM_STATE } from "../../constants/authForms";
 
 export default function ResetPasswordPage() {
   const location = useLocation();

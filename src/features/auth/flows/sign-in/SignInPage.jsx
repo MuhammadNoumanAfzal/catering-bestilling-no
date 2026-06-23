@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
-import { loginUser } from "../api";
-import { AUTH_ROLE } from "../constants/authForms";
+import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
+import { loginUser } from "../../api";
 import {
   AuthButton,
   AuthCard,
   AuthInput,
   AuthPageFooter,
-} from "../components";
-import { useAuth } from "../hooks/useAuth";
+} from "../../components";
+import { AUTH_ROLE } from "../../constants/authForms";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function SignInPage() {
   const location = useLocation();

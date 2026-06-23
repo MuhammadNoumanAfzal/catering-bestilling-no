@@ -14,7 +14,7 @@ import {
   normalizeResetPasswordInput,
   normalizeVerifyResetCodeInput,
 } from "./authNormalizers";
-import { normalizeAuthenticatedUser } from "../utils/authSession";
+import { normalizeAuthenticatedUser } from "../../../lib/auth/authSession";
 
 function ensureSuccessResult(result, fallbackMessage) {
   if (!result?.success) {
