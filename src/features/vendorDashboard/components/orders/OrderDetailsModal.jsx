@@ -2,39 +2,30 @@ import { FiArrowRight, FiStar, FiX } from "react-icons/fi";
 import { getOrderStatusClasses } from "./orderUtils";
 
 function getOrderDetailItems(order) {
-  return (
-    order.items ?? [
-      {
-        quantity: order.person,
-        name: "Tasty Super Star Package",
-        price: order.total,
-        details: [
-          "3 Meats: Smoked Pulled Pork, Gluten-Free Brisket, St. Louis Pork Ribs",
-          "3 Sides: Potato Salad, BBQ Pinto Beans, Mac & Cheese",
-          "Dessert: Banana Pudding",
-          "Add: Black BBQ Sauce, Honey Mustard Sauce",
-          "Packaging: Tray Packaging",
-        ],
-      },
-    ]
-  );
+  return Array.isArray(order?.items) ? order.items : [];
 }
 
 function getOrderMeta(order) {
   return {
-    image: order.image ?? "/home/hero1.webp",
-    invoiceId: order.invoiceId ?? "#INOV-33254",
-    orderedDate: order.orderedDate ?? "01 Mar 2026",
-    deliveredDate: order.deliveredDate ?? order.date,
-    location: order.location ?? "House # 22 Bergen",
+    image: order?.image ?? "/home/hero1.webp",
+    invoiceId: order?.invoiceId ?? "",
+    orderedDate: order?.orderedDate ?? "",
+    deliveredDate: order?.deliveredDate ?? order?.date ?? "",
+    location: order?.location ?? "",
   };
 }
 
 function getModifiedItems(order) {
-  return order.modifiedItems ?? [];
+  return Array.isArray(order?.modifiedItems) ? order.modifiedItems : [];
 }
 
-export default function OrderDetailsModal({ order, isOpen, onClose }) {
+export default function OrderDetailsModal({
+  order,
+  isOpen,
+  onClose,
+  isLoading = false,
+  error = "",
+}) {
   if (!isOpen || !order) {
     return null;
   }
@@ -76,6 +67,24 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
           </div>
 
           <div className="space-y-6 px-6 py-6">
+            {isLoading ? (
+              <div className="rounded-[22px] border border-[#efe5db] bg-[#fcf8f4] p-6 text-center">
+                <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+                <p className="mt-4 text-sm text-[#6f665d]">
+                  Loading order details...
+                </p>
+              </div>
+            ) : null}
+
+            {error && !isLoading ? (
+              <div className="rounded-[22px] border border-[#f1c8bb] bg-[#fff5f1] p-5 text-center">
+                <p className="text-sm font-semibold text-[#7a3f2e]">
+                  Unable to load full order details
+                </p>
+                <p className="mt-2 text-sm text-[#8a5642]">{error}</p>
+              </div>
+            ) : null}
+
             <div className="rounded-[22px] border border-[#efe5db] bg-[#fcf8f4] p-4">
               <div className="flex flex-wrap items-center gap-3 text-sm text-[#5d554d]">
                 <span
@@ -129,30 +138,38 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
                 </span>
               </div>
               <div className="mt-4 space-y-4">
-                {items.map((item, index) => (
-                  <div
-                    key={`${item.name}-${index}`}
-                    className="rounded-[22px] border border-[#efe5db] bg-white p-4 shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="type-h4 text-[#1f1f1f]">
-                          {item.quantity} {item.name}
-                        </p>
+                {items.length > 0 ? (
+                  items.map((item, index) => (
+                    <div
+                      key={item.id || `${item.name}-${index}`}
+                      className="rounded-[22px] border border-[#efe5db] bg-white p-4 shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="type-h4 text-[#1f1f1f]">
+                            {item.quantity} {item.name}
+                          </p>
+                        </div>
+                        <p className="type-h4 shrink-0 text-[#1f1f1f]">{item.price}</p>
                       </div>
-                      <p className="type-h4 shrink-0 text-[#1f1f1f]">{item.price}</p>
-                    </div>
 
-                    <ul className="mt-3 space-y-2 text-sm leading-6 text-[#72695f]">
-                      {item.details.map((detail) => (
-                        <li key={detail} className="flex gap-2">
-                          <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#cf6e38]" />
-                          <span>{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
+                      {item.details?.length > 0 ? (
+                        <ul className="mt-3 space-y-2 text-sm leading-6 text-[#72695f]">
+                          {item.details.map((detail) => (
+                            <li key={detail} className="flex gap-2">
+                              <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#cf6e38]" />
+                              <span>{detail}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-[22px] border border-dashed border-[#ddd4cb] bg-white p-6 text-center text-sm text-[#776d64]">
+                    Item details are not available in the current API response.
                   </div>
-                ))}
+                )}
               </div>
             </section>
 
@@ -234,13 +251,17 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
                     Invoice
                   </p>
-                  <p className="mt-1 font-semibold text-[#1f1f1f]">{meta.invoiceId}</p>
+                  <p className="mt-1 font-semibold text-[#1f1f1f]">
+                    {meta.invoiceId || "Not available"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
                     Order Date
                   </p>
-                  <p className="mt-1 font-semibold text-[#1f1f1f]">{meta.orderedDate}</p>
+                  <p className="mt-1 font-semibold text-[#1f1f1f]">
+                    {meta.orderedDate || "Not available"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
@@ -252,7 +273,9 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
                     Delivered On
                   </p>
-                  <p className="mt-1 font-semibold text-[#1f1f1f]">{meta.deliveredDate}</p>
+                  <p className="mt-1 font-semibold text-[#1f1f1f]">
+                    {meta.deliveredDate || "Not available"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
@@ -264,7 +287,9 @@ export default function OrderDetailsModal({ order, isOpen, onClose }) {
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
                     Location
                   </p>
-                  <p className="mt-1 font-semibold text-[#1f1f1f]">{meta.location}</p>
+                  <p className="mt-1 font-semibold text-[#1f1f1f]">
+                    {meta.location || "Not available"}
+                  </p>
                 </div>
               </div>
             </section>
