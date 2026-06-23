@@ -12,6 +12,7 @@ export default function AddressBookSection({
   activeId,
   onSelect,
   onAdd,
+  onDelete,
   onSetDefault,
   onChangeField,
 }) {
@@ -47,6 +48,7 @@ export default function AddressBookSection({
             key={address.id}
             address={address}
             isActive={address.id === activeAddress.id}
+            onDelete={() => onDelete(address.id)}
             onSelect={() => onSelect(address.id)}
           />
         ))}

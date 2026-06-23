@@ -1,11 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
-import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
-import {
-  readSavedAddresses,
-  writeSavedAddresses,
-} from "../../../../utils/customerProfileStorage";
+import { confirmRemoveItem, showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { createEmptyAddressEntry } from "../constants/addressBook";
-import { fetchAddressBook, saveAddressBook } from "../api";
+import { deleteAddress, fetchAddressBook, saveAddressBook } from "../api";
 
 function getDefaultActiveId(addresses) {
   return (
@@ -42,27 +38,26 @@ export function useVendorAddressPage() {
           return;
         }
 
-        writeSavedAddresses("delivery", addressBook.delivery);
-        writeSavedAddresses("invoice", addressBook.invoice);
         setDeliveryAddresses(addressBook.delivery);
         setInvoiceAddresses(addressBook.invoice);
         setActiveDeliveryId(getDefaultActiveId(addressBook.delivery));
         setActiveInvoiceId(getDefaultActiveId(addressBook.invoice));
         setSavedSnapshot(addressBook);
-      } catch {
+      } catch (error) {
         if (!isMounted) {
           return;
         }
-
-        const localDelivery = readSavedAddresses("delivery");
-        const localInvoice = readSavedAddresses("invoice");
-        const fallbackSnapshot = buildAddressBookSnapshot(localDelivery, localInvoice);
-
-        setDeliveryAddresses(localDelivery);
-        setInvoiceAddresses(localInvoice);
-        setActiveDeliveryId(getDefaultActiveId(localDelivery));
-        setActiveInvoiceId(getDefaultActiveId(localInvoice));
-        setSavedSnapshot(fallbackSnapshot);
+        setDeliveryAddresses([]);
+        setInvoiceAddresses([]);
+        setActiveDeliveryId("");
+        setActiveInvoiceId("");
+        setSavedSnapshot({ delivery: [], invoice: [] });
+        await showAuthErrorAlert(
+          error instanceof Error
+            ? error.message
+            : "Unable to load your addresses right now.",
+          "Address book unavailable",
+        );
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -134,6 +129,55 @@ export function useVendorAddressPage() {
     setActiveInvoiceId(getDefaultActiveId(savedSnapshot.invoice));
   }
 
+  async function handleDelete(type, addressId) {
+    const source = type === "delivery" ? deliveryAddresses : invoiceAddresses;
+    const addressToDelete = source.find((address) => address.id === addressId);
+
+    if (!addressToDelete) {
+      return;
+    }
+
+    const result = await confirmRemoveItem(addressToDelete.label || "address");
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      if (addressToDelete.id && !`${addressToDelete.id}`.startsWith("local-")) {
+        await deleteAddress(addressToDelete.id);
+      }
+
+      const nextAddresses = source.filter((address) => address.id !== addressId);
+      const normalizedAddresses =
+        nextAddresses.length > 0
+          ? nextAddresses.some((address) => address.isDefault)
+            ? nextAddresses
+            : nextAddresses.map((address, index) => ({
+                ...address,
+                isDefault: index === 0,
+              }))
+          : [createEmptyAddressEntry(type)];
+
+      syncAddresses(type, normalizedAddresses);
+
+      if (type === "delivery") {
+        setActiveDeliveryId(getDefaultActiveId(normalizedAddresses));
+      } else {
+        setActiveInvoiceId(getDefaultActiveId(normalizedAddresses));
+      }
+
+      await showSuccessToast("Address removed successfully");
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete this address right now.",
+        "Address delete failed",
+      );
+    }
+  }
+
   async function handleSave() {
     setIsSaving(true);
 
@@ -143,8 +187,6 @@ export function useVendorAddressPage() {
         invoice: invoiceAddresses,
       });
 
-      writeSavedAddresses("delivery", nextSnapshot.delivery);
-      writeSavedAddresses("invoice", nextSnapshot.invoice);
       setDeliveryAddresses(nextSnapshot.delivery);
       setInvoiceAddresses(nextSnapshot.invoice);
       setActiveDeliveryId(getDefaultActiveId(nextSnapshot.delivery));
@@ -169,6 +211,7 @@ export function useVendorAddressPage() {
     deliveryAddresses,
     handleAdd,
     handleChangeField,
+    handleDelete,
     handleReset,
     handleSave,
     handleSetDefault,

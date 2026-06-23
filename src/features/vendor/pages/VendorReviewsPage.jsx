@@ -89,7 +89,7 @@ function ReviewCard({ review, isFeatured = false }) {
   );
 }
 
-function EmptyReviewsState({ onAddReview }) {
+function EmptyReviewsState({ onAddReview, canReview }) {
   return (
     <div className="rounded-[28px] border border-dashed border-[#e3d7ca] bg-[linear-gradient(180deg,#fffaf6_0%,#fff4eb_100%)] p-8 text-center shadow-[0_14px_36px_rgba(31,19,8,0.05)]">
       <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-[20px] bg-white text-[#cf6e38] shadow-[0_10px_24px_rgba(31,19,8,0.06)]">
@@ -98,14 +98,20 @@ function EmptyReviewsState({ onAddReview }) {
       <h2 className="mt-5 text-[28px] font-semibold tracking-[-0.03em] text-[#171512]">
         No reviews published yet
       </h2>
-      <button
-        type="button"
-        onClick={onAddReview}
-        className="mt-6 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
-      >
-        <FiPlus className="text-[16px]" />
-        Write a review
-      </button>
+      {canReview ? (
+        <button
+          type="button"
+          onClick={onAddReview}
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
+        >
+          <FiPlus className="text-[16px]" />
+          Write a review
+        </button>
+      ) : (
+        <p className="mt-5 text-sm text-[#74685d]">
+          Reviews can be submitted after an eligible order is completed.
+        </p>
+      )}
     </div>
   );
 }
@@ -128,7 +134,12 @@ export default function VendorReviewsPage() {
 
   const featuredReview = reviews[0] ?? null;
   const otherReviews = reviews.slice(1);
-  const reviewCount = totalCount || vendor?.reviewCount || reviews.length;
+  const reviewCount =
+    totalCount ||
+    Number(vendor?.reviewSummary?.totalCount ?? vendor?.reviewCount ?? 0) ||
+    reviews.length;
+  const canReview = Boolean(vendor?.canReview);
+  const hasReviewed = Boolean(vendor?.hasReviewed);
   const derivedAverageRating = reviews.length
     ? (
         reviews.reduce(
@@ -138,7 +149,9 @@ export default function VendorReviewsPage() {
       ).toFixed(1)
     : null;
   const averageRating = (
-    derivedAverageRating ?? Number(vendor?.rating ?? 0)
+    vendor?.reviewSummary?.averageRating ??
+    derivedAverageRating ??
+    Number(vendor?.rating ?? 0)
   ).toString();
   const summaryCards = useMemo(
     () =>
@@ -157,7 +170,7 @@ export default function VendorReviewsPage() {
                 ? FiTruck
                 : FiMessageSquare,
       })),
-    [vendor],
+    [averageRating, reviewCount, vendor],
   );
 
   if (isLoading || isReviewsLoading) {
@@ -231,17 +244,31 @@ export default function VendorReviewsPage() {
                     <FiMapPin className="text-[14px]" />
                     {vendor.addressLine}
                   </span>
+                  {!canReview ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
+                      <FiMessageSquare className="text-[14px]" />
+                      Review available after eligible order
+                    </span>
+                  ) : null}
+                  {hasReviewed ? (
+                    <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
+                      <FiMessageSquare className="text-[14px]" />
+                      You already reviewed this vendor
+                    </span>
+                  ) : null}
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsReviewModalOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
-              >
-                <FiPlus className="text-[16px]" />
-                Write a review
-              </button>
+              {canReview && !hasReviewed ? (
+                <button
+                  type="button"
+                  onClick={() => setIsReviewModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
+                >
+                  <FiPlus className="text-[16px]" />
+                  Write a review
+                </button>
+              ) : null}
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -264,7 +291,10 @@ export default function VendorReviewsPage() {
           </div>
         ) : (
           <div className="mt-8">
-            <EmptyReviewsState onAddReview={() => setIsReviewModalOpen(true)} />
+            <EmptyReviewsState
+              canReview={canReview && !hasReviewed}
+              onAddReview={() => setIsReviewModalOpen(true)}
+            />
           </div>
         )}
 
@@ -296,7 +326,7 @@ export default function VendorReviewsPage() {
         ) : null}
       </div>
 
-      {isReviewModalOpen ? (
+      {isReviewModalOpen && canReview && !hasReviewed ? (
         <VendorReviewModal
           vendor={vendor}
           onCancel={() => setIsReviewModalOpen(false)}

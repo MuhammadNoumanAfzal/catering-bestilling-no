@@ -75,6 +75,16 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       name
       rating
       reviewsCount
+      canReview
+      hasReviewed
+      reviewSummary {
+        averageRating
+        totalCount
+        ratingBreakdown {
+          stars
+          count
+        }
+      }
       logoUrl
       coverPhotoUrl
       categoryTags

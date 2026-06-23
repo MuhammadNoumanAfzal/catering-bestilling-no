@@ -1,9 +1,10 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 
 const FETCH_USER_NOTIFICATIONS_QUERY = `
-  query FetchUserNotifications {
-    userNotifications {
+  query FetchUserNotifications($first: Int, $after: String) {
+    userNotifications(first: $first, after: $after) {
       totalCount
+      unreadCount
       edges {
         node {
           id
@@ -14,7 +15,12 @@ const FETCH_USER_NOTIFICATIONS_QUERY = `
           status
           isSeen
           createdOn
+          actionUrl
         }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
@@ -106,12 +112,14 @@ function mapNotificationNode(node) {
     objectId: node.objectId,
     status: node.status,
     createdOn: node.createdOn,
+    actionUrl: node.actionUrl || "",
   };
 }
 
-export async function fetchUserNotifications() {
+export async function fetchUserNotifications({ first = 50, after = null } = {}) {
   const response = await graphqlRequest({
     query: FETCH_USER_NOTIFICATIONS_QUERY,
+    variables: { first, after },
   });
 
   return (response.userNotifications?.edges || []).map((edge) =>
