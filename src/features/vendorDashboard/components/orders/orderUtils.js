@@ -11,6 +11,7 @@ export const ORDER_TABS = [
 ];
 
 export const ORDER_DATE_OPTIONS = [
+  { label: "All Time", value: "all-time" },
   { label: "Last Month", value: "last-month" },
   { label: "Last 3 Months", value: "last-3-months" },
   { label: "Last 6 Months", value: "last-6-months" },
@@ -20,12 +21,22 @@ export const ORDER_DATE_OPTIONS = [
 
 export const PAGE_SIZE = 8;
 
-export function parseOrderDate(dateLabel) {
-  return new Date(`${dateLabel} 00:00:00`);
+export function parseOrderDate(dateValue) {
+  if (!dateValue) {
+    return new Date(Number.NaN);
+  }
+
+  const parsedDate = new Date(dateValue);
+
+  if (!Number.isNaN(parsedDate.getTime())) {
+    return parsedDate;
+  }
+
+  return new Date(`${dateValue} 00:00:00`);
 }
 
 export function normalizeOrderStatus(status) {
-  const normalizedStatus = status.toLowerCase();
+  const normalizedStatus = `${status ?? ""}`.toLowerCase();
 
   if (normalizedStatus === "delivered") {
     return "completed";
@@ -54,7 +65,15 @@ export function getOrderStatusClasses(status) {
   return "bg-[#ececec] text-[#676767]";
 }
 
+export function isOrderDateValid(dateValue) {
+  return !Number.isNaN(parseOrderDate(dateValue).getTime());
+}
+
 export function getRangeDays(rangeValue) {
+  if (rangeValue === "all-time") {
+    return null;
+  }
+
   if (rangeValue === "last-month") {
     return 30;
   }
@@ -104,6 +123,6 @@ export function getDateFilterLabel(
 
   return (
     ORDER_DATE_OPTIONS.find((option) => option.value === selectedRange)?.label ??
-    "Last Month"
+    "All Time"
   );
 }

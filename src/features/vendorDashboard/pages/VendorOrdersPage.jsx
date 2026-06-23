@@ -6,10 +6,15 @@ import OrderDetailsModal from "../components/orders/OrderDetailsModal";
 import OrderStatusSummaryCard from "../components/orders/OrderStatusSummaryCard";
 import OrdersPagination from "../components/orders/OrdersPagination";
 import OrdersTable from "../components/orders/OrdersTable";
-import { fetchClientOrders } from "../ordersSlice";
+import {
+  clearSelectedOrderDetail,
+  fetchClientOrderDetail,
+  fetchClientOrders,
+} from "../ordersSlice";
 import {
   getRangeDays,
   isActiveOrder,
+  isOrderDateValid,
   normalizeOrderStatus,
   ORDER_TABS,
   ORDER_VIEW_TABS,
@@ -17,14 +22,32 @@ import {
   parseOrderDate,
 } from "../components/orders/orderUtils";
 
+function OrdersErrorState({ message, onRetry }) {
+  return (
+    <div className="rounded-[24px] border border-[#f1c8bb] bg-[#fff5f1] p-6 text-center shadow-[0_12px_24px_rgba(32,32,32,0.04)]">
+      <h2 className="text-lg font-semibold text-[#3a2218]">
+        Unable to load orders
+      </h2>
+      <p className="mt-2 text-sm text-[#8a5642]">{message}</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className="mt-5 rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b94f26]"
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+
 export default function VendorOrdersPage() {
   const [activeView, setActiveView] = useState("active");
   const [selectedTabs, setSelectedTabs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedRange, setSelectedRange] = useState("last-month");
+  const [selectedRange, setSelectedRange] = useState("all-time");
   const [customDateRange, setCustomDateRange] = useState({
-    from: "2025-02-05",
-    to: "2025-03-05",
+    from: "",
+    to: "",
   });
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,17 +55,23 @@ export default function VendorOrdersPage() {
   const dateMenuRef = useRef(null);
 
   const dispatch = useDispatch();
-  const { orders, statusSummary, isLoading, error } = useSelector((state) => state.orders);
+  const {
+    orders,
+    statusSummary,
+    isLoading,
+    error,
+    selectedOrderDetail,
+    selectedOrderDetailStatus,
+    selectedOrderDetailError,
+  } = useSelector((state) => state.orders);
+  const normalizedOrders = Array.isArray(orders) ? orders : [];
+  const normalizedStatusSummary = Array.isArray(statusSummary)
+    ? statusSummary
+    : [];
 
   useEffect(() => {
     dispatch(fetchClientOrders());
   }, [dispatch]);
-
-  const referenceDate = useMemo(() => {
-    if (orders.length === 0) return new Date();
-    const timestamps = orders.map((order) => parseOrderDate(order.date).getTime());
-    return new Date(Math.max(...timestamps));
-  }, [orders]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -58,37 +87,51 @@ export default function VendorOrdersPage() {
     };
   }, []);
 
+  const referenceDate = useMemo(() => {
+    const validDates = normalizedOrders
+      .map((order) => order.eventDateRaw || order.createdOnRaw || order.date)
+      .filter(isOrderDateValid)
+      .map((dateValue) => parseOrderDate(dateValue).getTime());
+
+    if (validDates.length === 0) {
+      return new Date();
+    }
+
+    return new Date(Math.max(...validDates));
+  }, [normalizedOrders]);
+
   const filteredOrders = useMemo(() => {
     const query = searchValue.trim().toLowerCase();
     const rangeDays = getRangeDays(selectedRange);
 
-    return orders.filter((order) => {
+    return normalizedOrders.filter((order) => {
+      const orderDateSource = order.eventDateRaw || order.createdOnRaw || order.date;
+      const orderDate = parseOrderDate(orderDateSource);
+      const hasValidOrderDate = !Number.isNaN(orderDate.getTime());
       const matchesView =
         activeView === "active" ? isActiveOrder(order.status) : true;
       const matchesTab =
         selectedTabs.length === 0 || selectedTabs.includes("all")
           ? true
           : selectedTabs.includes(normalizeOrderStatus(order.status));
-      const orderDate = parseOrderDate(order.date);
-      const diffInDays = Math.floor(
-        (referenceDate.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24),
-      );
-      const matchesRange =
-        selectedRange === "this-year"
-          ? orderDate.getFullYear() === referenceDate.getFullYear()
-          : selectedRange === "custom-date"
-            ? (() => {
-                if (!customDateRange.from || !customDateRange.to) {
-                  return true;
-                }
 
-                const fromDate = new Date(`${customDateRange.from}T00:00:00`);
-                const toDate = new Date(`${customDateRange.to}T23:59:59`);
-                return orderDate >= fromDate && orderDate <= toDate;
-              })()
-            : rangeDays === null
-              ? true
-              : diffInDays >= 0 && diffInDays <= rangeDays;
+      let matchesRange = true;
+
+      if (selectedRange === "this-year" && hasValidOrderDate) {
+        matchesRange = orderDate.getFullYear() === referenceDate.getFullYear();
+      } else if (selectedRange === "custom-date") {
+        if (customDateRange.from && customDateRange.to && hasValidOrderDate) {
+          const fromDate = new Date(`${customDateRange.from}T00:00:00`);
+          const toDate = new Date(`${customDateRange.to}T23:59:59`);
+          matchesRange = orderDate >= fromDate && orderDate <= toDate;
+        }
+      } else if (rangeDays !== null && hasValidOrderDate) {
+        const diffInDays = Math.floor(
+          (referenceDate.getTime() - orderDate.getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
+        matchesRange = diffInDays >= 0 && diffInDays <= rangeDays;
+      }
 
       if (!matchesView || !matchesTab || !matchesRange) {
         return false;
@@ -98,7 +141,14 @@ export default function VendorOrdersPage() {
         return true;
       }
 
-      return [order.id, order.vendor, order.eventName, order.date, order.status]
+      return [
+        order.id,
+        order.vendor,
+        order.eventName,
+        order.date,
+        order.status,
+        order.location,
+      ]
         .join(" ")
         .toLowerCase()
         .includes(query);
@@ -106,6 +156,7 @@ export default function VendorOrdersPage() {
   }, [
     activeView,
     customDateRange,
+    normalizedOrders,
     referenceDate,
     searchValue,
     selectedTabs,
@@ -118,29 +169,18 @@ export default function VendorOrdersPage() {
     (safeCurrentPage - 1) * PAGE_SIZE,
     safeCurrentPage * PAGE_SIZE,
   );
-
   const startIndex =
     filteredOrders.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
   const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, filteredOrders.length);
-  const activeOrdersCount = orders.filter((order) =>
+  const activeOrdersCount = normalizedOrders.filter((order) =>
     isActiveOrder(order.status),
   ).length;
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center text-sm text-red-600">
-        {error}
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (currentPage !== safeCurrentPage) {
+      setCurrentPage(safeCurrentPage);
+    }
+  }, [currentPage, safeCurrentPage]);
 
   function handleTabChange(tab) {
     setSelectedTabs((current) => {
@@ -165,9 +205,7 @@ export default function VendorOrdersPage() {
       }
 
       const allowedTabs = ["draft", "scheduled"];
-      const nextTabs = current.filter((tab) => allowedTabs.includes(tab));
-
-      return nextTabs;
+      return current.filter((tab) => allowedTabs.includes(tab));
     });
     setCurrentPage(1);
   }
@@ -177,19 +215,46 @@ export default function VendorOrdersPage() {
     setCurrentPage(1);
   }
 
+  function handleOpenDetails(order) {
+    setSelectedOrder(order);
+    dispatch(fetchClientOrderDetail(order.rawId || order.id));
+  }
+
+  function handleCloseDetails() {
+    setSelectedOrder(null);
+    dispatch(clearSelectedOrderDetail());
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <OrdersErrorState
+        message={error}
+        onRetry={() => dispatch(fetchClientOrders())}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6">
       <section>
         <h1 className="type-h2 text-[#191919]">Orders</h1>
         <p className="mt-2 type-para text-[#635b53]">
-          Track active orders and quickly review recently placed orders.
+          Track active orders and review order history from your account.
         </p>
       </section>
 
       <section>
         <h2 className="type-h3 font-extrabold text-[#121212]">Quick Status</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {statusSummary.map((item) => (
+          {normalizedStatusSummary.map((item) => (
             <OrderStatusSummaryCard key={item.label} {...item} />
           ))}
         </div>
@@ -203,7 +268,9 @@ export default function VendorOrdersPage() {
                 {ORDER_VIEW_TABS.map((tab) => {
                   const isActive = tab.value === activeView;
                   const count =
-                    tab.value === "active" ? activeOrdersCount : orders.length;
+                    tab.value === "active"
+                      ? activeOrdersCount
+                      : normalizedOrders.length;
 
                   return (
                     <button
@@ -278,7 +345,7 @@ export default function VendorOrdersPage() {
               <div className="flex w-full justify-stretch sm:justify-end">
                 <OrderDateFilter
                   customDateRange={customDateRange}
-                  defaultRange="last-month"
+                  defaultRange="all-time"
                   isOpen={isDateMenuOpen}
                   menuRef={dateMenuRef}
                   onSelect={(value) => {
@@ -305,27 +372,29 @@ export default function VendorOrdersPage() {
               </div>
             </div>
           </div>
+
+          <OrdersTable
+            orders={visibleOrders}
+            onOpenDetails={handleOpenDetails}
+          />
+
+          <OrdersPagination
+            currentPage={safeCurrentPage}
+            endIndex={endIndex}
+            onPageChange={setCurrentPage}
+            startIndex={startIndex}
+            totalItems={filteredOrders.length}
+            totalPages={totalPages}
+          />
         </div>
-
-        <OrdersTable
-          orders={visibleOrders}
-          onOpenDetails={(order) => setSelectedOrder(order)}
-        />
-
-        <OrdersPagination
-          currentPage={safeCurrentPage}
-          endIndex={endIndex}
-          onPageChange={setCurrentPage}
-          startIndex={startIndex}
-          totalItems={filteredOrders.length}
-          totalPages={totalPages}
-        />
       </section>
 
       <OrderDetailsModal
-        order={selectedOrder}
+        order={selectedOrderDetail || selectedOrder}
+        isLoading={selectedOrderDetailStatus === "loading"}
+        error={selectedOrderDetailError}
         isOpen={Boolean(selectedOrder)}
-        onClose={() => setSelectedOrder(null)}
+        onClose={handleCloseDetails}
       />
     </div>
   );

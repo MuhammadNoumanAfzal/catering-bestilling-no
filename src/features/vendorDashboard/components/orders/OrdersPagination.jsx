@@ -8,8 +8,20 @@ export default function OrdersPagination({
   totalItems,
   totalPages,
 }) {
-  const paginationNumbers = Array.from({ length: totalPages }, (_, index) => index + 1)
-    .slice(0, 4);
+  const paginationNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
+  ).filter((pageNumber) => {
+    if (totalPages <= 5) {
+      return true;
+    }
+
+    return (
+      pageNumber === 1 ||
+      pageNumber === totalPages ||
+      Math.abs(pageNumber - currentPage) <= 1
+    );
+  });
 
   return (
     <div className="mt-5 flex flex-col gap-3 border-t border-[#ece4dc] pt-4 text-sm text-[#666666] md:flex-row md:items-center md:justify-between">
@@ -27,42 +39,30 @@ export default function OrdersPagination({
           <FiChevronLeft className="text-[14px]" />
         </button>
 
-        {paginationNumbers.map((pageNumber) => {
+        {paginationNumbers.map((pageNumber, index) => {
           const isActive = pageNumber === currentPage;
+          const previousPageNumber = paginationNumbers[index - 1];
 
           return (
-            <button
-              key={pageNumber}
-              type="button"
-              onClick={() => onPageChange(pageNumber)}
-              className={[
-                "flex h-7 min-w-7 items-center justify-center rounded-md px-2 text-xs font-semibold transition",
-                isActive
-                  ? "bg-[#cf5c2f] text-white"
-                  : "text-[#4d4d4d] hover:bg-[#faf7f3]",
-              ].join(" ")}
-            >
-              {pageNumber}
-            </button>
+            <div key={pageNumber} className="flex items-center gap-2">
+              {index > 0 && previousPageNumber !== pageNumber - 1 ? (
+                <span className="px-1 text-xs">...</span>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => onPageChange(pageNumber)}
+                className={[
+                  "flex h-7 min-w-7 items-center justify-center rounded-md px-2 text-xs font-semibold transition",
+                  isActive
+                    ? "bg-[#cf5c2f] text-white"
+                    : "text-[#4d4d4d] hover:bg-[#faf7f3]",
+                ].join(" ")}
+              >
+                {pageNumber}
+              </button>
+            </div>
           );
         })}
-
-        {totalPages > 4 ? <span className="px-1 text-xs">...</span> : null}
-
-        {totalPages > 4 ? (
-          <button
-            type="button"
-            onClick={() => onPageChange(totalPages)}
-            className={[
-              "flex h-7 min-w-7 items-center justify-center rounded-md px-2 text-xs font-semibold transition",
-              totalPages === currentPage
-                ? "bg-[#cf5c2f] text-white"
-                : "text-[#4d4d4d] hover:bg-[#faf7f3]",
-            ].join(" ")}
-          >
-            {totalPages}
-          </button>
-        ) : null}
 
         <button
           type="button"
