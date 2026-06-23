@@ -281,6 +281,14 @@ export default function MenuDetailsPage() {
       baseItemPricingType === "per-person"
         ? baseItemUnitPrice * totalServes
         : baseItemUnitPrice * quantityCount;
+    const normalizedVendorNote = vendorNote.trim();
+    const selectedOptions = {};
+
+    if (selectedRequired) {
+      const requiredSelectionLabel =
+        menuItem.modal?.requiredSelection?.title || "Selection";
+      selectedOptions[requiredSelectionLabel] = selectedRequired;
+    }
 
     const summaryItem = {
       id: `${menuItem.id}-${Date.now()}`,
@@ -292,11 +300,13 @@ export default function MenuDetailsPage() {
       unitPrice: baseItemUnitPrice,
       price: linePrice,
       pricingType: baseItemPricingType,
+      selectedOptions,
+      specialInstructions: normalizedVendorNote,
       details: [
         `Serves ${menuItem.serves}`,
         selectedQuantity,
         selectedRequired,
-        vendorNote ? `Note: ${vendorNote}` : null,
+        normalizedVendorNote ? `Note: ${normalizedVendorNote}` : null,
       ].filter(Boolean),
     };
 

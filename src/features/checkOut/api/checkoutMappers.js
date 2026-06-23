@@ -115,6 +115,36 @@ function resolveProductId(item) {
   return matched ? matched[1] : "";
 }
 
+function normalizeSelectedOptions(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(value)
+      .map(([key, optionValue]) => [`${key ?? ""}`.trim(), `${optionValue ?? ""}`.trim()])
+      .filter(([key, optionValue]) => key && optionValue),
+  );
+}
+
+function normalizeSelectedAddons(items, parentProductId) {
+  return items
+    .filter(
+      (item) =>
+        item?.isAddOn &&
+        `${item.parentMenuItemId ?? ""}` === `${parentProductId ?? ""}`,
+    )
+    .map((item) => {
+      const quantity = Math.max(1, Number(item.quantity ?? 1));
+
+      return {
+        name: quantity > 1 ? `${item.name || "Add-on"} x${quantity}` : item.name || "Add-on",
+        price: Number(item.unitPrice ?? item.price ?? 0),
+      };
+    })
+    .filter((item) => item.name && Number.isFinite(item.price));
+}
+
 function validateRequiredFields(payload, requiredKeys) {
   const missingKeys = requiredKeys.filter((key) => !`${payload[key] ?? ""}`.trim());
 
@@ -124,25 +154,31 @@ function validateRequiredFields(payload, requiredKeys) {
 }
 
 function buildOrderItems(items) {
-  const groupedItems = items.reduce((accumulator, item) => {
-    const productId = resolveProductId(item);
+  return items
+    .filter((item) => !item?.isAddOn)
+    .map((item) => {
+      const productId = resolveProductId(item);
 
-    if (!productId) {
-      throw new Error(
-        `Cart item "${item.name || item.id}" is missing a valid product id.`,
-      );
-    }
+      if (!productId) {
+        throw new Error(
+          `Cart item "${item.name || item.id}" is missing a valid product id.`,
+        );
+      }
 
-    const quantity = Math.max(1, Number(item.quantity ?? 1));
-    const currentQuantity = accumulator.get(productId) ?? 0;
-    accumulator.set(productId, currentQuantity + quantity);
-    return accumulator;
-  }, new Map());
+      const selectedOptions = normalizeSelectedOptions(item.selectedOptions);
+      const selectedAddons = normalizeSelectedAddons(items, productId);
+      const specialInstructions = `${item.specialInstructions ?? ""}`.trim();
 
-  return Array.from(groupedItems.entries()).map(([product, quantity]) => ({
-    product,
-    quantity,
-  }));
+      return {
+        product: productId,
+        quantity: Math.max(1, Number(item.quantity ?? 1)),
+        ...(Object.keys(selectedOptions).length > 0
+          ? { selectedOptions }
+          : {}),
+        ...(selectedAddons.length > 0 ? { selectedAddons } : {}),
+        ...(specialInstructions ? { specialInstructions } : {}),
+      };
+    });
 }
 
 export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
