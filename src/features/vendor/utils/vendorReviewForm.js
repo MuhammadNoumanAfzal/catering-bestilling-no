@@ -23,7 +23,6 @@ export function createInitialVendorReviewFormState() {
 export function buildVendorReviewSubmissionPayload(vendor, formState) {
   return {
     vendorId: vendor?.id || "",
-    vendorSlug: vendor?.slug || "",
     rating: Number(formState.rating),
     title: formState.title.trim(),
     comment: formState.comment.trim(),

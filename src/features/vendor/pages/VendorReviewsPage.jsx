@@ -128,10 +128,25 @@ export default function VendorReviewsPage() {
 
   const featuredReview = reviews[0] ?? null;
   const otherReviews = reviews.slice(1);
-  const averageRating = Number(vendor?.rating ?? 0).toFixed(1);
+  const reviewCount = totalCount || vendor?.reviewCount || reviews.length;
+  const derivedAverageRating = reviews.length
+    ? (
+        reviews.reduce(
+          (total, review) => total + Number(review.rating || 0),
+          0,
+        ) / reviews.length
+      ).toFixed(1)
+    : null;
+  const averageRating = (
+    derivedAverageRating ?? Number(vendor?.rating ?? 0)
+  ).toString();
   const summaryCards = useMemo(
     () =>
-      getVendorReviewSummaryCards(vendor).map((card, index) => ({
+      getVendorReviewSummaryCards({
+        ...vendor,
+        rating: averageRating,
+        reviewCount,
+      }).map((card, index) => ({
         ...card,
         icon:
           index === 0
@@ -168,9 +183,16 @@ export default function VendorReviewsPage() {
       return;
     }
 
-    const response = await createReview(payload);
-    setIsReviewModalOpen(false);
-    await showSuccessToast(response.message || "Review submitted successfully");
+    try {
+      const response = await createReview(payload);
+      setIsReviewModalOpen(false);
+      await showSuccessToast(response.message || "Review submitted successfully");
+    } catch (submitError) {
+      await showAuthErrorAlert(
+        submitError.message || "Unable to submit your review right now.",
+        "Review submission failed",
+      );
+    }
   };
 
   return (
@@ -203,7 +225,7 @@ export default function VendorReviewsPage() {
                     <span className="font-semibold text-[#171512]">
                       {averageRating}
                     </span>
-                    <span>from {totalCount || vendor.reviewCount} reviews</span>
+                    <span>from {reviewCount} reviews</span>
                   </span>
                   <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
                     <FiMapPin className="text-[14px]" />
