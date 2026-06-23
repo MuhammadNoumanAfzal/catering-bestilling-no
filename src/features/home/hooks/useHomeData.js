@@ -4,6 +4,7 @@ import { fetchHomeData } from "../store/homeSlice";
 import {
   selectFeaturedVendors,
   selectHomeError,
+  selectHomeHasLoadedOnce,
   selectHomeStatus,
   selectPopularProducts,
   selectPopularVendors,
@@ -16,10 +17,15 @@ export function useHomeData(filters = {}) {
   const popularProducts = useSelector(selectPopularProducts);
   const status = useSelector(selectHomeStatus);
   const error = useSelector(selectHomeError);
+  const hasLoadedOnce = useSelector(selectHomeHasLoadedOnce);
   const serializedFilters = JSON.stringify(filters);
 
   useEffect(() => {
-    dispatch(fetchHomeData(filters));
+    const request = dispatch(fetchHomeData(filters));
+
+    return () => {
+      request.abort();
+    };
   }, [dispatch, serializedFilters]);
 
   return {
@@ -28,5 +34,6 @@ export function useHomeData(filters = {}) {
     popularProducts,
     status,
     error,
+    hasLoadedOnce,
   };
 }

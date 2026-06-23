@@ -3,10 +3,14 @@ import { fetchHomeContent } from "../api";
 
 export const fetchHomeData = createAsyncThunk(
   "home/fetchHomeData",
-  async (filters = {}, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue, signal }) => {
     try {
-      return await fetchHomeContent(filters);
+      return await fetchHomeContent(filters, signal);
     } catch (error) {
+      if (error?.name === "AbortError") {
+        throw error;
+      }
+
       return rejectWithValue(error.message || "Failed to fetch home data.");
     }
   },
@@ -18,6 +22,7 @@ const initialState = {
   popularProducts: [],
   status: "idle",
   error: null,
+  hasLoadedOnce: false,
 };
 
 const homeSlice = createSlice({
@@ -32,11 +37,16 @@ const homeSlice = createSlice({
       })
       .addCase(fetchHomeData.fulfilled, (state, action) => {
         state.status = "succeeded";
+        state.hasLoadedOnce = true;
         state.featuredVendors = action.payload.featuredVendors;
         state.popularVendors = action.payload.popularVendors;
         state.popularProducts = action.payload.popularProducts;
       })
       .addCase(fetchHomeData.rejected, (state, action) => {
+        if (action.meta.aborted) {
+          return;
+        }
+
         state.status = "failed";
         state.error = action.payload || "Failed to load home data.";
       });

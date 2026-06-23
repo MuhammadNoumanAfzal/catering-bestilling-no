@@ -4,3 +4,4 @@ export const selectPopularVendors = (state) => state.home.popularVendors;
 export const selectPopularProducts = (state) => state.home.popularProducts;
 export const selectHomeStatus = (state) => state.home.status;
 export const selectHomeError = (state) => state.home.error;
+export const selectHomeHasLoadedOnce = (state) => state.home.hasLoadedOnce;
