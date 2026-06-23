@@ -55,6 +55,42 @@ function formatNotificationTime(createdOn) {
   return rtf.format(diffInDays, "day");
 }
 
+function formatDayLabel(createdOn) {
+  if (!createdOn) {
+    return "Unknown date";
+  }
+
+  const createdAt = new Date(createdOn);
+
+  if (Number.isNaN(createdAt.getTime())) {
+    return "Unknown date";
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(createdAt);
+}
+
+function mapNotificationType(notificationType) {
+  const normalizedType = `${notificationType ?? ""}`.toLowerCase();
+
+  if (normalizedType.includes("order")) {
+    return "order-update";
+  }
+
+  if (normalizedType.includes("payment")) {
+    return "payment";
+  }
+
+  if (normalizedType.includes("delivery")) {
+    return "delivery";
+  }
+
+  return "menu";
+}
+
 function mapNotificationNode(node) {
   return {
     id: node.id,
@@ -62,6 +98,10 @@ function mapNotificationNode(node) {
     message: node.message || "",
     timeLabel: formatNotificationTime(node.createdOn),
     unread: !node.isSeen,
+    category: node.isSeen ? "read" : "unread",
+    type: mapNotificationType(node.notificationType),
+    createdAt: node.createdOn ? `${node.createdOn}`.split("T")[0] : "",
+    dayLabel: formatDayLabel(node.createdOn),
     notificationType: node.notificationType,
     objectId: node.objectId,
     status: node.status,

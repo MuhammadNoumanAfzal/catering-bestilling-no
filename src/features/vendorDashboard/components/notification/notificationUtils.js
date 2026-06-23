@@ -5,6 +5,7 @@ export const NOTIFICATION_TABS = [
 ];
 
 export const NOTIFICATION_DATE_OPTIONS = [
+  { label: "All Time", value: "all-time" },
   { label: "Last Month", value: "last-month" },
   { label: "Last 3 Months", value: "last-3-months" },
   { label: "Last 6 Months", value: "last-6-months" },
@@ -55,7 +56,7 @@ export function getNotificationDateFilterLabel(selectedRange, customDateRange) {
 
   return (
     NOTIFICATION_DATE_OPTIONS.find((option) => option.value === selectedRange)
-      ?.label ?? "Last Month"
+      ?.label ?? "All Time"
   );
 }
 
@@ -66,7 +67,15 @@ export function isNotificationWithinDateRange(
   referenceDate,
 ) {
   const date = new Date(`${notificationDate}T00:00:00`);
-  const reference = new Date(`${referenceDate}T23:59:59`);
+  const reference = new Date(referenceDate);
+
+  if (Number.isNaN(date.getTime()) || Number.isNaN(reference.getTime())) {
+    return true;
+  }
+
+  if (selectedRange === "all-time") {
+    return true;
+  }
 
   if (selectedRange === "custom-date") {
     if (!customDateRange.from || !customDateRange.to) {
