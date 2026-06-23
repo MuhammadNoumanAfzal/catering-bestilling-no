@@ -6,6 +6,7 @@ export default function SupportTicketForm({
   audienceOptions,
   fileName,
   formState,
+  isSubmitting = false,
   onAudienceChange,
   onFieldChange,
   onFileChange,
@@ -72,12 +73,20 @@ export default function SupportTicketForm({
 
         <SupportUploadBox fileName={fileName} onChange={onFileChange} />
 
+        {fileName ? (
+          <p className="text-xs text-[#8b8177]">
+            Attachment selected. It will be linked once file upload API is
+            available.
+          </p>
+        ) : null}
+
         <div className="flex justify-end">
           <button
             type="submit"
+            disabled={isSubmitting}
             className="rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#bb602d]"
           >
-            Submit Ticket
+            {isSubmitting ? "Submitting..." : "Submit Ticket"}
           </button>
         </div>
       </form>
