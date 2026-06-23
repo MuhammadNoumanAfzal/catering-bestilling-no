@@ -13,11 +13,6 @@ const pageContent = {
     description:
       "Review billing history, payment states, and export-ready invoice records.",
   },
-  "/vendor-dashboard/rewards": {
-    title: "Reward",
-    description:
-      "Monitor reward points, earning activity, and redemption opportunities for your account.",
-  },
   "/vendor-dashboard/address": {
     title: "Address",
     description:

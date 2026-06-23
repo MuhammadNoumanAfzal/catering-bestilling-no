@@ -6,7 +6,6 @@ const FETCH_CLIENT_DASHBOARD_QUERY = `
     clientDashboard {
       totalOrders
       pendingInvoices
-      rewardPoints
       recentOrders {
         id
         eventName
@@ -74,7 +73,6 @@ export const fetchDashboardData = createAsyncThunk(
       return {
         totalOrders: data.totalOrders || 0,
         pendingInvoices: data.pendingInvoices || 0,
-        rewardPoints: data.rewardPoints || 0,
         recentOrders,
         recentInvoices,
       };
@@ -87,7 +85,6 @@ export const fetchDashboardData = createAsyncThunk(
 const initialState = {
   totalOrders: 0,
   pendingInvoices: 0,
-  rewardPoints: 0,
   recentOrders: [],
   recentInvoices: [],
   isLoading: false,
@@ -108,7 +105,6 @@ const dashboardSlice = createSlice({
         state.isLoading = false;
         state.totalOrders = action.payload.totalOrders;
         state.pendingInvoices = action.payload.pendingInvoices;
-        state.rewardPoints = action.payload.rewardPoints;
         state.recentOrders = action.payload.recentOrders;
         state.recentInvoices = action.payload.recentInvoices;
       })
