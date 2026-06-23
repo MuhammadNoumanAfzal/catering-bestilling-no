@@ -3,8 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiGrid, FiHome } from "react-icons/fi";
 import CommonNavbarActions from "./navbar/CommonNavbarActions";
 import CommonNavbarFilters from "./navbar/CommonNavbarFilters";
-import { navbarNotifications } from "./navbar/notificationData";
 import { formatNavbarDate } from "./navbar/navbarDateUtils";
+import useUserNotifications from "./navbar/useUserNotifications";
 import useNavbarCartSummary from "./navbar/useNavbarCartSummary";
 import { useAuth } from "../../features/auth";
 import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardConfig";
@@ -69,6 +69,7 @@ export default function CommonNavbar({
     setSearchQuery,
   } = useBrowseFilters();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
+  const { notifications, unreadNotificationCount } = useUserNotifications();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -84,9 +85,6 @@ export default function CommonNavbar({
   const dropdownRef = useRef(null);
   const actionMenuRef = useRef(null);
   const notificationRef = useRef(null);
-  const unreadNotificationCount = navbarNotifications.filter(
-    (item) => item.unread,
-  ).length;
 
   const toggleDropdown = (key) => {
     setOpenDropdown((current) => {
@@ -249,7 +247,7 @@ export default function CommonNavbar({
           isLoggedIn={isLoggedIn}
           isNotificationOpen={isNotificationOpen}
           menuItems={commonProfileMenuItems}
-          notifications={navbarNotifications}
+          notifications={notifications}
           notificationRef={notificationRef}
           onCheckoutClick={() => {
             setIsActionMenuOpen(false);

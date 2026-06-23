@@ -3,9 +3,9 @@ import { fetchHomeContent } from "../api";
 
 export const fetchHomeData = createAsyncThunk(
   "home/fetchHomeData",
-  async (_, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      return await fetchHomeContent();
+      return await fetchHomeContent(filters);
     } catch (error) {
       return rejectWithValue(error.message || "Failed to fetch home data.");
     }

@@ -7,7 +7,14 @@ export default function HeroSection({
   postalCode,
   onPostalCodeChange,
   availableVendorCount,
+  onSearch,
 }) {
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      onSearch?.();
+    }
+  };
+
   return (
     <section className="relative overflow-hidden bg-[#fbf8f5]">
       <img
@@ -41,6 +48,7 @@ export default function HeroSection({
                     onChange={(event) =>
                       onDeliveryAddressChange?.(event.target.value)
                     }
+                    onKeyDown={handleKeyDown}
                     placeholder="Enter your delivery address"
                     className="type-para ml-3 w-full bg-transparent text-gray-700 outline-none placeholder:text-gray-400"
                   />
@@ -52,6 +60,7 @@ export default function HeroSection({
                   maxLength={4}
                   value={postalCode}
                   onChange={(event) => onPostalCodeChange?.(event.target.value)}
+                  onKeyDown={handleKeyDown}
                   placeholder="Add Postal Code"
                   className="type-para h-12 rounded-xl border border-gray-300 bg-white px-4 text-gray-700 outline-none placeholder:text-gray-400 transition focus-within:border-[#e98c65] sm:w-[180px]"
                 />
@@ -59,6 +68,7 @@ export default function HeroSection({
 
               <button
                 type="button"
+                onClick={onSearch}
                 className="type-h6 mt-3 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#c85f33] px-6 text-white transition hover:bg-[#b9542b]"
               >
                 <FiSearch className="text-base" />
@@ -74,7 +84,7 @@ export default function HeroSection({
                         ? `postal code ${postalCode}`
                         : `location ${deliveryAddress}`
                     }.`
-                  : "Enter your delivery address or a 4-digit postal code to see vendors available in your area."}
+                  : "Enter your delivery address or postal code to see vendors available in your area."}
               </p>
             </div>
           </div>

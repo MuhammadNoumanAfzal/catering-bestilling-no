@@ -9,19 +9,18 @@ import {
   selectPopularVendors,
 } from "../selectors/homeSelectors";
 
-export function useHomeData() {
+export function useHomeData(filters = {}) {
   const dispatch = useDispatch();
   const featuredVendors = useSelector(selectFeaturedVendors);
   const popularVendors = useSelector(selectPopularVendors);
   const popularProducts = useSelector(selectPopularProducts);
   const status = useSelector(selectHomeStatus);
   const error = useSelector(selectHomeError);
+  const serializedFilters = JSON.stringify(filters);
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchHomeData());
-    }
-  }, [dispatch, status]);
+    dispatch(fetchHomeData(filters));
+  }, [dispatch, serializedFilters]);
 
   return {
     featuredVendors,

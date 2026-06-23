@@ -11,8 +11,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../auth";
 import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
-import { navbarNotifications } from "../../../components/shared/navbar/notificationData";
 import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCartSummary";
+import useUserNotifications from "../../../components/shared/navbar/useUserNotifications";
 import { vendorNavigationItems } from "../../vendorDashboard/data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
@@ -28,12 +28,10 @@ export default function HomeNavbar() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { isLoggedIn, user, signOut } = useAuth();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
+  const { notifications, unreadNotificationCount } = useUserNotifications();
   const desktopNotificationRef = useRef(null);
   const mobileNotificationRef = useRef(null);
   const profileMenuRef = useRef(null);
-  const unreadNotificationCount = navbarNotifications.filter(
-    (item) => item.unread,
-  ).length;
 
   const closeMenu = () => setOpen(false);
 
@@ -111,7 +109,7 @@ export default function HomeNavbar() {
 
                 {isNotificationOpen ? (
                   <NotificationPopover
-                    notifications={navbarNotifications}
+                    notifications={notifications}
                     className="top-[calc(100%+14px)]"
                   />
                 ) : null}
@@ -293,7 +291,7 @@ export default function HomeNavbar() {
                 {isNotificationOpen ? (
                   <div ref={mobileNotificationRef}>
                     <NotificationPopover
-                      notifications={navbarNotifications}
+                      notifications={notifications}
                       className="static mt-1 w-full max-w-none shadow-none sm:shadow-[0_18px_40px_rgba(22,22,22,0.14)]"
                     />
                   </div>
