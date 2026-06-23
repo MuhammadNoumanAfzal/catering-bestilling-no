@@ -71,7 +71,7 @@ export default function HomeNavbar() {
       return;
     }
 
-    signOut();
+    await signOut();
     setIsProfileMenuOpen(false);
     closeMenu();
     await showSuccessToast("Logged out successfully");

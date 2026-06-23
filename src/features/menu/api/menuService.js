@@ -3,7 +3,42 @@ import {
   adaptApiProductToMenuItem,
   adaptApiVendorToProfile,
 } from "../../vendor";
+import { fetchVendorReviews } from "../../vendor/api/vendorService";
 import { FETCH_PRODUCT_QUERY } from "./menuQueries";
+
+async function hydrateMenuVendorRating(vendorProfile, vendorSlug) {
+  const reviewCount = Number(vendorProfile?.reviewCount ?? 0);
+  const rating = Number(vendorProfile?.rating ?? 0);
+
+  if (!vendorProfile || !vendorSlug || reviewCount <= 0 || rating > 0) {
+    return vendorProfile;
+  }
+
+  try {
+    const reviewConnection = await fetchVendorReviews(vendorSlug, { first: 50 });
+    const ratings = (reviewConnection.reviews || [])
+      .map((review) => Number(review.rating ?? 0))
+      .filter((value) => value > 0);
+
+    if (ratings.length === 0) {
+      return vendorProfile;
+    }
+
+    const averageRating =
+      ratings.reduce((total, value) => total + value, 0) / ratings.length;
+
+    return {
+      ...vendorProfile,
+      rating: averageRating.toFixed(1),
+      reviewCount: Math.max(
+        reviewCount,
+        Number(reviewConnection.totalCount ?? ratings.length),
+      ),
+    };
+  } catch {
+    return vendorProfile;
+  }
+}
 
 export async function fetchMenuDetails({ itemId, vendorSlug }) {
   const response = await graphqlRequest({
@@ -28,7 +63,9 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
 
   const [product, vendor] = await Promise.all([
     Promise.resolve(adaptApiProductToMenuItem(response.product)),
-    Promise.resolve(adaptApiVendorToProfile(response.product.vendor)),
+    Promise.resolve(adaptApiVendorToProfile(response.product.vendor)).then(
+      (vendorProfile) => hydrateMenuVendorRating(vendorProfile, vendorSlug),
+    ),
   ]);
 
   return {
