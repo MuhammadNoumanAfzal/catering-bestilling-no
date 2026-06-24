@@ -1,4 +1,5 @@
 import NotificationSettingsSection from "../components/settings/NotificationSettingsSection";
+import PasswordSettingsSection from "../components/settings/PasswordSettingsSection";
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
 import SettingsActions from "../components/settings/SettingsActions";
 import { useVendorSettingsPage } from "../settings/hooks/useVendorSettingsPage";
@@ -37,6 +38,10 @@ export default function VendorSettingsPage() {
         ) : null}
         <ProfileSettingsSection formState={formState} updateField={updateField} />
         <NotificationSettingsSection
+          formState={formState}
+          updateField={updateField}
+        />
+        <PasswordSettingsSection
           formState={formState}
           updateField={updateField}
         />

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
+import { changePassword } from "../../../auth/api";
 import {
   readSavedSettings,
   writeSavedSettings,
@@ -30,6 +31,15 @@ function stripPasswordFields(formState) {
   } = formState;
 
   return rest;
+}
+
+function hasPasswordValues(formState) {
+  return [
+    formState.oldPassword,
+    formState.confirmOldPassword,
+    formState.newPassword,
+    formState.confirmNewPassword,
+  ].some((value) => `${value ?? ""}`.trim());
 }
 
 export function useVendorSettingsPage() {
@@ -113,7 +123,7 @@ export function useVendorSettingsPage() {
   const isDirty = useMemo(() => {
     const currentComparable = JSON.stringify(stripPasswordFields(formState));
     const savedComparable = JSON.stringify(savedFormState);
-    return currentComparable !== savedComparable;
+    return currentComparable !== savedComparable || hasPasswordValues(formState);
   }, [formState, savedFormState]);
 
   const updateField = (key, value) => {
@@ -134,15 +144,69 @@ export function useVendorSettingsPage() {
     setIsSaving(true);
 
     try {
-      const result = await updateSettingsProfile(formState);
-      writeSavedSettings(result.formState);
-      setSavedFormState(result.formState);
-      setFormState({
-        ...result.formState,
-        ...getPasswordFields(),
-      });
-      setLoadWarning("");
-      await showSuccessToast(result.message);
+      const profileHasChanged =
+        JSON.stringify(stripPasswordFields(formState)) !==
+        JSON.stringify(savedFormState);
+      const passwordHasChanged = hasPasswordValues(formState);
+      const successMessages = [];
+
+      if (profileHasChanged) {
+        const result = await updateSettingsProfile(formState);
+        writeSavedSettings(result.formState);
+        setSavedFormState(result.formState);
+        setFormState((current) => ({
+          ...result.formState,
+          ...getPasswordFields(),
+          oldPassword: current.oldPassword,
+          confirmOldPassword: current.confirmOldPassword,
+          newPassword: current.newPassword,
+          confirmNewPassword: current.confirmNewPassword,
+        }));
+        setLoadWarning("");
+        successMessages.push(result.message);
+      }
+
+      if (passwordHasChanged) {
+        const oldPassword = `${formState.oldPassword ?? ""}`.trim();
+        const confirmOldPassword = `${formState.confirmOldPassword ?? ""}`.trim();
+        const newPassword = `${formState.newPassword ?? ""}`.trim();
+        const confirmNewPassword = `${formState.confirmNewPassword ?? ""}`.trim();
+
+        if (
+          !oldPassword ||
+          !confirmOldPassword ||
+          !newPassword ||
+          !confirmNewPassword
+        ) {
+          throw new Error("Please complete all password fields.");
+        }
+
+        if (oldPassword !== confirmOldPassword) {
+          throw new Error("Old password confirmation does not match.");
+        }
+
+        if (newPassword !== confirmNewPassword) {
+          throw new Error("New password confirmation does not match.");
+        }
+
+        const passwordResult = await changePassword({
+          oldPassword,
+          newPassword1: newPassword,
+          newPassword2: confirmNewPassword,
+        });
+
+        setFormState((current) => ({
+          ...current,
+          ...getPasswordFields(),
+        }));
+        successMessages.push(
+          passwordResult.message || "Password changed successfully.",
+        );
+      }
+
+      if (successMessages.length > 0) {
+        await showSuccessToast(successMessages.join(" "));
+      }
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error

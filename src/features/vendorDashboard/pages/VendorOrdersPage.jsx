@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiSearch } from "react-icons/fi";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { ModifyOrderModal } from "../../order";
+import {
+  mapOrderToModifyForm,
+  submitOrderModification,
+} from "../../order/api/orderModificationService";
 import OrderDateFilter from "../components/orders/OrderDateFilter";
 import OrderDetailsModal from "../components/orders/OrderDetailsModal";
 import OrderStatusSummaryCard from "../components/orders/OrderStatusSummaryCard";
@@ -52,6 +58,9 @@ export default function VendorOrdersPage() {
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+  const [isModifySaving, setIsModifySaving] = useState(false);
+  const [modifyError, setModifyError] = useState("");
   const dateMenuRef = useRef(null);
 
   const dispatch = useDispatch();
@@ -221,8 +230,47 @@ export default function VendorOrdersPage() {
   }
 
   function handleCloseDetails() {
+    setIsModifyModalOpen(false);
+    setModifyError("");
     setSelectedOrder(null);
     dispatch(clearSelectedOrderDetail());
+  }
+
+  async function handleModifySave(nextValues) {
+    const targetOrder = selectedOrderDetail || selectedOrder;
+    const orderId = targetOrder?.rawId || targetOrder?.orderId || targetOrder?.id;
+
+    if (!orderId) {
+      await showAuthErrorAlert(
+        "This order does not have a valid id for modification.",
+        "Modify order failed",
+      );
+      return;
+    }
+
+    setIsModifySaving(true);
+    setModifyError("");
+
+    try {
+      const result = await submitOrderModification({
+        orderId,
+        ...nextValues,
+      });
+      await Promise.all([
+        dispatch(fetchClientOrders()),
+        dispatch(fetchClientOrderDetail(orderId)),
+      ]);
+      await showSuccessToast(result.message);
+      setIsModifyModalOpen(false);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to modify this order right now.";
+      setModifyError(message);
+    } finally {
+      setIsModifySaving(false);
+    }
   }
 
   if (isLoading) {
@@ -395,7 +443,22 @@ export default function VendorOrdersPage() {
         error={selectedOrderDetailError}
         isOpen={Boolean(selectedOrder)}
         onClose={handleCloseDetails}
+        onModify={() => {
+          setModifyError("");
+          setIsModifyModalOpen(true);
+        }}
       />
+
+      {isModifyModalOpen ? (
+        <ModifyOrderModal
+          error={modifyError}
+          initialValue={mapOrderToModifyForm(selectedOrderDetail || selectedOrder)}
+          isLoading={selectedOrderDetailStatus === "loading"}
+          isSaving={isModifySaving}
+          onCancel={() => setIsModifyModalOpen(false)}
+          onSave={handleModifySave}
+        />
+      ) : null}
     </div>
   );
 }

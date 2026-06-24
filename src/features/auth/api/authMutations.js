@@ -99,3 +99,24 @@ export const LOGOUT_USER_MUTATION = `
     }
   }
 `;
+
+export const CHANGE_PASSWORD_MUTATION = `
+  mutation ChangePassword(
+    $oldPassword: String!
+    $newPassword1: String!
+    $newPassword2: String!
+  ) {
+    changePassword(
+      oldPassword: $oldPassword
+      newPassword1: $newPassword1
+      newPassword2: $newPassword2
+    ) {
+      success
+      message
+      errors {
+        field
+        message
+      }
+    }
+  }
+`;

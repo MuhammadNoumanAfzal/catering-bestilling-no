@@ -11,7 +11,11 @@ import { useOrderConfirmedPage } from "../hooks/useOrderConfirmedPage";
 export default function OrderConfirmedPage() {
   const {
     handleModifySave,
+    isModifyLoading,
     isModifyModalOpen,
+    isModifySaving,
+    modifyError,
+    modifyInitialValue,
     orderPreview,
     placedOrderDraft,
     primaryOrderId,
@@ -50,7 +54,10 @@ export default function OrderConfirmedPage() {
 
       {isModifyModalOpen ? (
         <ModifyOrderModal
-          initialValue={orderPreview}
+          error={modifyError}
+          initialValue={modifyInitialValue || orderPreview}
+          isLoading={isModifyLoading}
+          isSaving={isModifySaving}
           onCancel={() => setIsModifyModalOpen(false)}
           onSave={handleModifySave}
         />

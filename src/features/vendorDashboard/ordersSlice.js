@@ -61,6 +61,7 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
     clientOrder(id: $orderId) {
       id
       status
+      canModify
       eventName
       personCount
       grandTotal
@@ -68,6 +69,10 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
       taxAmount
       deliveryFee
       tipAmount
+      deliveryAddress
+      deliverySuite
+      deliveryCity
+      deliveryPostalCode
       deliveryAddressStr
       orderNotes
       createdOn
@@ -332,10 +337,15 @@ export const fetchClientOrderDetail = createAsyncThunk(
           deliveryFee: formatAmount(orderNode.deliveryFee),
           tipAmount: formatAmount(orderNode.tipAmount),
           status: orderNode.status || "Pending",
+          canModify: orderNode.canModify !== false,
           isModified: modifiedItems.length > 0,
           orderedDate: formatDate(orderNode.createdOn),
           deliveredDate: formatDate(orderNode.eventDate),
           location: orderNode.deliveryAddressStr || "Not provided",
+          deliveryAddress: orderNode.deliveryAddress || "",
+          deliverySuite: orderNode.deliverySuite || "",
+          deliveryCity: orderNode.deliveryCity || "",
+          deliveryPostalCode: orderNode.deliveryPostalCode || "",
           invoiceId: orderNode.invoiceNumber || "",
           orderNotes: orderNode.orderNotes || "",
           eventTime: orderNode.eventTime || "",

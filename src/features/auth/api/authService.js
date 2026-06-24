@@ -1,5 +1,6 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import {
+  CHANGE_PASSWORD_MUTATION,
   LOGOUT_USER_MUTATION,
   LOGIN_USER_MUTATION,
   PASSWORD_RESET_MAIL_MUTATION,
@@ -138,4 +139,30 @@ export async function logoutUser() {
     dataKey: "logoutUser",
     fallbackMessage: "Unable to log out right now.",
   });
+}
+
+export async function changePassword(input) {
+  const variables = {
+    oldPassword: `${input?.oldPassword ?? ""}`,
+    newPassword1: `${input?.newPassword1 ?? ""}`,
+    newPassword2: `${input?.newPassword2 ?? ""}`,
+  };
+  const data = await graphqlRequest({
+    query: CHANGE_PASSWORD_MUTATION,
+    variables,
+  });
+  const result = data?.changePassword;
+
+  if (!result?.success) {
+    const errorMessage = Array.isArray(result?.errors) && result.errors.length > 0
+      ? result.errors
+          .map((error) => error?.message)
+          .filter(Boolean)
+          .join(" ")
+      : result?.message || "Unable to change password.";
+
+    throw new Error(errorMessage);
+  }
+
+  return result;
 }
