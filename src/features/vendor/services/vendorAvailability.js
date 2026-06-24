@@ -11,11 +11,11 @@ function resolveVendorReference(vendor) {
 }
 
 function resolveVendorPostalCoverage(vendor) {
-  if ((vendor?.servicePostalCodes ?? []).length > 0) {
-    return vendor.servicePostalCodes;
-  }
-
-  return [];
+  return [
+    `${vendor?.primaryPostalCode ?? ""}`.trim(),
+    `${vendor?.postCode ?? ""}`.trim(),
+    ...((vendor?.servicePostalCodes ?? []).map((value) => `${value ?? ""}`.trim())),
+  ].filter(Boolean);
 }
 
 function isDateValid(date) {
