@@ -1,46 +1,22 @@
 import { useEffect } from "react";
-import { FiArrowLeft, FiDownload, FiFileText } from "react-icons/fi";
-import { Link, Navigate, useParams } from "react-router-dom";
+import {
+  FiArrowLeft,
+  FiCalendar,
+  FiCreditCard,
+  FiDownload,
+  FiFileText,
+  FiMapPin,
+  FiUser,
+} from "react-icons/fi";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchInvoices } from "../invoicesSlice";
-
-function buildInvoiceExportContent(invoice) {
-  return [
-    "Invoice Details",
-    "",
-    `Invoice ID: ${invoice.id}`,
-    `Vendor: ${invoice.vendor}`,
-    `Event: ${invoice.event}`,
-    `Delivered On: ${invoice.deliveredOn}`,
-    `Due On: ${invoice.dueOn}`,
-    `Status: ${invoice.status}`,
-    "",
-    "Breakdown:",
-    `Subtotal: ${invoice.subtotal || "NOK 0.00"}`,
-    `Delivery Fee: ${invoice.deliveryFee || "NOK 0.00"}`,
-    `Tax: ${invoice.tax || "NOK 0.00"}`,
-    `Tip: ${invoice.tip || "NOK 0.00"}`,
-    `Total Amount: ${invoice.amount}`,
-  ].join("\n");
-}
-
-function exportInvoice(invoice) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  const blob = new Blob([buildInvoiceExportContent(invoice)], {
-    type: "text/plain;charset=utf-8",
-  });
-  const url = window.URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `${invoice.id.replace(/#/g, "")}-invoice.txt`;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.URL.revokeObjectURL(url);
-}
+import { getInvoiceStatusClasses } from "../components/invoices/invoiceUtils";
+import {
+  clearInvoiceDownloadState,
+  clearSelectedInvoiceDetail,
+  fetchInvoiceDetail,
+  fetchInvoiceDownloadUrl,
+} from "../invoicesSlice";
 
 function DetailRow({ label, value }) {
   return (
@@ -53,40 +29,73 @@ function DetailRow({ label, value }) {
   );
 }
 
+function DetailSection({ title, children }) {
+  return (
+    <section className="rounded-[24px] border border-[#ece1d7] bg-[#fffdfa] p-5">
+      <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#9c897d]">
+        {title}
+      </h3>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
 export default function VendorInvoiceDetailsPage() {
   const { invoiceId } = useParams();
   const decodedInvoiceId = invoiceId ? decodeURIComponent(invoiceId) : "";
   const dispatch = useDispatch();
-
-  const { records, isLoading, error } = useSelector((state) => state.invoices);
+  const {
+    selectedInvoiceDetail,
+    selectedInvoiceDetailStatus,
+    selectedInvoiceDetailError,
+    downloadStatus,
+    downloadError,
+  } = useSelector((state) => state.invoices);
 
   useEffect(() => {
-    if (records.length === 0) {
-      dispatch(fetchInvoices());
+    if (decodedInvoiceId) {
+      dispatch(fetchInvoiceDetail(decodedInvoiceId));
     }
-  }, [dispatch, records.length]);
 
-  const invoice = records.find((rec) => rec.id === decodedInvoiceId);
+    return () => {
+      dispatch(clearSelectedInvoiceDetail());
+      dispatch(clearInvoiceDownloadState());
+    };
+  }, [decodedInvoiceId, dispatch]);
 
-  if (isLoading) {
+  if (selectedInvoiceDetailStatus === "loading") {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
       </div>
     );
   }
 
-  if (error) {
+  if (selectedInvoiceDetailStatus === "failed") {
     return (
-      <div className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center text-sm text-red-600">
-        {error}
-      </div>
+      <section className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center">
+        <h2 className="text-lg font-semibold text-red-700">
+          Unable to load invoice
+        </h2>
+        <p className="mt-2 text-sm text-red-600">
+          {selectedInvoiceDetailError}
+        </p>
+        <button
+          type="button"
+          onClick={() => dispatch(fetchInvoiceDetail(decodedInvoiceId))}
+          className="mt-5 rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d]"
+        >
+          Try again
+        </button>
+      </section>
     );
   }
 
-  if (!invoice) {
-    return <Navigate to="/vendor-dashboard/invoices" replace />;
+  if (!selectedInvoiceDetail) {
+    return null;
   }
+
+  const invoice = selectedInvoiceDetail;
 
   return (
     <div className="space-y-6">
@@ -101,17 +110,27 @@ export default function VendorInvoiceDetailsPage() {
           </Link>
           <h1 className="mt-3 type-h2 text-[#191919]">Invoice Details</h1>
           <p className="mt-2 type-para text-[#635b53]">
-            Review the invoice information and export a copy when needed.
+            Review the invoice information and export a PDF when needed.
           </p>
         </div>
 
         <button
           type="button"
-          onClick={() => exportInvoice(invoice)}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d]"
+          onClick={async () => {
+            const result = await dispatch(fetchInvoiceDownloadUrl(invoice.id));
+
+            if (
+              fetchInvoiceDownloadUrl.fulfilled.match(result) &&
+              typeof window !== "undefined"
+            ) {
+              window.open(result.payload.url, "_blank", "noopener,noreferrer");
+            }
+          }}
+          disabled={downloadStatus === "loading"}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-70"
         >
           <FiDownload className="text-[15px]" />
-          Export Invoice
+          {downloadStatus === "loading" ? "Preparing PDF..." : "Export PDF"}
         </button>
       </div>
 
@@ -123,14 +142,16 @@ export default function VendorInvoiceDetailsPage() {
             </div>
 
             <div>
-              <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#9c897d]">
+              <span
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getInvoiceStatusClasses(invoice.status)}`}
+              >
                 {invoice.status}
-              </p>
+              </span>
               <h2 className="mt-2 text-[28px] font-semibold tracking-[-0.03em] text-[#1f1f1f]">
-                {invoice.id}
+                {invoice.invoiceNumber}
               </h2>
               <p className="mt-2 text-[15px] text-[#685e56]">
-                {invoice.event} for {invoice.vendor}
+                {invoice.order.eventName} for {invoice.vendor.name}
               </p>
             </div>
           </div>
@@ -140,29 +161,147 @@ export default function VendorInvoiceDetailsPage() {
               Invoice Amount
             </p>
             <p className="mt-2 text-[28px] font-semibold text-[#cf6e38]">
-              {invoice.amount}
+              {invoice.totalAmount}
             </p>
           </div>
         </div>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <DetailRow label="Vendor" value={invoice.vendor} />
-          <DetailRow label="Event" value={invoice.event} />
-          <DetailRow label="Delivered On" value={invoice.deliveredOn} />
+          <DetailRow label="Vendor" value={invoice.vendor.name} />
+          <DetailRow label="Event" value={invoice.order.eventName} />
+          <DetailRow label="Issued On" value={invoice.issuedOn} />
           <DetailRow label="Due On" value={invoice.dueOn} />
         </div>
 
         <div className="mt-6 border-t border-[#ece4dc] pt-6">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#9c897d] mb-4">Amount Breakdown</h3>
+          <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.1em] text-[#9c897d]">
+            Amount Breakdown
+          </h3>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <DetailRow label="Subtotal" value={invoice.subtotal || "NOK 0.00"} />
-            <DetailRow label="Delivery Fee" value={invoice.deliveryFee || "NOK 0.00"} />
-            <DetailRow label="Tax" value={invoice.tax || "NOK 0.00"} />
-            <DetailRow label="Tip" value={invoice.tip || "NOK 0.00"} />
+            <DetailRow label="Subtotal" value={invoice.subtotal} />
+            <DetailRow label="Delivery Fee" value={invoice.deliveryFee} />
+            <DetailRow label="Tax" value={invoice.taxAmount} />
+            <DetailRow label="Tip" value={invoice.tipAmount} />
           </div>
+        </div>
+      </section>
+
+      {downloadError ? (
+        <div className="rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          {downloadError}
+        </div>
+      ) : null}
+
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+        <DetailSection title="Line Items">
+          {invoice.lineItems.length > 0 ? (
+            <div className="space-y-3">
+              {invoice.lineItems.map((item) => (
+                <article
+                  key={item.id}
+                  className="rounded-[20px] border border-[#efe5dc] bg-white px-4 py-4"
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-base font-semibold text-[#1f1f1f]">
+                        {item.label}
+                      </p>
+                      {item.description ? (
+                        <p className="mt-1 text-sm text-[#6f665f]">
+                          {item.description}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="text-left sm:text-right">
+                      <p className="text-sm font-semibold text-[#1f1f1f]">
+                        {item.totalPrice}
+                      </p>
+                      <p className="mt-1 text-xs text-[#8b827b]">
+                        {item.quantity} x {item.unitPrice}
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-[#706760]">No line items available.</p>
+          )}
+        </DetailSection>
+
+        <div className="space-y-6">
+          <DetailSection title="Invoice Meta">
+            <div className="grid gap-3">
+              <DetailRow label="Paid On" value={invoice.paidOn || "Not paid yet"} />
+              <DetailRow label="Payment Type" value={invoice.paymentType} />
+              <DetailRow
+                label="Transaction Reference"
+                value={invoice.transactionReference}
+              />
+              <DetailRow label="Paid Amount" value={invoice.paidAmount} />
+              <DetailRow label="Due Amount" value={invoice.dueAmount} />
+            </div>
+          </DetailSection>
+
+          <DetailSection title="Event & Billing">
+            <div className="space-y-4 text-sm text-[#4b463f]">
+              <div className="flex items-start gap-3">
+                <FiCalendar className="mt-0.5 text-[#cf6e38]" />
+                <div>
+                  <p className="font-semibold text-[#1f1f1f]">
+                    {invoice.order.eventName}
+                  </p>
+                  <p className="mt-1">
+                    {invoice.order.eventDate} | {invoice.order.personCount} guests
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiMapPin className="mt-0.5 text-[#cf6e38]" />
+                <div>
+                  <p className="font-semibold text-[#1f1f1f]">Delivery Info</p>
+                  <p className="mt-1">{invoice.order.deliveryAddressStr}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiUser className="mt-0.5 text-[#cf6e38]" />
+                <div>
+                  <p className="font-semibold text-[#1f1f1f]">Billing Contact</p>
+                  <p className="mt-1">
+                    {invoice.vendor.companyName || invoice.vendor.name}
+                  </p>
+                  <p>{invoice.billingAddress.phone || "No phone added"}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiCreditCard className="mt-0.5 text-[#cf6e38]" />
+                <div>
+                  <p className="font-semibold text-[#1f1f1f]">Billing Address</p>
+                  <p className="mt-1">
+                    {[
+                      invoice.billingAddress.address,
+                      invoice.billingAddress.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || "Not provided"}
+                  </p>
+                </div>
+              </div>
+
+              {invoice.note ? (
+                <div className="rounded-[18px] border border-[#f1e3d6] bg-[#fff8f3] px-4 py-3">
+                  <p className="font-semibold text-[#1f1f1f]">Note</p>
+                  <p className="mt-1 text-sm text-[#6d645c]">{invoice.note}</p>
+                </div>
+              ) : null}
+            </div>
+          </DetailSection>
         </div>
       </section>
     </div>
   );
 }
-

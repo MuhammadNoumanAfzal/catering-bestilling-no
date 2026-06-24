@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiDownload, FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,22 +11,47 @@ import { fetchInvoices } from "../invoicesSlice";
 import {
   DATE_OPTIONS,
   getInvoiceDateFilterLabel,
-  isInvoiceWithinDateRange,
+  getInvoiceQueryDateRange,
   PAGE_SIZE,
   STATUS_OPTIONS,
 } from "../components/invoices/invoiceUtils";
 
+function buildInvoiceCsv(invoices) {
+  const rows = [
+    ["Invoice", "Vendor", "Event", "Issued On", "Due On", "Amount", "Status"],
+    ...invoices.map((invoice) => [
+      invoice.invoiceNumberShort,
+      invoice.vendor,
+      invoice.event,
+      invoice.issuedOn,
+      invoice.dueOn,
+      invoice.amount,
+      invoice.status,
+    ]),
+  ];
+
+  return rows
+    .map((row) =>
+      row
+        .map((value) => `"${`${value ?? ""}`.replaceAll('"', '""')}"`)
+        .join(","),
+    )
+    .join("\n");
+}
+
 export default function VendorInvoicesPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { records, overview, totals, isLoading, error } = useSelector((state) => state.invoices);
+  const { records, overview, totals, totalCount, isLoading, error } =
+    useSelector((state) => state.invoices);
 
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
-  const [selectedDateRange, setSelectedDateRange] = useState("7");
+  const [selectedDateRange, setSelectedDateRange] = useState("all");
   const [customDateRange, setCustomDateRange] = useState({
-    from: "2025-02-05",
-    to: "2025-03-05",
+    from: "",
+    to: "",
   });
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
@@ -35,8 +60,40 @@ export default function VendorInvoicesPage() {
   const dateMenuRef = useRef(null);
 
   useEffect(() => {
-    dispatch(fetchInvoices());
-  }, [dispatch]);
+    const timer = window.setTimeout(() => {
+      setDebouncedSearchValue(searchValue.trim());
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [searchValue]);
+
+  useEffect(() => {
+    const { dateFrom, dateTo } = getInvoiceQueryDateRange(
+      selectedDateRange,
+      customDateRange,
+    );
+
+    dispatch(
+      fetchInvoices({
+        status: selectedStatus === "all" ? null : selectedStatus,
+        search: debouncedSearchValue || null,
+        dateFrom,
+        dateTo,
+        first: 100,
+        after: null,
+      }),
+    );
+  }, [
+    customDateRange,
+    debouncedSearchValue,
+    dispatch,
+    selectedDateRange,
+    selectedStatus,
+  ]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchValue, selectedDateRange, selectedStatus, customDateRange]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -56,56 +113,15 @@ export default function VendorInvoicesPage() {
     };
   }, []);
 
-  const filteredInvoices = useMemo(() => {
-    const query = searchValue.trim().toLowerCase();
-
-    return records.filter((invoice) => {
-      const matchesStatus =
-        selectedStatus === "all"
-          ? true
-          : invoice.status.toLowerCase() === selectedStatus;
-      const matchesDate = isInvoiceWithinDateRange(
-        invoice.deliveredAt,
-        selectedDateRange,
-        customDateRange,
-      );
-
-      if (!matchesStatus || !matchesDate) {
-        return false;
-      }
-
-      if (!query) {
-        return true;
-      }
-
-      return [
-        invoice.id,
-        invoice.vendor,
-        invoice.event,
-        invoice.deliveredOn,
-        invoice.dueOn,
-        invoice.amount,
-        invoice.status,
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(query);
-    });
-  }, [records, customDateRange, searchValue, selectedDateRange, selectedStatus]);
-
-
-  const totalPages = Math.max(1, Math.ceil(filteredInvoices.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(records.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
-  const visibleInvoices = filteredInvoices.slice(
+  const visibleInvoices = records.slice(
     (safeCurrentPage - 1) * PAGE_SIZE,
     safeCurrentPage * PAGE_SIZE,
   );
   const startIndex =
-    filteredInvoices.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
-  const endIndex = Math.min(
-    safeCurrentPage * PAGE_SIZE,
-    filteredInvoices.length,
-  );
+    records.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
+  const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, records.length);
 
   if (isLoading) {
     return (
@@ -126,10 +142,8 @@ export default function VendorInvoicesPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 ">Invoice</h1>
-        <p className="mt-2 type-para ">
-          Track all invoice and payment records.
-        </p>
+        <h1 className="type-h2">Invoice</h1>
+        <p className="mt-2 type-para">Track all invoice and payment records.</p>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -150,11 +164,8 @@ export default function VendorInvoicesPage() {
             <FiSearch className="text-[16px]" />
             <input
               value={searchValue}
-              onChange={(event) => {
-                setSearchValue(event.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search..."
+              onChange={(event) => setSearchValue(event.target.value)}
+              placeholder="Search invoice, vendor, event..."
               className="w-full bg-transparent text-sm text-[#242424] outline-none placeholder:text-[#aaaaaa]"
             />
           </label>
@@ -163,7 +174,10 @@ export default function VendorInvoicesPage() {
             <InvoiceFilterMenu
               defaultValue="all"
               isOpen={isStatusMenuOpen}
-              label="Status: All"
+              label={
+                STATUS_OPTIONS.find((option) => option.value === selectedStatus)
+                  ?.label ?? "Status: All"
+              }
               onToggle={() => {
                 setIsStatusMenuOpen((open) => !open);
                 setIsDateMenuOpen(false);
@@ -172,7 +186,6 @@ export default function VendorInvoicesPage() {
               selectedValue={selectedStatus}
               onSelect={(value) => {
                 setSelectedStatus(value);
-                setCurrentPage(1);
                 setIsStatusMenuOpen(false);
               }}
               menuRef={statusMenuRef}
@@ -180,6 +193,23 @@ export default function VendorInvoicesPage() {
 
             <button
               type="button"
+              onClick={() => {
+                if (typeof window === "undefined" || records.length === 0) {
+                  return;
+                }
+
+                const blob = new Blob([buildInvoiceCsv(records)], {
+                  type: "text/csv;charset=utf-8",
+                });
+                const url = window.URL.createObjectURL(blob);
+                const anchor = document.createElement("a");
+                anchor.href = url;
+                anchor.download = "invoices.csv";
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+                window.URL.revokeObjectURL(url);
+              }}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto"
             >
               <FiDownload className="text-[15px]" />
@@ -187,7 +217,7 @@ export default function VendorInvoicesPage() {
             </button>
 
             <InvoiceFilterMenu
-              defaultValue="7"
+              defaultValue="all"
               isOpen={isDateMenuOpen}
               label={getInvoiceDateFilterLabel(
                 selectedDateRange,
@@ -201,7 +231,6 @@ export default function VendorInvoicesPage() {
               selectedValue={selectedDateRange}
               onSelect={(value) => {
                 setSelectedDateRange(value);
-                setCurrentPage(1);
                 if (value !== "custom-date") {
                   setIsDateMenuOpen(false);
                 }
@@ -218,10 +247,9 @@ export default function VendorInvoicesPage() {
                         type="button"
                         onClick={() => {
                           const nextValue =
-                            option.value === selectedDateRange ? "7" : option.value;
+                            option.value === selectedDateRange ? "all" : option.value;
 
                           setSelectedDateRange(nextValue);
-                          setCurrentPage(1);
                           if (nextValue !== "custom-date") {
                             setIsDateMenuOpen(false);
                           }
@@ -252,13 +280,12 @@ export default function VendorInvoicesPage() {
                             type="date"
                             value={customDateRange.from}
                             max={customDateRange.to || undefined}
-                            onChange={(event) => {
+                            onChange={(event) =>
                               setCustomDateRange((current) => ({
                                 ...current,
                                 from: event.target.value,
-                              }));
-                              setCurrentPage(1);
-                            }}
+                              }))
+                            }
                             className="w-full rounded-xl border border-[#e7d8cb] bg-white px-3 py-2 text-sm text-[#2d2d2d] outline-none"
                           />
                         </label>
@@ -271,13 +298,12 @@ export default function VendorInvoicesPage() {
                             type="date"
                             value={customDateRange.to}
                             min={customDateRange.from || undefined}
-                            onChange={(event) => {
+                            onChange={(event) =>
                               setCustomDateRange((current) => ({
                                 ...current,
                                 to: event.target.value,
-                              }));
-                              setCurrentPage(1);
-                            }}
+                              }))
+                            }
                             className="w-full rounded-xl border border-[#e7d8cb] bg-white px-3 py-2 text-sm text-[#2d2d2d] outline-none"
                           />
                         </label>
@@ -286,10 +312,7 @@ export default function VendorInvoicesPage() {
                       <div className="mt-3 flex justify-end">
                         <button
                           type="button"
-                          onClick={() => {
-                            setIsDateMenuOpen(false);
-                            setCurrentPage(1);
-                          }}
+                          onClick={() => setIsDateMenuOpen(false)}
                           className="rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#bc602d]"
                         >
                           Apply
@@ -303,11 +326,12 @@ export default function VendorInvoicesPage() {
           </div>
         </div>
 
-
         <InvoiceTable
           invoices={visibleInvoices}
           onOpenDetails={(invoice) =>
-            navigate(`/vendor-dashboard/invoices/${encodeURIComponent(invoice.id)}`)
+            navigate(
+              `/vendor-dashboard/invoices/${encodeURIComponent(invoice.orderId)}`,
+            )
           }
         />
 
@@ -316,11 +340,10 @@ export default function VendorInvoicesPage() {
           endIndex={endIndex}
           onPageChange={setCurrentPage}
           startIndex={startIndex}
-          totalItems={filteredInvoices.length}
+          totalItems={records.length}
           totalPages={totalPages}
         />
       </section>
     </div>
   );
 }
-

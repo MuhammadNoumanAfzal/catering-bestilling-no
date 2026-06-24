@@ -1,8 +1,8 @@
 export const STATUS_OPTIONS = [
   { label: "Status: All", value: "all" },
-  { label: "Paid", value: "paid" },
-  { label: "Pending", value: "pending" },
-  { label: "Overdue", value: "overdue" },
+  { label: "Paid", value: "payment-paid" },
+  { label: "Pending", value: "payment-pending" },
+  { label: "Overdue", value: "payment-overdue" },
 ];
 
 export const DATE_OPTIONS = [
@@ -14,7 +14,6 @@ export const DATE_OPTIONS = [
 ];
 
 export const PAGE_SIZE = 8;
-const TODAY = new Date("2026-04-22T00:00:00");
 
 export function formatFilterDate(dateValue) {
   if (!dateValue) {
@@ -41,7 +40,7 @@ export function getInvoiceDateFilterLabel(selectedRange, customDateRange) {
 }
 
 export function getInvoiceStatusClasses(status) {
-  const normalizedStatus = status.toLowerCase();
+  const normalizedStatus = `${status ?? ""}`.toLowerCase();
 
   if (normalizedStatus === "paid") {
     return "bg-[#dff6dd] text-[#2d9b42]";
@@ -51,39 +50,46 @@ export function getInvoiceStatusClasses(status) {
     return "bg-[#fff4d6] text-[#cf8b19]";
   }
 
-  return "bg-[#fde2d9] text-[#d06036]";
-}
-
-export function isInvoiceWithinDateRange(
-  dateValue,
-  selectedRange,
-  customDateRange = {},
-) {
-  if (selectedRange === "all") {
-    return true;
+  if (normalizedStatus === "overdue") {
+    return "bg-[#fde2d9] text-[#d06036]";
   }
 
-  const candidate = new Date(`${dateValue}T00:00:00`);
+  return "bg-[#eef3fc] text-[#2c76ff]";
+}
+
+export function getInvoiceQueryDateRange(selectedRange, customDateRange = {}) {
+  const today = new Date();
+  const toDate = today.toISOString().slice(0, 10);
+
+  if (selectedRange === "all") {
+    return { dateFrom: null, dateTo: null };
+  }
 
   if (selectedRange === "custom-date") {
-    if (!customDateRange.from || !customDateRange.to) {
-      return true;
-    }
-
-    const fromDate = new Date(`${customDateRange.from}T00:00:00`);
-    const toDate = new Date(`${customDateRange.to}T23:59:59`);
-
-    return candidate >= fromDate && candidate <= toDate;
+    return {
+      dateFrom: customDateRange.from || null,
+      dateTo: customDateRange.to || null,
+    };
   }
 
   if (selectedRange === "year") {
-    return candidate.getFullYear() === TODAY.getFullYear();
+    return {
+      dateFrom: `${today.getFullYear()}-01-01`,
+      dateTo: toDate,
+    };
   }
 
   const rangeDays = Number(selectedRange);
-  const diffInDays = Math.floor(
-    (TODAY.getTime() - candidate.getTime()) / (1000 * 60 * 60 * 24),
-  );
 
-  return diffInDays >= 0 && diffInDays < rangeDays;
+  if (!Number.isFinite(rangeDays) || rangeDays <= 0) {
+    return { dateFrom: null, dateTo: null };
+  }
+
+  const fromDate = new Date(today);
+  fromDate.setDate(today.getDate() - (rangeDays - 1));
+
+  return {
+    dateFrom: fromDate.toISOString().slice(0, 10),
+    dateTo: toDate,
+  };
 }
