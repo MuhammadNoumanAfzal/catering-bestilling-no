@@ -1,4 +1,3 @@
-import { showSuccessToast } from "../../../utils/alerts";
 import { writeOrderSummary } from "../../vendor/utils/orderSummaryStorage";
 import { writePlacedOrderDraft } from "./placedOrderDraftStorage";
 
@@ -46,7 +45,6 @@ export async function savePlacedOrderDraftChanges(placedOrderDraft, nextValues) 
   );
 
   writePlacedOrderDraft(nextPlacedOrderDraft);
-  await showSuccessToast("Modification request sent successfully");
 
   return nextPlacedOrderDraft;
 }

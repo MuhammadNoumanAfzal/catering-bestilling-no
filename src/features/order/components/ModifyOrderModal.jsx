@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   createInitialModifyOrderFormState,
   MODIFY_ORDER_PLACEHOLDERS,
@@ -23,13 +23,20 @@ function formatDisplayDate(value) {
 }
 
 export default function ModifyOrderModal({
+  error = "",
   initialValue,
+  isLoading = false,
+  isSaving = false,
   onCancel,
   onSave,
 }) {
   const [formState, setFormState] = useState(() =>
     createInitialModifyOrderFormState(initialValue),
   );
+
+  useEffect(() => {
+    setFormState(createInitialModifyOrderFormState(initialValue));
+  }, [initialValue]);
 
   const formattedDate = useMemo(
     () => formatDisplayDate(formState.date),
@@ -54,6 +61,21 @@ export default function ModifyOrderModal({
         </div>
 
         <div className="space-y-3 px-5 py-4 sm:px-6">
+          {error ? (
+            <div className="rounded-[14px] border border-[#f1c8bb] bg-[#fff5f1] px-4 py-3 text-sm text-[#8a5642]">
+              {error}
+            </div>
+          ) : null}
+
+          {isLoading ? (
+            <div className="rounded-[14px] border border-[#efe4da] bg-[#fcf8f4] px-4 py-6 text-center">
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+              <p className="mt-3 text-sm text-[#6f665d]">
+                Loading current order details...
+              </p>
+            </div>
+          ) : null}
+
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
@@ -63,6 +85,7 @@ export default function ModifyOrderModal({
                 type="date"
                 value={formState.date}
                 onChange={(event) => updateField("date", event.target.value)}
+                disabled={isLoading || isSaving}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
               {formattedDate ? (
@@ -80,6 +103,7 @@ export default function ModifyOrderModal({
                 type="time"
                 value={formState.time}
                 onChange={(event) => updateField("time", event.target.value)}
+                disabled={isLoading || isSaving}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
             </label>
@@ -93,6 +117,7 @@ export default function ModifyOrderModal({
               value={formState.address}
               onChange={(event) => updateField("address", event.target.value)}
               placeholder={MODIFY_ORDER_PLACEHOLDERS.address}
+              disabled={isLoading || isSaving}
               className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
             />
           </label>
@@ -111,6 +136,7 @@ export default function ModifyOrderModal({
                       Math.max(1, Number(formState.personCount) - 1),
                     )
                   }
+                  disabled={isLoading || isSaving}
                   className="h-full w-11 border-r border-[#dad1c8] text-[18px] text-[#322d29] transition hover:bg-[#faf5f0]"
                 >
                   -
@@ -123,6 +149,7 @@ export default function ModifyOrderModal({
                   onClick={() =>
                     updateField("personCount", Number(formState.personCount) + 1)
                   }
+                  disabled={isLoading || isSaving}
                   className="h-full w-11 border-l border-[#dad1c8] text-[18px] text-[#322d29] transition hover:bg-[#faf5f0]"
                 >
                   +
@@ -140,6 +167,7 @@ export default function ModifyOrderModal({
                   updateField("addressLine2", event.target.value)
                 }
                 placeholder={MODIFY_ORDER_PLACEHOLDERS.addressLine2}
+                disabled={isLoading || isSaving}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
             </label>
@@ -154,6 +182,7 @@ export default function ModifyOrderModal({
                 value={formState.city}
                 onChange={(event) => updateField("city", event.target.value)}
                 placeholder={MODIFY_ORDER_PLACEHOLDERS.city}
+                disabled={isLoading || isSaving}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
             </label>
@@ -168,6 +197,7 @@ export default function ModifyOrderModal({
                   updateField("postalCode", event.target.value)
                 }
                 placeholder={MODIFY_ORDER_PLACEHOLDERS.postalCode}
+                disabled={isLoading || isSaving}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
             </label>
@@ -183,6 +213,7 @@ export default function ModifyOrderModal({
                 updateField("additionalDetails", event.target.value)
               }
               placeholder={MODIFY_ORDER_PLACEHOLDERS.additionalDetails}
+              disabled={isLoading || isSaving}
               className="min-h-[88px] w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 py-2.5 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
             />
           </label>
@@ -192,6 +223,7 @@ export default function ModifyOrderModal({
           <button
             type="button"
             onClick={onCancel}
+            disabled={isSaving}
             className="rounded-[10px] border border-[#d9cec4] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#2b2622] transition hover:bg-[#faf7f3]"
           >
             Cancel
@@ -210,9 +242,10 @@ export default function ModifyOrderModal({
                 additionalDetails: formState.additionalDetails.trim(),
               })
             }
+            disabled={isLoading || isSaving}
             className="rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
           >
-            Send Request
+            {isSaving ? "Sending..." : "Send Request"}
           </button>
         </div>
       </div>

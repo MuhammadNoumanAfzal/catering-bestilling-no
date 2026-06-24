@@ -23,6 +23,7 @@ export default function OrderDetailsModal({
   order,
   isOpen,
   onClose,
+  onModify,
   isLoading = false,
   error = "",
 }) {
@@ -304,7 +305,19 @@ export default function OrderDetailsModal({
                 Includes the full order amount
               </p>
             </div>
-            <p className="type-h2 text-[#1f1f1f]">{order.total}</p>
+            <div className="flex items-center gap-3">
+              {onModify ? (
+                <button
+                  type="button"
+                  onClick={onModify}
+                  disabled={isLoading || order.canModify === false}
+                  className="rounded-full border border-[#d9cec4] bg-white px-4 py-2 text-sm font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {order.canModify === false ? "Modification closed" : "Modify order"}
+                </button>
+              ) : null}
+              <p className="type-h2 text-[#1f1f1f]">{order.total}</p>
+            </div>
           </div>
         </div>
       </div>
