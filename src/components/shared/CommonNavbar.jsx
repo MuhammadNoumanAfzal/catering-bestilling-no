@@ -69,7 +69,8 @@ export default function CommonNavbar({
     setSearchQuery,
   } = useBrowseFilters();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
-  const { notifications, unreadNotificationCount } = useUserNotifications();
+  const { hasFreshNotification, notifications, unreadNotificationCount } =
+    useUserNotifications();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -243,6 +244,7 @@ export default function CommonNavbar({
         <CommonNavbarActions
           actionMenuRef={actionMenuRef}
           cartItemCount={cartItemCount}
+          hasFreshNotification={hasFreshNotification}
           isActionMenuOpen={isActionMenuOpen}
           isLoggedIn={isLoggedIn}
           isNotificationOpen={isNotificationOpen}

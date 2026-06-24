@@ -28,7 +28,8 @@ export default function HomeNavbar() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { isLoggedIn, user, signOut } = useAuth();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
-  const { notifications, unreadNotificationCount } = useUserNotifications();
+  const { hasFreshNotification, notifications, unreadNotificationCount } =
+    useUserNotifications();
   const desktopNotificationRef = useRef(null);
   const mobileNotificationRef = useRef(null);
   const profileMenuRef = useRef(null);
@@ -95,11 +96,21 @@ export default function HomeNavbar() {
                 <button
                   type="button"
                   onClick={() => setIsNotificationOpen((current) => !current)}
-                  className={actionButtonClassName}
+                  className={`${actionButtonClassName} ${
+                    hasFreshNotification
+                      ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
+                      : ""
+                  }`}
                   aria-label="Notifications"
                   aria-expanded={isNotificationOpen}
                 >
                   <FiBell />
+                  {hasFreshNotification ? (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#cf6e38] opacity-60" />
+                      <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#cf6e38]" />
+                    </span>
+                  ) : null}
                   {unreadNotificationCount > 0 ? (
                     <span className="absolute right-0.5 top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
                       {unreadNotificationCount}

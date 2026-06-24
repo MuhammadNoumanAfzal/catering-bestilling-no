@@ -22,7 +22,8 @@ export default function VendorTopbar() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
-  const { notifications, unreadNotificationCount } = useUserNotifications();
+  const { hasFreshNotification, notifications, unreadNotificationCount } =
+    useUserNotifications();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notificationRef = useRef(null);
 
@@ -70,11 +71,21 @@ export default function VendorTopbar() {
             <button
               type="button"
               onClick={() => setIsNotificationOpen((current) => !current)}
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e3dbd3] bg-white text-[#2c2c2c] transition hover:text-[#cf5c2f]"
+              className={`relative inline-flex h-10 w-10 items-center justify-center rounded-full border bg-white text-[#2c2c2c] transition hover:text-[#cf5c2f] ${
+                hasFreshNotification
+                  ? "border-[#cf6e38] text-[#cf5c2f] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
+                  : "border-[#e3dbd3]"
+              }`}
               aria-label="Notifications"
               aria-expanded={isNotificationOpen}
             >
               <FiBell className="text-[18px]" />
+              {hasFreshNotification ? (
+                <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#cf6e38] opacity-60" />
+                  <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#cf6e38]" />
+                </span>
+              ) : null}
               {unreadNotificationCount > 0 ? (
                 <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#cf5c2f] px-1 text-[10px] font-bold leading-none text-white">
                   {unreadNotificationCount}
