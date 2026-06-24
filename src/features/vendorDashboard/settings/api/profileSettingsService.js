@@ -7,7 +7,7 @@ import { UPDATE_GENERAL_PROFILE_MUTATION } from "./profileSettingsMutations";
 import { GET_SETTINGS_PROFILE_QUERY } from "./profileSettingsQueries";
 
 function buildNotificationPreferences(formState) {
-  return JSON.stringify({
+  return {
     deliveryUpdates: {
       textMessage: Boolean(formState.textNotifications),
       email: Boolean(formState.emailNotifications),
@@ -16,7 +16,7 @@ function buildNotificationPreferences(formState) {
     orderConfirmation: {
       pushNotification: Boolean(formState.orderConfirmationPush),
     },
-  });
+  };
 }
 
 function buildGeneralProfileVariables(formState) {
