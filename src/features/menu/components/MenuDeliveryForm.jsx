@@ -1,5 +1,6 @@
 import { FiMapPin } from "react-icons/fi";
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
+import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 
 export default function MenuDeliveryForm({
   minimumPersons = 1,
@@ -26,6 +27,7 @@ export default function MenuDeliveryForm({
               type="date"
               value={orderSummary.deliveryDate}
               onChange={(event) => onDeliveryDateChange(event.target.value)}
+              min={getTodayDateValue()}
               className="w-full cursor-pointer rounded-[8px] border border-[#d7cdc4] px-4 py-2.5 text-[14px] text-[#1d1713] outline-none"
             />
           </div>

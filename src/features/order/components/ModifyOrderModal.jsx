@@ -22,6 +22,54 @@ function formatDisplayDate(value) {
   }).format(parsed);
 }
 
+function getTodayDateValue() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function validateModifyForm(formState) {
+  const address = `${formState.address ?? ""}`.trim();
+  const city = `${formState.city ?? ""}`.trim();
+  const postalCode = `${formState.postalCode ?? ""}`.trim();
+  const date = `${formState.date ?? ""}`.trim();
+  const time = `${formState.time ?? ""}`.trim();
+  const personCount = Math.max(1, Number(formState.personCount) || 1);
+  const today = getTodayDateValue();
+
+  if (!date) {
+    return "Please select a date.";
+  }
+
+  if (date < today) {
+    return "Please select today or a future date.";
+  }
+
+  if (!time) {
+    return "Please select a time.";
+  }
+
+  if (!address) {
+    return "Please enter the delivery address.";
+  }
+
+  if (!city) {
+    return "Please enter the city.";
+  }
+
+  if (!postalCode) {
+    return "Please enter the postal code.";
+  }
+
+  if (personCount < 1) {
+    return "Person count must be at least 1.";
+  }
+
+  return "";
+}
+
 export default function ModifyOrderModal({
   error = "",
   initialValue,
@@ -33,9 +81,11 @@ export default function ModifyOrderModal({
   const [formState, setFormState] = useState(() =>
     createInitialModifyOrderFormState(initialValue),
   );
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     setFormState(createInitialModifyOrderFormState(initialValue));
+    setValidationError("");
   }, [initialValue]);
 
   const formattedDate = useMemo(
@@ -44,10 +94,31 @@ export default function ModifyOrderModal({
   );
 
   const updateField = (key, value) => {
+    setValidationError("");
     setFormState((current) => ({
       ...current,
       [key]: value,
     }));
+  };
+
+  const handleSubmit = () => {
+    const nextValidationError = validateModifyForm(formState);
+
+    if (nextValidationError) {
+      setValidationError(nextValidationError);
+      return;
+    }
+
+    onSave({
+      address: formState.address.trim(),
+      addressLine2: formState.addressLine2.trim(),
+      city: formState.city.trim(),
+      postalCode: formState.postalCode.trim(),
+      date: formState.date,
+      time: formState.time,
+      personCount: Math.max(1, Number(formState.personCount) || 1),
+      additionalDetails: formState.additionalDetails.trim(),
+    });
   };
 
   return (
@@ -61,9 +132,9 @@ export default function ModifyOrderModal({
         </div>
 
         <div className="space-y-3 px-5 py-4 sm:px-6">
-          {error ? (
+          {error || validationError ? (
             <div className="rounded-[14px] border border-[#f1c8bb] bg-[#fff5f1] px-4 py-3 text-sm text-[#8a5642]">
-              {error}
+              {validationError || error}
             </div>
           ) : null}
 
@@ -86,6 +157,7 @@ export default function ModifyOrderModal({
                 value={formState.date}
                 onChange={(event) => updateField("date", event.target.value)}
                 disabled={isLoading || isSaving}
+                min={getTodayDateValue()}
                 className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
               />
               {formattedDate ? (
@@ -230,18 +302,7 @@ export default function ModifyOrderModal({
           </button>
           <button
             type="button"
-            onClick={() =>
-              onSave({
-                address: formState.address.trim(),
-                addressLine2: formState.addressLine2.trim(),
-                city: formState.city.trim(),
-                postalCode: formState.postalCode.trim(),
-                date: formState.date,
-                time: formState.time,
-                personCount: Math.max(1, Number(formState.personCount) || 1),
-                additionalDetails: formState.additionalDetails.trim(),
-              })
-            }
+            onClick={handleSubmit}
             disabled={isLoading || isSaving}
             className="rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
           >

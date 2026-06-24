@@ -41,24 +41,11 @@ const MODIFY_CLIENT_ORDER_MUTATION = `
         deliveryFee
         grandTotal
       }
-      errors {
-        field
-        message
-      }
     }
   }
 `;
 
 function buildErrorMessage(result, fallbackMessage) {
-  const errors = Array.isArray(result?.errors) ? result.errors : [];
-
-  if (errors.length > 0) {
-    return errors
-      .map((error) => error?.message)
-      .filter(Boolean)
-      .join(" ");
-  }
-
   return result?.message || fallbackMessage;
 }
 

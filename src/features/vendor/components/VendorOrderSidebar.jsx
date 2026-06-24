@@ -6,13 +6,14 @@ import TablewareModal, {
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
-import { promptSignInRequired } from "../../../utils/alerts";
+import { promptSignInRequired, showAuthErrorAlert } from "../../../utils/alerts";
 import {
   getItemPrice,
   getItemServes,
   SALES_TAX_RATE,
   sortSummaryItems,
 } from "../../checkOut/components/summary/checkoutSummaryUtils";
+import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
 
 const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
@@ -314,6 +315,22 @@ export default function VendorOrderSidebar({
                       navigate("/signup", { state: { from: location } });
                     }
 
+                    return;
+                  }
+
+                  const validationError = validateOrderSummaryBasics({
+                    deliveryDate: orderSummary.deliveryDate,
+                    deliveryTime: orderSummary.deliveryTime,
+                    deliveryAddress: orderSummary.deliveryAddress,
+                    personCount: orderSummary.personCount,
+                    minimumPersons,
+                  });
+
+                  if (validationError) {
+                    await showAuthErrorAlert(
+                      validationError,
+                      "Order details required",
+                    );
                     return;
                   }
 
