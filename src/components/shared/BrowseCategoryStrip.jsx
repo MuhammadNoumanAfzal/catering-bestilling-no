@@ -82,12 +82,20 @@ export default function BrowseCategoryStrip({
   const hasSelectedMoreOptions = selectedMoreOptions.length > 0;
   const shouldScroll = categories.length > 6;
 
+  const getItemLabel = (item) =>
+    typeof item === "string" ? item : item?.name ?? "";
+
+  const getItemValue = (item) =>
+    typeof item === "string"
+      ? item
+      : item?.value ?? item?.slug ?? item?.name ?? "";
+
   const renderIcon = (item) => {
     if (typeof item.icon === "string") {
       return (
         <img
           src={item.icon}
-          alt={item.name}
+          alt={getItemLabel(item)}
           className={styles.image}
         />
       );
@@ -108,30 +116,33 @@ export default function BrowseCategoryStrip({
     onOpenChange?.(nextOpen);
   };
 
-  const handleCategoryClick = (itemName) => {
-    if (itemName === "More") {
+  const handleCategoryClick = (item) => {
+    const itemLabel = getItemLabel(item);
+    const itemValue = getItemValue(item);
+
+    if (itemLabel === "More") {
       setPanelOpen(!showMorePanel);
       return;
     }
 
     const nextCategory =
       Array.isArray(activeCategory)
-        ? activeCategory.includes(itemName)
+        ? activeCategory.includes(itemValue)
           ? null
-          : itemName
-        : activeCategory === itemName
+          : itemValue
+        : activeCategory === itemValue
           ? null
-          : itemName;
+          : itemValue;
 
     onCategoryChange?.(nextCategory);
     setPanelOpen(false);
   };
 
   const toggleMoreOption = (option) => {
+    const optionValue = getItemValue(option);
+
     setSelectedMoreOptions((current) =>
-      current.includes(option)
-        ? current.filter((item) => item !== option)
-        : [...current, option],
+      current.includes(optionValue) ? [] : [optionValue],
     );
   };
 
@@ -142,7 +153,7 @@ export default function BrowseCategoryStrip({
   };
 
   const applyFilters = () => {
-    onCategoryChange?.(selectedMoreOptions.length > 0 ? selectedMoreOptions : null);
+    onCategoryChange?.(selectedMoreOptions[0] ?? null);
     setPanelOpen(false);
   };
 
@@ -155,20 +166,22 @@ export default function BrowseCategoryStrip({
           }`}
         >
           {categories.map((item) => {
-            const isMore = item.name === "More";
+            const itemLabel = getItemLabel(item);
+            const itemValue = getItemValue(item);
+            const isMore = itemLabel === "More";
             const isMoreActive =
               isMore && (showMorePanel || hasSelectedMoreOptions);
             const isActiveCategory =
               !isMore &&
               (Array.isArray(activeCategory)
-                ? activeCategory.includes(item.name)
-                : activeCategory === item.name);
+                ? activeCategory.includes(itemValue)
+                : activeCategory === itemValue);
 
             return (
               <button
-                key={item.name}
+                key={itemValue || itemLabel}
                 type="button"
-                onClick={() => handleCategoryClick(item.name)}
+                onClick={() => handleCategoryClick(item)}
                 className={`${styles.button} transition ${
                   isMoreActive || isActiveCategory ? "text-[#CF3A00]" : ""
                 }`}
@@ -188,7 +201,7 @@ export default function BrowseCategoryStrip({
                     isMoreActive || isActiveCategory ? "text-[#CF3A00]" : ""
                   }`}
                 >
-                  {item.name}
+                  {itemLabel}
                 </span>
               </button>
             );
@@ -202,11 +215,13 @@ export default function BrowseCategoryStrip({
 
           <div className={styles.panelGrid}>
             {moreOptions.map((option) => {
-              const isSelected = selectedMoreOptions.includes(option);
+              const optionValue = getItemValue(option);
+              const optionLabel = getItemLabel(option);
+              const isSelected = selectedMoreOptions.includes(optionValue);
 
               return (
                 <button
-                  key={option}
+                  key={optionValue}
                   type="button"
                   onClick={() => toggleMoreOption(option)}
                   className={`${styles.optionButton} ${
@@ -215,7 +230,7 @@ export default function BrowseCategoryStrip({
                       : ""
                   }`}
                 >
-                  {option}
+                  {optionLabel}
                 </button>
               );
             })}

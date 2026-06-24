@@ -25,9 +25,12 @@ const ITEMS_PER_PAGE = 6;
 
 export default function BrowseCatalogView({
   categories,
+  error = "",
   isLoading = false,
   menuItems,
+  disableLocationFiltering = false,
   moreOptions,
+  totalItems,
 }) {
   const {
     attendeeCount,
@@ -68,10 +71,13 @@ export default function BrowseCatalogView({
 
   const normalizedSearchQuery = searchQuery.trim().toLowerCase();
   const filteredMenuItems = sortCatalogItems(
-    filterItemsByVendorLocation(
-      menuItems,
-      locationValue,
-      (item) => item?.vendorData ?? item?.vendor ?? null,
+    (disableLocationFiltering
+      ? menuItems
+      : filterItemsByVendorLocation(
+          menuItems,
+          locationValue,
+          (item) => item?.vendorData ?? item?.vendor ?? null,
+        )
     ).filter((item) => {
       const searchableText = [
         item.title,
@@ -137,13 +143,37 @@ export default function BrowseCatalogView({
     startIndex,
     startIndex + ITEMS_PER_PAGE,
   );
-  const activeCategoryLabel = formatCategoryLabel(selectedCategory);
+  const allCategoryOptions = [...categories, ...moreOptions].filter(
+    (item) => item?.name !== "More",
+  );
+  const resolveCategoryLabel = (value) => {
+    const matchedOption = allCategoryOptions.find(
+      (item) =>
+        item?.value === value || item?.slug === value || item?.name === value,
+    );
+
+    return matchedOption?.name ?? value;
+  };
+  const activeCategoryLabel = Array.isArray(selectedCategory)
+    ? selectedCategory.map(resolveCategoryLabel).join(", ")
+    : resolveCategoryLabel(formatCategoryLabel(selectedCategory));
 
   if (isLoading) {
     return (
       <section className="w-full px-6 py-12 md:px-20">
         <div className="mx-auto flex min-h-[40vh] w-full max-w-7xl items-center justify-center">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="w-full px-6 py-12 md:px-20">
+        <div className="mx-auto w-full max-w-7xl rounded-[28px] border border-red-200 bg-red-50 px-6 py-8 text-center">
+          <h3 className="type-h3 text-red-700">Unable to load browse page</h3>
+          <p className="mt-3 text-sm text-red-600">{error}</p>
         </div>
       </section>
     );
@@ -165,7 +195,7 @@ export default function BrowseCatalogView({
       <BrowseMenuSection
         title="Menu"
         items={paginatedItems}
-        totalItems={filteredMenuItems.length}
+        totalItems={totalItems ?? filteredMenuItems.length}
         activeCategoryLabel={activeCategoryLabel}
       />
 

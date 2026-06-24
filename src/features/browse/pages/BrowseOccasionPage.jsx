@@ -1,19 +1,19 @@
 import BrowseCatalogView from "../components/BrowseCatalogView";
 import { useBrowseCatalogItems } from "../hooks/useBrowseCatalogItems";
-import {
-  occasionCategories,
-  moreOccasionOptions,
-} from "../data/browseData";
 
 export default function BrowseOccasionPage() {
-  const { items, isLoading } = useBrowseCatalogItems();
+  const { categories, moreOptions, items, totalCount, error, isLoading } =
+    useBrowseCatalogItems("occasion");
 
   return (
     <BrowseCatalogView
+      disableLocationFiltering
+      error={error}
       isLoading={isLoading}
-      categories={occasionCategories}
+      categories={categories}
       menuItems={items}
-      moreOptions={moreOccasionOptions}
+      moreOptions={moreOptions}
+      totalItems={totalCount}
     />
   );
 }

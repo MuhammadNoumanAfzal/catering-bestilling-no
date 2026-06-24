@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { foodTypeCategories, moreFoodTypeOptions } from "../../browse/data/browseData";
 import BrowseMenuSection from "../../browse/components/BrowseMenuSection";
 import BrowseTabs from "../../browse/components/BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
 import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
 
 export default function FoodBrowsePreviewSection({
+  categories = [],
+  moreOptions = [],
   selectedCategory,
   onCategoryChange,
   previewItems,
@@ -23,8 +24,8 @@ export default function FoodBrowsePreviewSection({
 
         <BrowseCategoryStrip
           activeCategory={selectedCategory}
-          categories={foodTypeCategories}
-          moreOptions={moreFoodTypeOptions}
+          categories={categories}
+          moreOptions={moreOptions}
           isOpen={showMorePanel}
           onOpenChange={setShowMorePanel}
           onCategoryChange={onCategoryChange}

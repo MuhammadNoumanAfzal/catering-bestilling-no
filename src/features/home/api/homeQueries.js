@@ -14,6 +14,16 @@ export const FETCH_HOME_DATA_QUERY = `
           logoUrl
           coverPhotoUrl
           categoryTags
+          foodTypes {
+            id
+            name
+            slug
+          }
+          occasions {
+            id
+            name
+            slug
+          }
           reviewsCount
           businessSettings {
             businessAddress
@@ -49,6 +59,16 @@ export const FETCH_HOME_DATA_QUERY = `
           logoUrl
           coverPhotoUrl
           categoryTags
+          foodTypes {
+            id
+            name
+            slug
+          }
+          occasions {
+            id
+            name
+            slug
+          }
           reviewsCount
           businessSettings {
             businessAddress
@@ -84,6 +104,16 @@ export const FETCH_HOME_DATA_QUERY = `
           priceWithTax
           pricingType
           categoryTags
+          foodTypes {
+            id
+            name
+            slug
+          }
+          occasions {
+            id
+            name
+            slug
+          }
           dietaryTags
           minimumGuests
           coverImage {
@@ -97,6 +127,16 @@ export const FETCH_HOME_DATA_QUERY = `
             logoUrl
             coverPhotoUrl
             categoryTags
+            foodTypes {
+              id
+              name
+              slug
+            }
+            occasions {
+              id
+              name
+              slug
+            }
             businessSettings {
               businessAddress
               businessHours

@@ -15,6 +15,11 @@ function extractLeadTimeMinutes(leadTimeLabel) {
   return Math.min(...values);
 }
 
+function extractPriceValue(priceLabel) {
+  const numericMatch = `${priceLabel ?? ""}`.match(/(\d+(\.\d+)?)/);
+  return numericMatch ? Number(numericMatch[1]) : Number.POSITIVE_INFINITY;
+}
+
 export function matchesRatingFilter(rating, selectedRating) {
   if (!selectedRating || selectedRating === "Ratings") {
     return true;
@@ -121,12 +126,26 @@ export function sortCatalogItems(items, selectedSort) {
     );
   }
 
-  if (selectedSort === "Fastest delivery") {
-    return [...items].sort((left, right) => {
-      const leftMinutes = extractLeadTimeMinutes(left.deliveryTimeLabel ?? left.deliveryTime);
-      const rightMinutes = extractLeadTimeMinutes(right.deliveryTimeLabel ?? right.deliveryTime);
-      return leftMinutes - rightMinutes;
-    });
+  if (selectedSort === "Highest Rated") {
+    return [...items].sort(
+      (left, right) => Number(right.rating ?? 0) - Number(left.rating ?? 0),
+    );
+  }
+
+  if (selectedSort === "Price: Low to High") {
+    return [...items].sort(
+      (left, right) => extractPriceValue(left.price) - extractPriceValue(right.price),
+    );
+  }
+
+  if (selectedSort === "Price: High to Low") {
+    return [...items].sort(
+      (left, right) => extractPriceValue(right.price) - extractPriceValue(left.price),
+    );
+  }
+
+  if (selectedSort === "Newest") {
+    return [...items];
   }
 
   return items;
