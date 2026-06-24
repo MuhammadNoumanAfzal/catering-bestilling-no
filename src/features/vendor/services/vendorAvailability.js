@@ -1,5 +1,5 @@
 function normalizePostalCode(postalCode = "") {
-  return `${postalCode}`.replace(/\D/g, "").slice(0, 4);
+  return `${postalCode}`.replace(/\D/g, "");
 }
 
 function normalizeLocationQuery(locationQuery = "") {
