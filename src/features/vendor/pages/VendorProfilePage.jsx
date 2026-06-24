@@ -423,6 +423,7 @@ export default function VendorProfilePage() {
           <VendorOrderSidebar
             vendor={vendor}
             orderSummary={orderSummary}
+            isVendorAvailable={isVendorAvailable}
             onRemoveItem={async (itemId) => {
               const itemName = orderSummary.items.find((item) => item.id === itemId)?.name;
               const result = await confirmRemoveItem(itemName);
@@ -432,15 +433,8 @@ export default function VendorProfilePage() {
               }
 
               setOrderSummary((current) => {
-                const removedItem = current.items.find((item) => item.id === itemId);
-
                 return {
                   ...current,
-                  personCount: Math.max(
-                    1,
-                    current.personCount -
-                      (removedItem?.isAddOn ? 0 : (removedItem?.totalServes ?? 0)),
-                  ),
                   items: current.items.filter((item) => item.id !== itemId),
                 };
               });

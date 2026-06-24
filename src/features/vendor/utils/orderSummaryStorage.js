@@ -20,6 +20,7 @@ export function createInitialOrderSummary(vendor) {
     personCount: vendor.orderSummary.personCount,
     deliveryAddress: vendor.orderSummary.deliveryAddress,
     invoiceAddress: vendor.orderSummary.invoiceAddress,
+    vendorNote: vendor.orderSummary.vendorNote || "",
     tipRate: 0,
     tableware: getDefaultTableware(),
   };
@@ -99,6 +100,7 @@ function toVendorSnapshot(vendor) {
       personCount: 1,
       deliveryAddress: "",
       invoiceAddress: "",
+      vendorNote: "",
       total: "0.00",
     },
   };

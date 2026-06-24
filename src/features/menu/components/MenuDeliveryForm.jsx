@@ -4,6 +4,7 @@ import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 
 export default function MenuDeliveryForm({
   minimumPersons = 1,
+  isVendorAvailable = true,
   orderSummary,
   vendorNote,
   onDeliveryDateChange,
@@ -99,10 +100,21 @@ export default function MenuDeliveryForm({
       <button
         type="button"
         onClick={onAddToCart}
-        className="mt-5 block w-full cursor-pointer rounded-[10px] bg-[#cf6e38] px-4 py-3 text-center text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
+        disabled={!isVendorAvailable}
+        className={`mt-5 block w-full rounded-[10px] px-4 py-3 text-center text-[15px] font-semibold text-white transition ${
+          isVendorAvailable
+            ? "cursor-pointer bg-[#cf6e38] hover:bg-[#bb602d]"
+            : "cursor-not-allowed bg-[#d7c5b9]"
+        }`}
       >
         Add to Cart
       </button>
+
+      {!isVendorAvailable ? (
+        <p className="mt-3 text-[13px] text-[#c86434]">
+          This caterer is unavailable at your selected delivery time. Choose a different date or time to continue.
+        </p>
+      ) : null}
     </div>
   );
 }
