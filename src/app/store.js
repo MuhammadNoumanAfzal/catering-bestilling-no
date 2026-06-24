@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authReducer } from "../features/auth";
-import { homeReducer } from "../features/home";
+import homeReducer from "../features/home/store/homeSlice";
 import dashboardReducer from "../features/vendorDashboard/dashboardSlice";
 import ordersReducer from "../features/vendorDashboard/ordersSlice";
 import invoicesReducer from "../features/vendorDashboard/invoicesSlice";
 import { vendorReducer } from "../features/vendor";
-import { menuReducer } from "../features/menu";
+import menuReducer from "../features/menu/store/menuSlice";
 
 export const store = configureStore({
   reducer: {

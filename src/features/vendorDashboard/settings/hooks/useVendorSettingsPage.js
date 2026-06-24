@@ -45,6 +45,7 @@ export function useVendorSettingsPage() {
   }));
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [loadWarning, setLoadWarning] = useState("");
 
   useEffect(() => {
     if (!location.hash) {
@@ -76,6 +77,7 @@ export function useVendorSettingsPage() {
           ...nextSavedState,
           ...getPasswordFields(),
         });
+        setLoadWarning("");
       } catch {
         if (!isMounted) {
           return;
@@ -91,6 +93,9 @@ export function useVendorSettingsPage() {
           ...localState,
           ...getPasswordFields(),
         });
+        setLoadWarning(
+          "Live settings could not be loaded. Showing your last saved local values.",
+        );
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -136,6 +141,7 @@ export function useVendorSettingsPage() {
         ...result.formState,
         ...getPasswordFields(),
       });
+      setLoadWarning("");
       await showSuccessToast(result.message);
     } catch (error) {
       await showAuthErrorAlert(
@@ -156,6 +162,7 @@ export function useVendorSettingsPage() {
     isDirty,
     isLoading,
     isSaving,
+    loadWarning,
     updateField,
   };
 }

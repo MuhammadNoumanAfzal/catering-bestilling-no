@@ -11,6 +11,7 @@ export default function VendorSettingsPage() {
     isDirty,
     isLoading,
     isSaving,
+    loadWarning,
     updateField,
   } = useVendorSettingsPage();
 
@@ -29,6 +30,11 @@ export default function VendorSettingsPage() {
       </section>
 
       <div className="space-y-6">
+        {loadWarning ? (
+          <div className="rounded-[18px] border border-[#f1cfb7] bg-[#fff7f1] px-4 py-3 text-sm text-[#8a5335]">
+            {loadWarning}
+          </div>
+        ) : null}
         <ProfileSettingsSection formState={formState} updateField={updateField} />
         <NotificationSettingsSection
           formState={formState}
