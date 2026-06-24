@@ -492,13 +492,15 @@ export default function MenuDetailsPage() {
           />
         </div>
 
-        <MenuAddOnsSection
-          addOnsSliderRef={addOnsSliderRef}
-          addOnItems={addOnItems}
-          selectedOptional={selectedOptional}
-          onScroll={scrollAddOns}
-          onUpdateOptionalQuantity={updateOptionalQuantity}
-        />
+        {addOnItems.length > 0 ? (
+          <MenuAddOnsSection
+            addOnsSliderRef={addOnsSliderRef}
+            addOnItems={addOnItems}
+            selectedOptional={selectedOptional}
+            onScroll={scrollAddOns}
+            onUpdateOptionalQuantity={updateOptionalQuantity}
+          />
+        ) : null}
       </div>
 
       {showAvailabilityPopup && !isAvailabilityPopupDismissed ? (

@@ -4,7 +4,56 @@ import {
   adaptApiVendorToProfile,
 } from "../../vendor";
 import { fetchVendorReviews } from "../../vendor/api/vendorService";
-import { FETCH_PRODUCT_QUERY } from "./menuQueries";
+import { attachAddOnsToMenuItem } from "./menuMappers";
+import {
+  FETCH_PRODUCT_QUERY,
+  FETCH_VENDOR_ADD_ONS_QUERY,
+} from "./menuQueries";
+
+function mapVendorAddOns(edges) {
+  return (edges || [])
+    .map((edge) => edge?.node)
+    .filter(
+      (node) =>
+        node &&
+        `${node.menuStatus ?? ""}`.toLowerCase() === "active",
+    )
+    .map((node) => {
+      const attachmentNodes = (node.attachments?.edges || [])
+        .map((edge) => edge?.node)
+        .filter(Boolean);
+      const coverAttachment =
+        attachmentNodes.find((attachment) => attachment.isCover) ||
+        attachmentNodes[0] ||
+        null;
+
+      return {
+        id: node.id,
+        name: node.name,
+        description: node.description || "",
+        priceWithTax: node.priceWithTax,
+        dietaryTags: node.dietaryTags || [],
+        coverImage: coverAttachment
+          ? {
+              fileUrl: coverAttachment.fileUrl || "",
+            }
+          : null,
+      };
+    });
+}
+
+async function fetchVendorAddOns() {
+  try {
+    const response = await graphqlRequest({
+      query: FETCH_VENDOR_ADD_ONS_QUERY,
+      variables: { first: 50 },
+    });
+
+    return mapVendorAddOns(response?.vendorAddOns?.edges);
+  } catch {
+    return [];
+  }
+}
 
 async function hydrateMenuVendorRating(vendorProfile, vendorSlug) {
   const reviewCount = Number(vendorProfile?.reviewCount ?? 0);
@@ -61,12 +110,20 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
     throw new Error("Product does not belong to the requested vendor.");
   }
 
-  const [product, vendor] = await Promise.all([
+  const [productResult, vendor, vendorAddOns] = await Promise.all([
     Promise.resolve(adaptApiProductToMenuItem(response.product)),
     Promise.resolve(adaptApiVendorToProfile(response.product.vendor)).then(
       (vendorProfile) => hydrateMenuVendorRating(vendorProfile, vendorSlug),
     ),
+    fetchVendorAddOns(),
   ]);
+
+  const hasProductLevelAddOns =
+    Array.isArray(productResult?.modal?.optionalSelections) &&
+    productResult.modal.optionalSelections.length > 0;
+  const product = hasProductLevelAddOns
+    ? productResult
+    : attachAddOnsToMenuItem(productResult, vendorAddOns);
 
   return {
     product,

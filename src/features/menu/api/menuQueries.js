@@ -67,3 +67,31 @@ export const FETCH_PRODUCT_QUERY = `
     }
   }
 `;
+
+export const FETCH_VENDOR_ADD_ONS_QUERY = `
+  query GetVendorAddOns($first: Int) {
+    vendorAddOns(first: $first) {
+      totalCount
+      edges {
+        node {
+          id
+          name
+          description
+          productType
+          menuStatus
+          priceWithTax
+          dietaryTags
+          attachments {
+            edges {
+              node {
+                fileUrl
+                fileId
+                isCover
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
