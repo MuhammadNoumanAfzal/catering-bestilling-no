@@ -9,6 +9,7 @@ export default function VendorAddressPage() {
     deliveryAddresses,
     handleAdd,
     handleChangeField,
+    handleCopyDeliveryToInvoice,
     handleDelete,
     handleReset,
     handleSave,
@@ -59,6 +60,9 @@ export default function VendorAddressPage() {
         onChangeField={(addressId, key, value) =>
           handleChangeField("invoice", addressId, key, value)
         }
+        extraActionLabel="Copy from delivery"
+        onExtraAction={handleCopyDeliveryToInvoice}
+        isExtraActionDisabled={deliveryAddresses.length === 0}
       />
 
       <AddressPageActions

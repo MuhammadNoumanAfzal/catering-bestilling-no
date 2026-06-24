@@ -1,5 +1,4 @@
 import { graphqlRequest } from "../../../../lib/api/graphqlClient";
-import { ADDRESS_FIELD_LIMITS } from "../constants/addressFieldLimits";
 import {
   DELETE_ADDRESS_MUTATION,
   SAVE_ADDRESS_BOOK_MUTATION,
@@ -12,7 +11,6 @@ import { GET_ADDRESS_BOOK_QUERY } from "./addressBookQueries";
 
 function validateAddress(addressType, address) {
   const missingFields = [];
-  const invalidLengthFields = [];
 
   if (!address.label.trim()) {
     missingFields.push("locationName");
@@ -30,30 +28,6 @@ function validateAddress(addressType, address) {
   if (missingFields.length > 0) {
     throw new Error(
       `Missing required ${addressType} address fields: ${missingFields.join(", ")}.`,
-    );
-  }
-
-  if (address.label.trim().length > ADDRESS_FIELD_LIMITS.label) {
-    invalidLengthFields.push(
-      `locationName must be at most ${ADDRESS_FIELD_LIMITS.label} characters`,
-    );
-  }
-
-  if (address.postalCode.trim().length > ADDRESS_FIELD_LIMITS.postalCode) {
-    invalidLengthFields.push(
-      `postCode must be at most ${ADDRESS_FIELD_LIMITS.postalCode} characters`,
-    );
-  }
-
-  if (address.contactName.trim().length > ADDRESS_FIELD_LIMITS.contactName) {
-    invalidLengthFields.push(
-      `receivingName must be at most ${ADDRESS_FIELD_LIMITS.contactName} characters`,
-    );
-  }
-
-  if (invalidLengthFields.length > 0) {
-    throw new Error(
-      `Invalid ${addressType} address fields: ${invalidLengthFields.join(", ")}.`,
     );
   }
 }

@@ -1,5 +1,4 @@
 import { FiPlus } from "react-icons/fi";
-import { ADDRESS_FIELD_LIMITS } from "../constants/addressFieldLimits";
 import AddressCard from "./AddressCard";
 import AddressField from "./AddressField";
 import AddressTextarea from "./AddressTextarea";
@@ -15,6 +14,9 @@ export default function AddressBookSection({
   onDelete,
   onSetDefault,
   onChangeField,
+  extraActionLabel = "",
+  onExtraAction = null,
+  isExtraActionDisabled = false,
 }) {
   const activeAddress =
     addresses.find((address) => address.id === activeId) ?? addresses[0];
@@ -40,6 +42,21 @@ export default function AddressBookSection({
           <FiPlus className="text-[15px]" />
           Add {typeLabel} address
         </button>
+
+        {onExtraAction ? (
+          <button
+            type="button"
+            onClick={onExtraAction}
+            disabled={isExtraActionDisabled}
+            className={`inline-flex items-center justify-center gap-1 self-start whitespace-nowrap rounded-full border px-2.5 py-1.5 text-[12px] font-semibold leading-none transition sm:self-auto ${
+              isExtraActionDisabled
+                ? "cursor-not-allowed border-[#e4ddd6] bg-[#f6f1eb] text-[#aa9e92]"
+                : "border-[#dfd5cb] bg-white text-[#5c5047] hover:bg-[#faf6f2]"
+            }`}
+          >
+            {extraActionLabel}
+          </button>
+        ) : null}
       </div>
 
       <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -77,7 +94,6 @@ export default function AddressBookSection({
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <AddressField
             label="Location name"
-            maxLength={ADDRESS_FIELD_LIMITS.label}
             value={activeAddress.label}
             onChange={(event) =>
               onChangeField(activeAddress.id, "label", event.target.value)
@@ -128,7 +144,6 @@ export default function AddressBookSection({
 
           <AddressField
             label="Postal code"
-            maxLength={ADDRESS_FIELD_LIMITS.postalCode}
             value={activeAddress.postalCode}
             onChange={(event) =>
               onChangeField(activeAddress.id, "postalCode", event.target.value)
@@ -149,7 +164,6 @@ export default function AddressBookSection({
 
           <AddressField
             label="Receiving name"
-            maxLength={ADDRESS_FIELD_LIMITS.contactName}
             value={activeAddress.contactName}
             onChange={(event) =>
               onChangeField(activeAddress.id, "contactName", event.target.value)

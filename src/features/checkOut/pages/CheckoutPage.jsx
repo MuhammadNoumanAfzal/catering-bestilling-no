@@ -104,16 +104,37 @@ export default function CheckoutPage() {
                 <CheckoutSection
                   title="Invoice Address"
                   actions={
-                    <CheckoutAddressControls
-                      title="Edit invoice address"
-                      selectedAddressId={formState.selectedInvoiceAddressId}
-                      savedAddresses={invoiceAddresses}
-                      onSelectAddress={(addressId) => applySavedAddress("invoice", addressId)}
-                      isEditing={isInvoiceAddressEditing}
-                      onToggleEditing={() =>
-                        setIsInvoiceAddressEditing((current) => !current)
-                      }
-                    />
+                    <div className="flex flex-col gap-3 sm:items-end">
+                      <label className="flex cursor-pointer items-center gap-2 text-[13px] font-medium text-[#5f564f]">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(formState.invoiceSameAsDelivery)}
+                          onChange={(event) =>
+                            updateField(
+                              "invoiceSameAsDelivery",
+                              event.target.checked,
+                            )
+                          }
+                          className="h-4 w-4 accent-[#cf6e38]"
+                        />
+                        Use delivery address for invoice
+                      </label>
+
+                      {!formState.invoiceSameAsDelivery ? (
+                        <CheckoutAddressControls
+                          title="Edit invoice address"
+                          selectedAddressId={formState.selectedInvoiceAddressId}
+                          savedAddresses={invoiceAddresses}
+                          onSelectAddress={(addressId) =>
+                            applySavedAddress("invoice", addressId)
+                          }
+                          isEditing={isInvoiceAddressEditing}
+                          onToggleEditing={() =>
+                            setIsInvoiceAddressEditing((current) => !current)
+                          }
+                        />
+                      ) : null}
+                    </div>
                   }
                 >
                   <CheckoutAddressPreview
@@ -123,7 +144,7 @@ export default function CheckoutPage() {
                     emptyText="Choose a saved invoice address or add a custom one."
                   />
 
-                  {isInvoiceAddressEditing ? (
+                  {isInvoiceAddressEditing && !formState.invoiceSameAsDelivery ? (
                     <div className="mt-3">
                       <CheckoutAddressFields
                         mode={normalizedType}
