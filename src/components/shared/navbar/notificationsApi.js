@@ -122,7 +122,15 @@ export async function fetchUserNotifications({ first = 50, after = null } = {}) 
     variables: { first, after },
   });
 
-  return (response.userNotifications?.edges || []).map((edge) =>
-    mapNotificationNode(edge.node),
-  );
+  const connection = response.userNotifications || {};
+
+  return {
+    notifications: (connection.edges || []).map((edge) =>
+      mapNotificationNode(edge.node),
+    ),
+    unreadCount: Number(connection.unreadCount ?? 0) || 0,
+    totalCount: Number(connection.totalCount ?? 0) || 0,
+    hasNextPage: Boolean(connection.pageInfo?.hasNextPage),
+    endCursor: connection.pageInfo?.endCursor || null,
+  };
 }
