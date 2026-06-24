@@ -8,7 +8,7 @@ export const UPDATE_GENERAL_PROFILE_MUTATION = `
     $companyName: String!
     $jobTitle: String!
     $industryUsage: String!
-    $notificationPreferences: JSONString!
+    $notificationPreferences: GenericScalar!
   ) {
     generalProfileUpdate(
       input: {
