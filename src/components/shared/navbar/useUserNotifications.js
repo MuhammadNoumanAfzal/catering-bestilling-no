@@ -5,6 +5,26 @@ import { showSuccessToast } from "../../../utils/alerts";
 
 const NOTIFICATIONS_POLL_INTERVAL_MS = 30000;
 const FRESH_NOTIFICATION_HIGHLIGHT_MS = 12000;
+const LAST_ACKNOWLEDGED_NOTIFICATION_KEY = "last-acknowledged-notification-id";
+
+function readLastAcknowledgedNotificationId() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.localStorage.getItem(LAST_ACKNOWLEDGED_NOTIFICATION_KEY);
+}
+
+function writeLastAcknowledgedNotificationId(notificationId) {
+  if (typeof window === "undefined" || !notificationId) {
+    return;
+  }
+
+  window.localStorage.setItem(
+    LAST_ACKNOWLEDGED_NOTIFICATION_KEY,
+    notificationId,
+  );
+}
 
 export default function useUserNotifications() {
   const { isLoggedIn } = useAuth();
@@ -32,6 +52,8 @@ export default function useUserNotifications() {
         if (isMounted) {
           const nextNotifications = result.notifications || [];
           const nextTopNotificationId = nextNotifications[0]?.id || null;
+          const lastAcknowledgedNotificationId =
+            readLastAcknowledgedNotificationId();
 
           if (
             previousTopNotificationId &&
@@ -51,6 +73,13 @@ export default function useUserNotifications() {
             const notificationTitle =
               nextNotifications[0]?.title || "New notification received";
             showSuccessToast(notificationTitle);
+          }
+
+          if (
+            nextTopNotificationId &&
+            nextTopNotificationId !== lastAcknowledgedNotificationId
+          ) {
+            setHasFreshNotification(true);
           }
 
           previousTopNotificationId = nextTopNotificationId;
@@ -85,7 +114,19 @@ export default function useUserNotifications() {
     };
   }, [isLoggedIn]);
 
+  const acknowledgeFreshNotifications = () => {
+    const topNotificationId = notifications[0]?.id || null;
+
+    if (!topNotificationId) {
+      return;
+    }
+
+    writeLastAcknowledgedNotificationId(topNotificationId);
+    setHasFreshNotification(false);
+  };
+
   return {
+    acknowledgeFreshNotifications,
     hasFreshNotification,
     notifications,
     unreadNotificationCount,
