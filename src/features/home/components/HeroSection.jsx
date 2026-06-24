@@ -57,7 +57,6 @@ export default function HeroSection({
                 <input
                   type="text"
                   inputMode="numeric"
-                  maxLength={4}
                   value={postalCode}
                   onChange={(event) => onPostalCodeChange?.(event.target.value)}
                   onKeyDown={handleKeyDown}

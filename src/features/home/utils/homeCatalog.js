@@ -24,7 +24,7 @@ export function buildCategoryQuery(selectedCategory) {
 }
 
 export function normalizePostalCode(value) {
-  return `${value ?? ""}`.replace(/\D/g, "").slice(0, 4);
+  return `${value ?? ""}`.replace(/\D/g, "");
 }
 
 export function normalizeSearchQuery(value) {
