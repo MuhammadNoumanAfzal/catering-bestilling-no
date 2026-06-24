@@ -50,16 +50,6 @@ function ReviewCard({ review, isFeatured = false }) {
               <span className="inline-flex rounded-full bg-[#f6efe7] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#7b6c61]">
                 {review.occasion || "General"}
               </span>
-              {review.status === "pending" ? (
-                <span className="inline-flex rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#cf6e38]">
-                  Pending review
-                </span>
-              ) : null}
-              {isFeatured ? (
-                <span className="inline-flex rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#cf6e38]">
-                  Featured review
-                </span>
-              ) : null}
             </div>
 
             <h2 className="mt-4 text-[22px] font-semibold tracking-[-0.03em] text-[#171512]">
