@@ -30,6 +30,26 @@ import {
 } from "../constants/checkoutForm";
 import { validateCheckoutForm } from "../../order/utils/orderFlowValidation";
 
+function getMirroredInvoiceFields(formState) {
+  return {
+    ...buildCheckoutAddressFields(
+      "invoice",
+      {
+        id: formState.selectedDeliveryAddressId || "",
+        label: formState.deliveryAddressLabel || "",
+        contactName: formState.deliveryContactName || "",
+        addressLine1: formState.deliveryAddress || "",
+        addressLine2: formState.deliveryAddressLine2 || "",
+        city: formState.deliveryCity || "",
+        postalCode: formState.deliveryPostalCode || "",
+        phoneNumber: formState.deliveryPhoneNumber || "",
+        instructions: formState.deliveryInstructions || "",
+      },
+      formState.deliveryAddress || "",
+    ),
+  };
+}
+
 export function useCheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -140,8 +160,55 @@ export function useCheckoutPage() {
     }));
   }, [hasItems, totalPersonCount]);
 
+  useEffect(() => {
+    if (!formState.invoiceSameAsDelivery) {
+      return;
+    }
+
+    setFormState((current) => ({
+      ...current,
+      ...getMirroredInvoiceFields(current),
+    }));
+  }, [
+    formState.deliveryAddress,
+    formState.deliveryAddressLabel,
+    formState.deliveryAddressLine2,
+    formState.deliveryCity,
+    formState.deliveryContactName,
+    formState.deliveryInstructions,
+    formState.deliveryPhoneNumber,
+    formState.deliveryPostalCode,
+    formState.invoiceSameAsDelivery,
+    formState.selectedDeliveryAddressId,
+  ]);
+
   const updateField = (key, value) => {
-    setFormState((current) => ({ ...current, [key]: value }));
+    setFormState((current) => {
+      const nextState = { ...current, [key]: value };
+
+      if (key === "invoiceSameAsDelivery") {
+        if (value) {
+          return {
+            ...nextState,
+            ...getMirroredInvoiceFields(nextState),
+          };
+        }
+
+        return nextState;
+      }
+
+      if (
+        current.invoiceSameAsDelivery &&
+        key.startsWith("delivery")
+      ) {
+        return {
+          ...nextState,
+          ...getMirroredInvoiceFields(nextState),
+        };
+      }
+
+      return nextState;
+    });
   };
 
   const updateCartField = (key, value) => {
@@ -171,6 +238,16 @@ export function useCheckoutPage() {
     setFormState((current) => ({
       ...current,
       ...buildCheckoutAddressFields(type, selectedAddress, current[`${type}Address`]),
+      ...(type === "delivery" && current.invoiceSameAsDelivery
+        ? getMirroredInvoiceFields({
+            ...current,
+            ...buildCheckoutAddressFields(
+              type,
+              selectedAddress,
+              current[`${type}Address`],
+            ),
+          })
+        : {}),
     }));
   };
 

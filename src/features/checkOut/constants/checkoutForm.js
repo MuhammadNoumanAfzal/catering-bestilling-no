@@ -53,6 +53,7 @@ export function createInitialCheckoutFormState(primaryCart) {
       defaultInvoiceAddress,
       orderSummary?.invoiceAddress ?? "",
     ),
+    invoiceSameAsDelivery: true,
     eventName: "",
     occasion: "",
     date: orderSummary?.deliveryDate ?? "",

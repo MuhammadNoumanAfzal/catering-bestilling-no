@@ -43,6 +43,24 @@ function buildAddressBookSnapshot(deliveryAddresses, invoiceAddresses) {
   };
 }
 
+function isAddressEmpty(address) {
+  if (!address) {
+    return true;
+  }
+
+  return ![
+    address.label,
+    address.contactName,
+    address.addressLine1,
+    address.addressLine2,
+    address.city,
+    address.state,
+    address.postalCode,
+    address.phoneNumber,
+    address.instructions,
+  ].some((value) => `${value ?? ""}`.trim());
+}
+
 export function useVendorAddressPage() {
   const [deliveryAddresses, setDeliveryAddresses] = useState([]);
   const [invoiceAddresses, setInvoiceAddresses] = useState([]);
@@ -151,6 +169,62 @@ export function useVendorAddressPage() {
     syncAddresses(type, nextAddresses);
   }
 
+  async function handleCopyDeliveryToInvoice() {
+    const sourceAddress =
+      deliveryAddresses.find((address) => address.id === activeDeliveryId) ??
+      deliveryAddresses[0];
+
+    if (!sourceAddress) {
+      await showAuthErrorAlert(
+        "Please create or select a delivery address first.",
+        "No delivery address selected",
+      );
+      return;
+    }
+
+    const copiedInvoiceAddress = {
+      ...createEmptyAddressEntry("invoice"),
+      label: sourceAddress.label,
+      contactName: sourceAddress.contactName,
+      addressLine1: sourceAddress.addressLine1,
+      addressLine2: sourceAddress.addressLine2,
+      city: sourceAddress.city,
+      state: sourceAddress.state,
+      postalCode: sourceAddress.postalCode,
+      phoneNumber: sourceAddress.phoneNumber,
+      instructions: sourceAddress.instructions,
+      isDefault: false,
+    };
+
+    const activeInvoiceAddress =
+      invoiceAddresses.find((address) => address.id === activeInvoiceId) ??
+      invoiceAddresses[0] ??
+      null;
+
+    let nextAddresses = invoiceAddresses;
+    let nextActiveId = copiedInvoiceAddress.id;
+
+    if (activeInvoiceAddress && isAddressEmpty(activeInvoiceAddress)) {
+      const replacementAddress = {
+        ...copiedInvoiceAddress,
+        id: activeInvoiceAddress.id,
+        isDefault: activeInvoiceAddress.isDefault,
+      };
+
+      nextAddresses = invoiceAddresses.map((address) =>
+        address.id === activeInvoiceAddress.id ? replacementAddress : address,
+      );
+      nextActiveId = replacementAddress.id;
+    } else {
+      nextAddresses = [...invoiceAddresses, copiedInvoiceAddress];
+    }
+
+    const normalizedNextAddresses = ensureAddressGroup(nextAddresses, "invoice");
+    setInvoiceAddresses(normalizedNextAddresses);
+    setActiveInvoiceId(nextActiveId);
+    await showSuccessToast("Delivery address copied to invoice addresses");
+  }
+
   function handleReset() {
     const normalizedSnapshot = normalizeAddressBook(savedSnapshot);
     setDeliveryAddresses(normalizedSnapshot.delivery);
@@ -243,6 +317,7 @@ export function useVendorAddressPage() {
     deliveryAddresses,
     handleAdd,
     handleChangeField,
+    handleCopyDeliveryToInvoice,
     handleDelete,
     handleReset,
     handleSave,
