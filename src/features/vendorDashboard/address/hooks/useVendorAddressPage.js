@@ -11,6 +11,31 @@ function getDefaultActiveId(addresses) {
   );
 }
 
+function ensureAddressGroup(addresses, type) {
+  if (Array.isArray(addresses) && addresses.length > 0) {
+    return addresses.some((address) => address.isDefault)
+      ? addresses
+      : addresses.map((address, index) => ({
+          ...address,
+          isDefault: index === 0,
+        }));
+  }
+
+  return [
+    {
+      ...createEmptyAddressEntry(type),
+      isDefault: true,
+    },
+  ];
+}
+
+function normalizeAddressBook(addressBook) {
+  return {
+    delivery: ensureAddressGroup(addressBook?.delivery, "delivery"),
+    invoice: ensureAddressGroup(addressBook?.invoice, "invoice"),
+  };
+}
+
 function buildAddressBookSnapshot(deliveryAddresses, invoiceAddresses) {
   return {
     delivery: deliveryAddresses,
@@ -32,7 +57,7 @@ export function useVendorAddressPage() {
 
     async function loadAddressBook() {
       try {
-        const addressBook = await fetchAddressBook();
+        const addressBook = normalizeAddressBook(await fetchAddressBook());
 
         if (!isMounted) {
           return;
@@ -47,11 +72,15 @@ export function useVendorAddressPage() {
         if (!isMounted) {
           return;
         }
-        setDeliveryAddresses([]);
-        setInvoiceAddresses([]);
-        setActiveDeliveryId("");
-        setActiveInvoiceId("");
-        setSavedSnapshot({ delivery: [], invoice: [] });
+        const fallbackAddressBook = normalizeAddressBook({
+          delivery: [],
+          invoice: [],
+        });
+        setDeliveryAddresses(fallbackAddressBook.delivery);
+        setInvoiceAddresses(fallbackAddressBook.invoice);
+        setActiveDeliveryId(getDefaultActiveId(fallbackAddressBook.delivery));
+        setActiveInvoiceId(getDefaultActiveId(fallbackAddressBook.invoice));
+        setSavedSnapshot(fallbackAddressBook);
         await showAuthErrorAlert(
           error instanceof Error
             ? error.message
@@ -123,10 +152,11 @@ export function useVendorAddressPage() {
   }
 
   function handleReset() {
-    setDeliveryAddresses(savedSnapshot.delivery);
-    setInvoiceAddresses(savedSnapshot.invoice);
-    setActiveDeliveryId(getDefaultActiveId(savedSnapshot.delivery));
-    setActiveInvoiceId(getDefaultActiveId(savedSnapshot.invoice));
+    const normalizedSnapshot = normalizeAddressBook(savedSnapshot);
+    setDeliveryAddresses(normalizedSnapshot.delivery);
+    setInvoiceAddresses(normalizedSnapshot.invoice);
+    setActiveDeliveryId(getDefaultActiveId(normalizedSnapshot.delivery));
+    setActiveInvoiceId(getDefaultActiveId(normalizedSnapshot.invoice));
   }
 
   async function handleDelete(type, addressId) {
@@ -182,10 +212,12 @@ export function useVendorAddressPage() {
     setIsSaving(true);
 
     try {
-      const nextSnapshot = await saveAddressBook({
+      const nextSnapshot = normalizeAddressBook(
+        await saveAddressBook({
         delivery: deliveryAddresses,
         invoice: invoiceAddresses,
-      });
+      }),
+      );
 
       setDeliveryAddresses(nextSnapshot.delivery);
       setInvoiceAddresses(nextSnapshot.invoice);
