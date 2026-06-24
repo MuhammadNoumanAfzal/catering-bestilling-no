@@ -91,10 +91,13 @@ function mapVendorNode(node) {
     reviewCount: Number(node?.reviewsCount || 0),
     addressLine: address,
     city: extractCityFromAddress(address),
-    servicePostalCodes: (node?.serviceAreas || [])
-      .filter((area) => area?.isActive)
-      .map((area) => `${area?.postCode ?? ""}`.padStart(4, "0"))
-      .filter(Boolean),
+    primaryPostalCode: `${node?.postCode ?? ""}`.trim(),
+    servicePostalCodes: [
+      `${node?.postCode ?? ""}`.trim(),
+      ...(node?.serviceAreas || [])
+        .filter((area) => area?.isActive)
+        .map((area) => `${area?.postCode ?? ""}`.trim()),
+    ].filter(Boolean),
     availability: {
       delivery: {
         days: deliveryDays,

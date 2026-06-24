@@ -299,22 +299,11 @@ export function useCheckoutPage() {
             return cart;
           }
 
-          const removedItem = cart.orderSummary.items.find(
-            (item) => item.id === itemId,
-          );
-
           return {
             ...cart,
             orderSummary: {
               ...cart.orderSummary,
               items: cart.orderSummary.items.filter((item) => item.id !== itemId),
-              personCount: Math.max(
-                1,
-                cart.orderSummary.personCount -
-                  (removedItem?.isAddOn
-                    ? 0
-                    : Number(removedItem?.totalServes ?? removedItem?.serves ?? 0)),
-              ),
             },
           };
         })

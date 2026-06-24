@@ -9,6 +9,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          postCode
           rating
           discountPercentage
           logoUrl
@@ -54,6 +55,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          postCode
           rating
           discountPercentage
           logoUrl
@@ -122,6 +124,7 @@ export const FETCH_HOME_DATA_QUERY = `
           vendor {
             id
             name
+            postCode
             rating
             reviewsCount
             logoUrl
