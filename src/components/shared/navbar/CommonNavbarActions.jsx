@@ -5,6 +5,7 @@ import NotificationPopover from "./NotificationPopover";
 export default function CommonNavbarActions({
   actionMenuRef,
   cartItemCount,
+  hasFreshNotification,
   isActionMenuOpen,
   isLoggedIn,
   isNotificationOpen,
@@ -26,11 +27,21 @@ export default function CommonNavbarActions({
           <button
             type="button"
             onClick={onNotificationToggle}
-            className="relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33]"
+            className={`relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] ${
+              hasFreshNotification
+                ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
+                : "border-[#e6ddd5]"
+            }`}
             aria-label="Notifications"
             aria-expanded={isNotificationOpen}
           >
             <FiBell className="text-[18px]" />
+            {hasFreshNotification ? (
+              <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#cf6e38] opacity-60" />
+                <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#cf6e38]" />
+              </span>
+            ) : null}
             {unreadNotificationCount > 0 ? (
               <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
                 {unreadNotificationCount}
