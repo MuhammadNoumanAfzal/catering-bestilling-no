@@ -22,7 +22,12 @@ export default function VendorTopbar() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
-  const { hasFreshNotification, notifications, unreadNotificationCount } =
+  const {
+    acknowledgeFreshNotifications,
+    hasFreshNotification,
+    notifications,
+    unreadNotificationCount,
+  } =
     useUserNotifications();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notificationRef = useRef(null);
@@ -70,7 +75,17 @@ export default function VendorTopbar() {
           <div className="relative" ref={notificationRef}>
             <button
               type="button"
-              onClick={() => setIsNotificationOpen((current) => !current)}
+              onClick={() =>
+                setIsNotificationOpen((current) => {
+                  const nextValue = !current;
+
+                  if (nextValue) {
+                    acknowledgeFreshNotifications();
+                  }
+
+                  return nextValue;
+                })
+              }
               className={`relative inline-flex h-10 w-10 items-center justify-center rounded-full border bg-white text-[#2c2c2c] transition hover:text-[#cf5c2f] ${
                 hasFreshNotification
                   ? "border-[#cf6e38] text-[#cf5c2f] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"

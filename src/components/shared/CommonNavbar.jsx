@@ -69,7 +69,12 @@ export default function CommonNavbar({
     setSearchQuery,
   } = useBrowseFilters();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
-  const { hasFreshNotification, notifications, unreadNotificationCount } =
+  const {
+    acknowledgeFreshNotifications,
+    hasFreshNotification,
+    notifications,
+    unreadNotificationCount,
+  } =
     useUserNotifications();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
@@ -258,7 +263,15 @@ export default function CommonNavbar({
           }}
           onCloseActionMenu={() => setIsActionMenuOpen(false)}
           onNotificationToggle={() => {
-            setIsNotificationOpen((current) => !current);
+            setIsNotificationOpen((current) => {
+              const nextValue = !current;
+
+              if (nextValue) {
+                acknowledgeFreshNotifications();
+              }
+
+              return nextValue;
+            });
             setIsActionMenuOpen(false);
           }}
           onSignOut={handleSignOut}
