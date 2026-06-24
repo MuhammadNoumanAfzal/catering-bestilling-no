@@ -28,6 +28,7 @@ import {
   createInitialCheckoutFormState,
   VALID_CHECKOUT_TYPES,
 } from "../constants/checkoutForm";
+import { validateCheckoutForm } from "../../order/utils/orderFlowValidation";
 
 export function useCheckoutPage() {
   const navigate = useNavigate();
@@ -245,6 +246,16 @@ export function useCheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
+    const validationError = validateCheckoutForm({
+      formState,
+      checkoutType: normalizedType,
+    });
+
+    if (validationError) {
+      await showAuthErrorAlert(validationError, "Checkout details required");
+      return;
+    }
+
     const result = await confirmPlaceOrder();
 
     if (!result.isConfirmed || !normalizedType) {

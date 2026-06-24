@@ -1,6 +1,7 @@
 import CheckoutField from "./CheckoutField";
 import CheckoutSection from "./CheckoutSection";
 import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
+import { getTodayDateValue } from "../../../order/utils/orderFlowValidation";
 
 export default function EventDetailsSection({
   mode,
@@ -35,6 +36,7 @@ export default function EventDetailsSection({
           label="Date"
           type="date"
           value={formState.date}
+          min={getTodayDateValue()}
           onChange={(event) => {
             updateField("date", event.target.value);
             updateCartField("deliveryDate", event.target.value);

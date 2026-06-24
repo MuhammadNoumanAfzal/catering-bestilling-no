@@ -113,10 +113,6 @@ export const CHANGE_PASSWORD_MUTATION = `
     ) {
       success
       message
-      errors {
-        field
-        message
-      }
     }
   }
 `;

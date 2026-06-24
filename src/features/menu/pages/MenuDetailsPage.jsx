@@ -30,6 +30,7 @@ import {
 } from "../components";
 import { useMenuDetails } from "../hooks/useMenuDetails";
 import { useSavedVendorStatus } from "../../vendor/hooks/useSavedVendorStatus";
+import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
@@ -271,6 +272,19 @@ export default function MenuDetailsPage() {
         navigate("/signup", { state: { from: location } });
       }
 
+      return;
+    }
+
+    const validationError = validateOrderSummaryBasics({
+      deliveryDate: orderSummary.deliveryDate,
+      deliveryTime: orderSummary.deliveryTime,
+      deliveryAddress: orderSummary.deliveryAddress,
+      personCount: orderSummary.personCount,
+      minimumPersons,
+    });
+
+    if (validationError) {
+      await showAuthErrorAlert(validationError, "Order details required");
       return;
     }
 
