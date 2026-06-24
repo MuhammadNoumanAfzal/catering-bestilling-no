@@ -154,7 +154,10 @@ export async function changePassword(input) {
   const result = data?.changePassword;
 
   if (!result?.success) {
-    throw new Error(result?.message || "Unable to change password.");
+    const firstError = result?.errors?.find((item) => item?.message)?.message;
+    throw new Error(
+      firstError || result?.message || "Unable to change password.",
+    );
   }
 
   return result;
