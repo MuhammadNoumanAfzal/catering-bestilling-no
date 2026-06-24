@@ -72,10 +72,12 @@ export default function VendorNotificationsPage() {
       setError("");
 
       try {
-        const nextNotifications = await fetchUserNotifications();
+        const response = await fetchUserNotifications();
 
         if (isMounted) {
-          setNotifications(nextNotifications);
+          setNotifications(
+            Array.isArray(response?.notifications) ? response.notifications : [],
+          );
         }
       } catch (loadError) {
         if (isMounted) {

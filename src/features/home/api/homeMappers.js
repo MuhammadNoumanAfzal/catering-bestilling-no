@@ -46,6 +46,16 @@ function normalizeTags(tags, fallback = []) {
   return Array.isArray(tags) && tags.length > 0 ? tags : fallback;
 }
 
+function normalizeTaxonomyTags(items = [], fallback = []) {
+  const mappedItems = Array.isArray(items)
+    ? items
+        .map((item) => item?.slug || item?.name || "")
+        .filter(Boolean)
+    : [];
+
+  return mappedItems.length > 0 ? mappedItems : fallback;
+}
+
 function mapVendorNode(node) {
   const name = node?.name || "Vendor";
   const minTime = node?.deliverySettings?.minDeliveryTime;
@@ -74,7 +84,10 @@ function mapVendorNode(node) {
       Number(node?.discountPercentage) > 0
         ? `${node.discountPercentage}% Discount`
         : null,
-    categoryTags: normalizeTags(node?.categoryTags),
+    categoryTags: normalizeTaxonomyTags(
+      node?.foodTypes,
+      normalizeTags(node?.categoryTags),
+    ),
     reviewCount: Number(node?.reviewsCount || 0),
     addressLine: address,
     city: extractCityFromAddress(address),
@@ -127,7 +140,10 @@ export function mapProductNode(node) {
     deliveryFee:
       formatDeliveryFee(node?.deliveryFee) || vendor?.deliveryFee || "",
     discount: node?.badge || null,
-    categoryTags: normalizeTags(node?.categoryTags),
+    categoryTags: normalizeTaxonomyTags(
+      node?.foodTypes,
+      normalizeTags(node?.categoryTags),
+    ),
     dietaryTags: normalizeTags(node?.dietaryTags),
     minimumGuests: node?.minimumGuests ?? 0,
     price: Number.isFinite(displayPrice) ? `NOK ${displayPrice.toFixed(2)}` : "",

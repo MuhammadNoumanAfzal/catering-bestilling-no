@@ -115,7 +115,10 @@ export const moreOccasionOptions = [
 export const sortByOptions = [
   "Recommended",
   "Most Popular",
-  "Fastest delivery",
+  "Highest Rated",
+  "Price: Low to High",
+  "Price: High to Low",
+  "Newest",
 ];
 
 export const ratingOptions = [
@@ -152,3 +155,35 @@ export const distanceOptions = [
   "Within 5 km",
   "Within 10 km",
 ];
+
+const FALLBACK_ICON_MAP = {
+  breakfast: Croissant,
+  "hot-meal": Soup,
+  soup: Soup,
+  salad: Salad,
+  salads: Salad,
+  packages: BriefcaseBusiness,
+  asian: UtensilsCrossed,
+  bbq: Flame,
+  healthy: Apple,
+  italian: Pizza,
+  birthday: CakeSlice,
+  baby: Baby,
+  meeting: Handshake,
+  conference: Presentation,
+  networking: Network,
+  party: PartyPopper,
+  reception: GlassWater,
+};
+
+function normalizeBrowseIconKey(value) {
+  return `${value ?? ""}`
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
+export function getBrowseFallbackIcon(value) {
+  return FALLBACK_ICON_MAP[normalizeBrowseIconKey(value)] ?? null;
+}

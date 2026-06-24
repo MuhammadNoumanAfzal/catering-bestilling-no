@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
+import { getBrowseFallbackIcon } from "../../browse/data/browseData";
+import { fetchFoodTypes } from "../../browse/api/browseTaxonomyService";
 import {
   FoodBrowsePreviewSection,
   HeroSection,
@@ -50,6 +52,14 @@ function extractAreaName(address) {
   return segments.at(-1) ?? trimmedAddress;
 }
 
+function slugifyCategory(value) {
+  return `${value ?? ""}`
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
 export default function HomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -73,6 +83,7 @@ export default function HomePage() {
   const [draftDeliveryAddress, setDraftDeliveryAddress] = useState(deliveryAddress);
   const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [foodTypeCategories, setFoodTypeCategories] = useState([]);
   const {
     popularVendors,
     featuredVendors,
@@ -85,13 +96,77 @@ export default function HomePage() {
   const normalizedPostalCode = normalizePostalCode(postalCode);
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const normalizedCategoryFilter = normalizeCategorySelection(selectedCategory);
-  const activeCategoryLabel = buildActiveCategoryLabel(normalizedCategoryFilter);
   const activeHomeLocationFilter = buildLocationFilter({
     postalCode: normalizedPostalCode,
     deliveryAddress: draftDeliveryAddress,
     locationValue,
   });
   const menuQuery = buildCategoryQuery(normalizedCategoryFilter);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadFoodTypes() {
+      try {
+        const items = await fetchFoodTypes();
+
+        if (!isMounted) {
+          return;
+        }
+
+        setFoodTypeCategories(
+          items.map((item) => ({
+            id: item.id || "",
+            name: item.name || "Category",
+            value: item.slug || slugifyCategory(item.name),
+            slug: item.slug || slugifyCategory(item.name),
+            icon: item.iconUrl || getBrowseFallbackIcon(item.slug || item.name),
+          })),
+        );
+      } catch {
+        if (isMounted) {
+          setFoodTypeCategories([]);
+        }
+      }
+    }
+
+    loadFoodTypes();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const activeCategoryLabel = useMemo(() => {
+    if (!normalizedCategoryFilter) {
+      return null;
+    }
+
+    const categoryValue = Array.isArray(normalizedCategoryFilter)
+      ? normalizedCategoryFilter[0]
+      : normalizedCategoryFilter;
+    const matchedCategory = foodTypeCategories.find(
+      (item) => item.value === categoryValue || item.slug === categoryValue,
+    );
+
+    return matchedCategory?.name ?? buildActiveCategoryLabel(normalizedCategoryFilter);
+  }, [foodTypeCategories, normalizedCategoryFilter]);
+
+  const previewCategories = useMemo(() => {
+    if (foodTypeCategories.length <= 8) {
+      return foodTypeCategories;
+    }
+
+    return [
+      ...foodTypeCategories.slice(0, 8),
+      { name: "More", value: "__more__" },
+    ];
+  }, [foodTypeCategories]);
+
+  const previewMoreOptions = useMemo(
+    () => (foodTypeCategories.length > 8 ? foodTypeCategories.slice(8) : []),
+    [foodTypeCategories],
+  );
 
   const handleHomeSearch = () => {
     const nextPostalCode = normalizePostalCode(postalCode);
@@ -185,6 +260,8 @@ export default function HomePage() {
         />
       ) : null}
       <FoodBrowsePreviewSection
+        categories={previewCategories}
+        moreOptions={previewMoreOptions}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
         previewItems={previewMenuItems}

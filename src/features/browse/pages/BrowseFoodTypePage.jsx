@@ -1,19 +1,19 @@
 import BrowseCatalogView from "../components/BrowseCatalogView";
 import { useBrowseCatalogItems } from "../hooks/useBrowseCatalogItems";
-import {
-  foodTypeCategories,
-  moreFoodTypeOptions,
-} from "../data/browseData";
 
 export default function BrowseFoodTypePage() {
-  const { items, isLoading } = useBrowseCatalogItems();
+  const { categories, moreOptions, items, totalCount, error, isLoading } =
+    useBrowseCatalogItems("food-type");
 
   return (
     <BrowseCatalogView
+      disableLocationFiltering
+      error={error}
       isLoading={isLoading}
-      categories={foodTypeCategories}
+      categories={categories}
       menuItems={items}
-      moreOptions={moreFoodTypeOptions}
+      moreOptions={moreOptions}
+      totalItems={totalCount}
     />
   );
 }
