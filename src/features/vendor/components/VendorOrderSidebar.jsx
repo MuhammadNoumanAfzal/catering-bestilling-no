@@ -91,6 +91,7 @@ export default function VendorOrderSidebar({
   vendor,
   orderSummary,
   minimumPersons = 1,
+  isVendorAvailable = true,
   onRemoveItem,
   onTipChange,
   onDeliveryDateChange,
@@ -334,9 +335,21 @@ export default function VendorOrderSidebar({
                     return;
                   }
 
+                  if (!isVendorAvailable) {
+                    await showAuthErrorAlert(
+                      "This caterer is unavailable at your selected delivery time. Please choose another date or time before checkout.",
+                      "Unavailable for selected time",
+                    );
+                    return;
+                  }
+
                   navigate("/checkout/corporate");
                 }}
-                className="mt-4 w-full cursor-pointer rounded-[4px] bg-[#cf6e38] px-4 py-3 text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
+                className={`mt-4 w-full rounded-[4px] px-4 py-3 text-[15px] font-semibold text-white transition ${
+                  isVendorAvailable
+                    ? "cursor-pointer bg-[#cf6e38] hover:bg-[#bb602d]"
+                    : "cursor-not-allowed bg-[#d7c5b9]"
+                }`}
               >
                 Checkout
               </button>

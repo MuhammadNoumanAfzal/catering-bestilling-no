@@ -65,20 +65,19 @@ export default function MenuDetailsPage() {
       return;
     }
 
-    setOrderSummary(() => {
-      const storedSummary = readOrderSummary(vendor);
-      return {
-        ...storedSummary,
-        personCount: Math.max(
-          minimumPersons,
-          Number(storedSummary.personCount ?? minimumPersons),
-        ),
-      };
+    const storedSummary = readOrderSummary(vendor);
+
+    setOrderSummary({
+      ...storedSummary,
+      personCount: Math.max(
+        minimumPersons,
+        Number(storedSummary.personCount ?? minimumPersons),
+      ),
     });
+    setVendorNote(`${storedSummary.vendorNote ?? ""}`);
     setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");
     setSelectedRequired(menuItem.modal.requiredSelection?.options?.[0] ?? "");
     setSelectedOptional({});
-    setVendorNote("");
     setIsAvailabilityPopupDismissed(false);
   }, [menuItem, minimumPersons, vendor]);
 
@@ -275,6 +274,20 @@ export default function MenuDetailsPage() {
       return;
     }
 
+    if (
+      !isVendorDeliverySlotAvailable(
+        vendor,
+        orderSummary.deliveryDate,
+        orderSummary.deliveryTime,
+      )
+    ) {
+      await showAuthErrorAlert(
+        "This caterer is unavailable at your selected delivery time. Please choose another date or time.",
+        "Unavailable for selected time",
+      );
+      return;
+    }
+
     const validationError = validateOrderSummaryBasics({
       deliveryDate: orderSummary.deliveryDate,
       deliveryTime: orderSummary.deliveryTime,
@@ -328,10 +341,10 @@ export default function MenuDetailsPage() {
 
     setOrderSummary((current) => ({
       ...current,
-      personCount:
-        current.items.filter((item) => !item.isAddOn).length === 0
-          ? summaryItem.totalServes
-          : current.personCount + summaryItem.totalServes,
+      personCount: Math.max(
+        minimumPersons,
+        Number(current.personCount ?? minimumPersons),
+      ),
       items: [summaryItem, ...current.items],
     }));
 
@@ -401,6 +414,7 @@ export default function MenuDetailsPage() {
                 includedMenuItems={includedMenuItems}
               />
               <MenuDeliveryForm
+                isVendorAvailable={!showAvailabilityPopup}
                 orderSummary={orderSummary}
                 vendorNote={vendorNote}
                 onDeliveryDateChange={(deliveryDate) =>
@@ -419,7 +433,13 @@ export default function MenuDetailsPage() {
                   setOrderSummary((current) => ({ ...current, deliveryAddress }))
                 }
                 minimumPersons={minimumPersons}
-                onVendorNoteChange={setVendorNote}
+                onVendorNoteChange={(nextVendorNote) => {
+                  setVendorNote(nextVendorNote);
+                  setOrderSummary((current) => ({
+                    ...current,
+                    vendorNote: nextVendorNote,
+                  }));
+                }}
                 onAddToCart={handleAddToCart}
               />
             </div>
@@ -428,6 +448,7 @@ export default function MenuDetailsPage() {
           <VendorOrderSidebar
             vendor={vendor}
             orderSummary={orderSummary}
+            isVendorAvailable={!showAvailabilityPopup}
             onRemoveItem={async (itemKey) => {
               const itemName = orderSummary.items.find((item) => item.id === itemKey)?.name;
               const result = await confirmRemoveItem(itemName);
@@ -437,15 +458,8 @@ export default function MenuDetailsPage() {
               }
 
               setOrderSummary((current) => {
-                const removedItem = current.items.find((item) => item.id === itemKey);
-
                 return {
                   ...current,
-                  personCount: Math.max(
-                    1,
-                    current.personCount -
-                      (removedItem?.isAddOn ? 0 : (removedItem?.totalServes ?? 0)),
-                  ),
                   items: current.items.filter((item) => item.id !== itemKey),
                 };
               });
