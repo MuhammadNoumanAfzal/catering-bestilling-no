@@ -7,4 +7,33 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(),    tailwindcss(),
 ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) {
+            return undefined
+          }
+
+          if (id.includes('react-router')) {
+            return 'router'
+          }
+
+          if (id.includes('sweetalert2')) {
+            return 'alerts'
+          }
+
+          if (id.includes('react-icons')) {
+            return 'icons'
+          }
+
+          if (id.includes('react-datepicker') || id.includes('date-fns')) {
+            return 'date-ui'
+          }
+
+          return 'vendor'
+        },
+      },
+    },
+  },
 })
