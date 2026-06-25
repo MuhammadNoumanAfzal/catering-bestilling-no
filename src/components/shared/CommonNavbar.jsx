@@ -17,6 +17,58 @@ const commonProfileMenuItems = [
   ...vendorNavigationItems.filter((item) => item.to !== "/vendor-dashboard"),
 ];
 
+const DEFAULT_SEARCH_ROUTE = "/vendors/popular";
+const DEFAULT_FILTER_ROUTE = "/";
+
+function resolveNavbarSearchRoute(pathname) {
+  if (pathname.startsWith("/browse/food-type")) {
+    return "/browse/food-type";
+  }
+
+  if (pathname.startsWith("/browse/occasion")) {
+    return "/browse/occasion";
+  }
+
+  if (pathname.startsWith("/vendors/featured")) {
+    return "/vendors/featured";
+  }
+
+  if (pathname.startsWith("/vendors/popular")) {
+    return "/vendors/popular";
+  }
+
+  if (pathname.startsWith("/products/popular")) {
+    return "/products/popular";
+  }
+
+  return DEFAULT_SEARCH_ROUTE;
+}
+
+function shouldPreserveSearchParams(pathname) {
+  return (
+    pathname.startsWith("/browse/food-type") ||
+    pathname.startsWith("/browse/occasion") ||
+    pathname.startsWith("/vendors/featured") ||
+    pathname.startsWith("/vendors/popular") ||
+    pathname.startsWith("/products/popular")
+  );
+}
+
+function resolveNavbarFilterRoute(pathname) {
+  if (
+    pathname === "/" ||
+    pathname.startsWith("/browse/food-type") ||
+    pathname.startsWith("/browse/occasion") ||
+    pathname.startsWith("/vendors/featured") ||
+    pathname.startsWith("/vendors/popular") ||
+    pathname.startsWith("/products/popular")
+  ) {
+    return pathname;
+  }
+
+  return DEFAULT_FILTER_ROUTE;
+}
+
 function formatEventLabel(attendeeCount, eventName) {
   if (eventName) {
     return eventName;
@@ -147,22 +199,29 @@ export default function CommonNavbar({
     setDeliveryDate(draftDate);
     setDeliveryTime(draftTime);
     setOpenDropdown(null);
-
-    if (location.pathname.startsWith("/vendor-dashboard")) {
-      navigate("/");
-    }
+    navigate({
+      pathname: resolveNavbarFilterRoute(location.pathname),
+      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+    });
   };
 
   const applyEventDetails = () => {
     setAttendeeCount(draftAttendeeCount);
     setEventName(draftEventName.trim());
     setOpenDropdown(null);
+    navigate({
+      pathname: resolveNavbarFilterRoute(location.pathname),
+      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+    });
   };
 
   const handleSearchSubmit = () => {
-    if (location.pathname.startsWith("/vendor-dashboard")) {
-      navigate("/");
-    }
+    const nextPathname = resolveNavbarSearchRoute(location.pathname);
+
+    navigate({
+      pathname: nextPathname,
+      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+    });
   };
 
   const handleSignOut = async () => {

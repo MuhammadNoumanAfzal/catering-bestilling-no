@@ -28,8 +28,12 @@ export default function HomeNavbar() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { isLoggedIn, user, signOut } = useAuth();
   const { itemCount: cartItemCount } = useNavbarCartSummary();
-  const { hasFreshNotification, notifications, unreadNotificationCount } =
-    useUserNotifications();
+  const {
+    acknowledgeFreshNotifications,
+    hasFreshNotification,
+    notifications,
+    unreadNotificationCount,
+  } = useUserNotifications();
   const desktopNotificationRef = useRef(null);
   const mobileNotificationRef = useRef(null);
   const profileMenuRef = useRef(null);
@@ -95,7 +99,17 @@ export default function HomeNavbar() {
               <div className="relative" ref={desktopNotificationRef}>
                 <button
                   type="button"
-                  onClick={() => setIsNotificationOpen((current) => !current)}
+                  onClick={() =>
+                    setIsNotificationOpen((current) => {
+                      const nextValue = !current;
+
+                      if (nextValue) {
+                        acknowledgeFreshNotifications();
+                      }
+
+                      return nextValue;
+                    })
+                  }
                   className={`${actionButtonClassName} ${
                     hasFreshNotification
                       ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
@@ -284,7 +298,17 @@ export default function HomeNavbar() {
 
                 <button
                   type="button"
-                  onClick={() => setIsNotificationOpen((current) => !current)}
+                  onClick={() =>
+                    setIsNotificationOpen((current) => {
+                      const nextValue = !current;
+
+                      if (nextValue) {
+                        acknowledgeFreshNotifications();
+                      }
+
+                      return nextValue;
+                    })
+                  }
                   className="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 transition hover:text-black"
                   aria-expanded={isNotificationOpen}
                 >
