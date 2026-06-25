@@ -14,6 +14,7 @@ function EmptyState({ categoryLabel }) {
 }
 
 export default function BrowseMenuSection({
+  sectionId,
   title,
   items,
   totalItems,
@@ -22,7 +23,7 @@ export default function BrowseMenuSection({
   onSeeAllClick,
 }) {
   return (
-    <section className="mt-12 ">
+    <section id={sectionId} className="mt-12 ">
       <div className="mx-auto px-4 w-full max-w-7xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="type-h3 font-semibold text-[#191919]">{title}</h2>

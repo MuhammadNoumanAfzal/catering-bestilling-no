@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   dietaryOptions,
   offerOptions,
@@ -18,9 +18,12 @@ import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 export default function BrowseFilterBar({
   variant = "default",
   onControlInteract,
+  onApply,
+  resultsAnchorId,
 }) {
   const [activeFilters, setActiveFilters] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [showAppliedState, setShowAppliedState] = useState(false);
   const {
     clearBrowseFilters,
     otherFilters,
@@ -205,6 +208,48 @@ export default function BrowseFilterBar({
     toggleFilter(chipKey);
   };
 
+  const handleApplyClick = () => {
+    setOpenDropdown(null);
+    setShowAppliedState(true);
+    onControlInteract?.();
+    onApply?.();
+
+    if (!resultsAnchorId) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      const element = document.getElementById(resultsAnchorId);
+
+      if (!element) {
+        return;
+      }
+
+      const topOffset = 104;
+      const nextScrollTop =
+        element.getBoundingClientRect().top + window.scrollY - topOffset;
+
+      window.scrollTo({
+        top: Math.max(0, nextScrollTop),
+        behavior: "smooth",
+      });
+    });
+  };
+
+  useEffect(() => {
+    if (!showAppliedState) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setShowAppliedState(false);
+    }, 1400);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [showAppliedState]);
+
   return (
     <>
       <div className="sticky top-[76px] z-30 bg-white/95 pb-2 backdrop-blur-[6px]">
@@ -235,10 +280,12 @@ export default function BrowseFilterBar({
 
           <button
             type="button"
-            onClick={() => setOpenDropdown(null)}
-            className={styles.applyButtonClassName}
+            onClick={handleApplyClick}
+            className={`${styles.applyButtonClassName} ${
+              showAppliedState ? "bg-[#2f8f57] hover:bg-[#2a7f4d]" : ""
+            }`}
           >
-            Apply
+            {showAppliedState ? "Applied" : "Apply"}
           </button>
         </div>
 
