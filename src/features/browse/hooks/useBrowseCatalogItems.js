@@ -229,6 +229,10 @@ export function useBrowseCatalogItems(mode = "food-type") {
     () => (categories.length > 8 ? categories.slice(8) : []),
     [categories],
   );
+  const hasVisibleContent =
+    categories.length > 0 || items.length > 0 || totalCount > 0;
+  const isInitialLoading = (isLoading || isTaxonomyLoading) && !hasVisibleContent;
+  const isRefreshing = (isLoading || isTaxonomyLoading) && hasVisibleContent;
 
   return {
     categories: primaryCategories,
@@ -236,6 +240,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
     items,
     totalCount,
     error,
-    isLoading: isLoading || isTaxonomyLoading,
+    isLoading: isInitialLoading,
+    isRefreshing,
   };
 }
