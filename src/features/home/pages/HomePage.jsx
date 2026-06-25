@@ -72,6 +72,10 @@ function buildSearchSummaryLabel({ postCode, areaName }) {
   return "";
 }
 
+function isValidPostalCode(postCode) {
+  return /^\d{4,5}$/.test(`${postCode ?? ""}`.trim());
+}
+
 export default function HomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -96,6 +100,7 @@ export default function HomePage() {
   const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [foodTypeCategories, setFoodTypeCategories] = useState([]);
+  const [searchValidationMessage, setSearchValidationMessage] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
   const vendorResultsRef = useRef(null);
   const {
@@ -117,6 +122,7 @@ export default function HomePage() {
     locationValue,
   });
   const menuQuery = buildCategoryQuery(normalizedCategoryFilter);
+  const hasValidPostalCode = isValidPostalCode(normalizedPostalCode);
 
   useEffect(() => {
     let isMounted = true;
@@ -185,8 +191,18 @@ export default function HomePage() {
 
   const handleHomeSearch = () => {
     const nextPostalCode = normalizePostalCode(postalCode);
+    const hasPostalCodeInput = Boolean(nextPostalCode);
+
+    if (hasPostalCodeInput && !isValidPostalCode(nextPostalCode)) {
+      setSearchValidationMessage(
+        "Postal code must be 4 or 5 digits before you search.",
+      );
+      return;
+    }
+
     const nextAreaName = nextPostalCode ? "" : extractAreaName(draftDeliveryAddress);
     const hasSearchInput = Boolean(nextPostalCode || draftDeliveryAddress.trim());
+    setSearchValidationMessage("");
 
     setDeliveryAddress(draftDeliveryAddress.trim());
     setLocationValue(nextPostalCode || nextAreaName);
@@ -292,6 +308,7 @@ export default function HomePage() {
     setDeliveryAddress("");
     setLocationValue("");
     setAppliedSearchFilters({});
+    setSearchValidationMessage("");
     setPendingSearchScroll(false);
   };
 
@@ -301,9 +318,17 @@ export default function HomePage() {
         deliveryAddress={draftDeliveryAddress}
         onDeliveryAddressChange={setDraftDeliveryAddress}
         postalCode={normalizedPostalCode}
-        onPostalCodeChange={setPostalCode}
+        onPostalCodeChange={(value) => {
+          setPostalCode(value);
+
+          if (searchValidationMessage && isValidPostalCode(value)) {
+            setSearchValidationMessage("");
+          }
+        }}
         availableVendorCount={availableVendorCount}
+        hasValidPostalCode={hasValidPostalCode}
         onSearch={handleHomeSearch}
+        searchValidationMessage={searchValidationMessage}
       />
       {error ? (
         <HomeStatusBanner
