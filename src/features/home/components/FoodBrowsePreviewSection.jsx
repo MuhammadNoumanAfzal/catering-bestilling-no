@@ -15,7 +15,8 @@ export default function FoodBrowsePreviewSection({
   onSeeAllClick,
 }) {
   const [showMorePanel, setShowMorePanel] = useState(false);
-  const shouldShowPreviewMenu = Boolean(activeCategoryLabel);
+  const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
+  const shouldShowPreviewMenu = Boolean(activeCategoryLabel || hasAppliedFilters);
 
   return (
     <section className="overflow-x-clip bg-white px-4 py-6 sm:px-8 lg:px-20">
@@ -31,12 +32,20 @@ export default function FoodBrowsePreviewSection({
           onCategoryChange={onCategoryChange}
         />
 
-        <BrowseFilterBar onControlInteract={() => setShowMorePanel(false)} />
+        <BrowseFilterBar
+          onControlInteract={() => setShowMorePanel(false)}
+          onApply={() => {
+            setShowMorePanel(false);
+            setHasAppliedFilters(true);
+          }}
+          resultsAnchorId="home-browse-results"
+        />
       </div>
 
       {shouldShowPreviewMenu ? (
         <BrowseMenuSection
-          title={`${activeCategoryLabel} Menu`}
+          sectionId="home-browse-results"
+          title={activeCategoryLabel ? `${activeCategoryLabel} Menu` : "Menu"}
           items={previewItems}
           totalItems={totalItems}
           activeCategoryLabel={activeCategoryLabel}

@@ -189,10 +189,14 @@ export default function BrowseCatalogView({
           moreOptions={moreOptions}
           onCategoryChange={handleCategoryChange}
         />
-        <BrowseFilterBar />
+        <BrowseFilterBar
+          onApply={() => setCurrentPage(1)}
+          resultsAnchorId="browse-results"
+        />
       </div>
 
       <BrowseMenuSection
+        sectionId="browse-results"
         title="Menu"
         items={paginatedItems}
         totalItems={totalItems ?? filteredMenuItems.length}
