@@ -7,7 +7,9 @@ export default function HeroSection({
   postalCode,
   onPostalCodeChange,
   availableVendorCount,
+  hasValidPostalCode,
   onSearch,
+  searchValidationMessage,
 }) {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -58,7 +60,11 @@ export default function HeroSection({
                   type="text"
                   inputMode="numeric"
                   value={postalCode}
-                  onChange={(event) => onPostalCodeChange?.(event.target.value)}
+                  onChange={(event) =>
+                    onPostalCodeChange?.(
+                      event.target.value.replace(/\D/g, "").slice(0, 5),
+                    )
+                  }
                   onKeyDown={handleKeyDown}
                   placeholder="Add Postal Code"
                   className="type-para h-12 rounded-xl border border-gray-300 bg-white px-4 text-gray-700 outline-none placeholder:text-gray-400 transition focus-within:border-[#e98c65] sm:w-[180px]"
@@ -75,7 +81,13 @@ export default function HeroSection({
               </button>
 
               <p className="mt-3 text-sm text-[#5f5a55]">
-                {postalCode || deliveryAddress
+                {searchValidationMessage ? (
+                  <span className="font-medium text-[#b6542c]">
+                    {searchValidationMessage}
+                  </span>
+                ) : postalCode && !hasValidPostalCode ? (
+                  "Enter a 4 or 5 digit postal code to search in your area."
+                ) : postalCode || deliveryAddress
                   ? `${availableVendorCount} vendor${
                       availableVendorCount === 1 ? "" : "s"
                     } available for ${
