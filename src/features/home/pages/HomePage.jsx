@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
@@ -60,6 +60,18 @@ function slugifyCategory(value) {
     .replace(/(^-|-$)+/g, "");
 }
 
+function buildSearchSummaryLabel({ postCode, areaName }) {
+  if (postCode) {
+    return `postal code ${postCode}`;
+  }
+
+  if (areaName) {
+    return areaName;
+  }
+
+  return "";
+}
+
 export default function HomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -84,6 +96,8 @@ export default function HomePage() {
   const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [foodTypeCategories, setFoodTypeCategories] = useState([]);
+  const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
+  const vendorResultsRef = useRef(null);
   const {
     popularVendors,
     featuredVendors,
@@ -96,6 +110,7 @@ export default function HomePage() {
   const normalizedPostalCode = normalizePostalCode(postalCode);
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const normalizedCategoryFilter = normalizeCategorySelection(selectedCategory);
+  const appliedSearchLabel = buildSearchSummaryLabel(appliedSearchFilters);
   const activeHomeLocationFilter = buildLocationFilter({
     postalCode: normalizedPostalCode,
     deliveryAddress: draftDeliveryAddress,
@@ -171,6 +186,7 @@ export default function HomePage() {
   const handleHomeSearch = () => {
     const nextPostalCode = normalizePostalCode(postalCode);
     const nextAreaName = nextPostalCode ? "" : extractAreaName(draftDeliveryAddress);
+    const hasSearchInput = Boolean(nextPostalCode || draftDeliveryAddress.trim());
 
     setDeliveryAddress(draftDeliveryAddress.trim());
     setLocationValue(nextPostalCode || nextAreaName);
@@ -178,6 +194,7 @@ export default function HomePage() {
       postCode: nextPostalCode || undefined,
       areaName: nextAreaName || undefined,
     });
+    setPendingSearchScroll(hasSearchInput);
   };
   const sharedFilters = useMemo(
     () => ({
@@ -235,6 +252,48 @@ export default function HomePage() {
     filteredPopularVendors.length + filteredFeaturedVendors.length;
   const isInitialLoading = status === "loading" && !hasLoadedOnce;
   const isRefreshing = status === "loading" && hasLoadedOnce;
+  const hasAppliedLocationSearch = Boolean(appliedSearchLabel);
+
+  useEffect(() => {
+    if (!pendingSearchScroll) {
+      return;
+    }
+
+    if (status === "loading") {
+      return;
+    }
+
+    if (availableVendorCount <= 0) {
+      setPendingSearchScroll(false);
+      return;
+    }
+
+    const resultsElement = vendorResultsRef.current;
+
+    if (!resultsElement) {
+      setPendingSearchScroll(false);
+      return;
+    }
+
+    const topOffset = 104;
+    const nextScrollTop =
+      resultsElement.getBoundingClientRect().top + window.scrollY - topOffset;
+
+    window.scrollTo({
+      top: Math.max(0, nextScrollTop),
+      behavior: "smooth",
+    });
+    setPendingSearchScroll(false);
+  }, [availableVendorCount, pendingSearchScroll, status]);
+
+  const handleClearLocationSearch = () => {
+    setPostalCode("");
+    setDraftDeliveryAddress("");
+    setDeliveryAddress("");
+    setLocationValue("");
+    setAppliedSearchFilters({});
+    setPendingSearchScroll(false);
+  };
 
   return (
     <div>
@@ -259,6 +318,30 @@ export default function HomePage() {
           message="Refreshing vendors and products for your latest search."
         />
       ) : null}
+      {!error &&
+      !isInitialLoading &&
+      hasAppliedLocationSearch &&
+      availableVendorCount > 0 ? (
+        <HomeStatusBanner
+          tone="info"
+          message={`Showing ${availableVendorCount} vendor${
+            availableVendorCount === 1 ? "" : "s"
+          } for ${appliedSearchLabel}.`}
+          actionLabel="Clear search"
+          onAction={handleClearLocationSearch}
+        />
+      ) : null}
+      {!error &&
+      !isInitialLoading &&
+      hasAppliedLocationSearch &&
+      availableVendorCount === 0 ? (
+        <HomeStatusBanner
+          tone="error"
+          message={`No vendors are currently available for ${appliedSearchLabel}. Try another address, area, or postal code.`}
+          actionLabel="Clear search"
+          onAction={handleClearLocationSearch}
+        />
+      ) : null}
       <FoodBrowsePreviewSection
         categories={previewCategories}
         moreOptions={previewMoreOptions}
@@ -280,7 +363,7 @@ export default function HomePage() {
           />
         </>
       ) : (
-        <>
+        <div ref={vendorResultsRef}>
           <VendorShowcaseSection
             title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
             vendors={filteredPopularVendors}
@@ -311,7 +394,7 @@ export default function HomePage() {
             })}
             onSeeAllClick={() => navigate(`/products/popular${menuQuery}`)}
           />
-        </>
+        </div>
       )}
       <HowItWorksSection />
     </div>
