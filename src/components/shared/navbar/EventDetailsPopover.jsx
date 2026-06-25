@@ -14,21 +14,22 @@ export default function EventDetailsPopover({
     <div className="absolute left-[250px] top-[calc(100%+10px)] z-50 max-h-[calc(100vh-96px)] w-[450px] overflow-y-auto rounded-[18px] border border-[#e6ded4] bg-white p-6 py-8 shadow-[0_18px_60px_rgba(26,18,9,0.18)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
       <div className="absolute -top-2 left-8 h-4 w-4 rotate-45 border-l border-t border-[#e6ded4] bg-white" />
 
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="type-h4 ">Number of attendees</p>
+      <div className="mb-4 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <p className="type-h4 ">Number of attendees</p>
 
-        <div className="flex items-center gap-3">
           {attendeeCount > 0 || eventName.trim() ? (
             <button
               type="button"
               onClick={onClear}
-              className="text-[13px] font-semibold text-[#c85f33] transition hover:text-[#a94b24]"
+              className="shrink-0 text-[13px] font-semibold text-[#c85f33] transition hover:text-[#a94b24]"
             >
               Clear
             </button>
           ) : null}
+        </div>
 
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => onAttendeeChange(-1)}
@@ -56,7 +57,6 @@ export default function EventDetailsPopover({
           >
             <FiPlus className="text-[22px]" />
           </button>
-          </div>
         </div>
       </div>
 
