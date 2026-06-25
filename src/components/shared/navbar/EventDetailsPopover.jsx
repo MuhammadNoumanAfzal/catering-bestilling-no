@@ -5,6 +5,7 @@ export default function EventDetailsPopover({
   attendeeInput,
   eventName,
   onApply,
+  onClear,
   onAttendeeChange,
   onAttendeeInputChange,
   onEventNameChange,
@@ -16,7 +17,18 @@ export default function EventDetailsPopover({
       <div className="mb-4 flex items-center justify-between gap-3">
         <p className="type-h4 ">Number of attendees</p>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-3">
+          {attendeeCount > 0 || eventName.trim() ? (
+            <button
+              type="button"
+              onClick={onClear}
+              className="text-[13px] font-semibold text-[#c85f33] transition hover:text-[#a94b24]"
+            >
+              Clear
+            </button>
+          ) : null}
+
+          <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => onAttendeeChange(-1)}
@@ -44,6 +56,7 @@ export default function EventDetailsPopover({
           >
             <FiPlus className="text-[22px]" />
           </button>
+          </div>
         </div>
       </div>
 

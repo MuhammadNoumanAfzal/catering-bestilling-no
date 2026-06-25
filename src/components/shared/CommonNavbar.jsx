@@ -215,6 +215,31 @@ export default function CommonNavbar({
     });
   };
 
+  const clearDeliverySelection = () => {
+    setDraftDate(null);
+    setDraftTime("");
+    setDeliveryDate(null);
+    setDeliveryTime("");
+    setOpenDropdown(null);
+    navigate({
+      pathname: resolveNavbarFilterRoute(location.pathname),
+      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+    });
+  };
+
+  const clearEventDetails = () => {
+    setDraftAttendeeCount(0);
+    setDraftAttendeeInput("");
+    setDraftEventName("");
+    setAttendeeCount(0);
+    setEventName("");
+    setOpenDropdown(null);
+    navigate({
+      pathname: resolveNavbarFilterRoute(location.pathname),
+      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+    });
+  };
+
   const handleSearchSubmit = () => {
     const nextPathname = resolveNavbarSearchRoute(location.pathname);
 
@@ -270,6 +295,8 @@ export default function CommonNavbar({
               locationValue={locationValue}
               onApplyDelivery={applyDeliverySelection}
               onApplyEvent={applyEventDetails}
+              onClearDelivery={clearDeliverySelection}
+              onClearEvent={clearEventDetails}
               onAttendeeChange={(change) =>
                 setDraftAttendeeCount((current) => {
                   const nextValue = Math.max(0, current + change);
@@ -284,6 +311,7 @@ export default function CommonNavbar({
               onDateSelect={setDraftDate}
               onEventNameChange={setDraftEventName}
               onLocationChange={setLocationValue}
+              onLocationClear={() => setLocationValue("")}
               onMonthChange={(direction) =>
                 setCalendarMonth(
                   (current) =>

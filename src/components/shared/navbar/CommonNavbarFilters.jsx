@@ -22,11 +22,14 @@ export default function CommonNavbarFilters({
   locationValue,
   onApplyDelivery,
   onApplyEvent,
+  onClearDelivery,
+  onClearEvent,
   onAttendeeChange,
   onAttendeeInputChange,
   onDateSelect,
   onEventNameChange,
   onLocationChange,
+  onLocationClear,
   onMonthChange,
   onSearchChange,
   onSearchSubmit,
@@ -50,10 +53,27 @@ export default function CommonNavbarFilters({
               type="text"
               value={locationValue}
               onChange={(event) => onLocationChange(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  onSearchSubmit?.();
+                }
+              }}
               placeholder="Enter location"
               className="w-[112px] bg-transparent text-[15px] text-[#434343] outline-none placeholder:text-[#a7a099] xl:w-[150px] xl:text-[16px]"
             />
           </label>
+
+          {locationValue.trim() ? (
+            <button
+              type="button"
+              onClick={onLocationClear}
+              className="mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#a7a099] transition hover:bg-[#f5eee7] hover:text-[#CF3A00]"
+              aria-label="Clear location"
+            >
+              <FiX className="text-[11px]" />
+            </button>
+          ) : null}
 
           <div className="h-4  w-px bg-[#e3ddd6]" />
 
@@ -87,6 +107,20 @@ export default function CommonNavbarFilters({
             />
           </button>
 
+          {hasDeliverySelection ? (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onClearDelivery?.();
+              }}
+              className="mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#a7a099] transition hover:bg-[#f5eee7] hover:text-[#CF3A00]"
+              aria-label="Clear delivery filter"
+            >
+              <FiX className="text-[11px]" />
+            </button>
+          ) : null}
+
           <div className="h-4 w-px bg-[#e3ddd6]" />
 
           <button
@@ -109,6 +143,20 @@ export default function CommonNavbarFilters({
               }`}
             />
           </button>
+
+          {hasEventSelection ? (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onClearEvent?.();
+              }}
+              className="ml-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#a7a099] transition hover:bg-[#f5eee7] hover:text-[#CF3A00]"
+              aria-label="Clear event filter"
+            >
+              <FiX className="text-[11px]" />
+            </button>
+          ) : null}
         </div>
 
         {openDropdown === "delivery" ? (
@@ -117,6 +165,7 @@ export default function CommonNavbarFilters({
             draftDate={draftDate}
             draftTime={draftTime}
             onApply={onApplyDelivery}
+            onClear={onClearDelivery}
             onDateSelect={onDateSelect}
             onMonthChange={onMonthChange}
             onTimeSelect={onTimeSelect}
@@ -129,6 +178,7 @@ export default function CommonNavbarFilters({
             attendeeInput={draftAttendeeInput}
             eventName={draftEventName}
             onApply={onApplyEvent}
+            onClear={onClearEvent}
             onAttendeeChange={onAttendeeChange}
             onAttendeeInputChange={onAttendeeInputChange}
             onEventNameChange={onEventNameChange}

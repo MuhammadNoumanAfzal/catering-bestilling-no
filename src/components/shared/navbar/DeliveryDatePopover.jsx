@@ -11,6 +11,7 @@ export default function DeliveryDatePopover({
   draftDate,
   draftTime,
   onApply,
+  onClear,
   onDateSelect,
   onMonthChange,
   onTimeSelect,
@@ -29,6 +30,15 @@ export default function DeliveryDatePopover({
         <div>
           <p className="text-[15px] font-semibold ">Delivery date</p>
         </div>
+        {draftDate || draftTime ? (
+          <button
+            type="button"
+            onClick={onClear}
+            className="text-[13px] font-semibold text-[#c85f33] transition hover:text-[#a94b24]"
+          >
+            Clear
+          </button>
+        ) : null}
       </div>
 
       <div className="rounded-[16px] border border-[#d9d2c9] p-3">
