@@ -2,9 +2,18 @@ export default function VendorMenuItemCard({ item, onClick }) {
   return (
     <article
       onClick={onClick}
-      className="grid min-h-[176px] cursor-pointer grid-cols-[1fr_112px] overflow-hidden rounded-[18px] border border-[#e7dfd6] bg-white shadow-[0_10px_24px_rgba(31,19,8,0.05)] transition hover:-translate-y-0.5 hover:border-[#d7c4b4]"
+      className="overflow-hidden rounded-[18px] border border-[#e7dfd6] bg-white shadow-[0_10px_24px_rgba(31,19,8,0.05)] transition hover:-translate-y-0.5 hover:border-[#d7c4b4] sm:grid sm:min-h-[176px] sm:grid-cols-[1fr_112px] sm:items-stretch"
     >
-      <div className="p-4">
+      <div className="relative h-[188px] sm:order-2 sm:h-full">
+        <img
+          src={item.image}
+          alt={item.title}
+          className="h-full w-full object-cover"
+        />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/25 to-transparent" />
+      </div>
+
+      <div className="p-4 sm:order-1">
         <div className="flex flex-wrap items-center gap-2">
           {item.subcategory ? (
             <p className="text-subpara font-semibold uppercase tracking-[0.08em] text-[#cf6e38]">
@@ -48,15 +57,6 @@ export default function VendorMenuItemCard({ item, onClick }) {
         <p className="mt-4 text-[18px] font-semibold text-[#121212]">
           NOK {item.price.toFixed(2)}
         </p>
-      </div>
-
-      <div className="relative h-full">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="h-full w-full object-cover"
-        />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/25 to-transparent" />
       </div>
     </article>
   );

@@ -3,16 +3,22 @@ import { LiaBicycleSolid } from "react-icons/lia";
 
 function InfoCard({ icon, label, value, subvalue }) {
   return (
-    <div className="rounded-[22px] border border-[#ead8c8] bg-[#fffaf5] px-4 py-4 shadow-[0_6px_18px_rgba(39,24,13,0.04)]">
-      <div className="flex items-start gap-3">
-        <span className="mt-1 text-[16px] text-[#1f1712]">{icon}</span>
-        <div>
-          <p className="text-[13px] font-medium text-[#1f1712]">{label}</p>
-          <p className="mt-1 text-[15px] font-semibold leading-6 text-[#111111]">
+    <div className="min-h-[116px] rounded-[22px] border border-[#ead8c8] bg-[#fffaf5] px-4 py-4 shadow-[0_6px_18px_rgba(39,24,13,0.04)] sm:min-h-[128px] sm:px-5">
+      <div className="flex items-start gap-3.5">
+        <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-[15px] text-[#1f1712] shadow-[0_4px_10px_rgba(39,24,13,0.05)]">
+          {icon}
+        </span>
+        <div className="min-w-0">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#7a6453]">
+            {label}
+          </p>
+          <p className="mt-1.5 text-[16px] font-semibold leading-6 text-[#111111] sm:text-[17px]">
             {value}
           </p>
           {subvalue ? (
-            <p className="mt-1 text-[12px] leading-5 text-[#2f241c]">{subvalue}</p>
+            <p className="mt-1.5 text-[12px] leading-5 text-[#5d5147] sm:text-[13px]">
+              {subvalue}
+            </p>
           ) : null}
         </div>
       </div>
@@ -38,7 +44,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-3.5 md:grid-cols-2 xl:grid-cols-4">
         <InfoCard
           icon={<FiStar className="fill-[#f4b400] text-[#f4b400]" />}
           label="Rating"
@@ -64,14 +70,14 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         />
       </div>
 
-      <div className="mt-5 rounded-[16px] bg-white pb-4">
-        <p className="text-[16px] leading-9 text-[#1d1713]">
+      <div className="mt-5 rounded-[18px] border border-[#efe4da] bg-white p-4 sm:p-5">
+        <p className="text-[15px] leading-8 text-[#1d1713] sm:text-[16px] sm:leading-9">
           Price: NOK {unitPrice.toFixed(2)} {priceLabel}
         </p>
-        <p className="text-[16px] leading-9 text-[#1d1713]">
+        <p className="text-[15px] leading-8 text-[#1d1713] sm:text-[16px] sm:leading-9">
           Vendor: {vendor.name}
         </p>
-        <p className="mt-4 max-w-3xl text-[15px] leading-8 text-[#4e443c]">
+        <p className="mt-3 max-w-3xl text-[14px] leading-7 text-[#4e443c] sm:mt-4 sm:text-[15px] sm:leading-8">
           {menuItem.description}
         </p>
       </div>
