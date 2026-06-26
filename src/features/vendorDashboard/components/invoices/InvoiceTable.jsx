@@ -22,7 +22,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
 
   return (
     <div className="mt-4">
-      <div className="hidden overflow-x-auto md:block">
+      <div className="hidden rounded-[24px] bg-white/55 p-2 md:block">
         <table className="w-full border-separate border-spacing-y-3">
           <thead>
             <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a7c71]">
