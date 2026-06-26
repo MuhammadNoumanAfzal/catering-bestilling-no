@@ -23,9 +23,9 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
   return (
     <div className="mt-4">
       <div className="hidden overflow-x-auto md:block">
-        <table className="w-full border-separate border-spacing-y-2">
+        <table className="w-full border-separate border-spacing-y-3">
           <thead>
-            <tr className="type-subpara text-left uppercase tracking-[0.04em] text-[#7e776f]">
+            <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a7c71]">
               <th className="px-3 py-2">Invoice</th>
               <th className="px-3 py-2">Vendor</th>
               <th className="px-3 py-2">Event</th>
@@ -38,11 +38,11 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
           </thead>
           <tbody>
             {invoices.map((invoice, index) => (
-              <tr
-                key={`${invoice.id}-${invoice.invoiceNumber}-${index}`}
-                className="rounded-2xl bg-[#fcfbf9] text-sm text-[#232323] shadow-[0_2px_8px_rgba(20,20,20,0.03)]"
-              >
-                <td className="rounded-l-2xl px-3 py-3 font-semibold">
+            <tr
+              key={`${invoice.id}-${invoice.invoiceNumber}-${index}`}
+              className="rounded-[22px] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f2_100%)] text-sm text-[#232323] shadow-[0_10px_22px_rgba(20,20,20,0.05)]"
+            >
+                <td className="rounded-l-[22px] px-3 py-4 font-semibold">
                   {invoice.invoiceNumberShort}
                 </td>
                 <td className="px-3 py-3">{invoice.vendor}</td>
@@ -57,7 +57,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                     {invoice.status}
                   </span>
                 </td>
-                <td className="rounded-r-2xl px-3 py-3">
+                <td className="rounded-r-[22px] px-3 py-4">
                   <div
                     className="relative flex justify-center"
                     ref={
@@ -105,7 +105,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
         {invoices.map((invoice, index) => (
           <article
             key={`${invoice.id}-${invoice.invoiceNumber}-mobile-${index}`}
-            className="rounded-[20px] border border-[#e8dfd7] bg-[#fcfbf9] p-4 shadow-[0_8px_20px_rgba(20,20,20,0.04)]"
+            className="rounded-[24px] border border-[#e8dfd7] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f2_100%)] p-4 shadow-[0_12px_26px_rgba(20,20,20,0.05)]"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -129,7 +129,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-[16px] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Event
                 </p>
@@ -137,7 +137,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                   {invoice.event}
                 </p>
               </div>
-              <div className="rounded-[16px] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Issued
                 </p>
@@ -145,7 +145,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                   {invoice.issuedOn}
                 </p>
               </div>
-              <div className="rounded-[16px] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Due On
                 </p>
@@ -153,7 +153,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                   {invoice.dueOn}
                 </p>
               </div>
-              <div className="rounded-[16px] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Amount
                 </p>
