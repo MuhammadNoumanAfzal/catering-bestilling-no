@@ -146,14 +146,14 @@ export default function VendorInvoicesPage() {
         <p className="mt-2 type-para">Track all invoice and payment records.</p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {overview.map((item) => (
           <InvoiceOverviewCard key={item.label} {...item} />
         ))}
       </section>
 
       <section className="rounded-[28px] border border-[#ddd4cb] bg-white p-4 shadow-[0_16px_34px_rgba(28,28,28,0.06)] md:p-5">
-        <div className="grid gap-3 border-b border-[#ece4dc] pb-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 border-b border-[#ece4dc] pb-4 xl:grid-cols-4">
           {totals.map((item) => (
             <InvoiceTotalCard key={item.label} {...item} />
           ))}
