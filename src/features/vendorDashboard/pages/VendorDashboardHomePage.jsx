@@ -130,7 +130,7 @@ export default function VendorDashboardHomePage() {
         </p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2">
+      <section className="grid grid-cols-2 gap-3 sm:gap-4">
         {stats.map((item) => (
           <VendorStatCard key={item.label} {...item} />
         ))}
