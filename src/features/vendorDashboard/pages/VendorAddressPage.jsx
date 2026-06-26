@@ -1,6 +1,5 @@
 import AddressBookSection from "../address/components/AddressBookSection";
 import AddressPageActions from "../address/components/AddressPageActions";
-import DashboardPageHero from "../components/DashboardPageHero";
 import { useVendorAddressPage } from "../address/hooks/useVendorAddressPage";
 
 export default function VendorAddressPage() {
@@ -33,36 +32,6 @@ export default function VendorAddressPage() {
 
   return (
     <div className="space-y-6">
-      <DashboardPageHero
-        eyebrow="Address book"
-        title="Delivery & Invoice Addresses"
-        description="Keep your default delivery and billing locations organized so checkout forms can autofill correctly every time."
-        stats={[
-          {
-            label: "Delivery",
-            value: deliveryAddresses.length,
-            note: "Saved delivery locations available.",
-          },
-          {
-            label: "Invoice",
-            value: invoiceAddresses.length,
-            note: "Saved billing addresses ready to use.",
-          },
-          {
-            label: "Changes",
-            value: isDirty ? "Unsaved" : "Saved",
-            note: isDirty
-              ? "Address edits are waiting to be saved."
-              : "Address book is synced.",
-          },
-          {
-            label: "Status",
-            value: isSaving ? "Saving" : "Ready",
-            note: "Current address book sync state.",
-          },
-        ]}
-      />
-
       <AddressBookSection
         type="delivery"
         title="Delivery Addresses"

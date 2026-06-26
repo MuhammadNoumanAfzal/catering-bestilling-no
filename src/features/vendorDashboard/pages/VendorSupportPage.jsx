@@ -1,7 +1,6 @@
 import { useState } from "react";
 import SupportTicketForm from "../components/support/SupportTicketForm";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
-import DashboardPageHero from "../components/DashboardPageHero";
 import { createSupportTicket } from "../support/api";
 
 const AUDIENCE_OPTIONS = [
@@ -92,33 +91,12 @@ export default function VendorSupportPage() {
 
   return (
     <div className="space-y-6">
-      <DashboardPageHero
-        eyebrow="Help desk"
-        title="Support Center"
-        description="Raise delivery, order, payment, or account issues with the right context so your team can move faster."
-        stats={[
-          {
-            label: "Audience",
-            value: formState.audience || "vendor",
-            note: "Who the current ticket is being raised for.",
-          },
-          {
-            label: "Subject",
-            value: formState.subject ? "Selected" : "Pending",
-            note: "Choose the issue type before submission.",
-          },
-          {
-            label: "Attachment",
-            value: selectedFileName ? "Added" : "Optional",
-            note: selectedFileName || "Upload support evidence when needed.",
-          },
-          {
-            label: "Status",
-            value: isSubmitting ? "Sending" : "Draft",
-            note: "Current ticket submission state.",
-          },
-        ]}
-      />
+      <section>
+        <h1 className="type-h2 text-[#191919]">Support Center</h1>
+        <p className="mt-2 type-para text-[#635b53]">
+          We&apos;re here to help. Find answers or get in touch with our team.
+        </p>
+      </section>
 
       <SupportTicketForm
         audienceOptions={AUDIENCE_OPTIONS}
