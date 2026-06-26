@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import DashboardPageHero from "../components/DashboardPageHero";
 import { getInvoiceStatusClasses } from "../components/invoices/invoiceUtils";
 import {
   clearInvoiceDownloadState,
@@ -101,39 +102,63 @@ export default function VendorInvoiceDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <Link
-            to="/vendor-dashboard/invoices"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#cf6e38] transition hover:text-[#b85e2a]"
-          >
-            <FiArrowLeft className="text-[15px]" />
-            Back to invoices
-          </Link>
-          <h1 className="mt-3 type-h2 text-[#191919]">Invoice Details</h1>
-          <p className="mt-2 type-para text-[#635b53]">
-            Review the invoice information and export a PDF when needed.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={async () => {
-            const result = await dispatch(fetchInvoiceDownloadUrl(invoice.id));
-
-            if (
-              fetchInvoiceDownloadUrl.fulfilled.match(result) &&
-              typeof window !== "undefined"
-            ) {
-              window.open(result.payload.url, "_blank", "noopener,noreferrer");
-            }
-          }}
-          disabled={downloadStatus === "loading"}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-70"
+      <div className="flex flex-col gap-3">
+        <Link
+          to="/vendor-dashboard/invoices"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[#cf6e38] transition hover:text-[#b85e2a]"
         >
-          <FiDownload className="text-[15px]" />
-          {downloadStatus === "loading" ? "Preparing PDF..." : "Export PDF"}
-        </button>
+          <FiArrowLeft className="text-[15px]" />
+          Back to invoices
+        </Link>
+
+        <DashboardPageHero
+          eyebrow="Finance detail"
+          title="Invoice Details"
+          description="Review billing details, payment meta, and line items before exporting or sharing this invoice."
+          stats={[
+            {
+              label: "Status",
+              value: invoice.status,
+              note: "Current invoice payment state.",
+            },
+            {
+              label: "Amount",
+              value: invoice.totalAmount,
+              note: "Final billed amount on this invoice.",
+            },
+            {
+              label: "Due",
+              value: invoice.dueOn || "N/A",
+              note: "Scheduled due date from the API.",
+            },
+            {
+              label: "Paid",
+              value: invoice.paidAmount,
+              note: "Amount recorded as settled so far.",
+            },
+          ]}
+        />
+
+        <div className="flex justify-start sm:justify-end">
+          <button
+            type="button"
+            onClick={async () => {
+              const result = await dispatch(fetchInvoiceDownloadUrl(invoice.id));
+
+              if (
+                fetchInvoiceDownloadUrl.fulfilled.match(result) &&
+                typeof window !== "undefined"
+              ) {
+                window.open(result.payload.url, "_blank", "noopener,noreferrer");
+              }
+            }}
+            disabled={downloadStatus === "loading"}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <FiDownload className="text-[15px]" />
+            {downloadStatus === "loading" ? "Preparing PDF..." : "Export PDF"}
+          </button>
+        </div>
       </div>
 
       <section className="rounded-[28px] border border-[#ddd4cb] bg-white p-4 shadow-[0_16px_34px_rgba(28,28,28,0.06)] md:p-6">
