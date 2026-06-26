@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FiDownload, FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import DashboardPageHero from "../components/DashboardPageHero";
 import InvoiceFilterMenu from "../components/invoices/InvoiceFilterMenu";
 import InvoiceOverviewCard from "../components/invoices/InvoiceOverviewCard";
 import InvoicePagination from "../components/invoices/InvoicePagination";
@@ -139,12 +140,42 @@ export default function VendorInvoicesPage() {
     );
   }
 
+  const paidInvoicesCount =
+    overview.find((item) => item.label === "Paid Invoices")?.value ?? 0;
+  const unpaidInvoicesCount =
+    overview.find((item) => item.label === "Unpaid Invoices")?.value ?? 0;
+  const overdueInvoicesCount =
+    overview.find((item) => item.label === "Overdue Invoices")?.value ?? 0;
+
   return (
     <div className="space-y-6">
-      <section>
-        <h1 className="type-h2">Invoice</h1>
-        <p className="mt-2 type-para">Track all invoice and payment records.</p>
-      </section>
+      <DashboardPageHero
+        eyebrow="Finance"
+        title="Invoices"
+        description="Monitor payment health, export records, and keep a clean view of what has been billed, paid, and still outstanding."
+        stats={[
+          {
+            label: "Loaded",
+            value: records.length,
+            note: "Invoices returned for the current dataset.",
+          },
+          {
+            label: "Paid",
+            value: paidInvoicesCount,
+            note: "Invoices already settled successfully.",
+          },
+          {
+            label: "Unpaid",
+            value: unpaidInvoicesCount,
+            note: "Invoices still awaiting payment.",
+          },
+          {
+            label: "Overdue",
+            value: overdueInvoicesCount,
+            note: "Past due invoices needing a follow-up.",
+          },
+        ]}
+      />
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {overview.map((item) => (
@@ -152,7 +183,7 @@ export default function VendorInvoicesPage() {
         ))}
       </section>
 
-      <section className="rounded-[28px] border border-[#ddd4cb] bg-white p-4 shadow-[0_16px_34px_rgba(28,28,28,0.06)] md:p-5">
+      <section className="rounded-[28px] border border-[#e6d9cd] bg-[linear-gradient(180deg,#fffdfb_0%,#fff8f3_100%)] p-4 shadow-[0_22px_44px_rgba(28,28,28,0.08)] md:p-5">
         <div className="grid grid-cols-2 gap-3 border-b border-[#ece4dc] pb-4 xl:grid-cols-4">
           {totals.map((item) => (
             <InvoiceTotalCard key={item.label} {...item} />

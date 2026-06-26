@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
 import { fetchSavedVendors, removeSavedVendor } from "../../vendor/api";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import DashboardPageHero from "../components/DashboardPageHero";
 
 function normalizeSavedRestaurant(vendor) {
   if (!vendor) {
@@ -139,14 +140,36 @@ export default function VendorRestaurantsPage() {
 
   return (
     <div className="space-y-6">
-      <section>
-        <div>
-          <h1 className="type-h2 text-[#191919]">Saved Restaurants</h1>
-          <p className="mt-2 text-sm text-[#5f5f5f]">
-            View all your saved restaurants that you like to order again
-          </p>
-        </div>
-      </section>
+      <DashboardPageHero
+        eyebrow="Favorites"
+        title="Saved Restaurants"
+        description="Keep your best vendor shortcuts in one place so you can jump back into trusted menus faster."
+        stats={[
+          {
+            label: "Saved",
+            value: savedRestaurants.length,
+            note: "Restaurants currently bookmarked.",
+          },
+          {
+            label: "Top Rated",
+            value:
+              savedRestaurants.length > 0
+                ? Math.max(...savedRestaurants.map((item) => item.rating)).toFixed(1)
+                : "0.0",
+            note: "Highest rating among your saved vendors.",
+          },
+          {
+            label: "Status",
+            value: isLoggedIn ? "Connected" : "Guest",
+            note: "Saved vendors sync with signed-in accounts.",
+          },
+          {
+            label: "Load",
+            value: isLoading ? "Loading" : "Ready",
+            note: "Current saved restaurants fetch status.",
+          },
+        ]}
+      />
 
       {!isLoggedIn ? (
         <RestaurantsPageStatus
