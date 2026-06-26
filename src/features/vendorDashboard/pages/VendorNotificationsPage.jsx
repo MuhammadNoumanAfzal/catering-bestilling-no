@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../auth";
 import { fetchUserNotifications } from "../../../components/shared/navbar/notificationsApi";
-import DashboardPageHero from "../components/DashboardPageHero";
 import NotificationSection from "../components/notification/NotificationSection";
 import NotificationDateFilter from "../components/notification/NotificationDateFilter";
 import NotificationTabs from "../components/notification/NotificationTabs";
@@ -164,33 +163,12 @@ export default function VendorNotificationsPage() {
 
   return (
     <div className="space-y-6">
-      <DashboardPageHero
-        eyebrow="Activity"
-        title="Notifications"
-        description="Review order changes, account alerts, and important system updates from a single organized feed."
-        stats={[
-          {
-            label: "All",
-            value: counts.all,
-            note: "Total notifications currently available.",
-          },
-          {
-            label: "Unread",
-            value: counts.unread,
-            note: "Items that still need your attention.",
-          },
-          {
-            label: "Read",
-            value: counts.read,
-            note: "Updates you have already reviewed.",
-          },
-          {
-            label: "Groups",
-            value: groupedNotifications.length,
-            note: "Day-based activity sections in the feed.",
-          },
-        ]}
-      />
+      <section>
+        <h1 className="type-h2 text-[#191919]">Notifications</h1>
+        <p className="mt-2 type-para text-[#635b53]">
+          Review order updates, status changes, and account alerts in one place.
+        </p>
+      </section>
 
       {!isLoggedIn ? (
         <section className="rounded-[24px] border border-dashed border-[#ddd7d1] bg-white px-6 py-16 text-center shadow-[0_10px_24px_rgba(32,32,32,0.04)]">
@@ -203,7 +181,7 @@ export default function VendorNotificationsPage() {
           </p>
         </section>
       ) : (
-        <section className="rounded-[28px] border border-[#e6d9cd] bg-[linear-gradient(180deg,#fffdfb_0%,#fff8f3_100%)] p-4 shadow-[0_22px_44px_rgba(28,28,28,0.08)] md:p-6">
+        <section className="rounded-[24px] border border-[#ddd4cb] bg-[linear-gradient(180deg,#fffdfb_0%,#ffffff_100%)] p-4 shadow-[0_18px_40px_rgba(28,28,28,0.07)] md:rounded-[28px] md:p-6">
           <div className="flex flex-col gap-4 border-b border-[#ece4dc] pb-5">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <NotificationTabs

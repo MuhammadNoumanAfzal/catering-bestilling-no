@@ -8,7 +8,6 @@ import {
   submitOrderModification,
 } from "../../order/api/orderModificationService";
 import OrderDateFilter from "../components/orders/OrderDateFilter";
-import DashboardPageHero from "../components/DashboardPageHero";
 import OrderDetailsModal from "../components/orders/OrderDetailsModal";
 import OrderStatusSummaryCard from "../components/orders/OrderStatusSummaryCard";
 import OrdersPagination from "../components/orders/OrdersPagination";
@@ -293,33 +292,12 @@ export default function VendorOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <DashboardPageHero
-        eyebrow="Operations"
-        title="Orders"
-        description="Track active orders, review history, and keep every event moving on schedule from one focused workspace."
-        stats={[
-          {
-            label: "All Orders",
-            value: normalizedOrders.length,
-            note: "Everything currently loaded from the API.",
-          },
-          {
-            label: "Active Now",
-            value: activeOrdersCount,
-            note: "Orders that still need operational attention.",
-          },
-          {
-            label: "Filtered",
-            value: filteredOrders.length,
-            note: "Matching your current view and filters.",
-          },
-          {
-            label: "Pages",
-            value: totalPages,
-            note: "Scrollable order archive pages available.",
-          },
-        ]}
-      />
+      <section>
+        <h1 className="type-h2 text-[#191919]">Orders</h1>
+        <p className="mt-2 type-para text-[#635b53]">
+          Track active orders and review order history from your account.
+        </p>
+      </section>
 
       <section>
         <h2 className="type-h3 font-extrabold text-[#121212]">Quick Status</h2>
@@ -330,8 +308,8 @@ export default function VendorOrdersPage() {
         </div>
       </section>
 
-      <section className="rounded-[28px] border border-[#e6d9cd] bg-[linear-gradient(180deg,#fffdfb_0%,#fff8f3_100%)] p-3 shadow-[0_22px_44px_rgba(28,28,28,0.08)] sm:p-4 md:p-6">
-        <div className="rounded-[24px] border border-[#efe4db] bg-[linear-gradient(180deg,#fffaf6_0%,#fffdfb_100%)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:p-4">
+      <section className="rounded-[24px] border border-[#ddd4cb] bg-[linear-gradient(180deg,#fffdfb_0%,#ffffff_100%)] p-3 shadow-[0_18px_40px_rgba(28,28,28,0.07)] sm:p-4 md:rounded-[28px] md:p-6">
+        <div className="rounded-[20px] border border-[#efe4db] bg-[linear-gradient(180deg,#fffaf6_0%,#fffdfb_100%)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] sm:p-4 md:rounded-[24px]">
           <div className="flex flex-col gap-4 border-b border-[#ece4dc] pb-5">
             <div className="hide-scrollbar overflow-x-auto">
               <div className="flex min-w-max items-center gap-3 pr-1">
