@@ -3,8 +3,11 @@ export const FETCH_PRODUCT_QUERY = `
     product(id: $id) {
       id
       name
+      title
       description
       priceWithTax
+      taxPercent
+      menuStatus
       pricingType
       averageRating
       minimumGuests
@@ -69,26 +72,21 @@ export const FETCH_PRODUCT_QUERY = `
 `;
 
 export const FETCH_VENDOR_ADD_ONS_QUERY = `
-  query GetVendorAddOns($first: Int) {
-    vendorAddOns(first: $first) {
-      totalCount
+  query GetVendorAddOns($vendorId: String!) {
+    products(productType: "add-on", vendor: $vendorId) {
       edges {
         node {
           id
           name
+          title
           description
-          productType
-          menuStatus
           priceWithTax
+          taxPercent
+          menuStatus
           dietaryTags
-          attachments {
-            edges {
-              node {
-                fileUrl
-                fileId
-                isCover
-              }
-            }
+          coverImage {
+            id
+            fileUrl
           }
         }
       }
