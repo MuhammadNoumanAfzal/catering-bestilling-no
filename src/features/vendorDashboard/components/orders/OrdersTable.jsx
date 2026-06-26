@@ -22,10 +22,10 @@ export default function OrdersTable({ orders, onOpenDetails }) {
 
   return (
     <div className="mt-4">
-      <div className="hidden overflow-x-auto md:block">
-      <table className="w-full border-separate border-spacing-y-3">
+      <div className="overflow-x-auto hidden md:block">
+      <table className="w-full border-separate border-spacing-y-2">
         <thead>
-          <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a7c71]">
+          <tr className="type-subpara text-left uppercase tracking-[0.04em] text-[#7e776f]">
             <th className="px-3 py-2">Sr.</th>
             <th className="px-3 py-2">Order ID</th>
             <th className="px-3 py-2">Vendor</th>
@@ -41,9 +41,9 @@ export default function OrdersTable({ orders, onOpenDetails }) {
           {orders.map((order, index) => (
             <tr
               key={`${order.id}-${order.date}-${index}`}
-              className="rounded-[22px] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f2_100%)] text-sm text-[#232323] shadow-[0_10px_22px_rgba(20,20,20,0.05)]"
+              className="rounded-2xl bg-[#fcfbf9] text-sm text-[#232323] shadow-[0_2px_8px_rgba(20,20,20,0.03)]"
             >
-              <td className="rounded-l-[22px] px-3 py-4 text-[#8d857d]">{index + 1}</td>
+              <td className="rounded-l-2xl px-3 py-3 text-[#8d857d]">{index + 1}</td>
               <td className="px-3 py-3 font-semibold">
                 <div className="flex items-center gap-2">
                   <span>{order.id}</span>
@@ -67,7 +67,7 @@ export default function OrdersTable({ orders, onOpenDetails }) {
                   {order.status}
                 </span>
               </td>
-              <td className="rounded-r-[22px] px-3 py-4">
+              <td className="rounded-r-2xl px-3 py-3">
                 <div className="relative flex justify-center" ref={openMenuKey === `${order.id}-${index}` ? menuRef : null}>
                   <button
                     type="button"
@@ -108,7 +108,7 @@ export default function OrdersTable({ orders, onOpenDetails }) {
         {orders.map((order, index) => (
           <article
             key={`${order.id}-${order.date}-mobile-${index}`}
-            className="rounded-[24px] border border-[#e8dfd7] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f2_100%)] p-4 shadow-[0_12px_26px_rgba(20,20,20,0.05)]"
+            className="rounded-[20px] border border-[#e8dfd7] bg-[#fcfbf9] p-4 shadow-[0_8px_20px_rgba(20,20,20,0.04)]"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -138,7 +138,7 @@ export default function OrdersTable({ orders, onOpenDetails }) {
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Event
                 </p>
@@ -146,7 +146,7 @@ export default function OrdersTable({ orders, onOpenDetails }) {
                   {order.eventName}
                 </p>
               </div>
-              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Date
                 </p>
@@ -154,7 +154,7 @@ export default function OrdersTable({ orders, onOpenDetails }) {
                   {order.date}
                 </p>
               </div>
-              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Guests
                 </p>
@@ -162,7 +162,7 @@ export default function OrdersTable({ orders, onOpenDetails }) {
                   {order.person}
                 </p>
               </div>
-              <div className="rounded-[16px] border border-[#f1e7df] bg-white px-3 py-2.5">
+              <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
                   Total
                 </p>
