@@ -19,37 +19,33 @@ function mapVendorAddOns(edges) {
         `${node.menuStatus ?? ""}`.toLowerCase() === "active",
     )
     .map((node) => {
-      const attachmentNodes = (node.attachments?.edges || [])
-        .map((edge) => edge?.node)
-        .filter(Boolean);
-      const coverAttachment =
-        attachmentNodes.find((attachment) => attachment.isCover) ||
-        attachmentNodes[0] ||
-        null;
-
       return {
         id: node.id,
-        name: node.name,
+        name: node.title || node.name,
         description: node.description || "",
         priceWithTax: node.priceWithTax,
         dietaryTags: node.dietaryTags || [],
-        coverImage: coverAttachment
+        coverImage: node.coverImage
           ? {
-              fileUrl: coverAttachment.fileUrl || "",
+              fileUrl: node.coverImage.fileUrl || "",
             }
           : null,
       };
     });
 }
 
-async function fetchVendorAddOns() {
+async function fetchVendorAddOns(vendorId) {
+  if (!vendorId) {
+    return [];
+  }
+
   try {
     const response = await graphqlRequest({
       query: FETCH_VENDOR_ADD_ONS_QUERY,
-      variables: { first: 50 },
+      variables: { vendorId: `${vendorId}` },
     });
 
-    return mapVendorAddOns(response?.vendorAddOns?.edges);
+    return mapVendorAddOns(response?.products?.edges);
   } catch {
     return [];
   }
@@ -115,7 +111,7 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
     Promise.resolve(adaptApiVendorToProfile(response.product.vendor)).then(
       (vendorProfile) => hydrateMenuVendorRating(vendorProfile, vendorSlug),
     ),
-    fetchVendorAddOns(),
+    fetchVendorAddOns(response.product.vendor?.id),
   ]);
 
   const hasProductLevelAddOns =
