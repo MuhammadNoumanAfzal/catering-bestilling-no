@@ -143,12 +143,12 @@ export default function VendorDashboardHomePage() {
             icon={FiPackage}
             footerTo="/vendor-dashboard/orders"
           >
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
               {normalizedOrders.length > 0 ? (
                 normalizedOrders.map((order, index) => (
                   <div
                     key={`${order.id}-${index}`}
-                    className="flex flex-col gap-3 rounded-2xl border border-[#efefef] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex h-full flex-col gap-3 rounded-2xl border border-[#efefef] px-3 py-3 sm:px-4"
                   >
                     <div>
                       <p className="type-h5">{order.eventName}</p>
@@ -157,7 +157,7 @@ export default function VendorDashboardHomePage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 self-start sm:self-center">
+                    <div className="mt-auto flex flex-col items-start gap-2">
                       <span className="type-h5 font-semibold text-[#1a1a1a]">
                         {order.amount}
                       </span>
@@ -170,12 +170,55 @@ export default function VendorDashboardHomePage() {
                   </div>
                 ))
               ) : (
-                <div className="py-6 text-center text-sm text-[#7e776f]">
+                <div className="col-span-2 py-6 text-center text-sm text-[#7e776f]">
                   No recent orders found.
                 </div>
               )}
             </div>
           </VendorSectionCard>
+
+          <VendorSectionCard
+            title="Invoices"
+            icon={FiCreditCard}
+            footerTo="/vendor-dashboard/invoices"
+          >
+          <div className="grid grid-cols-2 gap-3">
+            {normalizedInvoices.length > 0 ? (
+              normalizedInvoices.map((invoice, index) => (
+                <div
+                  key={`${invoice.id}-${index}`}
+                  className="flex h-full flex-col gap-3 rounded-2xl border border-[#efefef] px-3 py-3 sm:px-4"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f]">
+                    <FiCreditCard className="text-[22px]" />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="type-h5">{invoice.eventName}</p>
+                    <p className="mt-1 type-para text-[#8d8d8d]">
+                      {joinMeta([invoice.date, invoice.id])}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto text-left">
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 type-h6 font-semibold ${getStatusClasses(invoice.status)}`}
+                    >
+                      {invoice.status}
+                    </span>
+                    <p className="mt-2 type-h5 font-bold text-[#222222]">
+                      {invoice.amount}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-2 py-6 text-center text-sm text-[#7e776f]">
+                No recent invoices found.
+              </div>
+            )}
+          </div>
+        </VendorSectionCard>
 
           <VendorSectionCard
             title="Settings"
@@ -200,49 +243,6 @@ export default function VendorDashboardHomePage() {
             </div>
           </VendorSectionCard>
         </div>
-
-        <VendorSectionCard
-          title="Invoices"
-          icon={FiCreditCard}
-          footerTo="/vendor-dashboard/invoices"
-        >
-          <div className="space-y-3">
-            {normalizedInvoices.length > 0 ? (
-              normalizedInvoices.map((invoice, index) => (
-                <div
-                  key={`${invoice.id}-${index}`}
-                  className="grid gap-3 rounded-2xl border border-[#efefef] px-4 py-3 sm:grid-cols-[auto_1fr_auto] sm:items-center"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f]">
-                    <FiCreditCard className="text-[22px]" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="type-h5">{invoice.eventName}</p>
-                    <p className="mt-1 type-para text-[#8d8d8d]">
-                      {joinMeta([invoice.date, invoice.id])}
-                    </p>
-                  </div>
-
-                  <div className="text-left sm:text-right">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 type-h6 font-semibold ${getStatusClasses(invoice.status)}`}
-                    >
-                      {invoice.status}
-                    </span>
-                    <p className="mt-2 type-h5 font-bold text-[#222222]">
-                      {invoice.amount}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="py-6 text-center text-sm text-[#7e776f]">
-                No recent invoices found.
-              </div>
-            )}
-          </div>
-        </VendorSectionCard>
       </section>
     </div>
   );
