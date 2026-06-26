@@ -122,8 +122,8 @@ export default function ModifyOrderModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1a1410]/50 px-4 py-4 backdrop-blur-[2px]">
-      <div className="w-full max-w-[620px] rounded-[20px] bg-white shadow-[0_24px_80px_rgba(20,15,10,0.22)]">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1a1410]/50 px-3 py-3 backdrop-blur-[2px] sm:px-4 sm:py-4">
+      <div className="flex max-h-[calc(100vh-24px)] w-full max-w-[620px] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_24px_80px_rgba(20,15,10,0.22)] sm:max-h-[calc(100vh-32px)]">
         <div className="border-b border-[#eee4da] px-5 py-3 sm:px-6">
           <h2 className="type-h3 text-[#17120f]">Request Change</h2>
           <p className="mt-0.5 text-[12px] text-[#7a7067]">
@@ -131,7 +131,7 @@ export default function ModifyOrderModal({
           </p>
         </div>
 
-        <div className="space-y-3 px-5 py-4 sm:px-6">
+        <div className="space-y-3 overflow-y-auto px-4 py-4 sm:px-6">
           {error || validationError ? (
             <div className="rounded-[14px] border border-[#f1c8bb] bg-[#fff5f1] px-4 py-3 text-sm text-[#8a5642]">
               {validationError || error}
@@ -291,12 +291,12 @@ export default function ModifyOrderModal({
           </label>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-[#eee4da] px-5 py-3 sm:px-6">
+        <div className="flex flex-col-reverse gap-3 border-t border-[#eee4da] px-4 py-3 sm:flex-row sm:justify-end sm:px-6">
           <button
             type="button"
             onClick={onCancel}
             disabled={isSaving}
-            className="rounded-[10px] border border-[#d9cec4] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#2b2622] transition hover:bg-[#faf7f3]"
+            className="w-full rounded-[10px] border border-[#d9cec4] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#2b2622] transition hover:bg-[#faf7f3] sm:w-auto"
           >
             Cancel
           </button>
@@ -304,7 +304,7 @@ export default function ModifyOrderModal({
             type="button"
             onClick={handleSubmit}
             disabled={isLoading || isSaving}
-            className="rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
+            className="w-full rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] sm:w-auto"
           >
             {isSaving ? "Sending..." : "Send Request"}
           </button>

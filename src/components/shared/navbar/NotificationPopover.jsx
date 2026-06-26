@@ -6,7 +6,7 @@ export default function NotificationPopover({
 
   return (
     <div
-      className={`absolute right-0 top-[calc(100%+10px)] z-50 w-[min(320px,calc(100vw-20px))] max-w-[calc(100vw-20px)] overflow-hidden rounded-[18px] border border-[#eadfd6] bg-white shadow-[0_18px_40px_rgba(22,22,22,0.14)] sm:w-[320px] sm:max-w-[calc(100vw-24px)] ${className}`.trim()}
+      className={`fixed left-3 right-3 top-[72px] z-50 w-auto max-w-none overflow-hidden rounded-[18px] border border-[#eadfd6] bg-white shadow-[0_18px_40px_rgba(22,22,22,0.14)] sm:absolute sm:left-auto sm:right-0 sm:top-[calc(100%+10px)] sm:w-[320px] sm:max-w-[calc(100vw-24px)] ${className}`.trim()}
     >
       <div className="flex items-center justify-between border-b border-[#f0e7df] px-4 py-3">
         <div>
@@ -17,7 +17,7 @@ export default function NotificationPopover({
         </div>
       </div>
 
-      <div className="max-h-[320px] overflow-y-auto bg-[#fbf9f6]">
+      <div className="max-h-[min(60vh,320px)] overflow-y-auto bg-[#fbf9f6] sm:max-h-[320px]">
         {notifications.length === 0 ? (
           <div className="px-4 py-8 text-center">
             <p className="text-sm font-medium text-[#3a332d]">
