@@ -14,8 +14,11 @@ export default function SupportTicketForm({
   subjectOptions,
 }) {
   return (
-    <section className="rounded-[18px] border border-[#d9cec4] bg-white shadow-[0_14px_32px_rgba(30,20,12,0.05)]">
-      <div className="border-b border-[#eee4da] px-5 py-4 sm:px-6">
+    <section className="overflow-hidden rounded-[28px] border border-[#e5d8cc] bg-[linear-gradient(180deg,#fffdfb_0%,#fff8f2_100%)] shadow-[0_18px_40px_rgba(30,20,12,0.06)]">
+      <div className="border-b border-[#eee4da] bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,247,239,0.9))] px-5 py-5 sm:px-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#ad7a5f]">
+          Support request
+        </p>
         <h2 className="text-lg font-semibold text-[#201b17]">
           Submit a Support Ticket
         </h2>
@@ -24,7 +27,7 @@ export default function SupportTicketForm({
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4 px-5 py-5 sm:px-6">
+      <form onSubmit={onSubmit} className="space-y-5 px-5 py-5 sm:px-6">
         <div>
           <span className="mb-2 block text-sm font-semibold text-[#2d2d2d]">
             I am
@@ -80,11 +83,11 @@ export default function SupportTicketForm({
           </p>
         ) : null}
 
-        <div className="flex justify-end">
+        <div className="flex justify-end border-t border-[#eee4da] pt-4">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#bb602d]"
+            className="rounded-[14px] bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d]"
           >
             {isSubmitting ? "Submitting..." : "Submit Ticket"}
           </button>
