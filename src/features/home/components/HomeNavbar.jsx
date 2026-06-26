@@ -135,7 +135,7 @@ export default function HomeNavbar() {
                 {isNotificationOpen ? (
                   <NotificationPopover
                     notifications={notifications}
-                    className="top-[calc(100%+14px)]"
+                    className="right-0 top-[calc(100%+14px)]"
                   />
                 ) : null}
               </div>
