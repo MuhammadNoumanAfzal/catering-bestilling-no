@@ -20,18 +20,20 @@ import {
 
 function DetailRow({ label, value }) {
   return (
-    <div className="rounded-[18px] border border-[#eadfd5] bg-[#fffdfa] px-4 py-4">
+    <div className="rounded-[18px] border border-[#eadfd5] bg-[#fffdfa] px-3 py-3 sm:px-4 sm:py-4">
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9b8b7f]">
         {label}
       </p>
-      <p className="mt-2 text-[16px] font-semibold text-[#1f1f1f]">{value}</p>
+      <p className="mt-2 text-[15px] font-semibold text-[#1f1f1f] sm:text-[16px]">
+        {value}
+      </p>
     </div>
   );
 }
 
 function DetailSection({ title, children }) {
   return (
-    <section className="rounded-[24px] border border-[#ece1d7] bg-[#fffdfa] p-5">
+    <section className="rounded-[24px] border border-[#ece1d7] bg-[#fffdfa] p-4 sm:p-5">
       <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#9c897d]">
         {title}
       </h3>
@@ -147,7 +149,7 @@ export default function VendorInvoiceDetailsPage() {
               >
                 {invoice.status}
               </span>
-              <h2 className="mt-2 text-[28px] font-semibold tracking-[-0.03em] text-[#1f1f1f]">
+              <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-[#1f1f1f] sm:text-[28px]">
                 {invoice.invoiceNumber}
               </h2>
               <p className="mt-2 text-[15px] text-[#685e56]">
@@ -160,13 +162,13 @@ export default function VendorInvoiceDetailsPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#aa775a]">
               Invoice Amount
             </p>
-            <p className="mt-2 text-[28px] font-semibold text-[#cf6e38]">
+            <p className="mt-2 text-[24px] font-semibold text-[#cf6e38] sm:text-[28px]">
               {invoice.totalAmount}
             </p>
           </div>
         </div>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           <DetailRow label="Vendor" value={invoice.vendor.name} />
           <DetailRow label="Event" value={invoice.order.eventName} />
           <DetailRow label="Issued On" value={invoice.issuedOn} />
@@ -177,7 +179,7 @@ export default function VendorInvoiceDetailsPage() {
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.1em] text-[#9c897d]">
             Amount Breakdown
           </h3>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             <DetailRow label="Subtotal" value={invoice.subtotal} />
             <DetailRow label="Delivery Fee" value={invoice.deliveryFee} />
             <DetailRow label="Tax" value={invoice.taxAmount} />
@@ -232,7 +234,7 @@ export default function VendorInvoiceDetailsPage() {
 
         <div className="space-y-6">
           <DetailSection title="Invoice Meta">
-            <div className="grid gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <DetailRow label="Paid On" value={invoice.paidOn || "Not paid yet"} />
               <DetailRow label="Payment Type" value={invoice.paymentType} />
               <DetailRow
