@@ -60,6 +60,7 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
           id
           slug
           name
+          productType
           description
           priceWithTax
           pricingType
@@ -128,6 +129,7 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
           id
           slug
           name
+          productType
           description
           priceWithTax
           pricingType
@@ -184,6 +186,10 @@ function formatRating(value) {
   return Number(value ?? 0).toFixed(1);
 }
 
+function isPrimaryMenuProduct(node) {
+  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
+}
+
 function mapProductNode(node, mode) {
   const vendor = node?.vendor || {};
   const categoryTags =
@@ -224,9 +230,13 @@ function mapProductNode(node, mode) {
 }
 
 function mapConnectionPayload(connection, mode) {
+  const filteredEdges = (connection?.edges || []).filter((edge) =>
+    isPrimaryMenuProduct(edge?.node),
+  );
+
   return {
-    totalCount: connection?.totalCount ?? 0,
-    items: (connection?.edges || []).map((edge) =>
+    totalCount: filteredEdges.length,
+    items: filteredEdges.map((edge) =>
       mapProductNode(edge.node, mode),
     ),
     pageInfo: {
