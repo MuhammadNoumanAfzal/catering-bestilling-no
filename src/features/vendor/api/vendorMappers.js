@@ -180,11 +180,13 @@ export function adaptApiVendorToProfile(apiVendor) {
   const takeoutLabel = activeBusinessHours
     .map((hours) => {
       const dayName = DAY_NAMES_SHORT[hours.day.toLowerCase()] || hours.day;
-      const slots = (hours.slots || [])
-        .map((slot) => `${slot.start} - ${slot.end}`)
-        .join(", ");
+      const slots =
+        hours.openTime && hours.closeTime
+          ? `${hours.openTime} - ${hours.closeTime}`
+          : "";
       return `${dayName}: ${slots}`;
     })
+    .filter(Boolean)
     .join(" | ") || "Closed / Not available";
 
   const availability = {

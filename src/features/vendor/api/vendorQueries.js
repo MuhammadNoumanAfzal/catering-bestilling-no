@@ -16,12 +16,21 @@ export const FETCH_VENDORS_QUERY = `
             minDeliveryTime
             maxDeliveryTime
             deliveryDays
-            deliveryTimeSlots
+            deliveryTimeSlots {
+              start
+              end
+            }
           }
           businessSettings {
             id
             businessAddress
-            businessHours
+            businessHours {
+              id
+              day
+              enabled
+              openTime
+              closeTime
+            }
           }
           serviceAreas {
             id
@@ -90,7 +99,13 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       categoryTags
       businessSettings {
         businessAddress
-        businessHours
+        businessHours {
+          id
+          day
+          enabled
+          openTime
+          closeTime
+        }
       }
       serviceAreas {
         id
@@ -104,7 +119,10 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
         minDeliveryTime
         maxDeliveryTime
         deliveryDays
-        deliveryTimeSlots
+        deliveryTimeSlots {
+          start
+          end
+        }
       }
       menuCategories {
         id

@@ -53,12 +53,21 @@ export const FETCH_PRODUCT_QUERY = `
           minDeliveryTime
           maxDeliveryTime
           deliveryDays
-          deliveryTimeSlots
+          deliveryTimeSlots {
+            start
+            end
+          }
         }
         businessSettings {
           id
           businessAddress
-          businessHours
+          businessHours {
+            id
+            day
+            enabled
+            openTime
+            closeTime
+          }
         }
         serviceAreas {
           id
