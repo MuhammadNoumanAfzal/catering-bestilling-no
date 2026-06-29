@@ -28,7 +28,13 @@ export const FETCH_HOME_DATA_QUERY = `
           reviewsCount
           businessSettings {
             businessAddress
-            businessHours
+            businessHours {
+              id
+              day
+              enabled
+              openTime
+              closeTime
+            }
           }
           serviceAreas {
             id
@@ -41,7 +47,10 @@ export const FETCH_HOME_DATA_QUERY = `
             maxDeliveryTime
             baseDeliveryFee
             deliveryDays
-            deliveryTimeSlots
+            deliveryTimeSlots {
+              start
+              end
+            }
           }
         }
       }
@@ -74,7 +83,13 @@ export const FETCH_HOME_DATA_QUERY = `
           reviewsCount
           businessSettings {
             businessAddress
-            businessHours
+            businessHours {
+              id
+              day
+              enabled
+              openTime
+              closeTime
+            }
           }
           serviceAreas {
             id
@@ -87,7 +102,10 @@ export const FETCH_HOME_DATA_QUERY = `
             maxDeliveryTime
             baseDeliveryFee
             deliveryDays
-            deliveryTimeSlots
+            deliveryTimeSlots {
+              start
+              end
+            }
           }
         }
       }
@@ -101,8 +119,6 @@ export const FETCH_HOME_DATA_QUERY = `
           averageRating
           ordersCount
           badge
-          deliveryFee
-          deliveryTime
           priceWithTax
           pricingType
           categoryTags
@@ -142,7 +158,13 @@ export const FETCH_HOME_DATA_QUERY = `
             }
             businessSettings {
               businessAddress
-              businessHours
+              businessHours {
+                id
+                day
+                enabled
+                openTime
+                closeTime
+              }
             }
             serviceAreas {
               id
@@ -155,7 +177,10 @@ export const FETCH_HOME_DATA_QUERY = `
               maxDeliveryTime
               baseDeliveryFee
               deliveryDays
-              deliveryTimeSlots
+              deliveryTimeSlots {
+                start
+                end
+              }
             }
           }
         }
