@@ -56,6 +56,10 @@ function normalizeTaxonomyTags(items = [], fallback = []) {
   return mappedItems.length > 0 ? mappedItems : fallback;
 }
 
+function isPrimaryMenuProduct(node) {
+  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
+}
+
 function mapVendorNode(node) {
   const name = node?.name || "Vendor";
   const minTime = node?.deliverySettings?.minDeliveryTime;
@@ -161,8 +165,8 @@ export function mapHomeResponse(response) {
     popularVendors: (response?.popularVendors?.edges || []).map(
       (edge) => mapVendorNode(edge.node),
     ),
-    popularProducts: (response?.popularProducts?.edges || []).map(
-      (edge) => mapProductNode(edge.node),
-    ),
+    popularProducts: (response?.popularProducts?.edges || [])
+      .filter((edge) => isPrimaryMenuProduct(edge?.node))
+      .map((edge) => mapProductNode(edge.node)),
   };
 }

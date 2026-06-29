@@ -115,6 +115,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          productType
           description
           averageRating
           ordersCount

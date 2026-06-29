@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
 import { getBrowseFallbackIcon } from "../../browse/data/browseData";
-import { fetchFoodTypes } from "../../browse/api/browseTaxonomyService";
+import {
+  browseProductsByFoodType,
+  fetchFoodTypes,
+} from "../../browse/api/browseTaxonomyService";
 import {
   FoodBrowsePreviewSection,
   HeroSection,
@@ -100,6 +103,7 @@ export default function HomePage() {
   const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [foodTypeCategories, setFoodTypeCategories] = useState([]);
+  const [categoryBrowseProducts, setCategoryBrowseProducts] = useState([]);
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
   const vendorResultsRef = useRef(null);
@@ -123,6 +127,9 @@ export default function HomePage() {
   });
   const menuQuery = buildCategoryQuery(normalizedCategoryFilter);
   const hasValidPostalCode = isValidPostalCode(normalizedPostalCode);
+  const activeCategorySlug = Array.isArray(normalizedCategoryFilter)
+    ? normalizedCategoryFilter[0] || ""
+    : normalizedCategoryFilter || "";
 
   useEffect(() => {
     let isMounted = true;
@@ -157,6 +164,48 @@ export default function HomePage() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCategoryBrowseProducts() {
+      if (!activeCategorySlug) {
+        if (isMounted) {
+          setCategoryBrowseProducts([]);
+        }
+        return;
+      }
+
+      try {
+        const result = await browseProductsByFoodType({
+          foodTypeSlug: activeCategorySlug,
+          postCode: appliedSearchFilters.postCode,
+          areaName: appliedSearchFilters.areaName,
+          search: normalizedSearchQuery || undefined,
+          first: 24,
+        });
+
+        if (isMounted) {
+          setCategoryBrowseProducts(result.items || []);
+        }
+      } catch {
+        if (isMounted) {
+          setCategoryBrowseProducts([]);
+        }
+      }
+    }
+
+    loadCategoryBrowseProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    activeCategorySlug,
+    appliedSearchFilters.areaName,
+    appliedSearchFilters.postCode,
+    normalizedSearchQuery,
+  ]);
 
   const activeCategoryLabel = useMemo(() => {
     if (!normalizedCategoryFilter) {
@@ -244,8 +293,12 @@ export default function HomePage() {
   );
 
   const filteredMenuItems = useMemo(
-    () => filterHomePreviewMenuItems(popularProducts, sharedFilters),
-    [popularProducts, sharedFilters],
+    () =>
+      filterHomePreviewMenuItems(
+        activeCategorySlug ? categoryBrowseProducts : popularProducts,
+        sharedFilters,
+      ),
+    [activeCategorySlug, categoryBrowseProducts, popularProducts, sharedFilters],
   );
   const previewMenuItems = useMemo(
     () => filteredMenuItems.slice(0, 6),
@@ -261,8 +314,12 @@ export default function HomePage() {
     [featuredVendors, sharedFilters],
   );
   const filteredPopularProducts = useMemo(
-    () => filterHomeProducts(popularProducts, sharedFilters),
-    [popularProducts, sharedFilters],
+    () =>
+      filterHomeProducts(
+        activeCategorySlug ? categoryBrowseProducts : popularProducts,
+        sharedFilters,
+      ),
+    [activeCategorySlug, categoryBrowseProducts, popularProducts, sharedFilters],
   );
   const availableVendorCount =
     filteredPopularVendors.length + filteredFeaturedVendors.length;
@@ -410,7 +467,11 @@ export default function HomePage() {
             onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
           />
           <ProductShowcaseSection
-            title={buildHomeSectionTitle("Popular Products", activeCategoryLabel)}
+            title={
+              activeCategoryLabel
+                ? `${activeCategoryLabel} Products`
+                : buildHomeSectionTitle("Popular Products", activeCategoryLabel)
+            }
             products={filteredPopularProducts}
             emptyMessage={buildAvailabilityEmptyMessage({
               activeCategoryLabel,
