@@ -69,6 +69,10 @@ function buildOptionalSelections(product) {
   }));
 }
 
+function isPrimaryMenuProduct(product) {
+  return `${product?.productType ?? "menu"}`.toLowerCase() === "menu";
+}
+
 function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const price = parseFloat(product.priceWithTax || 0);
   const serves = product.minimumGuests || 1;
@@ -207,24 +211,28 @@ export function adaptApiVendorToProfile(apiVendor) {
     .filter((area) => area.isActive)
     .map((area) => String(area.postCode).padStart(4, "0"));
 
-  const categories = (apiVendor.menuCategories || []).map(
-    (category) => category.name,
-  );
+  const menuSections = (apiVendor.menuCategories || [])
+    .map((category, categoryIndex) => {
+      const primaryProducts = (category.vendorProducts || []).filter(
+        isPrimaryMenuProduct,
+      );
 
-  const menuSections = (apiVendor.menuCategories || []).map(
-    (category, categoryIndex) => ({
-      id: category.id || `${slug}-${categoryIndex}`,
-      title: category.name,
-      description: category.description || "",
-      items: (category.vendorProducts || []).map((product, productIndex) =>
-        buildMenuItem(
-          product,
-          category.name,
-          `${slug}-${category.id}-${productIndex}`,
+      return {
+        id: category.id || `${slug}-${categoryIndex}`,
+        title: category.name,
+        description: category.description || "",
+        items: primaryProducts.map((product, productIndex) =>
+          buildMenuItem(
+            product,
+            category.name,
+            `${slug}-${category.id}-${productIndex}`,
+          ),
         ),
-      ),
-    }),
-  );
+      };
+    })
+    .filter((section) => section.items.length > 0);
+
+  const categories = menuSections.map((category) => category.title);
 
   return {
     id: apiVendor.id,

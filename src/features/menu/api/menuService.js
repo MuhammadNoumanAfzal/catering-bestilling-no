@@ -34,6 +34,42 @@ function mapVendorAddOns(edges) {
     });
 }
 
+function enrichProductAddOnImages(product, vendorAddOns) {
+  if (
+    !product?.modal?.optionalSelections ||
+    !Array.isArray(product.modal.optionalSelections) ||
+    !Array.isArray(vendorAddOns) ||
+    vendorAddOns.length === 0
+  ) {
+    return product;
+  }
+
+  const vendorAddOnByName = new Map(
+    vendorAddOns.map((item) => [String(item.name || "").toLowerCase(), item]),
+  );
+
+  return {
+    ...product,
+    modal: {
+      ...product.modal,
+      optionalSelections: product.modal.optionalSelections.map((group) => ({
+        ...group,
+        options: (group.options || []).map((option) => {
+          const matchedAddOn = vendorAddOnByName.get(
+            String(option.label || option.name || "").toLowerCase(),
+          );
+
+          return {
+            ...option,
+            productId: matchedAddOn?.id || option.productId || option.id,
+            image: matchedAddOn?.coverImage?.fileUrl || option.image || "",
+          };
+        }),
+      })),
+    },
+  };
+}
+
 async function fetchVendorAddOns(vendorId) {
   if (!vendorId) {
     return [];
@@ -118,7 +154,7 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
     Array.isArray(productResult?.modal?.optionalSelections) &&
     productResult.modal.optionalSelections.length > 0;
   const product = hasProductLevelAddOns
-    ? productResult
+    ? enrichProductAddOnImages(productResult, vendorAddOns)
     : attachAddOnsToMenuItem(productResult, vendorAddOns);
 
   return {
