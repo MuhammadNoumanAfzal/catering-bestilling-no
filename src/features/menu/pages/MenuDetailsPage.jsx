@@ -210,7 +210,15 @@ export default function MenuDetailsPage() {
         descParts.push(item.description);
       }
       if (item.allergens && item.allergens.length > 0) {
-        descParts.push(`Allergens: ${item.allergens.join(", ")}.`);
+        const allergenLabels = item.allergens
+          .map((allergen) =>
+            typeof allergen === "string" ? allergen : allergen?.name,
+          )
+          .filter(Boolean);
+
+        if (allergenLabels.length > 0) {
+          descParts.push(`Allergens: ${allergenLabels.join(", ")}.`);
+        }
       }
       return {
         label: item.title || item.name,

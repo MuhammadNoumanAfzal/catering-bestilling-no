@@ -37,7 +37,11 @@ export const FETCH_PRODUCT_QUERY = `
         title
         description
         imageUrl
-        allergens
+        allergens {
+          id
+          name
+          slug
+        }
       }
       vendor {
         id
