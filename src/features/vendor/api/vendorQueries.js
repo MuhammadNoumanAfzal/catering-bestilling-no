@@ -45,6 +45,7 @@ export const FETCH_VENDORS_QUERY = `
             vendorProducts {
               id
               name
+              productType
               description
               priceWithTax
               averageRating
@@ -132,6 +133,7 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
           id
           slug
           name
+          productType
           description
           priceWithTax
           averageRating
