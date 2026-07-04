@@ -344,11 +344,15 @@ export default function VendorProfilePage() {
               </Link>
 
               <div className="mt-3">
-                <img
-                  src={vendor.banner}
-                  alt={vendor.name}
-                  className="h-[260px] w-full rounded-[14px] object-cover"
-                />
+                {vendor.banner || vendor.logo ? (
+                  <img
+                    src={vendor.banner || vendor.logo}
+                    alt={vendor.name}
+                    className="h-[260px] w-full rounded-[14px] object-cover"
+                  />
+                ) : (
+                  <div className="h-[260px] w-full rounded-[14px] border border-[#e7dfd6] bg-[#f7f1ea]" />
+                )}
               </div>
 
               <div className="mt-4">

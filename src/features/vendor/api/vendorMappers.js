@@ -135,8 +135,14 @@ export function adaptApiVendorToProfile(apiVendor) {
   const freeDeliveryOver = apiVendor.deliverySettings?.freeDeliveryOver ?? "";
   const pickupAddress = apiVendor.deliverySettings?.pickupAddress || "";
   const pickupInstructions = apiVendor.deliverySettings?.pickupInstructions || "";
-  const banner = apiVendor.coverPhotoUrl || "";
-  const logo = apiVendor.logoUrl || "";
+  const banner =
+    apiVendor.coverPhotoUrl ||
+    apiVendor.businessSettings?.coverPhotoUrl ||
+    "";
+  const logo =
+    apiVendor.logoUrl ||
+    apiVendor.businessSettings?.logoUrl ||
+    "";
   const rating = parseFloat(apiVendor.rating || 0);
   const address = apiVendor.businessSettings?.businessAddress || "";
   const cuisine = apiVendor.categoryTags?.[0] || "";

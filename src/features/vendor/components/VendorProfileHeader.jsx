@@ -14,11 +14,13 @@ export default function VendorProfileHeader({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
           <div className="flex h-20 w-full max-w-[140px] shrink-0 items-center justify-center self-center rounded-[12px] border border-[#ddd6cd] bg-white px-2 sm:h-24 sm:w-42 sm:self-start">
-            <img
-              src={vendor.logo}
-              alt={vendor.name}
-              className="h-full w-full object-contain"
-            />
+            {vendor.logo || vendor.banner ? (
+              <img
+                src={vendor.logo || vendor.banner}
+                alt={vendor.name}
+                className="h-full w-full object-contain"
+              />
+            ) : null}
           </div>
 
           <div className="min-w-0 flex-1 text-center sm:text-left">

@@ -25,6 +25,8 @@ export const FETCH_VENDORS_QUERY = `
             }
           }
           businessSettings {
+            logoUrl
+            coverPhotoUrl
             id
             businessAddress
             businessHours {
@@ -102,6 +104,8 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       coverPhotoUrl
       categoryTags
       businessSettings {
+        logoUrl
+        coverPhotoUrl
         businessAddress
         businessHours {
           id
