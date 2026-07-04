@@ -1,6 +1,9 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import { buildPlaceOrderPayload, mapCurrentUserToCheckoutProfile } from "./checkoutMappers";
-import { buildPlaceClientOrderMutation } from "./checkoutMutations";
+import {
+  buildPlaceClientOrderVariables,
+  PLACE_CLIENT_ORDER_MUTATION,
+} from "./checkoutMutations";
 import { GET_CURRENT_USER_DETAILS_QUERY } from "./checkoutQueries";
 
 export async function fetchCheckoutAutofillProfile() {
@@ -15,8 +18,11 @@ export async function fetchCheckoutAutofillProfile() {
 
 async function placeSingleOrder({ cart, checkoutType, formState }) {
   const payload = buildPlaceOrderPayload({ cart, checkoutType, formState });
-  const query = buildPlaceClientOrderMutation(payload);
-  const response = await graphqlRequest({ query });
+  const variables = buildPlaceClientOrderVariables(payload);
+  const response = await graphqlRequest({
+    query: PLACE_CLIENT_ORDER_MUTATION,
+    variables,
+  });
   const result = response?.placeClientOrder;
 
   if (!result?.success) {

@@ -4,7 +4,9 @@ const DEFAULT_GRAPHQL_ENDPOINT =
   "https://live-api.lunsjavtale.no/graphql/";
 
 export const GRAPHQL_ENDPOINT =
-  import.meta.env.VITE_GRAPHQL_URL ?? DEFAULT_GRAPHQL_ENDPOINT;
+  import.meta.env.VITE_GRAPHQL_URL ??
+  import.meta.env.VITE_GRAPHQL_API_URL ??
+  DEFAULT_GRAPHQL_ENDPOINT;
 
 const NORWEGIAN_TRANSLATIONS = {
   "passordet er for kort": "The password is too short.",

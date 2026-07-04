@@ -292,6 +292,13 @@ export function useCheckoutPage() {
       return;
     }
 
+    const isLastVendorItem =
+      (targetCart?.orderSummary.items?.filter((item) => item.id !== itemId).length ?? 0) === 0;
+
+    if (isLastVendorItem) {
+      clearStoredOrderSummary(vendorSlug);
+    }
+
     setCarts((current) =>
       current
         .map((cart) => {
