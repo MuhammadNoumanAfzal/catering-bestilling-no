@@ -5,9 +5,20 @@ export default function VendorLocationModal({ vendor, onClose }) {
     return null;
   }
 
+  const displayAddress = vendor.pickupAddress || vendor.addressLine;
+  const displayCity = vendor.city;
+  const pickupInstructions = vendor.pickupInstructions || "";
+  const deliveryFeeText = vendor.deliveryFee || "";
+  const freeDeliveryText = vendor.freeDeliveryOver
+    ? `Free delivery over ${vendor.freeDeliveryOver}`
+    : "";
+  const deliveryHours = vendor.availability?.delivery?.label || "";
+  const takeoutHours = vendor.availability?.takeout?.label?.split(" | ").join("\n") || "";
+  const hasPostalCodes = Array.isArray(vendor.servicePostalCodes) && vendor.servicePostalCodes.length > 0;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
-      <div className="relative w-full max-w-xl rounded-[24px] border border-[#eadfd2] bg-[#fffaf6] p-6 shadow-[0_24px_60px_rgba(32,22,12,0.18)]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-4">
+      <div className="relative w-full max-w-xl rounded-[24px] border border-[#eadfd2] bg-[#fffaf6] p-5 shadow-[0_24px_60px_rgba(32,22,12,0.18)]">
         <button
           type="button"
           onClick={onClose}
@@ -21,12 +32,12 @@ export default function VendorLocationModal({ vendor, onClose }) {
           <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-[#cf6e38]">
             Restaurant Details & Availability
           </p>
-          <h2 className="mt-2 text-[30px] font-semibold tracking-[-0.03em] text-[#171512]">
+          <h2 className="mt-2 text-[28px] font-semibold tracking-[-0.03em] text-[#171512]">
             {vendor.name}
           </h2>
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {/* Address Card */}
           <div className="rounded-[18px] border border-[#eadfd2] bg-white p-4">
             <p className="inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7b6f64]">
@@ -34,15 +45,20 @@ export default function VendorLocationModal({ vendor, onClose }) {
               Address
             </p>
             <p className="mt-3 text-[16px] font-semibold text-[#1f1f1f] break-words">
-              {vendor.addressLine || "No business address provided"}
+              {displayAddress || "-"}
             </p>
-            {vendor.city && (
+            {displayCity && (
               <p className="mt-1 text-[14px] text-[#6f675f]">
-                {vendor.city}, Norway
+                {displayCity}
               </p>
             )}
+            {pickupInstructions ? (
+              <p className="mt-2 text-[13px] text-[#7b6f64] whitespace-pre-line">
+                {pickupInstructions}
+              </p>
+            ) : null}
             {vendor.leadTime && (
-              <p className="mt-3 text-[13px] text-[#7b6f64]">
+              <p className="mt-2 text-[13px] text-[#7b6f64]">
                 Typical lead time: <span className="font-semibold text-[#1f1f1f]">{vendor.leadTime}</span>
               </p>
             )}
@@ -54,14 +70,21 @@ export default function VendorLocationModal({ vendor, onClose }) {
               <FiClock className="text-[14px]" />
               Delivery Hours
             </p>
-            <p className="mt-3 text-[15px] font-semibold text-[#1f1f1f] whitespace-pre-line">
-              {vendor.availability?.delivery?.label || "Open 24/7"}
-            </p>
-            {vendor.deliveryFee && (
-              <p className="mt-3 text-[13px] text-[#7b6f64]">
-                Fee: <span className="font-semibold text-[#1f1f1f]">{vendor.deliveryFee}</span>
+            {deliveryHours ? (
+              <p className="mt-3 text-[15px] font-semibold text-[#1f1f1f] whitespace-pre-line">
+                {deliveryHours}
               </p>
-            )}
+            ) : null}
+            {deliveryFeeText ? (
+              <p className="mt-2 text-[13px] text-[#7b6f64]">
+                Fee: <span className="font-semibold text-[#1f1f1f]">{deliveryFeeText}</span>
+              </p>
+            ) : null}
+            {freeDeliveryText ? (
+              <p className="mt-1 text-[13px] text-[#7b6f64]">
+                <span className="font-semibold text-[#1f1f1f]">{freeDeliveryText}</span>
+              </p>
+            ) : null}
           </div>
 
           {/* Opening / Business Hours Card */}
@@ -70,14 +93,20 @@ export default function VendorLocationModal({ vendor, onClose }) {
               <FiCalendar className="text-[14px]" />
               Opening Hours (Takeout)
             </p>
-            <p className="mt-3 text-[14px] leading-6 text-[#1f1f1f] font-medium whitespace-pre-line">
-              {vendor.availability?.takeout?.label?.split(" | ").join("\n") || "Closed"}
-            </p>
+            {takeoutHours ? (
+              <p className="mt-3 text-[14px] leading-6 text-[#1f1f1f] font-medium whitespace-pre-line">
+                {takeoutHours}
+              </p>
+            ) : (
+              <p className="mt-3 text-[14px] leading-6 text-[#6f675f] font-medium">
+                -
+              </p>
+            )}
           </div>
         </div>
 
         {/* Service Areas Postal Codes */}
-        {vendor.servicePostalCodes && vendor.servicePostalCodes.length > 0 ? (
+        {hasPostalCodes ? (
           <div className="mt-4 rounded-[18px] border border-[#eadfd2] bg-white p-4">
             <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7b6f64]">
               Service Postal Codes
@@ -96,11 +125,9 @@ export default function VendorLocationModal({ vendor, onClose }) {
         ) : (
           <div className="mt-4 rounded-[18px] border border-[#eadfd2] bg-white p-4">
             <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7b6f64]">
-              Service Area
+              Service Postal Codes
             </p>
-            <p className="mt-2 text-[14px] text-[#6f675f]">
-              Service area information is not available yet.
-            </p>
+            <p className="mt-2 text-[14px] text-[#6f675f]">-</p>
           </div>
         )}
       </div>

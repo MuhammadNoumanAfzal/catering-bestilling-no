@@ -46,6 +46,9 @@ export const FETCH_HOME_DATA_QUERY = `
             minDeliveryTime
             maxDeliveryTime
             baseDeliveryFee
+            freeDeliveryOver
+            pickupAddress
+            pickupInstructions
             deliveryDays
             deliveryTimeSlots {
               start
@@ -101,6 +104,9 @@ export const FETCH_HOME_DATA_QUERY = `
             minDeliveryTime
             maxDeliveryTime
             baseDeliveryFee
+            freeDeliveryOver
+            pickupAddress
+            pickupInstructions
             deliveryDays
             deliveryTimeSlots {
               start
@@ -177,6 +183,9 @@ export const FETCH_HOME_DATA_QUERY = `
               minDeliveryTime
               maxDeliveryTime
               baseDeliveryFee
+              freeDeliveryOver
+              pickupAddress
+              pickupInstructions
               deliveryDays
               deliveryTimeSlots {
                 start

@@ -65,7 +65,10 @@ function mapVendorNode(node) {
   const minTime = node?.deliverySettings?.minDeliveryTime;
   const maxTime = node?.deliverySettings?.maxDeliveryTime;
   const fee = node?.deliverySettings?.baseDeliveryFee ?? 0;
+  const freeDeliveryOver = node?.deliverySettings?.freeDeliveryOver ?? "";
   const address = node?.businessSettings?.businessAddress || "";
+  const pickupAddress = node?.deliverySettings?.pickupAddress || "";
+  const pickupInstructions = node?.deliverySettings?.pickupInstructions || "";
   const deliveryDays = (node?.deliverySettings?.deliveryDays || [])
     .map((day) => DAY_MAP[`${day}`.toLowerCase()])
     .filter((day) => day !== undefined);
@@ -95,6 +98,12 @@ function mapVendorNode(node) {
     reviewCount: Number(node?.reviewsCount || 0),
     addressLine: address,
     city: extractCityFromAddress(address),
+    pickupAddress,
+    pickupInstructions,
+    freeDeliveryOver:
+      freeDeliveryOver !== "" && freeDeliveryOver != null
+        ? `NOK ${Number.parseFloat(freeDeliveryOver || 0).toFixed(0)}`
+        : "",
     primaryPostalCode: `${node?.postCode ?? ""}`.trim(),
     servicePostalCodes: [
       `${node?.postCode ?? ""}`.trim(),

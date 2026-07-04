@@ -13,8 +13,11 @@ export const FETCH_VENDORS_QUERY = `
           deliverySettings {
             id
             baseDeliveryFee
+            freeDeliveryOver
             minDeliveryTime
             maxDeliveryTime
+            pickupAddress
+            pickupInstructions
             deliveryDays
             deliveryTimeSlots {
               start
@@ -117,8 +120,11 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       deliverySettings {
         id
         baseDeliveryFee
+        freeDeliveryOver
         minDeliveryTime
         maxDeliveryTime
+        pickupAddress
+        pickupInstructions
         deliveryDays
         deliveryTimeSlots {
           start
