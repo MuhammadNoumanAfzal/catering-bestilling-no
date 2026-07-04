@@ -129,7 +129,6 @@ export default function VendorReviewsPage() {
     Number(vendor?.reviewSummary?.totalCount ?? vendor?.reviewCount ?? 0) ||
     reviews.length;
   const canReview = Boolean(vendor?.canReview);
-  const hasReviewed = Boolean(vendor?.hasReviewed);
   const derivedAverageRating = reviews.length
     ? (
         reviews.reduce(
@@ -240,16 +239,10 @@ export default function VendorReviewsPage() {
                       Review available after eligible order
                     </span>
                   ) : null}
-                  {hasReviewed ? (
-                    <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
-                      <FiMessageSquare className="text-[14px]" />
-                      You already reviewed this vendor
-                    </span>
-                  ) : null}
                 </div>
               </div>
 
-              {canReview && !hasReviewed ? (
+              {canReview ? (
                 <button
                   type="button"
                   onClick={() => setIsReviewModalOpen(true)}
@@ -282,7 +275,7 @@ export default function VendorReviewsPage() {
         ) : (
           <div className="mt-8">
             <EmptyReviewsState
-              canReview={canReview && !hasReviewed}
+              canReview={canReview}
               onAddReview={() => setIsReviewModalOpen(true)}
             />
           </div>
@@ -316,7 +309,7 @@ export default function VendorReviewsPage() {
         ) : null}
       </div>
 
-      {isReviewModalOpen && canReview && !hasReviewed ? (
+      {isReviewModalOpen && canReview ? (
         <VendorReviewModal
           vendor={vendor}
           onCancel={() => setIsReviewModalOpen(false)}
