@@ -132,6 +132,9 @@ export function adaptApiVendorToProfile(apiVendor) {
   const minTime = apiVendor.deliverySettings?.minDeliveryTime ?? 0;
   const maxTime = apiVendor.deliverySettings?.maxDeliveryTime ?? 0;
   const fee = apiVendor.deliverySettings?.baseDeliveryFee ?? "0";
+  const freeDeliveryOver = apiVendor.deliverySettings?.freeDeliveryOver ?? "";
+  const pickupAddress = apiVendor.deliverySettings?.pickupAddress || "";
+  const pickupInstructions = apiVendor.deliverySettings?.pickupInstructions || "";
   const banner = apiVendor.coverPhotoUrl || "";
   const logo = apiVendor.logoUrl || "";
   const rating = parseFloat(apiVendor.rating || 0);
@@ -249,8 +252,11 @@ export function adaptApiVendorToProfile(apiVendor) {
     cuisine,
     addressLine: address,
     city,
+    pickupAddress,
+    pickupInstructions,
     servicePostalCodes,
     deliveryFee: `NOK ${parseFloat(fee).toFixed(0)} Delivery fee`,
+    freeDeliveryOver: freeDeliveryOver ? `NOK ${parseFloat(freeDeliveryOver).toFixed(0)}` : "",
     leadTime: minTime || maxTime ? `${minTime}-${maxTime} min` : "",
     availability,
     categories,
