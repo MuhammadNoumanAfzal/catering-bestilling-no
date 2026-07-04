@@ -202,6 +202,11 @@ export const FETCH_VENDOR_REVIEWS_QUERY = `
             createdOn
             status
             orderId
+            vendorReply {
+              id
+              message
+              createdOn
+            }
           }
         }
         pageInfo {
@@ -229,6 +234,11 @@ export const SUBMIT_VENDOR_REVIEW_MUTATION = `
         authorName
         createdOn
         status
+        vendorReply {
+          id
+          message
+          createdOn
+        }
       }
     }
   }

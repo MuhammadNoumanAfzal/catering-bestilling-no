@@ -292,5 +292,12 @@ export function adaptApiVendorReview(review) {
     createdOn: review?.createdOn || "",
     status: review?.status || "",
     orderId: review?.orderId || "",
+    vendorReply: review?.vendorReply
+      ? {
+          id: review.vendorReply.id || "",
+          message: review.vendorReply.message || "",
+          createdOn: review.vendorReply.createdOn || "",
+        }
+      : null,
   };
 }

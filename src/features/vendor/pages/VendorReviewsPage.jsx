@@ -74,6 +74,22 @@ function ReviewCard({ review, isFeatured = false }) {
         <p className="mt-5 max-w-3xl text-[15px] leading-8 text-[#564f49]">
           {review.comment}
         </p>
+
+        {review.vendorReply?.message ? (
+          <div className="mt-5 rounded-[18px] border border-[#eadfd2] bg-[#fbf6f1] p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#cf6e38]">
+                Vendor Reply
+              </p>
+              <span className="text-[12px] text-[#7b7067]">
+                {review.vendorReply.createdOn || ""}
+              </span>
+            </div>
+            <p className="mt-2 text-[14px] leading-7 text-[#4f4740]">
+              {review.vendorReply.message}
+            </p>
+          </div>
+        ) : null}
       </div>
     </article>
   );

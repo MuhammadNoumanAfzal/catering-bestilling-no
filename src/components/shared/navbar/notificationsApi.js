@@ -82,6 +82,10 @@ function formatDayLabel(createdOn) {
 function mapNotificationType(notificationType) {
   const normalizedType = `${notificationType ?? ""}`.toLowerCase();
 
+  if (normalizedType.includes("review") || normalizedType.includes("reply")) {
+    return "review";
+  }
+
   if (normalizedType.includes("order")) {
     return "order-update";
   }
