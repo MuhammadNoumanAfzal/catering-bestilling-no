@@ -1,48 +1,75 @@
-function escapeGraphqlString(value) {
-  return String(value ?? "")
-    .replace(/\\/g, "\\\\")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, "\\n")
-    .replace(/\r/g, "\\r");
-}
-
-function formatGraphqlValue(value) {
-  if (Array.isArray(value)) {
-    return `[${value.map((item) => formatGraphqlValue(item)).join(", ")}]`;
-  }
-
-  if (value && typeof value === "object") {
-    return `{ ${Object.entries(value)
-      .map(([key, entryValue]) => `${key}: ${formatGraphqlValue(entryValue)}`)
-      .join(", ")} }`;
-  }
-
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? `${value}` : "0";
-  }
-
-  if (typeof value === "boolean") {
-    return value ? "true" : "false";
-  }
-
-  return `"${escapeGraphqlString(value)}"`;
-}
-
-export function buildPlaceClientOrderMutation(payload) {
-  const args = Object.entries(payload)
-    .filter(([, value]) => value !== undefined && value !== null && value !== "")
-    .map(([key, value]) => `    ${key}: ${formatGraphqlValue(value)}`)
-    .join("\n");
-
-  return `
-    mutation PlaceClientOrder {
-      placeClientOrder(
-${args}
-      ) {
-        success
-        message
-        orderId
-      }
+export const PLACE_CLIENT_ORDER_MUTATION = `
+  mutation PlaceClientOrder(
+    $vendorId: ID!
+    $customerType: String!
+    $items: [ClientOrderItemInput]!
+    $corporateName: String
+    $deliveryAddress: String
+    $deliveryCity: String
+    $deliveryPostalCode: String
+    $deliverySuite: String
+    $email: String
+    $eventDate: Date
+    $eventName: String
+    $eventTime: Time
+    $invoiceAddress: String
+    $invoiceCity: String
+    $invoicePostalCode: String
+    $invoiceReference: String
+    $invoiceSuite: String
+    $occasion: String
+    $orderNotes: String
+    $organizationNumber: String
+    $personCount: Int
+    $phone: String
+    $taxPercent: Decimal
+    $tipAmount: Decimal
+  ) {
+    placeClientOrder(
+      vendorId: $vendorId
+      customerType: $customerType
+      items: $items
+      corporateName: $corporateName
+      deliveryAddress: $deliveryAddress
+      deliveryCity: $deliveryCity
+      deliveryPostalCode: $deliveryPostalCode
+      deliverySuite: $deliverySuite
+      email: $email
+      eventDate: $eventDate
+      eventName: $eventName
+      eventTime: $eventTime
+      invoiceAddress: $invoiceAddress
+      invoiceCity: $invoiceCity
+      invoicePostalCode: $invoicePostalCode
+      invoiceReference: $invoiceReference
+      invoiceSuite: $invoiceSuite
+      occasion: $occasion
+      orderNotes: $orderNotes
+      organizationNumber: $organizationNumber
+      personCount: $personCount
+      phone: $phone
+      taxPercent: $taxPercent
+      tipAmount: $tipAmount
+    ) {
+      success
+      message
+      orderId
     }
-  `;
+  }
+`;
+
+export function buildPlaceClientOrderVariables(payload) {
+  return Object.fromEntries(
+    Object.entries(payload).filter(([, value]) => {
+      if (value === undefined || value === null) {
+        return false;
+      }
+
+      if (typeof value === "string") {
+        return value !== "";
+      }
+
+      return true;
+    }),
+  );
 }
