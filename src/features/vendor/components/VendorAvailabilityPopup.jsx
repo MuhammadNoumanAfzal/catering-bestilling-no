@@ -18,7 +18,7 @@ function VendorSuggestionCard({ vendor }) {
         </p>
         <div className="mt-1 flex items-center gap-1 text-[11px] text-[#6e675f]">
           <FiStar className="fill-[#f2b21b] text-[#f2b21b]" />
-          <span>{vendor.rating.toFixed(1)}</span>
+          <span>{Number(vendor.rating ?? 0).toFixed(1)}</span>
           <span>({vendor.reviewCount})</span>
         </div>
         <span className="mt-1 inline-block text-[13px] font-medium text-[#4f7cff]">
