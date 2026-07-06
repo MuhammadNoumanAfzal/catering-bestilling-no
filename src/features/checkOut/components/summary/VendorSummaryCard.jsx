@@ -88,7 +88,10 @@ export default function VendorSummaryCard({
 
         <TipSelector
           selectedTipRate={cart.orderSummary.tipRate}
-          onSelect={(tipRate) => onTipChange(cart.vendor.slug, tipRate)}
+          customTipAmount={cart.orderSummary.customTipAmount}
+          onSelect={(tipRate, customAmount) =>
+            onTipChange(cart.vendor.slug, tipRate, customAmount)
+          }
         />
       </div>
 

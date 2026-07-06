@@ -251,7 +251,7 @@ export function useCheckoutPage() {
     }));
   };
 
-  const handleTipChange = (vendorSlug, tipRate) => {
+  const handleTipChange = (vendorSlug, tipRate, customTipAmount) => {
     setCarts((current) =>
       current.map((cart) =>
         cart.vendor.slug === vendorSlug
@@ -260,6 +260,10 @@ export function useCheckoutPage() {
               orderSummary: {
                 ...cart.orderSummary,
                 tipRate,
+                customTipAmount:
+                  customTipAmount !== undefined
+                    ? customTipAmount
+                    : cart.orderSummary.customTipAmount,
               },
             }
           : cart,
