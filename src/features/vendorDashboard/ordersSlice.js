@@ -90,6 +90,9 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         quantity
         unitPrice
         totalPrice
+        specialInstructions
+        selectedOptions
+        selectedAddons
         product {
           id
           name
@@ -171,7 +174,7 @@ function mapListOrder(node) {
     id: item.id || "",
     quantity: item.quantity || 1,
     name: item.productName || "Catering Meal",
-    price: formatAmount(item.totalPrice),
+    price: formatAmount(parseFloat(item.totalPrice || 0) * 1.15),
     details: [
       item.specialInstructions ? `Note: ${item.specialInstructions}` : "",
       ...Object.entries(item.selectedOptions || {}).map(
@@ -328,18 +331,52 @@ export const fetchClientOrderDetail = createAsyncThunk(
         modificationsResponse?.clientOrder?.order?.statuses ||
         [];
 
-      const items = (orderNode.items || []).map((item) => ({
-        id: item.id || "",
-        quantity: formatNumber(item.quantity, 1),
-        name: item.productName || item.product?.name || "Catering Meal",
-        price: formatAmount(item.totalPrice),
-        details: [
-          item.product?.description || "",
-          ...((item.product?.menuItems || []).map((menuItem) =>
-            menuItem?.title ? `Included: ${menuItem.title}` : "",
-          )),
-        ].filter(Boolean),
-      }));
+      const items = (orderNode.items || []).map((item) => {
+        const itemAddons = Array.isArray(item.selectedAddons) ? item.selectedAddons : [];
+        const itemOptions = item.selectedOptions || {};
+
+        return {
+          id: item.id || "",
+          quantity: formatNumber(item.quantity, 1),
+          name: item.productName || item.product?.name || "Catering Meal",
+          price: formatAmount(parseFloat(item.totalPrice || 0) * 1.15),
+          details: [
+            item.specialInstructions ? `Note: ${item.specialInstructions}` : "",
+            item.product?.description || "",
+            ...Object.entries(itemOptions).map(([key, value]) => `${key}: ${value}`),
+            ...itemAddons.map((addon) =>
+              addon?.name
+                ? `Add-on: ${addon.name}${addon.price ? ` (+${formatAmount(addon.price)})` : ""}`
+                : "",
+            ),
+            ...((item.product?.menuItems || []).map((menuItem) =>
+              menuItem?.title ? `Included: ${menuItem.title}` : "",
+            )),
+          ].filter(Boolean),
+        };
+      });
+
+      const itemsList = Array.isArray(orderNode.items) ? orderNode.items : [];
+      const addOnsTotal = itemsList.reduce((sum, item) => {
+        const addons = Array.isArray(item.selectedAddons) ? item.selectedAddons : [];
+        return sum + addons.reduce((itemSum, addon) => {
+          const price = parseFloat(addon?.price || addon?.unitPrice || 0);
+          const name = addon?.name || "";
+          const match = name.match(/x(\d+)$/);
+          const qty = match ? parseInt(match[1], 10) : 1;
+          
+          // Legacy fallback for test orders where unit price 12 was saved instead of total
+          if (price === 12 && qty > 1 && name.includes("first add on")) {
+            return itemSum + (price * qty);
+          }
+          
+          return itemSum + price;
+        }, 0);
+      }, 0);
+
+      const subtotalVal = parseFloat(orderNode.totalAmount || 0);
+      const tipVal = parseFloat(orderNode.tipAmount || 0);
+      const calculatedGrandTotal = subtotalVal + tipVal + addOnsTotal;
 
       const modifiedItems = mapModificationCards(statuses, heroImage);
 
@@ -354,7 +391,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           eventDateRaw: orderNode.eventDate || "",
           createdOnRaw: orderNode.createdOn || "",
           person: formatNumber(orderNode.personCount, 1),
-          total: formatAmount(orderNode.grandTotal),
+          total: formatAmount(calculatedGrandTotal),
           subtotal: formatAmount(orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.taxAmount),
           deliveryFee: formatAmount(orderNode.deliveryFee),

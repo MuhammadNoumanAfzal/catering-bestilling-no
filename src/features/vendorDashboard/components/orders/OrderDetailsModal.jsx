@@ -284,6 +284,12 @@ export default function OrderDetailsModal({
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">{order.person}</p>
                 </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                    Delivery Fee
+                  </p>
+                  <p className="mt-1 font-semibold text-[#1f1f1f]">{order.deliveryFee || "NOK 0.00"}</p>
+                </div>
                 <div className="sm:col-span-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
                     Location
