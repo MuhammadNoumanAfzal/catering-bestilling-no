@@ -78,7 +78,8 @@ export function getVendorTotals(cart) {
     0,
   );
   const deliveryFee = extractAmount(cart.vendor.deliveryFee);
-  const salesTax = subtotal * SALES_TAX_RATE;
+  const basePrice = subtotal / (1 + SALES_TAX_RATE);
+  const salesTax = subtotal - basePrice;
   const tipValue = getTipValue(cart.orderSummary, subtotal);
 
   return { subtotal, deliveryFee, salesTax, tipValue };
