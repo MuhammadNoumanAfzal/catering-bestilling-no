@@ -112,14 +112,15 @@ export default function VendorOrderSidebar({
   }));
   const foodAndBeverage = items.reduce((total, item) => total + item.price, 0);
   const restaurantDeliveryFee = extractAmount(vendor?.deliveryFee);
-  const salesTax = foodAndBeverage * SALES_TAX_RATE;
+  const basePrice = foodAndBeverage / (1 + SALES_TAX_RATE);
+  const salesTax = foodAndBeverage - basePrice;
   const tipValue =
     orderSummary.tipRate === "other"
       ? Number(orderSummary.customTipAmount ?? 0)
       : typeof orderSummary.tipRate === "number"
         ? foodAndBeverage * orderSummary.tipRate
         : 0;
-  const total = foodAndBeverage + restaurantDeliveryFee + salesTax + tipValue;
+  const total = foodAndBeverage + restaurantDeliveryFee + tipValue;
   const hasItems = items.length > 0;
   const formattedDateTime = formatDateTime(
     orderSummary.deliveryDate,

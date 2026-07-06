@@ -139,7 +139,7 @@ function normalizeSelectedAddons(items, parentProductId) {
 
       return {
         name: quantity > 1 ? `${item.name || "Add-on"} x${quantity}` : item.name || "Add-on",
-        price: Number(item.unitPrice ?? item.price ?? 0),
+        price: Number(item.unitPrice ?? item.price ?? 0) * quantity,
       };
     })
     .filter((item) => item.name && Number.isFinite(item.price));
