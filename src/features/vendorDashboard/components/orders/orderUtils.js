@@ -48,7 +48,12 @@ export function normalizeOrderStatus(status) {
 export function isActiveOrder(status) {
   const normalizedStatus = normalizeOrderStatus(status);
 
-  return normalizedStatus === "scheduled" || normalizedStatus === "draft";
+  return (
+    normalizedStatus !== "completed" &&
+    normalizedStatus !== "delivered" &&
+    normalizedStatus !== "canceled" &&
+    normalizedStatus !== "cancelled"
+  );
 }
 
 export function getOrderStatusClasses(status) {
