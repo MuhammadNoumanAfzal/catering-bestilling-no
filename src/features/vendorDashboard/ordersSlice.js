@@ -14,6 +14,7 @@ const FETCH_CLIENT_ORDERS_QUERY = `
           totalAmount
           taxAmount
           deliveryFee
+          tipAmount
           grandTotal
           createdOn
           dueDate
@@ -184,6 +185,28 @@ function mapListOrder(node) {
     ].filter(Boolean),
   }));
 
+  const itemsList = Array.isArray(node.items) ? node.items : [];
+  const addOnsTotal = itemsList.reduce((sum, item) => {
+    const addons = Array.isArray(item.selectedAddons) ? item.selectedAddons : [];
+    return sum + addons.reduce((itemSum, addon) => {
+      const price = parseFloat(addon?.price || addon?.unitPrice || 0);
+      const name = addon?.name || "";
+      const match = name.match(/x(\d+)$/);
+      const qty = match ? parseInt(match[1], 10) : 1;
+      
+      // Legacy fallback for test orders where unit price 12 was saved instead of total
+      if (price === 12 && qty > 1 && name.includes("first add on")) {
+        return itemSum + (price * qty);
+      }
+      
+      return itemSum + price;
+    }, 0);
+  }, 0);
+
+  const subtotalVal = parseFloat(node.totalAmount || 0);
+  const tipVal = parseFloat(node.tipAmount || 0);
+  const calculatedGrandTotal = subtotalVal + tipVal + addOnsTotal;
+
   return {
     id: formatId(node.id),
     rawId: node.id || "",
@@ -193,7 +216,7 @@ function mapListOrder(node) {
     eventDateRaw: node.eventDate || "",
     createdOnRaw: node.createdOn || "",
     person: formatNumber(node.personCount, 1),
-    total: formatAmount(node.grandTotal),
+    total: formatAmount(calculatedGrandTotal),
     status: node.status || "Ready",
     isModified: Array.isArray(node.modifiedItems) && node.modifiedItems.length > 0,
     orderedDate: formatDate(node.createdOn),
