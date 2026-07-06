@@ -215,6 +215,12 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     tipAmount: totals.tipValue.toFixed(2),
     taxPercent: (SALES_TAX_RATE * 100).toFixed(1),
     orderNotes: formState.additionalInfo,
+    tableware: cart.orderSummary?.tableware ? {
+      napkins: Boolean(cart.orderSummary.tableware.napkins),
+      utensils: Boolean(cart.orderSummary.tableware.utensils),
+      platesBowls: Boolean(cart.orderSummary.tableware.platesBowls),
+      instructions: cart.orderSummary.tableware.instructions || "",
+    } : null,
     items,
   };
 

@@ -24,6 +24,7 @@ export const PLACE_CLIENT_ORDER_MUTATION = `
     $phone: String
     $taxPercent: Decimal
     $tipAmount: Decimal
+    $tableware: TablewareInput
   ) {
     placeClientOrder(
       vendorId: $vendorId
@@ -50,6 +51,7 @@ export const PLACE_CLIENT_ORDER_MUTATION = `
       phone: $phone
       taxPercent: $taxPercent
       tipAmount: $tipAmount
+      tableware: $tableware
     ) {
       success
       message
