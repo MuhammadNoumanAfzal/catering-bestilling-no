@@ -231,7 +231,24 @@ function buildTotals(summary = {}) {
 }
 
 function mapInvoiceListNode(node) {
-  const status = mapInvoiceStatus(node.status);
+  const total = parseFloat(node.totalAmount || 0);
+  const paid = parseFloat(node.paidAmount || 0);
+  
+  let calculatedStatus = "pending";
+  if (paid >= total && total > 0) {
+    calculatedStatus = "paid";
+  } else {
+    const dueDateObj = new Date(node.dueDate);
+    const today = new Date();
+    const isPastDue = !isNaN(dueDateObj.getTime()) && dueDateObj.setHours(0,0,0,0) < today.setHours(0,0,0,0);
+    if (isPastDue) {
+      calculatedStatus = "overdue";
+    } else {
+      calculatedStatus = "pending";
+    }
+  }
+
+  const status = mapInvoiceStatus(calculatedStatus);
   const currency = node.currency || "NOK";
   const orderId = node.id || node.order?.id || "";
 
@@ -269,7 +286,24 @@ function mapInvoiceListNode(node) {
 }
 
 function mapInvoiceDetail(node) {
-  const status = mapInvoiceStatus(node.status);
+  const total = parseFloat(node.totalAmount || 0);
+  const paid = parseFloat(node.paidAmount || 0);
+  
+  let calculatedStatus = "pending";
+  if (paid >= total && total > 0) {
+    calculatedStatus = "paid";
+  } else {
+    const dueDateObj = new Date(node.dueDate);
+    const today = new Date();
+    const isPastDue = !isNaN(dueDateObj.getTime()) && dueDateObj.setHours(0,0,0,0) < today.setHours(0,0,0,0);
+    if (isPastDue) {
+      calculatedStatus = "overdue";
+    } else {
+      calculatedStatus = "pending";
+    }
+  }
+
+  const status = mapInvoiceStatus(calculatedStatus);
   const currency = node.currency || "NOK";
 
   return {
