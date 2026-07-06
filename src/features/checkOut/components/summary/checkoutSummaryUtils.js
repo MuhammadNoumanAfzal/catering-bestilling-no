@@ -20,6 +20,9 @@ export function extractAmount(value) {
 }
 
 export function getTipValue(summary, subtotal) {
+  if (summary.tipRate === "other") {
+    return Number(summary.customTipAmount ?? 0);
+  }
   return typeof summary.tipRate === "number" ? subtotal * summary.tipRate : 0;
 }
 

@@ -472,8 +472,15 @@ export default function MenuDetailsPage() {
                 };
               });
             }}
-            onTipChange={(tipRate) =>
-              setOrderSummary((current) => ({ ...current, tipRate }))
+            onTipChange={(tipRate, customTipAmount) =>
+              setOrderSummary((current) => ({
+                ...current,
+                tipRate,
+                customTipAmount:
+                  customTipAmount !== undefined
+                    ? customTipAmount
+                    : current.customTipAmount,
+              }))
             }
             onDeliveryDateChange={(deliveryDate) =>
               setOrderSummary((current) => ({ ...current, deliveryDate }))

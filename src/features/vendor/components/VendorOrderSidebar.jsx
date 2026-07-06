@@ -114,9 +114,11 @@ export default function VendorOrderSidebar({
   const restaurantDeliveryFee = extractAmount(vendor?.deliveryFee);
   const salesTax = foodAndBeverage * SALES_TAX_RATE;
   const tipValue =
-    typeof orderSummary.tipRate === "number"
-      ? foodAndBeverage * orderSummary.tipRate
-      : 0;
+    orderSummary.tipRate === "other"
+      ? Number(orderSummary.customTipAmount ?? 0)
+      : typeof orderSummary.tipRate === "number"
+        ? foodAndBeverage * orderSummary.tipRate
+        : 0;
   const total = foodAndBeverage + restaurantDeliveryFee + salesTax + tipValue;
   const hasItems = items.length > 0;
   const formattedDateTime = formatDateTime(
@@ -232,7 +234,13 @@ export default function VendorOrderSidebar({
                   <button
                     key={option.label}
                     type="button"
-                    onClick={() => onTipChange(option.value)}
+                    onClick={() => {
+                      if (option.value === "other") {
+                        onTipChange("other", orderSummary.customTipAmount ?? "");
+                      } else {
+                        onTipChange(option.value, 0);
+                      }
+                    }}
                     className={`rounded-full cursor-pointer border px-3 py-1 text-[13px] leading-5 ${
                       orderSummary.tipRate === option.value
                         ? "border-[#cf6e38] bg-[#fff3ec] text-[#cf6e38]"
@@ -243,6 +251,28 @@ export default function VendorOrderSidebar({
                   </button>
                 ))}
               </div>
+
+              {orderSummary.tipRate === "other" && (
+                <div className="mt-3 max-w-[200px]">
+                  <label className="block text-[12px] font-medium text-[#8b8580]">
+                    Enter custom tip amount (NOK)
+                  </label>
+                  <div className="relative mt-1.5 rounded-[4px] shadow-sm">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span className="text-[13px] text-[#8b8580]">NOK</span>
+                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      placeholder="0.00"
+                      value={orderSummary.customTipAmount ?? ""}
+                      onChange={(event) => onTipChange("other", event.target.value)}
+                      className="block w-full rounded-[4px] border border-[#d4cfc8] py-1.5 pl-12 pr-3 text-[14px] text-[#2c2c2c] placeholder:text-[#a49b92] focus:border-[#cf6e38] focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="border-b border-[#e2ddd8] py-4">
