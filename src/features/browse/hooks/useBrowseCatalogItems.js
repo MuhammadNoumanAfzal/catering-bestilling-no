@@ -38,10 +38,13 @@ function resolveLocationFilters(locationValue) {
     return { postCode: null, areaName: null };
   }
 
-  const normalizedPostCode = trimmedValue.replace(/\D/g, "").slice(0, 4);
+  const digits = trimmedValue.replace(/\D/g, "");
 
-  if (normalizedPostCode.length === 4 && normalizedPostCode === trimmedValue.replace(/\s+/g, "")) {
-    return { postCode: normalizedPostCode, areaName: null };
+  if (
+    (digits.length === 4 || digits.length === 5) &&
+    digits === trimmedValue.replace(/\s+/g, "")
+  ) {
+    return { postCode: digits, areaName: null };
   }
 
   return { postCode: null, areaName: trimmedValue };
