@@ -150,7 +150,7 @@ export function mapProductNode(node) {
     vendor: vendor?.name || "",
     vendorData: vendor,
     image: node?.coverImage?.fileUrl || vendor?.image || "",
-    rating: formatRating(node?.averageRating),
+    rating: formatRating(node?.averageRating || node?.vendor?.rating),
     deliveryTime:
       node?.deliveryTime || vendor?.deliveryTime || "",
     deliveryFee:
