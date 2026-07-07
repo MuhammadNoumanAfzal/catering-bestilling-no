@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { showNoVendorsAlert } from "../../../utils/alerts";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
 import { getBrowseFallbackIcon } from "../../browse/data/browseData";
@@ -338,6 +339,7 @@ export default function HomePage() {
 
     if (availableVendorCount <= 0) {
       setPendingSearchScroll(false);
+      showNoVendorsAlert(appliedSearchLabel);
       return;
     }
 
@@ -413,17 +415,7 @@ export default function HomePage() {
           onAction={handleClearLocationSearch}
         />
       ) : null}
-      {!error &&
-      !isInitialLoading &&
-      hasAppliedLocationSearch &&
-      availableVendorCount === 0 ? (
-        <HomeStatusBanner
-          tone="error"
-          message={`No vendors are currently available for ${appliedSearchLabel}. Try another address, area, or postal code.`}
-          actionLabel="Clear search"
-          onAction={handleClearLocationSearch}
-        />
-      ) : null}
+
       <FoodBrowsePreviewSection
         categories={previewCategories}
         moreOptions={previewMoreOptions}
