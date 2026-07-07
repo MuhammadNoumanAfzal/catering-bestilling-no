@@ -49,7 +49,7 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue);
 }
 
-export function validateCheckoutForm({ formState, checkoutType }) {
+export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
   const commonError = validateOrderSummaryBasics({
     deliveryDate: formState.date,
     deliveryTime: formState.time,
@@ -64,6 +64,33 @@ export function validateCheckoutForm({ formState, checkoutType }) {
 
   if (!`${formState.deliveryPostalCode ?? ""}`.trim()) {
     return "Please enter the delivery postal code.";
+  }
+
+  const deliveryPostalCode = `${formState.deliveryPostalCode ?? ""}`.trim();
+  if (deliveryPostalCode && Array.isArray(carts)) {
+    const normalizedInput = deliveryPostalCode.replace(/\D/g, "");
+    for (const cart of carts) {
+      const vendor = cart?.vendor;
+      if (vendor) {
+        const servicePostalCodes = Array.isArray(vendor.servicePostalCodes)
+          ? vendor.servicePostalCodes
+          : [];
+
+        if (servicePostalCodes.length > 0) {
+          const isMatched = servicePostalCodes.some((candidate) => {
+            const normalizedCandidate = `${candidate}`.replace(/\D/g, "");
+            return (
+              normalizedCandidate.startsWith(normalizedInput) ||
+              normalizedInput.startsWith(normalizedCandidate)
+            );
+          });
+
+          if (!isMatched) {
+            return `The vendor "${vendor.name}" does not deliver to postal code ${deliveryPostalCode}.`;
+          }
+        }
+      }
+    }
   }
 
   if (!`${formState.deliveryCity ?? ""}`.trim()) {
