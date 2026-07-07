@@ -140,6 +140,17 @@ export default function CommonNavbar({
   const [draftAttendeeCount, setDraftAttendeeCount] = useState(0);
   const [draftAttendeeInput, setDraftAttendeeInput] = useState("");
   const [draftEventName, setDraftEventName] = useState("");
+  const [draftLocation, setDraftLocation] = useState(locationValue);
+  const [draftSearch, setDraftSearch] = useState(searchQuery);
+
+  useEffect(() => {
+    setDraftLocation(locationValue);
+  }, [locationValue]);
+
+  useEffect(() => {
+    setDraftSearch(searchQuery);
+  }, [searchQuery]);
+
   const dropdownRef = useRef(null);
   const actionMenuRef = useRef(null);
   const notificationRef = useRef(null);
@@ -241,6 +252,9 @@ export default function CommonNavbar({
   };
 
   const handleSearchSubmit = () => {
+    setLocationValue(draftLocation);
+    setSearchQuery(draftSearch);
+
     const nextPathname = resolveNavbarSearchRoute(location.pathname);
 
     navigate({
@@ -292,7 +306,7 @@ export default function CommonNavbar({
               eventLabel={eventLabel}
               hasDeliverySelection={hasDeliverySelection}
               hasEventSelection={hasEventSelection}
-              locationValue={locationValue}
+              locationValue={draftLocation}
               onApplyDelivery={applyDeliverySelection}
               onApplyEvent={applyEventDetails}
               onClearDelivery={clearDeliverySelection}
@@ -310,8 +324,11 @@ export default function CommonNavbar({
               }}
               onDateSelect={setDraftDate}
               onEventNameChange={setDraftEventName}
-              onLocationChange={setLocationValue}
-              onLocationClear={() => setLocationValue("")}
+              onLocationChange={setDraftLocation}
+              onLocationClear={() => {
+                setDraftLocation("");
+                setLocationValue("");
+              }}
               onMonthChange={(direction) =>
                 setCalendarMonth(
                   (current) =>
@@ -319,15 +336,20 @@ export default function CommonNavbar({
                       current.getFullYear(),
                       current.getMonth() + direction,
                       1,
-                  ),
+                    ),
                 )
               }
-              onSearchChange={setSearchQuery}
+              onSearchChange={setDraftSearch}
               onSearchSubmit={handleSearchSubmit}
               onTimeSelect={setDraftTime}
               openDropdown={openDropdown}
-              searchValue={searchQuery}
-              setSearchValue={setSearchQuery}
+              searchValue={draftSearch}
+              setSearchValue={(val) => {
+                setDraftSearch(val);
+                if (val === "") {
+                  setSearchQuery("");
+                }
+              }}
               toggleDropdown={toggleDropdown}
             />
           </div>
