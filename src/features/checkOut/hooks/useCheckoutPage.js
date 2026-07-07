@@ -326,6 +326,7 @@ export function useCheckoutPage() {
     const validationError = validateCheckoutForm({
       formState,
       checkoutType: normalizedType,
+      carts,
     });
 
     if (validationError) {
