@@ -1,4 +1,5 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
+import { hydrateRatingsForItems } from "../../../utils/ratingHydrator";
 
 const GET_FOOD_TYPES_QUERY = `
   query GetFoodTypes {
@@ -210,9 +211,11 @@ function mapProductNode(node, mode) {
       id: vendor.id || "",
       slug: vendor.slug || "",
       name: vendor.name || "Catering partner",
+      rating: formatRating(vendor.rating),
+      reviewCount: Number(vendor.reviewsCount || 0),
     },
     image: node?.coverImage?.fileUrl || vendor.logoUrl || "/home/hero1.webp",
-    rating: formatRating(node?.averageRating ?? vendor?.rating),
+    rating: formatRating(node?.averageRating || vendor?.rating),
     price: formatPriceWithLabel(node?.priceWithTax, node?.pricingType),
     discount: node?.badge || "",
     categoryTags,
@@ -262,7 +265,9 @@ export async function browseProductsByFoodType(variables) {
     variables,
   });
 
-  return mapConnectionPayload(data?.products, "food-type");
+  const payload = mapConnectionPayload(data?.products, "food-type");
+  payload.items = await hydrateRatingsForItems(payload.items);
+  return payload;
 }
 
 export async function browseProductsByOccasion(variables) {
@@ -271,5 +276,7 @@ export async function browseProductsByOccasion(variables) {
     variables,
   });
 
-  return mapConnectionPayload(data?.products, "occasion");
+  const payload = mapConnectionPayload(data?.products, "occasion");
+  payload.items = await hydrateRatingsForItems(payload.items);
+  return payload;
 }
