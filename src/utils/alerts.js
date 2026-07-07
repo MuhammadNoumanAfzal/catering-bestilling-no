@@ -110,3 +110,14 @@ export function promptSignInRequired() {
     }),
   );
 }
+
+export function showNoVendorsAlert(locationLabel) {
+  return Swal.fire(
+    withBaseOptions({
+      icon: "info",
+      title: "No Vendors Available",
+      text: `No vendors are currently available for ${locationLabel}. Please try another address, area, or postal code.`,
+      confirmButtonText: "Okay",
+    }),
+  );
+}
