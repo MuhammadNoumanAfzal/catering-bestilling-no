@@ -2,16 +2,15 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   FiChevronRight,
-  FiCreditCard,
-  FiPackage,
   FiSettings,
   FiTruck,
+  FiList,
+  FiFileText,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../auth";
 import VendorSectionCard from "../components/VendorSectionCard";
 import { fetchDashboardData } from "../dashboardSlice";
-import { vendorSettingsLinks } from "../data/vendorDashboardConfig";
 
 function getStatusClasses(status) {
   const normalizedStatus = `${status ?? ""}`.toLowerCase();
@@ -21,30 +20,36 @@ function getStatusClasses(status) {
     normalizedStatus === "delivered" ||
     normalizedStatus === "ready"
   ) {
-    return "bg-[#e7f8eb] text-[#1f8f47]";
+    return "bg-[#e8f6ed] text-[#1b7a3e]";
   }
 
-  if (normalizedStatus === "scheduled" || normalizedStatus === "pending") {
-    return "bg-[#eef3fc] text-[#2c76ff]";
+  if (
+    normalizedStatus === "scheduled" ||
+    normalizedStatus === "pending" ||
+    normalizedStatus === "preparing" ||
+    normalizedStatus === "placed" ||
+    normalizedStatus === "confirmed"
+  ) {
+    return "bg-[#fff3eb] text-[#c95f33]";
   }
 
-  return "bg-[#fff1eb] text-[#cf6e38]";
-}
+  if (normalizedStatus === "draft") {
+    return "bg-[#e5e5e5] text-[#555555]";
+  }
 
-function joinMeta(parts) {
-  return parts.filter(Boolean).join(" • ");
+  return "bg-[#f5f3f0] text-[#716a62]";
 }
 
 function VendorStatCard({ label, value, icon: Icon }) {
   return (
-    <article className="rounded-[24px] border border-[#d9d9d9] bg-white p-4 shadow-[0_10px_24px_rgba(30,30,30,0.06)] sm:p-5">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-transparent text-[#cf5c2f] sm:h-16 sm:w-16">
-        <Icon className="text-[34px] sm:text-[54px]" />
+    <article className="flex flex-col items-center justify-center rounded-[20px] border border-[#e5e5e5] bg-white p-7 shadow-none transition-all duration-200 hover:border-[#ebdcd0] hover:shadow-sm">
+      <div className="flex h-14 w-14 items-center justify-center text-[#cf6e38]">
+        <Icon className="text-[48px]" />
       </div>
-      <p className="mt-4 text-sm font-semibold text-[#2a2a2a] sm:mt-5 sm:text-base">
+      <p className="mt-3 text-sm font-bold text-[#232323] tracking-wide text-center uppercase">
         {label}
       </p>
-      <p className="mt-3 text-[24px] font-extrabold leading-none text-[#1f1f1f] sm:mt-4 sm:text-[30px]">
+      <p className="mt-2 text-5xl font-black text-[#232323] text-center leading-none">
         {value}
       </p>
     </article>
@@ -92,9 +97,24 @@ export default function VendorDashboardHomePage() {
       icon: FiTruck,
     },
     {
-      label: "Pending Invoices",
+      label: "Pending Invoice",
       value: pendingInvoices,
-      icon: FiCreditCard,
+      icon: FiFileText,
+    },
+  ];
+
+  const localSettingsLinks = [
+    {
+      label: "Edit Profile",
+      to: "/vendor-dashboard/settings#profile",
+    },
+    {
+      label: "Password",
+      to: "/vendor-dashboard/settings#password",
+    },
+    {
+      label: "Notification",
+      to: "/vendor-dashboard/settings#notifications",
     },
   ];
 
@@ -124,53 +144,45 @@ export default function VendorDashboardHomePage() {
     <div className="space-y-6">
       <section>
         <h1 className="type-h2 text-[#191919]">Dashboard</h1>
-        <p className="mt-4 type-para text-[#5f5a54]">
-          Welcome back, {userDisplayName}. Here&apos;s an overview of your
-          account activity.
+        <p className="mt-2 type-para text-[#5f5a54]">
+          Welcome back, {userDisplayName}! Heres an overview of your activity.
         </p>
       </section>
 
-      <section className="grid grid-cols-2 gap-3 sm:gap-4">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {stats.map((item) => (
           <VendorStatCard key={item.label} {...item} />
         ))}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.1fr]">
+        {/* Left Column: Recent Orders & Settings */}
         <div className="space-y-6">
           <VendorSectionCard
             title="Recent Orders"
-            icon={FiPackage}
+            icon={FiList}
             footerTo="/vendor-dashboard/orders"
           >
-            <div className="grid grid-cols-2 gap-3">
-              {normalizedOrders.length > 0 ? (
-                normalizedOrders.map((order, index) => (
+            <div className="divide-y divide-[#f0f0f0]">
+              {normalizedOrders.slice(0, 3).length > 0 ? (
+                normalizedOrders.slice(0, 3).map((order, index) => (
                   <div
                     key={`${order.id}-${index}`}
-                    className="flex h-full flex-col gap-3 rounded-2xl border border-[#efefef] px-3 py-3 sm:px-4"
+                    className="flex items-center justify-between py-4"
                   >
-                    <div>
-                      <p className="type-h5">{order.eventName}</p>
-                      <p className="mt-1 type-para text-[#8d8d8d]">
-                        {joinMeta([order.date, order.id])}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-base font-bold text-[#232323]">{order.id}</span>
+                      <span className="text-sm text-[#8d857d]">{order.date}</span>
                     </div>
-
-                    <div className="mt-auto flex flex-col items-start gap-2">
-                      <span className="type-h5 font-semibold text-[#1a1a1a]">
-                        {order.amount}
-                      </span>
-                      <span
-                        className={`rounded-full px-3 py-1 type-h6 font-semibold ${getStatusClasses(order.status)}`}
-                      >
-                        {order.status}
-                      </span>
-                    </div>
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getStatusClasses(order.status)}`}
+                    >
+                      {order.status}
+                    </span>
                   </div>
                 ))
               ) : (
-                <div className="col-span-2 py-6 text-center text-sm text-[#7e776f]">
+                <div className="py-6 text-center text-sm text-[#7e776f]">
                   No recent orders found.
                 </div>
               )}
@@ -178,68 +190,60 @@ export default function VendorDashboardHomePage() {
           </VendorSectionCard>
 
           <VendorSectionCard
-            title="Invoices"
-            icon={FiCreditCard}
-            footerTo="/vendor-dashboard/invoices"
-          >
-          <div className="grid grid-cols-2 gap-3">
-            {normalizedInvoices.length > 0 ? (
-              normalizedInvoices.map((invoice, index) => (
-                <div
-                  key={`${invoice.id}-${index}`}
-                  className="flex h-full flex-col gap-3 rounded-2xl border border-[#efefef] px-3 py-3 sm:px-4"
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#fff2eb] text-[#cf5c2f]">
-                    <FiCreditCard className="text-[22px]" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <p className="type-h5">{invoice.eventName}</p>
-                    <p className="mt-1 type-para text-[#8d8d8d]">
-                      {joinMeta([invoice.date, invoice.id])}
-                    </p>
-                  </div>
-
-                  <div className="mt-auto text-left">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 type-h6 font-semibold ${getStatusClasses(invoice.status)}`}
-                    >
-                      {invoice.status}
-                    </span>
-                    <p className="mt-2 type-h5 font-bold text-[#222222]">
-                      {invoice.amount}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-2 py-6 text-center text-sm text-[#7e776f]">
-                No recent invoices found.
-              </div>
-            )}
-          </div>
-        </VendorSectionCard>
-
-          <VendorSectionCard
             title="Settings"
             icon={FiSettings}
-            footerLabel="Manage Settings"
-            footerTo="/vendor-dashboard/settings"
+            footerLabel={null}
           >
-            <div className="space-y-3">
-              {vendorSettingsLinks.map(({ label, icon: Icon, to }) => (
+            <div className="divide-y divide-[#f0f0f0]">
+              {localSettingsLinks.map(({ label, to }) => (
                 <Link
                   key={label}
                   to={to}
-                  className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[#efefef] px-4 py-3 text-left transition hover:bg-[#faf7f3]"
+                  className="flex items-center justify-between py-4 hover:bg-[#faf9f6] transition duration-150 px-1"
                 >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <Icon className="shrink-0 text-[22px] text-[#666666]" />
-                    <span className="type-h5 text-[#222222]">{label}</span>
-                  </span>
-                  <FiChevronRight className="shrink-0 text-[22px] text-[#9a9a9a]" />
+                  <span className="text-base font-semibold text-[#232323]">{label}</span>
+                  <FiChevronRight className="text-[#cf6e38] text-base" />
                 </Link>
               ))}
+            </div>
+          </VendorSectionCard>
+        </div>
+
+        {/* Right Column: Invoices */}
+        <div>
+          <VendorSectionCard
+            title="Invoices"
+            icon={FiFileText}
+            footerTo="/vendor-dashboard/invoices"
+          >
+            <div className="divide-y divide-[#f0f0f0]">
+              {normalizedInvoices.slice(0, 6).length > 0 ? (
+                normalizedInvoices.slice(0, 6).map((invoice, index) => (
+                  <div
+                    key={`${invoice.id}-${index}`}
+                    className="flex items-center justify-between py-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-base font-bold text-[#232323]">{invoice.id}</span>
+                      <span className="text-sm text-[#8d857d]">{invoice.date}</span>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getStatusClasses(invoice.status)}`}
+                      >
+                        {invoice.status}
+                      </span>
+                      <span className="text-base font-bold text-[#232323] min-w-[100px] text-right">
+                        {invoice.amount}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-6 text-center text-sm text-[#7e776f]">
+                  No recent invoices found.
+                </div>
+              )}
             </div>
           </VendorSectionCard>
         </div>

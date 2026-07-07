@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { FiChevronRight } from "react-icons/fi";
 
 export default function VendorSectionCard({
   title,
@@ -10,32 +9,30 @@ export default function VendorSectionCard({
   onFooterClick,
 }) {
   const footerClasses =
-    "flex w-full items-center justify-center gap-2 rounded-b-[24px] border-t border-[#ececec] px-4 py-3 text-sm font-semibold text-[#303030] transition hover:bg-[#faf7f3]";
+    "flex w-full items-center justify-center gap-2 rounded-b-[20px] border-t border-[#f0f0f0] px-4 py-4 text-base font-bold text-[#201b17] hover:bg-[#faf9f6] transition duration-200";
 
   return (
-    <section className="rounded-[24px] border border-[#d8d8d8] bg-white shadow-[0_8px_24px_rgba(25,25,25,0.06)]">
-      <header className="flex items-center gap-2 border-b border-[#ececec] px-5 py-4">
-        {Icon ? <Icon className="text-[22px] text-[#cf5c2f]" /> : null}
-        <h2 className="type-h4 text-[#1f1f1f]">{title}</h2>
+    <section className="rounded-[20px] border border-[#e5e5e5] bg-white shadow-none">
+      <header className="flex items-center gap-2.5 border-b border-[#f0f0f0] px-5 py-4.5">
+        {Icon ? <Icon className="text-2xl text-[#cf6e38]" /> : null}
+        <h2 className="text-lg font-bold text-[#201b17]">{title}</h2>
       </header>
 
-      <div className="px-4 py-3">{children}</div>
+      <div className="px-5 py-3">{children}</div>
 
       {footerTo ? (
         <Link to={footerTo} className={footerClasses}>
           <span>{footerLabel}</span>
-          <FiChevronRight className="text-[14px]" />
         </Link>
-      ) : (
+      ) : footerLabel ? (
         <button
           type="button"
           onClick={onFooterClick}
           className={footerClasses}
         >
           <span>{footerLabel}</span>
-          <FiChevronRight className="text-[14px]" />
         </button>
-      )}
+      ) : null}
     </section>
   );
 }
