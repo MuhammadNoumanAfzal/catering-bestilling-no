@@ -12,7 +12,7 @@ import {
 
 export const vendorNavigationItems = [
   {
-    label: "Home",
+    label: "Dashboard",
     to: "/vendor-dashboard",
     end: true,
     icon: FiGrid,
