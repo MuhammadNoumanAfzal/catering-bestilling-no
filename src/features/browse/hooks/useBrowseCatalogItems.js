@@ -123,11 +123,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
         const currentSelection = parseCategoryParamValue(categoryParam);
         const resolvedSlug = resolveSelectedSlug(currentSelection, nextCategories);
 
-        if (!resolvedSlug && nextCategories.length > 0) {
-          const nextParams = new URLSearchParams(searchParams);
-          nextParams.set("category", nextCategories[0].value);
-          setSearchParams(nextParams, { replace: true });
-        } else if (resolvedSlug && resolvedSlug !== currentSelection) {
+        if (resolvedSlug && resolvedSlug !== currentSelection) {
           const nextParams = new URLSearchParams(searchParams);
           nextParams.set("category", resolvedSlug);
           setSearchParams(nextParams, { replace: true });
@@ -161,15 +157,6 @@ export function useBrowseCatalogItems(mode = "food-type") {
     let isMounted = true;
 
     async function loadItems() {
-      if (!selectedSlug) {
-        if (isMounted) {
-          setItems([]);
-          setTotalCount(0);
-          setIsLoading(false);
-        }
-        return;
-      }
-
       setIsLoading(true);
       setError("");
 
