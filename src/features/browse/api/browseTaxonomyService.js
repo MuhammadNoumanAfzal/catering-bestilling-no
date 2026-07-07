@@ -37,7 +37,7 @@ const GET_OCCASIONS_QUERY = `
 
 const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
   query BrowseProductsByFoodType(
-    $foodTypeSlug: String!
+    $foodTypeSlug: String
     $postCode: String
     $areaName: String
     $search: String
@@ -106,7 +106,7 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
 
 const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
   query BrowseProductsByOccasion(
-    $occasionSlug: String!
+    $occasionSlug: String
     $postCode: String
     $areaName: String
     $search: String
