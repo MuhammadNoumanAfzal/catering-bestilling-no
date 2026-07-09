@@ -31,6 +31,7 @@ export default function CheckoutPage() {
     isDeliveryAddressEditing,
     isInvoiceAddressEditing,
     isLoadingSlots,
+    pricingError,
     isSubmittingOrder,
     normalizedType,
     setIsDeliveryAddressEditing,
@@ -57,6 +58,12 @@ export default function CheckoutPage() {
               />
 
               <div className="mt-3 space-y-3">
+                {pricingError ? (
+                  <div className="rounded-[12px] border border-red-200 bg-red-50 px-3 py-3 text-[13px] text-red-700">
+                    {pricingError}
+                  </div>
+                ) : null}
+
                 <ContactInfoSection
                   mode={normalizedType}
                   formState={formState}
