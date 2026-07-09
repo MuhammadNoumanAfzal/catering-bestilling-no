@@ -10,11 +10,11 @@ export default function PreferredTimePicker({
   return (
     <div className="preferred-time-picker">
       <TimePicker
-        amPm
+        amPm={false}
         clearIcon={null}
         clockIcon={<FiClock className="text-[16px]" />}
         disableClock
-        format="h:mm a"
+        format="HH:mm"
         hourPlaceholder="--"
         minutePlaceholder="--"
         onChange={(nextValue) => onChange(nextValue ?? "")}
