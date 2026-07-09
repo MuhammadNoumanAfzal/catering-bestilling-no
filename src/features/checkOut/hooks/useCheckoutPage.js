@@ -31,6 +31,52 @@ import {
 } from "../constants/checkoutForm";
 import { validateCheckoutForm } from "../../order/utils/orderFlowValidation";
 
+const CHECKOUT_DRAFT_STORAGE_KEY = "checkout-form-draft";
+
+function readCheckoutDrafts() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const rawValue = window.sessionStorage.getItem(CHECKOUT_DRAFT_STORAGE_KEY);
+    return rawValue ? JSON.parse(rawValue) : {};
+  } catch {
+    return {};
+  }
+}
+
+function readCheckoutFormDraft(type) {
+  const drafts = readCheckoutDrafts();
+  return type ? drafts[type] ?? null : null;
+}
+
+function writeCheckoutFormDraft(type, formState) {
+  if (typeof window === "undefined" || !type) {
+    return;
+  }
+
+  const drafts = readCheckoutDrafts();
+  drafts[type] = formState;
+  window.sessionStorage.setItem(CHECKOUT_DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+}
+
+function clearCheckoutFormDraft(type) {
+  if (typeof window === "undefined" || !type) {
+    return;
+  }
+
+  const drafts = readCheckoutDrafts();
+  delete drafts[type];
+
+  if (Object.keys(drafts).length === 0) {
+    window.sessionStorage.removeItem(CHECKOUT_DRAFT_STORAGE_KEY);
+    return;
+  }
+
+  window.sessionStorage.setItem(CHECKOUT_DRAFT_STORAGE_KEY, JSON.stringify(drafts));
+}
+
 function getMirroredInvoiceFields(formState) {
   return {
     ...buildCheckoutAddressFields(
@@ -55,6 +101,9 @@ export function useCheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { checkoutType } = useParams();
+  const normalizedType = VALID_CHECKOUT_TYPES.includes(checkoutType)
+    ? checkoutType
+    : null;
   const { isLoggedIn } = useAuth();
   const [carts, setCarts] = useState([]);
   const [formState, setFormState] = useState(() => createInitialCheckoutFormState());
@@ -71,17 +120,60 @@ export function useCheckoutPage() {
   const [deliverySlots, setDeliverySlots] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
+  const updateField = (key, value) => {
+    setFormState((current) => {
+      const nextState = { ...current, [key]: value };
+
+      if (key === "invoiceSameAsDelivery") {
+        if (value) {
+          return {
+            ...nextState,
+            ...getMirroredInvoiceFields(nextState),
+          };
+        }
+
+        return nextState;
+      }
+
+      if (
+        current.invoiceSameAsDelivery &&
+        key.startsWith("delivery")
+      ) {
+        return {
+          ...nextState,
+          ...getMirroredInvoiceFields(nextState),
+        };
+      }
+
+      return nextState;
+    });
+  };
+
+  const updateCartField = (key, value) => {
+    setCarts((current) =>
+      current.map((cart) => ({
+        ...cart,
+        orderSummary: {
+          ...cart.orderSummary,
+          [key]: value,
+        },
+      })),
+    );
+  };
+
   useEffect(() => {
     const storedCarts = readAllStoredOrderSummaries();
     const prefilledFormState = location.state?.prefillCheckoutForm;
+    const savedDraft = readCheckoutFormDraft(normalizedType);
 
     setCarts(storedCarts);
     setFormState((current) => ({
       ...current,
       ...createInitialCheckoutFormState(storedCarts[0]),
+      ...(savedDraft ?? {}),
       ...(prefilledFormState ?? {}),
     }));
-  }, [location.state]);
+  }, [location.state, normalizedType]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -89,6 +181,7 @@ export function useCheckoutPage() {
     }
 
     let isMounted = true;
+    const hasSavedDraft = Boolean(readCheckoutFormDraft(normalizedType));
 
     async function autofillCheckoutProfile() {
       setIsAutofilling(true);
@@ -112,10 +205,12 @@ export function useCheckoutPage() {
           setInvoiceAddresses(profile.invoiceAddresses);
         }
 
-        setFormState((current) => ({
-          ...current,
-          ...profile.formState,
-        }));
+        if (!hasSavedDraft) {
+          setFormState((current) => ({
+            ...current,
+            ...profile.formState,
+          }));
+        }
       } catch {
         // Keep existing locally saved checkout defaults if autofill fails.
       } finally {
@@ -130,7 +225,7 @@ export function useCheckoutPage() {
     return () => {
       isMounted = false;
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, normalizedType]);
 
   useEffect(() => {
     carts.forEach(({ vendor, orderSummary }) => {
@@ -138,10 +233,20 @@ export function useCheckoutPage() {
     });
   }, [carts]);
 
-  const normalizedType = VALID_CHECKOUT_TYPES.includes(checkoutType)
-    ? checkoutType
-    : null;
   const hasItems = carts.some((cart) => cart.orderSummary.items.length > 0);
+
+  useEffect(() => {
+    if (!normalizedType) {
+      return;
+    }
+
+    if (!hasItems) {
+      clearCheckoutFormDraft(normalizedType);
+      return;
+    }
+
+    writeCheckoutFormDraft(normalizedType, formState);
+  }, [formState, hasItems, normalizedType]);
 
   const totalPersonCount = useMemo(
     () =>
@@ -233,47 +338,6 @@ export function useCheckoutPage() {
     formState.invoiceSameAsDelivery,
     formState.selectedDeliveryAddressId,
   ]);
-
-  const updateField = (key, value) => {
-    setFormState((current) => {
-      const nextState = { ...current, [key]: value };
-
-      if (key === "invoiceSameAsDelivery") {
-        if (value) {
-          return {
-            ...nextState,
-            ...getMirroredInvoiceFields(nextState),
-          };
-        }
-
-        return nextState;
-      }
-
-      if (
-        current.invoiceSameAsDelivery &&
-        key.startsWith("delivery")
-      ) {
-        return {
-          ...nextState,
-          ...getMirroredInvoiceFields(nextState),
-        };
-      }
-
-      return nextState;
-    });
-  };
-
-  const updateCartField = (key, value) => {
-    setCarts((current) =>
-      current.map((cart) => ({
-        ...cart,
-        orderSummary: {
-          ...cart.orderSummary,
-          [key]: value,
-        },
-      })),
-    );
-  };
 
   const handleTypeChange = (nextType) => {
     navigate(`/checkout/${nextType}`);
@@ -407,6 +471,7 @@ export function useCheckoutPage() {
         formState,
         placedOrders,
       });
+      clearCheckoutFormDraft(normalizedType);
       clearAllStoredOrderSummaries();
       await showOrderPlacedSuccess();
       navigate("/order-confirmed");
