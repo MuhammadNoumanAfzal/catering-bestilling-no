@@ -26,10 +26,12 @@ export default function CheckoutPage() {
     handleTipChange,
     handleTypeChange,
     hasItems,
+    hasLivePricing,
     invoiceAddresses,
     isAutofilling,
     isDeliveryAddressEditing,
     isInvoiceAddressEditing,
+    isLoadingPricing,
     isLoadingSlots,
     pricingError,
     isSubmittingOrder,
@@ -185,7 +187,9 @@ export default function CheckoutPage() {
               {hasItems ? (
                 <CheckoutSummaryPanel
                   carts={carts}
+                  canPlaceOrder={hasLivePricing && !pricingError && !isLoadingPricing}
                   isSubmitting={isSubmittingOrder}
+                  isLoadingPricing={isLoadingPricing}
                   onTipChange={handleTipChange}
                   onRemoveItem={handleRemoveItem}
                   onTablewareChange={handleTablewareChange}

@@ -6,7 +6,9 @@ import {
 
 export default function CheckoutSummaryPanel({
   carts,
+  canPlaceOrder = true,
   isSubmitting = false,
+  isLoadingPricing = false,
   onTipChange,
   onRemoveItem,
   onTablewareChange,
@@ -70,10 +72,16 @@ export default function CheckoutSummaryPanel({
             <button
               type="button"
               onClick={onPlaceOrder}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !canPlaceOrder}
               className="type-h5 mt-3 w-full rounded-[6px] bg-[#cf6e38] px-4 py-3 text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting ? "Placing order..." : "Place Order"}
+              {isSubmitting
+                ? "Placing order..."
+                : isLoadingPricing
+                  ? "Loading live pricing..."
+                  : !canPlaceOrder
+                    ? "Live pricing required"
+                    : "Place Order"}
             </button>
           </div>
         </div>

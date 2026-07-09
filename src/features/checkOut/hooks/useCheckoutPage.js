@@ -282,6 +282,10 @@ export function useCheckoutPage() {
   );
 
   const hasItems = carts.some((cart) => cart.orderSummary.items.length > 0);
+  const hasLivePricing = carts.length > 0 && carts.every((cart) => {
+    const pricing = cart?.orderSummary?.pricing;
+    return pricing && pricing.grandTotal !== undefined && pricing.grandTotal !== null;
+  });
 
   useEffect(() => {
     if (!normalizedType) {
@@ -447,9 +451,13 @@ export function useCheckoutPage() {
             };
           }),
         );
-      } catch {
+      } catch (error) {
         if (!isCancelled) {
-          setPricingError("Unable to load backend checkout pricing.");
+          setPricingError(
+            error instanceof Error && error.message
+              ? error.message
+              : "Unable to load backend checkout pricing.",
+          );
           setCarts((current) =>
             current.map((cart) => ({
               ...cart,
@@ -576,6 +584,15 @@ export function useCheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
+    if (isLoadingPricing || pricingError || !hasLivePricing) {
+      await showAuthErrorAlert(
+        pricingError ||
+          "Live backend pricing is required before placing this order. Please wait for pricing to load and try again.",
+        "Live pricing required",
+      );
+      return;
+    }
+
     const validationError = validateCheckoutForm({
       formState,
       checkoutType: normalizedType,
@@ -652,6 +669,7 @@ export function useCheckoutPage() {
     handleTipChange,
     handleTypeChange,
     hasItems,
+    hasLivePricing,
     invoiceAddresses,
     isAutofilling,
     isDeliveryAddressEditing,
