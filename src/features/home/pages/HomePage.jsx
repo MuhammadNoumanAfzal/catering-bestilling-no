@@ -144,13 +144,15 @@ export default function HomePage() {
         }
 
         setFoodTypeCategories(
-          items.map((item) => ({
-            id: item.id || "",
-            name: item.name || "Category",
-            value: item.slug || slugifyCategory(item.name),
-            slug: item.slug || slugifyCategory(item.name),
-            icon: item.iconUrl || getBrowseFallbackIcon(item.slug || item.name),
-          })),
+          items
+            .filter((item) => Number(item?.productsCount ?? 0) > 0)
+            .map((item) => ({
+              id: item.id || "",
+              name: item.name || "Category",
+              value: item.slug || slugifyCategory(item.name),
+              slug: item.slug || slugifyCategory(item.name),
+              icon: item.iconUrl || getBrowseFallbackIcon(item.slug || item.name),
+            })),
         );
       } catch {
         if (isMounted) {
