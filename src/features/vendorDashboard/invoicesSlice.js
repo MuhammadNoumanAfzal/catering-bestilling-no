@@ -38,15 +38,18 @@ const FETCH_INVOICES_QUERY = `
           issuedOn
           dueDate
           paidOn
-          subtotal
-          taxAmount
-          deliveryFee
-          tipAmount
-          totalAmount
-          paidAmount
-          dueAmount
           currency
           pdfUrl
+          pricing {
+            subtotal
+            taxAmount
+            deliveryFee
+            addOnsTotal
+            tipAmount
+            grandTotal
+            amountPaid
+            amountDue
+          }
           vendor {
             id
             name
@@ -69,47 +72,29 @@ const FETCH_INVOICES_QUERY = `
 `;
 
 const GET_INVOICE_DETAIL_QUERY = `
-  query GetInvoiceDetail($orderId: ID!) {
-    clientOrder(id: $orderId) {
+  query GetInvoiceDetail($invoiceId: ID!) {
+    invoice(id: $invoiceId) {
       id
       invoiceNumber
+      orderNumber
       status
-      issuedOn
+      issueDate
       dueDate
-      paidOn
       currency
-      subtotal
-      taxAmount
-      deliveryFee
-      tipAmount
-      totalAmount
-      paidAmount
-      dueAmount
-      pdfUrl
-      paymentType
-      transactionReference
-      note
-      vendor {
-        id
-        name
-        slug
-        logoUrl
-        companyName
-      }
-      order {
-        id
-        eventName
-        dueDate
-        guestCount
-        deliveryDate
-      }
-      lineItems {
-        id
-        label
-        description
-        quantity
-        unitPrice
-        totalPrice
+      paymentStatus
+      paymentMethod
+      pricing {
+        subtotal
+        taxRate
+        taxAmount
+        deliveryFee
+        addOnsTotal
+        tipAmount
+        discountAmount
+        serviceFee
+        grandTotal
+        amountPaid
+        amountDue
       }
     }
   }
@@ -231,8 +216,9 @@ function buildTotals(summary = {}) {
 }
 
 function mapInvoiceListNode(node) {
-  const total = parseFloat(node.totalAmount || 0);
-  const paid = parseFloat(node.paidAmount || 0);
+  const pricing = node.pricing || {};
+  const total = parseFloat(pricing.grandTotal || node.totalAmount || 0);
+  const paid = parseFloat(pricing.amountPaid || node.paidAmount || 0);
   
   let calculatedStatus = "pending";
   if (paid >= total && total > 0) {
@@ -266,14 +252,14 @@ function mapInvoiceListNode(node) {
     dueDateRaw: node.dueDate || "",
     paidOn: formatDate(node.paidOn),
     paidOnRaw: node.paidOn || "",
-    subtotal: formatMoney(node.subtotal, currency),
-    tax: formatMoney(node.taxAmount, currency),
-    deliveryFee: formatMoney(node.deliveryFee, currency),
-    tip: formatMoney(node.tipAmount, currency),
-    amount: formatMoney(node.totalAmount, currency),
-    paidAmount: formatMoney(node.paidAmount, currency),
-    dueAmount: formatMoney(node.dueAmount, currency),
-    amountRaw: toNumber(node.totalAmount),
+    subtotal: formatMoney(pricing.subtotal || node.subtotal, currency),
+    tax: formatMoney(pricing.taxAmount || node.taxAmount, currency),
+    deliveryFee: formatMoney(pricing.deliveryFee || node.deliveryFee, currency),
+    tip: formatMoney(pricing.tipAmount || node.tipAmount, currency),
+    amount: formatMoney(pricing.grandTotal || node.totalAmount, currency),
+    paidAmount: formatMoney(pricing.amountPaid || node.paidAmount, currency),
+    dueAmount: formatMoney(pricing.amountDue || node.dueAmount, currency),
+    amountRaw: toNumber(pricing.grandTotal || node.totalAmount),
     currency,
     pdfUrl: node.pdfUrl || "",
     vendor: node.vendor?.name || "Catering partner",
@@ -286,8 +272,9 @@ function mapInvoiceListNode(node) {
 }
 
 function mapInvoiceDetail(node) {
-  const total = parseFloat(node.totalAmount || 0);
-  const paid = parseFloat(node.paidAmount || 0);
+  const pricing = node.pricing || {};
+  const total = parseFloat(pricing.grandTotal || node.totalAmount || 0);
+  const paid = parseFloat(pricing.amountPaid || node.paidAmount || 0);
   
   let calculatedStatus = "pending";
   if (paid >= total && total > 0) {
@@ -313,18 +300,18 @@ function mapInvoiceDetail(node) {
     status: status.label,
     statusKey: status.key,
     statusRaw: status.raw,
-    issuedOn: formatDate(node.issuedOn),
+    issuedOn: formatDate(node.issueDate || node.issuedOn),
     dueOn: formatDate(node.dueDate),
     paidOn: formatDate(node.paidOn),
-    subtotal: formatMoney(node.subtotal, currency),
-    taxAmount: formatMoney(node.taxAmount, currency),
-    deliveryFee: formatMoney(node.deliveryFee, currency),
-    tipAmount: formatMoney(node.tipAmount, currency),
-    totalAmount: formatMoney(node.totalAmount, currency),
-    paidAmount: formatMoney(node.paidAmount, currency),
-    dueAmount: formatMoney(node.dueAmount, currency),
-    paymentType: node.paymentType || "Not specified",
-    transactionReference: node.transactionReference || "Not available",
+    subtotal: formatMoney(pricing.subtotal || node.subtotal, currency),
+    taxAmount: formatMoney(pricing.taxAmount || node.taxAmount, currency),
+    deliveryFee: formatMoney(pricing.deliveryFee || node.deliveryFee, currency),
+    tipAmount: formatMoney(pricing.tipAmount || node.tipAmount, currency),
+    totalAmount: formatMoney(pricing.grandTotal || node.totalAmount, currency),
+    paidAmount: formatMoney(pricing.amountPaid || node.paidAmount, currency),
+    dueAmount: formatMoney(pricing.amountDue || node.dueAmount, currency),
+    paymentType: node.paymentMethod || node.paymentType || "Not specified",
+    transactionReference: node.orderNumber || node.transactionReference || "Not available",
     note: node.note || "",
     vendor: {
       id: node.vendor?.id || "",
@@ -334,29 +321,18 @@ function mapInvoiceDetail(node) {
       companyName: node.vendor?.companyName || "",
     },
     order: {
-      id: node.order?.id || node.id || "",
-      eventName: node.order?.eventName || "Event",
-      eventDate: formatDate(node.order?.dueDate),
-      personCount: Number(node.order?.guestCount ?? 0),
-      deliveryAddressStr: node.order?.deliveryDate
-        ? `Delivery date: ${formatDate(node.order.deliveryDate)}`
-        : "Not provided",
+      id: node.orderNumber || node.id || "",
+      eventName: node.orderNumber ? `Order ${node.orderNumber}` : "Event",
+      eventDate: formatDate(node.dueDate),
+      personCount: 0,
+      deliveryAddressStr: "Not provided",
     },
     billingAddress: {
       address: "",
       country: "",
       phone: "",
     },
-    lineItems: Array.isArray(node.lineItems)
-      ? node.lineItems.map((item) => ({
-          id: item.id || "",
-          label: item.label || "Line item",
-          description: item.description || "",
-          quantity: Number(item.quantity ?? 0),
-          unitPrice: formatMoney(item.unitPrice, currency),
-          totalPrice: formatMoney(item.totalPrice, currency),
-        }))
-      : [],
+    lineItems: [],
   };
 }
 
@@ -395,18 +371,18 @@ export const fetchInvoices = createAsyncThunk(
 
 export const fetchInvoiceDetail = createAsyncThunk(
   "invoices/fetchInvoiceDetail",
-  async (orderId, { rejectWithValue }) => {
+  async (invoiceId, { rejectWithValue }) => {
     try {
       const response = await graphqlRequest({
         query: GET_INVOICE_DETAIL_QUERY,
-        variables: { orderId },
+        variables: { invoiceId },
       });
 
-      if (!response.clientOrder?.id) {
+      if (!response.invoice?.id) {
         throw new Error("Invoice details not found.");
       }
 
-      return mapInvoiceDetail(response.clientOrder);
+      return mapInvoiceDetail(response.invoice);
     } catch (error) {
       return rejectWithValue(
         error.message || "Failed to load invoice details.",

@@ -11,11 +11,14 @@ const FETCH_CLIENT_ORDERS_QUERY = `
           id
           invoiceNumber
           status
-          totalAmount
-          taxAmount
-          deliveryFee
-          tipAmount
-          grandTotal
+          pricing {
+            subtotal
+            taxAmount
+            deliveryFee
+            addOnsTotal
+            tipAmount
+            grandTotal
+          }
           createdOn
           dueDate
           eventDate
@@ -34,10 +37,15 @@ const FETCH_CLIENT_ORDERS_QUERY = `
             productName
             quantity
             unitPrice
-            totalPrice
+            lineTotal
             specialInstructions
             selectedOptions
-            selectedAddons
+            selectedAddons {
+              name
+              unitPrice
+              quantity
+              totalPrice
+            }
           }
           modifiedItems {
             id
@@ -65,11 +73,19 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
       canModify
       eventName
       personCount
-      grandTotal
-      totalAmount
-      taxAmount
-      deliveryFee
-      tipAmount
+      pricing {
+        subtotal
+        taxRate
+        taxAmount
+        deliveryFee
+        addOnsTotal
+        tipAmount
+        discountAmount
+        serviceFee
+        grandTotal
+        amountPaid
+        amountDue
+      }
       deliveryAddress
       deliverySuite
       deliveryCity
@@ -89,10 +105,15 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         productName
         quantity
         unitPrice
-        totalPrice
+        lineTotal
         specialInstructions
         selectedOptions
-        selectedAddons
+        selectedAddons {
+          name
+          unitPrice
+          quantity
+          totalPrice
+        }
         product {
           id
           name
@@ -164,17 +185,21 @@ const formatId = (id) => {
 };
 
 function resolveOrderGrandTotal(node, fallbackAddOnsTotal = 0) {
-  const grandTotal = parseFloat(node?.grandTotal || 0);
+  const pricing = node?.pricing || {};
+  const grandTotal = parseFloat(pricing?.grandTotal || node?.grandTotal || 0);
   if (Number.isFinite(grandTotal) && grandTotal > 0) {
     return grandTotal;
   }
 
-  const totalAmount = parseFloat(node?.totalAmount || 0);
+  const totalAmount = parseFloat(pricing?.subtotal || node?.totalAmount || 0);
+  const deliveryFee = parseFloat(pricing?.deliveryFee || node?.deliveryFee || 0);
+  const tipAmount = parseFloat(pricing?.tipAmount || node?.tipAmount || 0);
+  const taxAmount = parseFloat(pricing?.taxAmount || node?.taxAmount || 0);
+
   if (Number.isFinite(totalAmount) && totalAmount > 0) {
-    return totalAmount;
+    return totalAmount + deliveryFee + tipAmount + taxAmount + fallbackAddOnsTotal;
   }
 
-  const tipAmount = parseFloat(node?.tipAmount || 0);
   return totalAmount + tipAmount + fallbackAddOnsTotal;
 }
 
@@ -189,7 +214,7 @@ function mapListOrder(node) {
     id: item.id || "",
     quantity: item.quantity || 1,
     name: item.productName || "Catering Meal",
-    price: formatAmount(parseFloat(item.totalPrice || 0) * 1.15),
+    price: formatAmount(parseFloat(item.lineTotal || item.totalPrice || 0)),
     details: [
       item.specialInstructions ? `Note: ${item.specialInstructions}` : "",
       ...Object.entries(item.selectedOptions || {}).map(
@@ -197,17 +222,20 @@ function mapListOrder(node) {
       ),
       ...(item.selectedAddons || []).map((addon) =>
         addon?.name
-          ? `Add-on: ${addon.name}${addon.price ? ` (+${formatAmount(addon.price)})` : ""}`
+          ? `Add-on: ${addon.name}${addon.totalPrice || addon.price ? ` (+${formatAmount(addon.totalPrice || addon.price)})` : ""}`
           : "",
       ),
     ].filter(Boolean),
   }));
 
   const itemsList = Array.isArray(node.items) ? node.items : [];
-  const addOnsTotal = itemsList.reduce((sum, item) => {
+  const pricingAddOnsTotal = parseFloat(node?.pricing?.addOnsTotal || 0);
+  const addOnsTotal = Number.isFinite(pricingAddOnsTotal) && pricingAddOnsTotal > 0
+    ? pricingAddOnsTotal
+    : itemsList.reduce((sum, item) => {
     const addons = Array.isArray(item.selectedAddons) ? item.selectedAddons : [];
     return sum + addons.reduce((itemSum, addon) => {
-      const price = parseFloat(addon?.price || addon?.unitPrice || 0);
+      const price = parseFloat(addon?.totalPrice || addon?.price || addon?.unitPrice || 0);
       const name = addon?.name || "";
       const match = name.match(/x(\d+)$/);
       const qty = match ? parseInt(match[1], 10) : 1;
@@ -240,9 +268,9 @@ function mapListOrder(node) {
     location: node.deliveryAddressStr || "Not provided",
     invoiceId: node.invoiceNumber || "",
     image: node.vendor?.coverPhotoUrl || node.vendor?.logoUrl || "/home/hero1.webp",
-    subtotal: formatAmount(node.totalAmount),
-    taxAmount: formatAmount(node.taxAmount),
-    deliveryFee: formatAmount(node.deliveryFee),
+    subtotal: formatAmount(node.pricing?.subtotal || node.totalAmount),
+    taxAmount: formatAmount(node.pricing?.taxAmount || node.taxAmount),
+    deliveryFee: formatAmount(node.pricing?.deliveryFee || node.deliveryFee),
     orderNotes: node.orderNotes || "",
     eventTime: node.eventTime || "",
     items: mappedItems,
@@ -352,14 +380,14 @@ export const fetchClientOrderDetail = createAsyncThunk(
           id: item.id || "",
           quantity: formatNumber(item.quantity, 1),
           name: item.productName || item.product?.name || "Catering Meal",
-          price: formatAmount(parseFloat(item.totalPrice || 0) * 1.15),
+          price: formatAmount(parseFloat(item.lineTotal || item.totalPrice || 0)),
           details: [
             item.specialInstructions ? `Note: ${item.specialInstructions}` : "",
             item.product?.description || "",
             ...Object.entries(itemOptions).map(([key, value]) => `${key}: ${value}`),
             ...itemAddons.map((addon) =>
               addon?.name
-                ? `Add-on: ${addon.name}${addon.price ? ` (+${formatAmount(addon.price)})` : ""}`
+                ? `Add-on: ${addon.name}${addon.totalPrice || addon.price ? ` (+${formatAmount(addon.totalPrice || addon.price)})` : ""}`
                 : "",
             ),
             ...((item.product?.menuItems || []).map((menuItem) =>
@@ -370,10 +398,13 @@ export const fetchClientOrderDetail = createAsyncThunk(
       });
 
       const itemsList = Array.isArray(orderNode.items) ? orderNode.items : [];
-      const addOnsTotal = itemsList.reduce((sum, item) => {
+      const pricingAddOnsTotal = parseFloat(orderNode?.pricing?.addOnsTotal || 0);
+      const addOnsTotal = Number.isFinite(pricingAddOnsTotal) && pricingAddOnsTotal > 0
+        ? pricingAddOnsTotal
+        : itemsList.reduce((sum, item) => {
         const addons = Array.isArray(item.selectedAddons) ? item.selectedAddons : [];
         return sum + addons.reduce((itemSum, addon) => {
-          const price = parseFloat(addon?.price || addon?.unitPrice || 0);
+          const price = parseFloat(addon?.totalPrice || addon?.price || addon?.unitPrice || 0);
           const name = addon?.name || "";
           const match = name.match(/x(\d+)$/);
           const qty = match ? parseInt(match[1], 10) : 1;
@@ -403,10 +434,10 @@ export const fetchClientOrderDetail = createAsyncThunk(
           createdOnRaw: orderNode.createdOn || "",
           person: formatNumber(orderNode.personCount, 1),
           total: formatAmount(resolvedGrandTotal),
-          subtotal: formatAmount(orderNode.totalAmount),
-          taxAmount: formatAmount(orderNode.taxAmount),
-          deliveryFee: formatAmount(orderNode.deliveryFee),
-          tipAmount: formatAmount(orderNode.tipAmount),
+          subtotal: formatAmount(orderNode.pricing?.subtotal || orderNode.totalAmount),
+          taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),
+          deliveryFee: formatAmount(orderNode.pricing?.deliveryFee || orderNode.deliveryFee),
+          tipAmount: formatAmount(orderNode.pricing?.tipAmount || orderNode.tipAmount),
           status: orderNode.status || "Pending",
           canModify: orderNode.canModify !== false,
           isModified: modifiedItems.length > 0,

@@ -24,7 +24,15 @@ export default function VendorSummaryCard({
     ...item,
     effectivePrice: getItemPrice(item, personCount),
   }));
-  const { subtotal, deliveryFee, salesTax, tipValue } = getVendorTotals(cart);
+  const {
+    subtotal,
+    deliveryFee,
+    salesTax,
+    addOnsTotal,
+    tipValue,
+    discountAmount,
+    serviceFee,
+  } = getVendorTotals(cart);
 
   return (
     <section className="rounded-[18px] border border-[#e7dfd7] bg-white p-4 shadow-[0_10px_30px_rgba(45,31,20,0.08)]">
@@ -83,7 +91,10 @@ export default function VendorSummaryCard({
           subtotal={subtotal}
           deliveryFee={deliveryFee}
           salesTax={salesTax}
+          addOnsTotal={addOnsTotal}
           tipValue={tipValue}
+          discountAmount={discountAmount}
+          serviceFee={serviceFee}
         />
 
         <TipSelector

@@ -1,10 +1,15 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
-import { buildPlaceOrderPayload, mapCurrentUserToCheckoutProfile } from "./checkoutMappers";
+import {
+  buildCheckoutPreviewPayload,
+  buildPlaceOrderPayload,
+  mapCurrentUserToCheckoutProfile,
+} from "./checkoutMappers";
 import {
   buildPlaceClientOrderVariables,
   PLACE_CLIENT_ORDER_MUTATION,
 } from "./checkoutMutations";
 import {
+  GET_CHECKOUT_PREVIEW_QUERY,
   GET_CURRENT_USER_DETAILS_QUERY,
   GET_AVAILABLE_DELIVERY_SLOTS_QUERY,
 } from "./checkoutQueries";
@@ -41,6 +46,20 @@ export async function fetchAvailableDeliverySlots({ vendorId, date }) {
   } catch {
     return [];
   }
+}
+
+export async function fetchCheckoutPreview({ cart, checkoutType, formState }) {
+  const payload = buildCheckoutPreviewPayload({ cart, checkoutType, formState });
+  const response = await graphqlRequest({
+    query: GET_CHECKOUT_PREVIEW_QUERY,
+    variables: { input: payload },
+  });
+
+  if (!response?.checkoutPreview) {
+    throw new Error(`Unable to calculate checkout totals for ${cart.vendor.name}.`);
+  }
+
+  return response.checkoutPreview;
 }
 
 
