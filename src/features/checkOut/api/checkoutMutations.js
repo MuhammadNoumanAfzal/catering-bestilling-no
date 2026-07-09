@@ -2,7 +2,7 @@ export const PLACE_CLIENT_ORDER_MUTATION = `
   mutation PlaceClientOrder(
     $vendorId: ID!
     $customerType: String!
-    $items: [ClientOrderItemInput]!
+    $items: [ClientOrderItemInput!]!
     $corporateName: String
     $deliveryAddress: String
     $deliveryCity: String
@@ -22,7 +22,6 @@ export const PLACE_CLIENT_ORDER_MUTATION = `
     $organizationNumber: String
     $personCount: Int
     $phone: String
-    $taxPercent: Decimal
     $tipAmount: Decimal
     $tableware: TablewareInput
   ) {
@@ -49,7 +48,6 @@ export const PLACE_CLIENT_ORDER_MUTATION = `
       organizationNumber: $organizationNumber
       personCount: $personCount
       phone: $phone
-      taxPercent: $taxPercent
       tipAmount: $tipAmount
       tableware: $tableware
     ) {
