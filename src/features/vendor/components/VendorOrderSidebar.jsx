@@ -10,7 +10,7 @@ import { promptSignInRequired, showAuthErrorAlert } from "../../../utils/alerts"
 import {
   getItemPrice,
   getItemServes,
-  SALES_TAX_RATE,
+  getVendorTotals,
   sortSummaryItems,
 } from "../../checkOut/components/summary/checkoutSummaryUtils";
 import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
@@ -27,11 +27,6 @@ function formatCurrency(value) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(Number(value ?? 0));
-}
-
-function extractAmount(value) {
-  const matched = `${value ?? ""}`.match(/(\d+(?:\.\d+)?)/);
-  return matched ? Number(matched[1]) : 0;
 }
 
 function formatDateTime(date, time) {
@@ -110,17 +105,17 @@ export default function VendorOrderSidebar({
     price: getItemPrice(item, orderSummary.personCount),
     effectiveServes: getItemServes(item, orderSummary.personCount),
   }));
-  const foodAndBeverage = items.reduce((total, item) => total + item.price, 0);
-  const restaurantDeliveryFee = extractAmount(vendor?.deliveryFee);
-  const basePrice = foodAndBeverage / (1 + SALES_TAX_RATE);
-  const salesTax = foodAndBeverage - basePrice;
-  const tipValue =
-    orderSummary.tipRate === "other"
-      ? Number(orderSummary.customTipAmount ?? 0)
-      : typeof orderSummary.tipRate === "number"
-        ? foodAndBeverage * orderSummary.tipRate
-        : 0;
-  const total = foodAndBeverage + restaurantDeliveryFee + tipValue;
+  const {
+    subtotal,
+    deliveryFee,
+    salesTax,
+    addOnsTotal,
+    tipValue,
+    grandTotal,
+  } = getVendorTotals({
+    vendor,
+    orderSummary,
+  });
   const hasItems = items.length > 0;
   const formattedDateTime = formatDateTime(
     orderSummary.deliveryDate,
@@ -196,25 +191,34 @@ export default function VendorOrderSidebar({
 
             <div className="border-b border-[#e2ddd8] py-4 type-para ">
               <div className="flex items-center justify-between gap-3">
-                <span>Food &amp; beverage</span>
+                <span>Subtotal</span>
                 <span className="font-semibold ">
-                  NOK {formatCurrency(foodAndBeverage)}
+                  NOK {formatCurrency(subtotal)}
                 </span>
               </div>
               <p className="mt-1 type-para text-[#76706a]">{restaurantName}</p>
 
               <div className="mt-2 flex items-center justify-between gap-3">
-                <span>Restaurant delivery fee</span>
+                <span>Delivery fee</span>
                 <span className="font-semibold text-[#76706a]">
-                  NOK {formatCurrency(restaurantDeliveryFee)}
+                  NOK {formatCurrency(deliveryFee)}
                 </span>
               </div>
               <p className="mt-1 type-para text-[#76706a]">
                 This is not a driver tip
               </p>
 
+              {addOnsTotal > 0 ? (
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <span>Add-ons</span>
+                  <span className="font-semibold text-[#76706a]">
+                    NOK {formatCurrency(addOnsTotal)}
+                  </span>
+                </div>
+              ) : null}
+
               <div className="mt-2 flex items-center justify-between gap-3">
-                <span>Sales Tax</span>
+                <span>VAT</span>
                 <span className="font-semibold text-[#76706a]">
                   NOK {formatCurrency(salesTax)}
                 </span>
@@ -331,7 +335,7 @@ export default function VendorOrderSidebar({
               <div className="flex items-center justify-between gap-3">
                 <span className="type-h4 font-semibold ">Total</span>
                 <span className="type-h4  font-semibold ">
-                  NOK {formatCurrency(total)}
+                  NOK {formatCurrency(grandTotal)}
                 </span>
               </div>
 

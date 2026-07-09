@@ -36,6 +36,16 @@ export function getTipValue(summary, subtotal) {
   return typeof summary.tipRate === "number" ? subtotal * summary.tipRate : 0;
 }
 
+export function getLocalMerchandiseTotal(orderSummary) {
+  const items = Array.isArray(orderSummary?.items) ? orderSummary.items : [];
+  const personCount = orderSummary?.personCount;
+
+  return items.reduce(
+    (sum, item) => sum + getItemPrice(item, personCount),
+    0,
+  );
+}
+
 export function getItemServes(item, personCount) {
   const baseServes = Number(item.totalServes ?? item.serves ?? 0);
   const normalizedPersonCount = Math.max(1, Number(personCount ?? 0) || 1);
@@ -102,17 +112,24 @@ export function getVendorTotals(cart) {
     (sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount),
     0,
   );
+  const mainItemsGrossTotal = cart.orderSummary.items
+    .filter((item) => !item?.isAddOn)
+    .reduce((sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount), 0);
+  const addOnsGrossTotal = cart.orderSummary.items
+    .filter((item) => item?.isAddOn)
+    .reduce((sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount), 0);
   const deliveryFee = extractAmount(cart.vendor.deliveryFee);
-  const basePrice = subtotal / (1 + SALES_TAX_RATE);
-  const salesTax = subtotal - basePrice;
+  const subtotalExVat = mainItemsGrossTotal / (1 + SALES_TAX_RATE);
+  const addOnsExVat = addOnsGrossTotal / (1 + SALES_TAX_RATE);
+  const salesTax = subtotal - subtotalExVat - addOnsExVat;
   const tipValue = getTipValue(cart.orderSummary, subtotal);
-  const grandTotal = subtotal + deliveryFee + tipValue;
+  const grandTotal = subtotalExVat + addOnsExVat + salesTax + deliveryFee + tipValue;
 
   return {
-    subtotal,
+    subtotal: subtotalExVat,
     deliveryFee,
     salesTax,
-    addOnsTotal: 0,
+    addOnsTotal: addOnsExVat,
     tipValue,
     discountAmount: 0,
     serviceFee: 0,
