@@ -1,7 +1,7 @@
 import { buildCheckoutAddressFields } from "../../../utils/customerProfileStorage";
 import {
+  getLocalMerchandiseTotal,
   getTipValue,
-  parseBackendAmount,
 } from "../components/summary/checkoutSummaryUtils";
 import { CHECKOUT_MODE_LABELS } from "../constants/checkoutForm";
 
@@ -190,21 +190,7 @@ function buildCheckoutPreviewItems(items) {
 }
 
 function resolveTipBaseAmount(cart) {
-  const pricing = cart?.orderSummary?.pricing;
-  const backendBaseAmount =
-    parseBackendAmount(pricing?.subtotal) + parseBackendAmount(pricing?.addOnsTotal);
-
-  if (backendBaseAmount > 0) {
-    return backendBaseAmount;
-  }
-
-  return cart.orderSummary.items.reduce((sum, item) => {
-    if (item?.isAddOn) {
-      return sum + Number(item.price ?? 0);
-    }
-
-    return sum + Number(item.price ?? 0);
-  }, 0);
+  return getLocalMerchandiseTotal(cart?.orderSummary);
 }
 
 export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
