@@ -51,10 +51,10 @@ export default function CheckoutSummaryPanel({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="type-para font-semibold uppercase tracking-[0.12em] text-white/70">
-                  Grand total
+                  Total to pay
                 </p>
                 <p className="mt-1 type-subpara text-white/85">
-                  Includes delivery, tax, and tip
+                  Final amount shown to the customer
                 </p>
               </div>
 

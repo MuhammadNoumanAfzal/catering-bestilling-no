@@ -19,11 +19,11 @@ export default function PriceDetailsCard({
 
       <div className="mt-3 space-y-2 text-[14px] text-[#2c2c2c]">
         <div className="flex items-center justify-between gap-3">
-          <span>Food &amp; beverage</span>
+          <span>Subtotal</span>
           <span className="font-semibold">NOK {formatCurrency(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
-          <span>Restaurant delivery fee</span>
+          <span>Delivery fee</span>
           <span className="font-semibold">NOK {formatCurrency(deliveryFee)}</span>
         </div>
         {addOnsTotal > 0 ? (
@@ -33,7 +33,7 @@ export default function PriceDetailsCard({
           </div>
         ) : null}
         <div className="flex items-center justify-between gap-3">
-          <span>Sales Tax</span>
+          <span>VAT</span>
           <span className="font-semibold">NOK {formatCurrency(salesTax)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
