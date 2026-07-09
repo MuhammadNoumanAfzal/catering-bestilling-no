@@ -14,7 +14,12 @@ export default function VendorLocationModal({ vendor, onClose }) {
     : "";
   const deliveryHours = vendor.availability?.delivery?.label || "";
   const takeoutHours = vendor.availability?.takeout?.label?.split(" | ").join("\n") || "";
-  const hasPostalCodes = Array.isArray(vendor.servicePostalCodes) && vendor.servicePostalCodes.length > 0;
+  const displayAreas = Array.isArray(vendor.serviceAreas) && vendor.serviceAreas.length > 0
+    ? vendor.serviceAreas
+    : (Array.isArray(vendor.servicePostalCodes) && vendor.servicePostalCodes.length > 0
+        ? vendor.servicePostalCodes.map((pc) => ({ id: pc, name: "", postCode: pc }))
+        : []);
+  const hasPostalCodes = displayAreas.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-4">
@@ -109,15 +114,23 @@ export default function VendorLocationModal({ vendor, onClose }) {
         {hasPostalCodes ? (
           <div className="mt-4 rounded-[18px] border border-[#eadfd2] bg-white p-4">
             <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7b6f64]">
-              Service Postal Codes
+              Service Areas
             </p>
-            <div className="mt-3 flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
-              {vendor.servicePostalCodes.map((postalCode) => (
+            <div className="mt-3 flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1">
+              {displayAreas.map((area) => (
                 <span
-                  key={postalCode}
-                  className="inline-flex rounded-full bg-[#f7efe8] px-3 py-1 text-[13px] font-medium text-[#5d5249]"
+                  key={area.id}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[#f7efe8] px-3 py-1 text-[13px] font-medium text-[#5d5249]"
                 >
-                  {postalCode}
+                  {area.name ? (
+                    <>
+                      <span className="font-semibold text-[#3d3229]">{area.name}</span>
+                      <span className="text-[#9c8a7d]">·</span>
+                      <span>{area.postCode}</span>
+                    </>
+                  ) : (
+                    <span>{area.postCode}</span>
+                  )}
                 </span>
               ))}
             </div>
@@ -125,7 +138,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
         ) : (
           <div className="mt-4 rounded-[18px] border border-[#eadfd2] bg-white p-4">
             <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#7b6f64]">
-              Service Postal Codes
+              Service Areas
             </p>
             <p className="mt-2 text-[14px] text-[#6f675f]">-</p>
           </div>
