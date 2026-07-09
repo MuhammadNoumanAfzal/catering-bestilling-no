@@ -184,7 +184,7 @@ export default function HomePage() {
           foodTypeSlug: activeCategorySlug,
           postCode: appliedSearchFilters.postCode,
           areaName: appliedSearchFilters.areaName,
-          search: normalizedSearchQuery || undefined,
+          search: undefined,
           first: 24,
         });
 
@@ -406,13 +406,16 @@ export default function HomePage() {
       ) : null}
       {!error &&
       !isInitialLoading &&
-      hasAppliedLocationSearch &&
-      availableVendorCount > 0 ? (
+      hasAppliedLocationSearch ? (
         <HomeStatusBanner
-          tone="info"
-          message={`Showing ${availableVendorCount} vendor${
-            availableVendorCount === 1 ? "" : "s"
-          } for ${appliedSearchLabel}.`}
+          tone={availableVendorCount > 0 ? "info" : "warning"}
+          message={
+            availableVendorCount > 0
+              ? `Showing ${availableVendorCount} vendor${
+                  availableVendorCount === 1 ? "" : "s"
+                } for ${appliedSearchLabel}.`
+              : `No vendors found servicing ${appliedSearchLabel}.`
+          }
           actionLabel="Clear search"
           onAction={handleClearLocationSearch}
         />
