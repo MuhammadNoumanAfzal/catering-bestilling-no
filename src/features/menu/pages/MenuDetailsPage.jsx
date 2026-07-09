@@ -61,6 +61,7 @@ export default function MenuDetailsPage() {
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
   const minimumPersons = menuItem?.serves ?? 1;
   const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
+  const baseItemPrice = Number(menuItem?.price ?? 0);
   const baseItemUnitPrice = Number(
     menuItem?.modal?.unitPrice ?? menuItem?.modal?.pricePerPerson ?? 0,
   );
@@ -386,8 +387,8 @@ export default function MenuDetailsPage() {
     const totalServes = menuItem.serves * quantityCount;
     const itemName = menuItem.modal?.heading ?? menuItem.title ?? "Item";
     const linePrice =
-      baseItemPricingType === "per-person"
-        ? baseItemUnitPrice * totalServes
+      baseItemPrice > 0
+        ? baseItemPrice * quantityCount
         : baseItemUnitPrice * quantityCount;
     const normalizedVendorNote = vendorNote.trim();
     const selectedOptions = {};

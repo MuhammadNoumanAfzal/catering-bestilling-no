@@ -1,6 +1,5 @@
 import { buildCheckoutAddressFields } from "../../../utils/customerProfileStorage";
 import {
-  SALES_TAX_RATE,
   getVendorTotals,
 } from "../components/summary/checkoutSummaryUtils";
 import { CHECKOUT_MODE_LABELS } from "../constants/checkoutForm";
@@ -181,6 +180,35 @@ function buildOrderItems(items) {
     });
 }
 
+export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
+  const vendorId = resolveVendorId(cart);
+
+  if (!vendorId) {
+    throw new Error(`Unable to resolve vendor id for ${cart.vendor.name}.`);
+  }
+
+  const items = buildOrderItems(cart.orderSummary.items);
+
+  if (items.length === 0) {
+    throw new Error(`No valid order items found for ${cart.vendor.name}.`);
+  }
+
+  const totals = getVendorTotals(cart);
+
+  return {
+    vendorId,
+    customerType: CHECKOUT_MODE_LABELS[checkoutType],
+    eventDate: formState.date,
+    eventTime: formatEventTime(formState.time),
+    personCount: Number(cart.orderSummary.personCount ?? formState.personCount ?? 1),
+    deliveryAddress: formState.deliveryAddress,
+    deliveryPostalCode: formState.deliveryPostalCode,
+    deliveryCity: formState.deliveryCity,
+    tipAmount: totals.tipValue.toFixed(2),
+    items,
+  };
+}
+
 export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
   const vendorId = resolveVendorId(cart);
 
@@ -213,7 +241,6 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     eventTime: formatEventTime(formState.time),
     personCount: Number(cart.orderSummary.personCount ?? formState.personCount ?? 1),
     tipAmount: totals.tipValue.toFixed(2),
-    taxPercent: (SALES_TAX_RATE * 100).toFixed(1),
     orderNotes: formState.additionalInfo,
     tableware: cart.orderSummary?.tableware ? {
       napkins: Boolean(cart.orderSummary.tableware.napkins),

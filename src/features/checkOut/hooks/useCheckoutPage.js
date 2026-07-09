@@ -23,6 +23,7 @@ import { writePlacedOrderDraft } from "../../order/services";
 import {
   fetchAvailableDeliverySlots,
   fetchCheckoutAutofillProfile,
+  fetchCheckoutPreview,
   placeCheckoutOrders,
 } from "../api";
 import {
@@ -119,6 +120,7 @@ export function useCheckoutPage() {
   const [isAutofilling, setIsAutofilling] = useState(false);
   const [deliverySlots, setDeliverySlots] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [isLoadingPricing, setIsLoadingPricing] = useState(false);
 
   const updateField = (key, value) => {
     setFormState((current) => {
@@ -233,6 +235,51 @@ export function useCheckoutPage() {
     });
   }, [carts]);
 
+  const pricingRequestKey = useMemo(
+    () =>
+      JSON.stringify({
+        checkoutType: normalizedType,
+        date: formState.date,
+        time: formState.time,
+        deliveryAddress: formState.deliveryAddress,
+        deliveryPostalCode: formState.deliveryPostalCode,
+        deliveryCity: formState.deliveryCity,
+        carts: carts.map((cart) => ({
+          vendorId: cart.vendor.id,
+          vendorSlug: cart.vendor.slug,
+          personCount: cart.orderSummary.personCount,
+          tipRate: cart.orderSummary.tipRate,
+          customTipAmount: cart.orderSummary.customTipAmount,
+          items: cart.orderSummary.items
+            .filter((item) => !item?.isAddOn)
+            .map((item) => ({
+              id: item.id,
+              productId: item.productId,
+              quantity: item.quantity,
+              selectedOptions: item.selectedOptions,
+              specialInstructions: item.specialInstructions,
+            })),
+          addOns: cart.orderSummary.items
+            .filter((item) => item?.isAddOn)
+            .map((item) => ({
+              id: item.id,
+              parentMenuItemId: item.parentMenuItemId,
+              quantity: item.quantity,
+              name: item.name,
+            })),
+        })),
+      }),
+    [
+      carts,
+      formState.date,
+      formState.deliveryAddress,
+      formState.deliveryCity,
+      formState.deliveryPostalCode,
+      formState.time,
+      normalizedType,
+    ],
+  );
+
   const hasItems = carts.some((cart) => cart.orderSummary.items.length > 0);
 
   useEffect(() => {
@@ -338,6 +385,93 @@ export function useCheckoutPage() {
     formState.invoiceSameAsDelivery,
     formState.selectedDeliveryAddressId,
   ]);
+
+  useEffect(() => {
+    if (!normalizedType || carts.length === 0) {
+      return;
+    }
+
+    if (!formState.date || !formState.time || !formState.deliveryAddress) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    async function loadCheckoutPricing() {
+      setIsLoadingPricing(true);
+
+      try {
+        const previewResults = await Promise.all(
+          carts.map(async (cart) => {
+            const preview = await fetchCheckoutPreview({
+              cart,
+              checkoutType: normalizedType,
+              formState,
+            });
+
+            return {
+              vendorSlug: cart.vendor.slug,
+              pricing: preview.pricing || null,
+              previewItems: Array.isArray(preview.items) ? preview.items : [],
+              pricingCurrency: preview.currency || "NOK",
+              availability: preview.availability || null,
+            };
+          }),
+        );
+
+        if (isCancelled) {
+          return;
+        }
+
+        setCarts((current) =>
+          current.map((cart) => {
+            const matchedPreview = previewResults.find(
+              (preview) => preview.vendorSlug === cart.vendor.slug,
+            );
+
+            if (!matchedPreview) {
+              return cart;
+            }
+
+            return {
+              ...cart,
+              orderSummary: {
+                ...cart.orderSummary,
+                pricing: matchedPreview.pricing,
+                previewItems: matchedPreview.previewItems,
+                pricingCurrency: matchedPreview.pricingCurrency,
+                availability: matchedPreview.availability,
+              },
+            };
+          }),
+        );
+      } catch {
+        if (!isCancelled) {
+          setCarts((current) =>
+            current.map((cart) => ({
+              ...cart,
+              orderSummary: {
+                ...cart.orderSummary,
+                pricing: null,
+                previewItems: [],
+                pricingCurrency: "NOK",
+              },
+            })),
+          );
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingPricing(false);
+        }
+      }
+    }
+
+    loadCheckoutPricing();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [carts.length, normalizedType, pricingRequestKey]);
 
   const handleTypeChange = (nextType) => {
     navigate(`/checkout/${nextType}`);
@@ -520,6 +654,7 @@ export function useCheckoutPage() {
     isDeliveryAddressEditing,
     isInvoiceAddressEditing,
     isLoadingSlots,
+    isLoadingPricing,
     isSubmittingOrder,
     normalizedType,
     setIsDeliveryAddressEditing,

@@ -34,3 +34,45 @@ export const GET_AVAILABLE_DELIVERY_SLOTS_QUERY = `
     }
   }
 `;
+
+export const GET_CHECKOUT_PREVIEW_QUERY = `
+  query CheckoutPreview($input: CheckoutPreviewInput!) {
+    checkoutPreview(input: $input) {
+      currency
+      availability {
+        isValid
+        errors
+        warnings
+      }
+      pricing {
+        subtotal
+        taxRate
+        taxAmount
+        deliveryFee
+        addOnsTotal
+        tipAmount
+        discountAmount
+        serviceFee
+        grandTotal
+      }
+      items {
+        productId
+        productName
+        pricingType
+        unitPrice
+        quantity
+        serves
+        lineSubtotal
+        lineTax
+        lineTotal
+        selectedOptions
+        selectedAddons {
+          name
+          unitPrice
+          quantity
+          totalPrice
+        }
+      }
+    }
+  }
+`;

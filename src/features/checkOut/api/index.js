@@ -1,1 +1,6 @@
-export { fetchAvailableDeliverySlots, fetchCheckoutAutofillProfile, placeCheckoutOrders } from "./checkoutService";
+export {
+  fetchAvailableDeliverySlots,
+  fetchCheckoutAutofillProfile,
+  fetchCheckoutPreview,
+  placeCheckoutOrders,
+} from "./checkoutService";

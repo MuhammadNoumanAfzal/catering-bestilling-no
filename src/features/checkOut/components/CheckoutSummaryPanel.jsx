@@ -13,9 +13,7 @@ export default function CheckoutSummaryPanel({
   onPlaceOrder,
 }) {
   const totals = getCheckoutTotals(carts);
-
-  const grandTotal =
-    totals.subtotal + totals.deliveryFee + totals.tip;
+  const grandTotal = totals.grandTotal;
 
   return (
     <aside className="min-w-0 border-l border-[#d8d2ca] bg-[#f7f5f2]">

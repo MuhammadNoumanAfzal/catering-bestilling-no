@@ -46,6 +46,7 @@ export default function VendorMenuItemModal({ item, onClose }) {
   const [instructionsOpen, setInstructionsOpen] = useState(false);
   const [instructions, setInstructions] = useState("");
   const pricingType = item.modal?.pricingType ?? item.pricingType ?? "per-person";
+  const baseItemPrice = Number(item.price ?? 0);
   const unitPrice = Number(
     item.modal?.unitPrice ?? item.modal?.pricePerPerson ?? 0,
   );
@@ -77,8 +78,8 @@ export default function VendorMenuItemModal({ item, onClose }) {
       totalServes,
       unitPrice,
       price:
-        pricingType === "per-person"
-          ? unitPrice * totalServes
+        baseItemPrice > 0
+          ? baseItemPrice * quantityCount
           : unitPrice * quantityCount,
       pricingType,
       details: [
