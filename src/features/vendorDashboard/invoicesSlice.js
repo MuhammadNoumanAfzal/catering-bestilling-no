@@ -77,7 +77,6 @@ const GET_INVOICE_DETAIL_QUERY = `
       id
       invoiceNumber
       orderNumber
-      status
       issueDate
       dueDate
       currency
@@ -275,6 +274,7 @@ function mapInvoiceDetail(node) {
   const pricing = node.pricing || {};
   const total = parseFloat(pricing.grandTotal || node.totalAmount || 0);
   const paid = parseFloat(pricing.amountPaid || node.paidAmount || 0);
+  const statusSource = node.paymentStatus || node.status || "";
   
   let calculatedStatus = "pending";
   if (paid >= total && total > 0) {
@@ -290,7 +290,7 @@ function mapInvoiceDetail(node) {
     }
   }
 
-  const status = mapInvoiceStatus(calculatedStatus);
+  const status = mapInvoiceStatus(statusSource || calculatedStatus);
   const currency = node.currency || "NOK";
 
   return {
