@@ -121,6 +121,7 @@ export function useCheckoutPage() {
   const [deliverySlots, setDeliverySlots] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isLoadingPricing, setIsLoadingPricing] = useState(false);
+  const [pricingError, setPricingError] = useState("");
 
   const updateField = (key, value) => {
     setFormState((current) => {
@@ -399,6 +400,7 @@ export function useCheckoutPage() {
 
     async function loadCheckoutPricing() {
       setIsLoadingPricing(true);
+      setPricingError("");
 
       try {
         const previewResults = await Promise.all(
@@ -447,6 +449,7 @@ export function useCheckoutPage() {
         );
       } catch {
         if (!isCancelled) {
+          setPricingError("Unable to load backend checkout pricing.");
           setCarts((current) =>
             current.map((cart) => ({
               ...cart,
@@ -655,6 +658,7 @@ export function useCheckoutPage() {
     isInvoiceAddressEditing,
     isLoadingSlots,
     isLoadingPricing,
+    pricingError,
     isSubmittingOrder,
     normalizedType,
     setIsDeliveryAddressEditing,

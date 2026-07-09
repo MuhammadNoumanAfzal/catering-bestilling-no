@@ -185,7 +185,6 @@ function buildCheckoutPreviewItems(items) {
   return buildOrderItems(items).map((item) => ({
     productId: item.product,
     quantity: item.quantity,
-    ...(item.selectedOptions ? { selectedOptions: item.selectedOptions } : {}),
     ...(item.selectedAddons ? { selectedAddons: item.selectedAddons } : {}),
   }));
 }
@@ -231,8 +230,6 @@ export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
     eventTime: formatEventTime(formState.time),
     personCount: Number(cart.orderSummary.personCount ?? formState.personCount ?? 1),
     deliveryAddress: formState.deliveryAddress,
-    deliveryPostalCode: formState.deliveryPostalCode,
-    deliveryCity: formState.deliveryCity,
     tipAmount: tipAmount.toFixed(2),
     items,
   };
