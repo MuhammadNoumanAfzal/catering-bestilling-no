@@ -1,6 +1,7 @@
 import { buildCheckoutAddressFields } from "../../../utils/customerProfileStorage";
 import {
-  getVendorTotals,
+  getTipValue,
+  parseBackendAmount,
 } from "../components/summary/checkoutSummaryUtils";
 import { CHECKOUT_MODE_LABELS } from "../constants/checkoutForm";
 
@@ -180,6 +181,34 @@ function buildOrderItems(items) {
     });
 }
 
+function buildCheckoutPreviewItems(items) {
+  return buildOrderItems(items).map((item) => ({
+    productId: item.product,
+    quantity: item.quantity,
+    ...(item.selectedOptions ? { selectedOptions: item.selectedOptions } : {}),
+    ...(item.selectedAddons ? { selectedAddons: item.selectedAddons } : {}),
+    ...(item.specialInstructions ? { specialInstructions: item.specialInstructions } : {}),
+  }));
+}
+
+function resolveTipBaseAmount(cart) {
+  const pricing = cart?.orderSummary?.pricing;
+  const backendBaseAmount =
+    parseBackendAmount(pricing?.subtotal) + parseBackendAmount(pricing?.addOnsTotal);
+
+  if (backendBaseAmount > 0) {
+    return backendBaseAmount;
+  }
+
+  return cart.orderSummary.items.reduce((sum, item) => {
+    if (item?.isAddOn) {
+      return sum + Number(item.price ?? 0);
+    }
+
+    return sum + Number(item.price ?? 0);
+  }, 0);
+}
+
 export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
   const vendorId = resolveVendorId(cart);
 
@@ -187,13 +216,14 @@ export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
     throw new Error(`Unable to resolve vendor id for ${cart.vendor.name}.`);
   }
 
-  const items = buildOrderItems(cart.orderSummary.items);
+  const items = buildCheckoutPreviewItems(cart.orderSummary.items);
 
   if (items.length === 0) {
     throw new Error(`No valid order items found for ${cart.vendor.name}.`);
   }
 
-  const totals = getVendorTotals(cart);
+  const tipBaseAmount = resolveTipBaseAmount(cart);
+  const tipAmount = getTipValue(cart.orderSummary, tipBaseAmount);
 
   return {
     vendorId,
@@ -204,7 +234,7 @@ export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
     deliveryAddress: formState.deliveryAddress,
     deliveryPostalCode: formState.deliveryPostalCode,
     deliveryCity: formState.deliveryCity,
-    tipAmount: totals.tipValue.toFixed(2),
+    tipAmount: tipAmount.toFixed(2),
     items,
   };
 }
@@ -222,7 +252,8 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     throw new Error(`No valid order items found for ${cart.vendor.name}.`);
   }
 
-  const totals = getVendorTotals(cart);
+  const tipBaseAmount = resolveTipBaseAmount(cart);
+  const tipAmount = getTipValue(cart.orderSummary, tipBaseAmount);
   const payload = {
     vendorId,
     customerType: CHECKOUT_MODE_LABELS[checkoutType],
@@ -240,7 +271,7 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     eventDate: formState.date,
     eventTime: formatEventTime(formState.time),
     personCount: Number(cart.orderSummary.personCount ?? formState.personCount ?? 1),
-    tipAmount: totals.tipValue.toFixed(2),
+    tipAmount: tipAmount.toFixed(2),
     orderNotes: formState.additionalInfo,
     tableware: cart.orderSummary?.tableware ? {
       napkins: Boolean(cart.orderSummary.tableware.napkins),
