@@ -23,3 +23,14 @@ export const GET_CURRENT_USER_DETAILS_QUERY = `
     }
   }
 `;
+
+export const GET_AVAILABLE_DELIVERY_SLOTS_QUERY = `
+  query GetAvailableDeliverySlots($vendorId: ID!, $date: String!) {
+    availableDeliverySlots(vendorId: $vendorId, date: $date) {
+      start
+      end
+      isFullyBooked
+      remainingCapacity
+    }
+  }
+`;

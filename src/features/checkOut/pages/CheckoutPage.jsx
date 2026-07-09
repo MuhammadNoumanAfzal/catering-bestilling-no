@@ -18,6 +18,7 @@ export default function CheckoutPage() {
     applySavedAddress,
     carts,
     deliveryAddresses,
+    deliverySlots,
     formState,
     handlePlaceOrder,
     handleRemoveItem,
@@ -29,6 +30,7 @@ export default function CheckoutPage() {
     isAutofilling,
     isDeliveryAddressEditing,
     isInvoiceAddressEditing,
+    isLoadingSlots,
     isSubmittingOrder,
     normalizedType,
     setIsDeliveryAddressEditing,
@@ -161,6 +163,8 @@ export default function CheckoutPage() {
                   formState={formState}
                   updateField={updateField}
                   updateCartField={updateCartField}
+                  deliverySlots={deliverySlots}
+                  isLoadingSlots={isLoadingSlots}
                 />
 
                 <AdditionalInfoSection

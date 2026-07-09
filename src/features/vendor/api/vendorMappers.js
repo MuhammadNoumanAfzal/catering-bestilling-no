@@ -216,9 +216,15 @@ export function adaptApiVendorToProfile(apiVendor) {
     },
   };
 
-  const servicePostalCodes = (apiVendor.serviceAreas || [])
+  const serviceAreas = (apiVendor.serviceAreas || [])
     .filter((area) => area.isActive)
-    .map((area) => String(area.postCode).padStart(4, "0"));
+    .map((area) => ({
+      id: area.id || `${area.postCode}`,
+      name: area.name || "",
+      postCode: String(area.postCode).padStart(4, "0"),
+    }));
+
+  const servicePostalCodes = serviceAreas.map((area) => area.postCode);
 
   const menuSections = (apiVendor.menuCategories || [])
     .map((category, categoryIndex) => {
@@ -260,6 +266,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     city,
     pickupAddress,
     pickupInstructions,
+    serviceAreas,
     servicePostalCodes,
     deliveryFee: `NOK ${parseFloat(fee).toFixed(0)} Delivery fee`,
     freeDeliveryOver: freeDeliveryOver ? `NOK ${parseFloat(freeDeliveryOver).toFixed(0)}` : "",

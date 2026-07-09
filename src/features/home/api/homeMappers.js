@@ -105,6 +105,13 @@ function mapVendorNode(node) {
         ? `NOK ${Number.parseFloat(freeDeliveryOver || 0).toFixed(0)}`
         : "",
     primaryPostalCode: `${node?.postCode ?? ""}`.trim(),
+    serviceAreas: (node?.serviceAreas || [])
+      .filter((area) => area?.isActive)
+      .map((area) => ({
+        id: area.id || `${area.postCode}`,
+        name: area.name || "",
+        postCode: `${area?.postCode ?? ""}`.trim(),
+      })),
     servicePostalCodes: [
       `${node?.postCode ?? ""}`.trim(),
       ...(node?.serviceAreas || [])

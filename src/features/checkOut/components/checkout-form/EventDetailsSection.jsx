@@ -8,6 +8,8 @@ export default function EventDetailsSection({
   formState,
   updateField,
   updateCartField,
+  deliverySlots = [],
+  isLoadingSlots = false,
 }) {
   const eventLabel = mode === "corporate" ? "Event Name" : "Occasion";
   const eventKey = mode === "corporate" ? "eventName" : "occasion";
@@ -21,6 +23,26 @@ export default function EventDetailsSection({
     updateField("personCount", nextPersonCount);
     updateCartField("personCount", nextPersonCount);
   };
+
+  const hasSlots = deliverySlots.length > 0;
+  const selectedTime = formState.time || "";
+
+  function isTimeInSlot(time, slot) {
+    return time >= slot.start && time <= slot.end;
+  }
+
+  function handleSelectSlot(slot) {
+    if (slot.isFullyBooked) return;
+    // Set time to the slot start
+    updateField("time", slot.start);
+    updateCartField("deliveryTime", slot.start);
+  }
+
+  function getCapacityLabel(slot) {
+    if (slot.isFullyBooked) return "Fully booked";
+    if (slot.remainingCapacity >= 9999) return "Available";
+    return `${slot.remainingCapacity} spot${slot.remainingCapacity !== 1 ? "s" : ""} left`;
+  }
 
   return (
     <CheckoutSection title="Event Details">
@@ -43,16 +65,69 @@ export default function EventDetailsSection({
           }}
           inputClassName="cursor-pointer"
         />
-        <CheckoutField
-          label="Time"
-          type="time"
-          value={formState.time}
-          onChange={(event) => {
-            updateField("time", event.target.value);
-            updateCartField("deliveryTime", event.target.value);
-          }}
-          inputClassName="cursor-pointer"
-        />
+
+        {/* Time / Slot Picker */}
+        <div className="flex flex-col">
+          <span className="type-subpara mb-1 block text-[#2d2d2d]">Time</span>
+
+          {!formState.date ? (
+            <p className="rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2 text-[13px] text-[#9b8f84]">
+              Select a date first
+            </p>
+          ) : isLoadingSlots ? (
+            <div className="flex items-center gap-2 rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2">
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
+              <span className="text-[13px] text-[#9b8f84]">Checking availability...</span>
+            </div>
+          ) : hasSlots ? (
+            <div className="flex flex-col gap-2">
+              {deliverySlots.map((slot) => {
+                const isSelected = isTimeInSlot(selectedTime, slot);
+                const isBooked = slot.isFullyBooked;
+                return (
+                  <button
+                    key={`${slot.start}-${slot.end}`}
+                    type="button"
+                    disabled={isBooked}
+                    onClick={() => handleSelectSlot(slot)}
+                    className={`flex w-full items-center justify-between rounded-[8px] border px-3 py-2 text-left text-[13px] transition ${
+                      isBooked
+                        ? "cursor-not-allowed border-[#e4ddd7] bg-[#f5f2ef] text-[#b0a49a] line-through"
+                        : isSelected
+                          ? "border-[#cf6e38] bg-[#fff4ed] font-semibold text-[#cf6e38] ring-1 ring-[#cf6e38]/30"
+                          : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/50 hover:bg-[#fdf8f4]"
+                    }`}
+                  >
+                    <span>{slot.label}</span>
+                    <span
+                      className={`ml-3 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                        isBooked
+                          ? "bg-[#f0e8e4] text-[#b08a7a]"
+                          : slot.remainingCapacity >= 9999
+                            ? "bg-[#eaf5ee] text-[#2f8a4b]"
+                            : slot.remainingCapacity <= 3
+                              ? "bg-[#fff0e5] text-[#cf6e38]"
+                              : "bg-[#eaf5ee] text-[#2f8a4b]"
+                      }`}
+                    >
+                      {getCapacityLabel(slot)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <input
+              type="time"
+              value={formState.time}
+              onChange={(event) => {
+                updateField("time", event.target.value);
+                updateCartField("deliveryTime", event.target.value);
+              }}
+              className="cursor-pointer rounded-[6px] border border-[#d9d1c7] bg-white px-3 py-2 text-[14px] text-[#2d2d2d] outline-none focus:border-[#cf6e38] focus:ring-1 focus:ring-[#cf6e38]/30"
+            />
+          )}
+        </div>
       </div>
 
       <div className="mt-3">
@@ -82,3 +157,5 @@ export default function EventDetailsSection({
     </CheckoutSection>
   );
 }
+
+

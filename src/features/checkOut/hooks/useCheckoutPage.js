@@ -21,6 +21,7 @@ import {
 } from "../../../utils/alerts";
 import { writePlacedOrderDraft } from "../../order/services";
 import {
+  fetchAvailableDeliverySlots,
   fetchCheckoutAutofillProfile,
   placeCheckoutOrders,
 } from "../api";
@@ -67,6 +68,8 @@ export function useCheckoutPage() {
   const [isInvoiceAddressEditing, setIsInvoiceAddressEditing] = useState(false);
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
   const [isAutofilling, setIsAutofilling] = useState(false);
+  const [deliverySlots, setDeliverySlots] = useState([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   useEffect(() => {
     const storedCarts = readAllStoredOrderSummaries();
@@ -159,6 +162,55 @@ export function useCheckoutPage() {
       personCount: totalPersonCount,
     }));
   }, [hasItems, totalPersonCount]);
+
+  // Fetch live delivery slots when date or cart vendors change
+  useEffect(() => {
+    const date = formState.date;
+    if (!date || !carts.length) {
+      setDeliverySlots([]);
+      return;
+    }
+
+    let isCancelled = false;
+
+    async function loadSlots() {
+      setIsLoadingSlots(true);
+      try {
+        // Fetch slots for the first cart's vendor (all carts share same date/time)
+        const primaryVendorId = carts[0]?.vendor?.id;
+        if (!primaryVendorId) return;
+
+        const slots = await fetchAvailableDeliverySlots({
+          vendorId: primaryVendorId,
+          date,
+        });
+
+        if (!isCancelled) {
+          setDeliverySlots(slots);
+
+          // If the currently selected time falls in a fully-booked slot, clear it
+          if (formState.time && slots.length > 0) {
+            const currentTime = formState.time;
+            const matchedSlot = slots.find(
+              (slot) => currentTime >= slot.start && currentTime <= slot.end,
+            );
+            if (matchedSlot?.isFullyBooked) {
+              updateField("time", "");
+              updateCartField("deliveryTime", "");
+            }
+          }
+        }
+      } catch {
+        if (!isCancelled) setDeliverySlots([]);
+      } finally {
+        if (!isCancelled) setIsLoadingSlots(false);
+      }
+    }
+
+    loadSlots();
+    return () => { isCancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formState.date, carts.length]);
 
   useEffect(() => {
     if (!formState.invoiceSameAsDelivery) {
@@ -390,6 +442,7 @@ export function useCheckoutPage() {
     applySavedAddress,
     carts,
     deliveryAddresses,
+    deliverySlots,
     formState,
     handlePlaceOrder,
     handleRemoveItem,
@@ -401,6 +454,7 @@ export function useCheckoutPage() {
     isAutofilling,
     isDeliveryAddressEditing,
     isInvoiceAddressEditing,
+    isLoadingSlots,
     isSubmittingOrder,
     normalizedType,
     setIsDeliveryAddressEditing,
