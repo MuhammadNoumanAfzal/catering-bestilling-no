@@ -112,7 +112,9 @@ export function useBrowseCatalogItems(mode = "food-type") {
       try {
         const taxonomyItems =
           mode === "occasion" ? await fetchOccasions() : await fetchFoodTypes();
-        const nextCategories = taxonomyItems.map(buildCategoryItem);
+        const nextCategories = taxonomyItems
+          .filter((item) => Number(item?.productsCount ?? 0) > 0)
+          .map(buildCategoryItem);
 
         if (!isMounted) {
           return;
