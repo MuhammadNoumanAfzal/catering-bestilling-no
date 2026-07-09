@@ -15,6 +15,7 @@ import {
   confirmRemoveItem,
   promptSignInRequired,
   showAuthErrorAlert,
+  showMenuUnavailableAlert,
   showSuccessToast,
 } from "../../../utils/alerts";
 import {
@@ -30,7 +31,10 @@ import {
 } from "../components";
 import { useMenuDetails } from "../hooks/useMenuDetails";
 import { useSavedVendorStatus } from "../../vendor/hooks/useSavedVendorStatus";
-import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
+import {
+  getMenuAvailabilityError,
+  validateOrderSummaryBasics,
+} from "../../order/utils/orderFlowValidation";
 
 export default function MenuDetailsPage() {
   const { vendorSlug, itemId } = useParams();
@@ -53,6 +57,7 @@ export default function MenuDetailsPage() {
     useState(false);
   const [vendorOptions, setVendorOptions] = useState([]);
   const addOnsSliderRef = useRef(null);
+  const lastMenuAvailabilityAlertKeyRef = useRef("");
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
   const minimumPersons = menuItem?.serves ?? 1;
   const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
@@ -228,6 +233,70 @@ export default function MenuDetailsPage() {
     });
   }, [menuItem, vendor]);
 
+  const vendorAvailableForSelection = isVendorDeliverySlotAvailable(
+    vendor,
+    orderSummary?.deliveryDate,
+    orderSummary?.deliveryTime,
+  );
+  const menuAvailabilityError = getMenuAvailabilityError(
+    menuItem,
+    orderSummary?.deliveryDate,
+  );
+  const menuAvailableDaysLabel = useMemo(() => {
+    const labels = {
+      su: "Sunday",
+      mo: "Monday",
+      tu: "Tuesday",
+      we: "Wednesday",
+      th: "Thursday",
+      fr: "Friday",
+      sa: "Saturday",
+    };
+
+    const availableDays = Array.isArray(menuItem?.availableDays)
+      ? menuItem.availableDays
+      : [];
+
+    return availableDays
+      .map((day) => labels[String(day || "").toLowerCase()])
+      .filter(Boolean)
+      .join(", ");
+  }, [menuItem]);
+  const isMenuAvailableForSelection = !menuAvailabilityError;
+  const isOrderableForSelection =
+    vendorAvailableForSelection && isMenuAvailableForSelection;
+
+  useEffect(() => {
+    const deliveryDate = `${orderSummary?.deliveryDate ?? ""}`.trim();
+
+    if (!deliveryDate || !menuAvailabilityError || vendorAvailableForSelection === false) {
+      lastMenuAvailabilityAlertKeyRef.current = "";
+      return;
+    }
+
+    const nextAlertKey = `${menuItem?.id || "menu"}:${deliveryDate}:${menuAvailabilityError}`;
+
+    if (lastMenuAvailabilityAlertKeyRef.current === nextAlertKey) {
+      return;
+    }
+
+    lastMenuAvailabilityAlertKeyRef.current = nextAlertKey;
+
+    showMenuUnavailableAlert({
+      menuTitle: menuItem?.title || menuItem?.modal?.heading || "This menu",
+      message: menuAvailabilityError,
+      availableDaysLabel: menuAvailableDaysLabel,
+    });
+  }, [
+    menuAvailabilityError,
+    menuAvailableDaysLabel,
+    menuItem?.id,
+    menuItem?.modal?.heading,
+    menuItem?.title,
+    orderSummary?.deliveryDate,
+    vendorAvailableForSelection,
+  ]);
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
@@ -283,15 +352,19 @@ export default function MenuDetailsPage() {
     }
 
     if (
-      !isVendorDeliverySlotAvailable(
-        vendor,
-        orderSummary.deliveryDate,
-        orderSummary.deliveryTime,
-      )
+      !vendorAvailableForSelection
     ) {
       await showAuthErrorAlert(
         "This caterer is unavailable at your selected delivery time. Please choose another date or time.",
         "Unavailable for selected time",
+      );
+      return;
+    }
+
+    if (!isMenuAvailableForSelection) {
+      await showAuthErrorAlert(
+        menuAvailabilityError || "This menu is unavailable for the selected date.",
+        "Menu unavailable",
       );
       return;
     }
@@ -335,6 +408,16 @@ export default function MenuDetailsPage() {
       unitPrice: baseItemUnitPrice,
       price: linePrice,
       pricingType: baseItemPricingType,
+      availableDays: Array.isArray(menuItem.availableDays) ? menuItem.availableDays : [],
+      isAvailabilityWindowEnabled: Boolean(menuItem.isAvailabilityWindowEnabled),
+      availableFrom: menuItem.availableFrom || "",
+      availableUntil: menuItem.availableUntil || "",
+      menuAvailability: {
+        availableDays: Array.isArray(menuItem.availableDays) ? menuItem.availableDays : [],
+        isAvailabilityWindowEnabled: Boolean(menuItem.isAvailabilityWindowEnabled),
+        availableFrom: menuItem.availableFrom || "",
+        availableUntil: menuItem.availableUntil || "",
+      },
       selectedOptions,
       specialInstructions: normalizedVendorNote,
       details: [
@@ -359,11 +442,7 @@ export default function MenuDetailsPage() {
     showSuccessToast(`${itemName} added to cart`);
   };
 
-  const showAvailabilityPopup = !isVendorDeliverySlotAvailable(
-    vendor,
-    orderSummary.deliveryDate,
-    orderSummary.deliveryTime,
-  );
+  const showAvailabilityPopup = !vendorAvailableForSelection;
   const availableRestaurants = getAvailableVendorsForSlot(
     vendorOptions,
     orderSummary.deliveryDate,
@@ -422,7 +501,7 @@ export default function MenuDetailsPage() {
                 includedMenuItems={includedMenuItems}
               />
               <MenuDeliveryForm
-                isVendorAvailable={!showAvailabilityPopup}
+                isVendorAvailable={isOrderableForSelection}
                 orderSummary={orderSummary}
                 vendorNote={vendorNote}
                 onDeliveryDateChange={(deliveryDate) =>
@@ -453,10 +532,10 @@ export default function MenuDetailsPage() {
             </div>
           </div>
 
-          <VendorOrderSidebar
+            <VendorOrderSidebar
             vendor={vendor}
             orderSummary={orderSummary}
-            isVendorAvailable={!showAvailabilityPopup}
+            isVendorAvailable={isOrderableForSelection}
             onRemoveItem={async (itemKey) => {
               const itemName = orderSummary.items.find((item) => item.id === itemKey)?.name;
               const result = await confirmRemoveItem(itemName);

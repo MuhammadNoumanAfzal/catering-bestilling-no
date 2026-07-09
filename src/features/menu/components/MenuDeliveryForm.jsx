@@ -109,12 +109,6 @@ export default function MenuDeliveryForm({
       >
         Add to Cart
       </button>
-
-      {!isVendorAvailable ? (
-        <p className="mt-3 text-[13px] text-[#c86434]">
-          This caterer is unavailable at your selected delivery time. Choose a different date or time to continue.
-        </p>
-      ) : null}
     </div>
   );
 }
