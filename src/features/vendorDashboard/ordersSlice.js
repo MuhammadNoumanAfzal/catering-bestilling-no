@@ -163,6 +163,21 @@ const formatId = (id) => {
   return idStr.startsWith("#") ? idStr : `#${idStr}`;
 };
 
+function resolveOrderGrandTotal(node, fallbackAddOnsTotal = 0) {
+  const grandTotal = parseFloat(node?.grandTotal || 0);
+  if (Number.isFinite(grandTotal) && grandTotal > 0) {
+    return grandTotal;
+  }
+
+  const totalAmount = parseFloat(node?.totalAmount || 0);
+  if (Number.isFinite(totalAmount) && totalAmount > 0) {
+    return totalAmount;
+  }
+
+  const tipAmount = parseFloat(node?.tipAmount || 0);
+  return totalAmount + tipAmount + fallbackAddOnsTotal;
+}
+
 const toTitleCase = (value) =>
   `${value ?? ""}`
     .replace(/[-_]+/g, " ")
@@ -206,9 +221,7 @@ function mapListOrder(node) {
     }, 0);
   }, 0);
 
-  const subtotalVal = parseFloat(node.totalAmount || 0);
-  const tipVal = parseFloat(node.tipAmount || 0);
-  const calculatedGrandTotal = subtotalVal + tipVal + addOnsTotal;
+  const resolvedGrandTotal = resolveOrderGrandTotal(node, addOnsTotal);
 
   return {
     id: formatId(node.id),
@@ -219,7 +232,7 @@ function mapListOrder(node) {
     eventDateRaw: node.eventDate || "",
     createdOnRaw: node.createdOn || "",
     person: formatNumber(node.personCount, 1),
-    total: formatAmount(calculatedGrandTotal),
+    total: formatAmount(resolvedGrandTotal),
     status: node.status || "Ready",
     isModified: Array.isArray(node.modifiedItems) && node.modifiedItems.length > 0,
     orderedDate: formatDate(node.createdOn),
@@ -374,9 +387,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
         }, 0);
       }, 0);
 
-      const subtotalVal = parseFloat(orderNode.totalAmount || 0);
-      const tipVal = parseFloat(orderNode.tipAmount || 0);
-      const calculatedGrandTotal = subtotalVal + tipVal + addOnsTotal;
+      const resolvedGrandTotal = resolveOrderGrandTotal(orderNode, addOnsTotal);
 
       const modifiedItems = mapModificationCards(statuses, heroImage);
 
@@ -391,7 +402,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           eventDateRaw: orderNode.eventDate || "",
           createdOnRaw: orderNode.createdOn || "",
           person: formatNumber(orderNode.personCount, 1),
-          total: formatAmount(calculatedGrandTotal),
+          total: formatAmount(resolvedGrandTotal),
           subtotal: formatAmount(orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.taxAmount),
           deliveryFee: formatAmount(orderNode.deliveryFee),
