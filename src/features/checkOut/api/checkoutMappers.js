@@ -138,11 +138,11 @@ function normalizeSelectedAddons(items, parentProductId) {
       const quantity = Math.max(1, Number(item.quantity ?? 1));
 
       return {
-        name: quantity > 1 ? `${item.name || "Add-on"} x${quantity}` : item.name || "Add-on",
-        price: Number(item.unitPrice ?? item.price ?? 0) * quantity,
+        name: item.name || "Add-on",
+        quantity,
       };
     })
-    .filter((item) => item.name && Number.isFinite(item.price));
+    .filter((item) => item.name && Number.isFinite(item.quantity));
 }
 
 function validateRequiredFields(payload, requiredKeys) {
@@ -187,7 +187,6 @@ function buildCheckoutPreviewItems(items) {
     quantity: item.quantity,
     ...(item.selectedOptions ? { selectedOptions: item.selectedOptions } : {}),
     ...(item.selectedAddons ? { selectedAddons: item.selectedAddons } : {}),
-    ...(item.specialInstructions ? { specialInstructions: item.specialInstructions } : {}),
   }));
 }
 
