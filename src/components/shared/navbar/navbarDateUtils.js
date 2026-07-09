@@ -30,7 +30,7 @@ export function isSameDay(firstDate, secondDate) {
   );
 }
 
-export function formatTimeTo12Hour(time) {
+export function formatTimeTo24Hour(time) {
   if (!time) {
     return "";
   }
@@ -42,10 +42,7 @@ export function formatTimeTo12Hour(time) {
     return `${time}`;
   }
 
-  const suffix = hours >= 12 ? "PM" : "AM";
-  const normalizedHours = hours % 12 || 12;
-
-  return `${normalizedHours}:${rawMinutes} ${suffix}`;
+  return `${String(hours).padStart(2, "0")}:${rawMinutes}`;
 }
 
 export function formatNavbarDate(date, time) {
@@ -60,5 +57,5 @@ export function formatNavbarDate(date, time) {
       })
     : "Any day";
 
-  return time ? `${dateLabel}, ${formatTimeTo12Hour(time)}` : dateLabel;
+  return time ? `${dateLabel}, ${formatTimeTo24Hour(time)}` : dateLabel;
 }

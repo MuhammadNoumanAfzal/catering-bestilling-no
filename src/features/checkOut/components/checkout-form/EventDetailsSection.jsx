@@ -2,6 +2,7 @@ import CheckoutField from "./CheckoutField";
 import CheckoutSection from "./CheckoutSection";
 import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
 import { getTodayDateValue } from "../../../order/utils/orderFlowValidation";
+import { formatTimeTo24Hour } from "../../../../components/shared/navbar/navbarDateUtils";
 
 export default function EventDetailsSection({
   mode,
@@ -84,6 +85,8 @@ export default function EventDetailsSection({
               {deliverySlots.map((slot) => {
                 const isSelected = isTimeInSlot(selectedTime, slot);
                 const isBooked = slot.isFullyBooked;
+                const shouldShowExactTime =
+                  isSelected && selectedTime && selectedTime !== slot.start;
                 return (
                   <button
                     key={`${slot.start}-${slot.end}`}
@@ -98,7 +101,14 @@ export default function EventDetailsSection({
                           : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/50 hover:bg-[#fdf8f4]"
                     }`}
                   >
-                    <span>{slot.label}</span>
+                    <span className="flex flex-col">
+                      <span>{slot.label}</span>
+                      {shouldShowExactTime ? (
+                        <span className="mt-1 text-[11px] font-medium text-[#8a5a3a]">
+                          Selected time: {formatTimeTo24Hour(selectedTime)}
+                        </span>
+                      ) : null}
+                    </span>
                     <span
                       className={`ml-3 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                         isBooked
@@ -157,5 +167,3 @@ export default function EventDetailsSection({
     </CheckoutSection>
   );
 }
-
-
