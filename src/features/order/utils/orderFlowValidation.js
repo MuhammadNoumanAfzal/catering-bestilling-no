@@ -6,6 +6,130 @@ export function getTodayDateValue() {
   return `${year}-${month}-${day}`;
 }
 
+const MENU_DAY_TO_INDEX = {
+  su: 0,
+  mo: 1,
+  tu: 2,
+  we: 3,
+  th: 4,
+  fr: 5,
+  sa: 6,
+};
+
+const MENU_DAY_LABELS = {
+  su: "Sunday",
+  mo: "Monday",
+  tu: "Tuesday",
+  we: "Wednesday",
+  th: "Thursday",
+  fr: "Friday",
+  sa: "Saturday",
+};
+
+function normalizeDateOnlyValue(dateValue) {
+  const normalizedValue = `${dateValue ?? ""}`.trim();
+
+  if (!normalizedValue) {
+    return "";
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(normalizedValue)) {
+    return normalizedValue;
+  }
+
+  const parsedDate = new Date(normalizedValue);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "";
+  }
+
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function normalizeDateToDayIndex(dateValue) {
+  const normalizedDate = normalizeDateOnlyValue(dateValue);
+
+  if (!normalizedDate) {
+    return null;
+  }
+
+  const [year, month, day] = normalizedDate.split("-").map(Number);
+  const parsedDate = new Date(year, month - 1, day);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  return parsedDate.getDay();
+}
+
+function normalizeAvailableDays(availableDays = []) {
+  return availableDays
+    .map((day) => `${day ?? ""}`.trim().toLowerCase())
+    .filter((day) => day in MENU_DAY_TO_INDEX);
+}
+
+function buildAvailableDaysLabel(availableDays = []) {
+  const labels = normalizeAvailableDays(availableDays)
+    .map((day) => MENU_DAY_LABELS[day])
+    .filter(Boolean);
+
+  return labels.join(", ");
+}
+
+export function getMenuAvailabilityError(menuLike, deliveryDate) {
+  const normalizedDate = normalizeDateOnlyValue(deliveryDate);
+
+  if (!normalizedDate) {
+    return "";
+  }
+
+  const itemName = `${menuLike?.title || menuLike?.name || "This menu"}`.trim();
+  const normalizedAvailableDays = normalizeAvailableDays(
+    menuLike?.availableDays || menuLike?.menuAvailability?.availableDays || [],
+  );
+
+  if (normalizedAvailableDays.length > 0) {
+    const selectedDayIndex = normalizeDateToDayIndex(normalizedDate);
+    const matchesDay = normalizedAvailableDays.some(
+      (day) => MENU_DAY_TO_INDEX[day] === selectedDayIndex,
+    );
+
+    if (!matchesDay) {
+      const availableDaysLabel = buildAvailableDaysLabel(normalizedAvailableDays);
+      return availableDaysLabel
+        ? `${itemName} is not available on the selected day. It can only be ordered on ${availableDaysLabel}.`
+        : `${itemName} is not available on the selected day.`;
+    }
+  }
+
+  const isAvailabilityWindowEnabled = Boolean(
+    menuLike?.isAvailabilityWindowEnabled ??
+      menuLike?.menuAvailability?.isAvailabilityWindowEnabled,
+  );
+  const availableFrom =
+    menuLike?.availableFrom || menuLike?.menuAvailability?.availableFrom || "";
+  const availableUntil =
+    menuLike?.availableUntil || menuLike?.menuAvailability?.availableUntil || "";
+
+  if (isAvailabilityWindowEnabled) {
+    const normalizedStart = normalizeDateOnlyValue(availableFrom);
+    const normalizedEnd = normalizeDateOnlyValue(availableUntil);
+
+    if (normalizedStart && normalizedDate < normalizedStart) {
+      return `${itemName} is not available before ${normalizedStart}.`;
+    }
+
+    if (normalizedEnd && normalizedDate > normalizedEnd) {
+      return `${itemName} is not available after ${normalizedEnd}.`;
+    }
+  }
+
+  return "";
+}
+
 export function validateOrderSummaryBasics({
   deliveryDate,
   deliveryTime,
@@ -64,6 +188,25 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
 
   if (!`${formState.deliveryPostalCode ?? ""}`.trim()) {
     return "Please enter the delivery postal code.";
+  }
+
+  if (Array.isArray(carts)) {
+    for (const cart of carts) {
+      const items = Array.isArray(cart?.orderSummary?.items)
+        ? cart.orderSummary.items
+        : [];
+
+      for (const item of items) {
+        if (item?.isAddOn) {
+          continue;
+        }
+
+        const menuAvailabilityError = getMenuAvailabilityError(item, formState.date);
+        if (menuAvailabilityError) {
+          return menuAvailabilityError;
+        }
+      }
+    }
   }
 
   const deliveryPostalCode = `${formState.deliveryPostalCode ?? ""}`.trim();

@@ -11,6 +11,7 @@ export const FETCH_PRODUCT_QUERY = `
       pricingType
       averageRating
       minimumGuests
+      availableDays
       isAvailabilityWindowEnabled
       availableFrom
       availableUntil

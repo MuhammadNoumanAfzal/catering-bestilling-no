@@ -85,6 +85,9 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
       ? `Allergens: ${product.allergens.join(", ")}`
       : "",
   ].filter(Boolean);
+  const availableDays = Array.isArray(product.availableDays)
+    ? product.availableDays
+    : [];
 
   return {
     id: product.id || fallbackId,
@@ -99,6 +102,10 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
     allergens: product.allergens || [],
     price,
     pricingType,
+    availableDays,
+    isAvailabilityWindowEnabled: Boolean(product.isAvailabilityWindowEnabled),
+    availableFrom: product.availableFrom || "",
+    availableUntil: product.availableUntil || "",
     menuItems: product.menuItems || [],
     modal: {
       heading: product.name,

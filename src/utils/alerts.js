@@ -121,3 +121,37 @@ export function showNoVendorsAlert(locationLabel) {
     }),
   );
 }
+
+export function showMenuUnavailableAlert({
+  menuTitle,
+  message,
+  availableDaysLabel = "",
+}) {
+  const safeTitle = menuTitle || "This menu";
+  const subtitle = availableDaysLabel
+    ? `Available on ${availableDaysLabel}`
+    : "Please choose another date";
+
+  return Swal.fire(
+    withBaseOptions({
+      icon: "warning",
+      title: "Menu unavailable",
+      confirmButtonText: "Choose another date",
+      html: `
+        <div style="text-align:left;padding-top:6px">
+          <div style="margin-bottom:12px;border:1px solid #f1ddcf;background:#fff4ec;border-radius:16px;padding:14px 16px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cf6e38;margin-bottom:6px">
+              ${subtitle}
+            </div>
+            <div style="font-size:20px;font-weight:800;color:#201b17;line-height:1.25">
+              ${safeTitle}
+            </div>
+          </div>
+          <div style="font-size:15px;line-height:1.6;color:#5b4d42">
+            ${message}
+          </div>
+        </div>
+      `,
+    }),
+  );
+}
