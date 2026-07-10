@@ -105,13 +105,48 @@ function buildMinuteOptions(selectedHour, minimumTime) {
   );
 }
 
+function formatTimeLabel(timeValue) {
+  const parts = parseTimeValue(timeValue);
+  if (!parts.hour || !parts.minute) {
+    return "";
+  }
+
+  return `${parts.hour}:${parts.minute}`;
+}
+
+function buildQuickTimeOptions(minimumTime) {
+  const options = [];
+  const startHour = minimumTime.hour >= 24 ? 24 : minimumTime.hour;
+  let hour = startHour;
+  let minute = minimumTime.minute || 0;
+
+  while (minute % 30 !== 0 && hour < 24) {
+    minute += 15;
+    if (minute >= 60) {
+      hour += 1;
+      minute = 0;
+    }
+  }
+
+  while (hour < 24 && options.length < 5) {
+    options.push(buildTimeValue(String(hour).padStart(2, "0"), String(minute).padStart(2, "0")));
+    minute += 60;
+    if (minute >= 60) {
+      hour += Math.floor(minute / 60);
+      minute %= 60;
+    }
+  }
+
+  return options.filter(Boolean);
+}
+
 function WheelColumn({ label, options, selectedValue, onSelect, isDisabled }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
       <span className="mb-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[#a19084]">
         {label}
       </span>
-      <div className="h-40 overflow-y-auto rounded-[14px] bg-[#fffaf6] p-1">
+      <div className="h-32 overflow-y-auto rounded-[14px] bg-[#fffaf6] p-1">
         <div className="space-y-1">
           {options.map((option) => {
             const isSelected = selectedValue === option;
@@ -148,7 +183,7 @@ function WheelColumn({ label, options, selectedValue, onSelect, isDisabled }) {
 export default function PreferredTimePicker({
   value,
   onChange,
-  placeholder = "Select time",
+  placeholder = "HH:MM",
   selectedDate = null,
 }) {
   const wrapperRef = useRef(null);
@@ -231,6 +266,10 @@ export default function PreferredTimePicker({
     () => buildMinuteOptions(draftHour, minimumTime),
     [draftHour, minimumTime],
   );
+  const quickTimeOptions = useMemo(
+    () => buildQuickTimeOptions(minimumTime),
+    [minimumTime],
+  );
   const canSave = Boolean(draftHour && draftMinute);
 
   function isHourDisabled(option) {
@@ -279,6 +318,22 @@ export default function PreferredTimePicker({
     }
 
     return null;
+  }
+
+  function handleInputChange(rawValue) {
+    const digitsOnly = `${rawValue ?? ""}`.replace(/[^\d]/g, "").slice(0, 4);
+
+    if (!digitsOnly) {
+      setInputValue("");
+      return;
+    }
+
+    if (digitsOnly.length <= 2) {
+      setInputValue(digitsOnly);
+      return;
+    }
+
+    setInputValue(`${digitsOnly.slice(0, 2)}:${digitsOnly.slice(2)}`);
   }
 
   function isManualTimeAllowed(timeValue) {
@@ -332,13 +387,34 @@ export default function PreferredTimePicker({
       return;
     }
 
-    onChange(buildTimeValue(draftHour, draftMinute));
+    const nextValue = buildTimeValue(draftHour, draftMinute);
+    onChange(nextValue);
+    setInputValue(nextValue);
     setIsOpen(false);
   }
 
   function handleCancel() {
     setDraftHour(validSelectedHour);
     setDraftMinute(validSelectedMinute);
+    setIsOpen(false);
+  }
+
+  function handleClear() {
+    setInputValue("");
+    onChange("");
+    setIsOpen(false);
+  }
+
+  function handleQuickPick(timeValue) {
+    const parts = parseTimeValue(timeValue);
+    if (!parts.hour || !parts.minute) {
+      return;
+    }
+
+    setDraftHour(parts.hour);
+    setDraftMinute(parts.minute);
+    setInputValue(timeValue);
+    onChange(timeValue);
     setIsOpen(false);
   }
 
@@ -351,9 +427,16 @@ export default function PreferredTimePicker({
         <input
           type="text"
           value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
+          onChange={(event) => handleInputChange(event.target.value)}
           onBlur={commitManualValue}
+          onFocus={() => {
+            if (!isOpen) {
+              handleOpen();
+            }
+          }}
           placeholder={placeholder}
+          inputMode="numeric"
+          maxLength={5}
           className="h-full min-w-0 flex-1 bg-transparent text-[14px] font-medium text-[#1d1713] outline-none placeholder:text-[#aa9e93]"
         />
         <button
@@ -366,10 +449,43 @@ export default function PreferredTimePicker({
       </div>
 
       {isOpen ? (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[260px] rounded-[18px] border border-[#e7ddd3] bg-white p-3 shadow-[0_20px_45px_rgba(44,30,16,0.14)]">
-          <div className="mb-3 text-center text-[13px] font-semibold text-[#6f6258]">
-            Select time
+        <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-full min-w-[280px] max-w-[340px] rounded-[18px] border border-[#e7ddd3] bg-white p-3 shadow-[0_20px_45px_rgba(44,30,16,0.14)]">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <div className="text-[13px] font-semibold text-[#6f6258]">Select time</div>
+              <div className="text-[11px] text-[#a19084]">24-hour format</div>
+            </div>
+            <div className="rounded-full bg-[#faf4ef] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
+              {displayValue ? formatTimeLabel(displayValue) : "No time"}
+            </div>
           </div>
+
+          {quickTimeOptions.length ? (
+            <div className="mb-3">
+              <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#a19084]">
+                Quick pick
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {quickTimeOptions.map((option) => {
+                  const isSelected = option === displayValue;
+                  return (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => handleQuickPick(option)}
+                      className={`rounded-full border px-3 py-1.5 text-[12px] font-semibold transition ${
+                        isSelected
+                          ? "border-[#cf6e38] bg-[#fff1e8] text-[#cf6e38]"
+                          : "border-[#eadfd6] bg-white text-[#6f6258] hover:border-[#cf6e38]/35 hover:bg-[#fff8f4]"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
 
           <div className="flex items-start gap-2">
             <WheelColumn
@@ -388,13 +504,24 @@ export default function PreferredTimePicker({
           </div>
 
           <div className="mt-3 flex items-center justify-between gap-2">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="rounded-[10px] px-3 py-2 text-[13px] font-semibold text-[#6f6258] transition hover:bg-[#faf4ef]"
-            >
-              Cancel
-            </button>
+            <div className="flex items-center gap-2">
+              {displayValue ? (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="rounded-[10px] px-3 py-2 text-[13px] font-semibold text-[#c85e2f] transition hover:bg-[#fff4ee]"
+                >
+                  Clear
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="rounded-[10px] px-3 py-2 text-[13px] font-semibold text-[#6f6258] transition hover:bg-[#faf4ef]"
+              >
+                Cancel
+              </button>
+            </div>
             <button
               type="button"
               onClick={handleSave}
