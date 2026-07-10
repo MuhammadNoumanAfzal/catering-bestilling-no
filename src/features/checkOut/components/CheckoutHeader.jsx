@@ -27,7 +27,7 @@ export default function CheckoutHeader() {
         </div>
 
         <p className="type-h4 hidden text-[#2b2b2b] sm:block">
-          Checkout
+          Checkouttt
         </p>
       </div>
     </header>
