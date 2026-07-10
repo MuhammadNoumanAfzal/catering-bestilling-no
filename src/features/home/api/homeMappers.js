@@ -175,6 +175,9 @@ export function mapProductNode(node) {
 
 export function mapHomeResponse(response) {
   return {
+    searchedVendors: (response?.searchVendors?.edges || []).map((edge) =>
+      mapVendorNode(edge.node),
+    ),
     featuredVendors: (response?.featured?.edges || []).map((edge) =>
       mapVendorNode(edge.node),
     ),

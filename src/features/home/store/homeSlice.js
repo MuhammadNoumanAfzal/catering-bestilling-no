@@ -17,6 +17,7 @@ export const fetchHomeData = createAsyncThunk(
 );
 
 const initialState = {
+  searchedVendors: [],
   featuredVendors: [],
   popularVendors: [],
   popularProducts: [],
@@ -38,6 +39,7 @@ const homeSlice = createSlice({
       .addCase(fetchHomeData.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.hasLoadedOnce = true;
+        state.searchedVendors = action.payload.searchedVendors;
         state.featuredVendors = action.payload.featuredVendors;
         state.popularVendors = action.payload.popularVendors;
         state.popularProducts = action.payload.popularProducts;

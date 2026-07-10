@@ -1,4 +1,5 @@
 export const selectHomeState = (state) => state.home;
+export const selectSearchedVendors = (state) => state.home.searchedVendors;
 export const selectFeaturedVendors = (state) => state.home.featuredVendors;
 export const selectPopularVendors = (state) => state.home.popularVendors;
 export const selectPopularProducts = (state) => state.home.popularProducts;

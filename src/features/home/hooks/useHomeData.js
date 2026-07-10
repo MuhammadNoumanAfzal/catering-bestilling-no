@@ -8,10 +8,12 @@ import {
   selectHomeStatus,
   selectPopularProducts,
   selectPopularVendors,
+  selectSearchedVendors,
 } from "../selectors/homeSelectors";
 
 export function useHomeData(filters = {}) {
   const dispatch = useDispatch();
+  const searchedVendors = useSelector(selectSearchedVendors);
   const featuredVendors = useSelector(selectFeaturedVendors);
   const popularVendors = useSelector(selectPopularVendors);
   const popularProducts = useSelector(selectPopularProducts);
@@ -29,6 +31,7 @@ export function useHomeData(filters = {}) {
   }, [dispatch, serializedFilters]);
 
   return {
+    searchedVendors,
     featuredVendors,
     popularVendors,
     popularProducts,

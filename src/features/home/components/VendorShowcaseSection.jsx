@@ -6,8 +6,9 @@ export default function VendorShowcaseSection({
   emptyMessage,
   seeAllLabel = "See all",
   onSeeAllClick,
+  limit = 3,
 }) {
-  const visibleVendors = vendors.slice(0, 3);
+  const visibleVendors = typeof limit === "number" ? vendors.slice(0, limit) : vendors;
 
   return (
     <section className="bg-white px-8 py-6 sm:px-10 lg:px-20">
