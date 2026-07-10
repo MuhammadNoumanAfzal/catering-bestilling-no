@@ -62,12 +62,13 @@ export function getItemPrice(item, personCount) {
   const storedPrice = Number(item.price ?? 0);
   const unitPrice = Number(item.unitPrice ?? 0);
   const quantity = Math.max(1, Number(item.quantity ?? 1));
-
-  if (storedPrice > 0) {
-    return storedPrice;
-  }
+  const normalizedPersonCount = Math.max(1, Number(personCount ?? 0) || 1);
 
   if (pricingType === "fixed") {
+    if (storedPrice > 0) {
+      return storedPrice;
+    }
+
     if (unitPrice > 0) {
       return unitPrice * quantity;
     }
@@ -76,10 +77,10 @@ export function getItemPrice(item, personCount) {
   }
 
   if (unitPrice > 0) {
-    return unitPrice * quantity;
+    return unitPrice * quantity * normalizedPersonCount;
   }
 
-  return Number(item.price ?? 0);
+  return storedPrice;
 }
 
 export function sortSummaryItems(items) {

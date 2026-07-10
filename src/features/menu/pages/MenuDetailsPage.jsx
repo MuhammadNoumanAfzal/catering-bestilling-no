@@ -407,7 +407,7 @@ export default function MenuDetailsPage() {
       serves: menuItem.serves,
       totalServes,
       unitPrice: baseItemUnitPrice,
-      price: linePrice,
+      price: baseItemPricingType === "fixed" ? linePrice : 0,
       pricingType: baseItemPricingType,
       availableDays: Array.isArray(menuItem.availableDays) ? menuItem.availableDays : [],
       isAvailabilityWindowEnabled: Boolean(menuItem.isAvailabilityWindowEnabled),
