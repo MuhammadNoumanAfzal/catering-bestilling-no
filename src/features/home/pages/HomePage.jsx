@@ -109,6 +109,7 @@ export default function HomePage() {
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
   const vendorResultsRef = useRef(null);
   const {
+    searchedVendors,
     popularVendors,
     featuredVendors,
     popularProducts,
@@ -312,6 +313,10 @@ export default function HomePage() {
     () => filterHomeVendors(popularVendors, sharedFilters),
     [popularVendors, sharedFilters],
   );
+  const filteredSearchedVendors = useMemo(
+    () => filterHomeVendors(searchedVendors, sharedFilters),
+    [searchedVendors, sharedFilters],
+  );
   const filteredFeaturedVendors = useMemo(
     () => filterHomeVendors(featuredVendors, sharedFilters),
     [featuredVendors, sharedFilters],
@@ -324,11 +329,12 @@ export default function HomePage() {
       ),
     [activeCategorySlug, categoryBrowseProducts, popularProducts, sharedFilters],
   );
-  const availableVendorCount =
-    filteredPopularVendors.length + filteredFeaturedVendors.length;
+  const hasAppliedLocationSearch = Boolean(appliedSearchLabel);
+  const availableVendorCount = hasAppliedLocationSearch
+    ? filteredSearchedVendors.length
+    : filteredPopularVendors.length + filteredFeaturedVendors.length;
   const isInitialLoading = status === "loading" && !hasLoadedOnce;
   const isRefreshing = status === "loading" && hasLoadedOnce;
-  const hasAppliedLocationSearch = Boolean(appliedSearchLabel);
 
   useEffect(() => {
     if (!pendingSearchScroll) {
@@ -443,26 +449,45 @@ export default function HomePage() {
         </>
       ) : (
         <div ref={vendorResultsRef}>
-          <VendorShowcaseSection
-            title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
-            vendors={filteredPopularVendors}
-            emptyMessage={buildAvailabilityEmptyMessage({
-              activeCategoryLabel,
-              locationFilter: activeHomeLocationFilter,
-              type: "vendors",
-            })}
-            onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
-          />
-          <VendorShowcaseSection
-            title={buildHomeSectionTitle("Featured Vendors", activeCategoryLabel)}
-            vendors={filteredFeaturedVendors}
-            emptyMessage={buildAvailabilityEmptyMessage({
-              activeCategoryLabel,
-              locationFilter: activeHomeLocationFilter,
-              type: "vendors",
-            })}
-            onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
-          />
+          {hasAppliedLocationSearch ? (
+            <VendorShowcaseSection
+              title={
+                activeCategoryLabel
+                  ? `${activeCategoryLabel} Vendors Serving ${appliedSearchLabel}`
+                  : `Vendors Serving ${appliedSearchLabel}`
+              }
+              vendors={filteredSearchedVendors}
+              emptyMessage={buildAvailabilityEmptyMessage({
+                activeCategoryLabel,
+                locationFilter: activeHomeLocationFilter,
+                type: "vendors",
+              })}
+              limit={null}
+            />
+          ) : (
+            <>
+              <VendorShowcaseSection
+                title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
+                vendors={filteredPopularVendors}
+                emptyMessage={buildAvailabilityEmptyMessage({
+                  activeCategoryLabel,
+                  locationFilter: activeHomeLocationFilter,
+                  type: "vendors",
+                })}
+                onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
+              />
+              <VendorShowcaseSection
+                title={buildHomeSectionTitle("Featured Vendors", activeCategoryLabel)}
+                vendors={filteredFeaturedVendors}
+                emptyMessage={buildAvailabilityEmptyMessage({
+                  activeCategoryLabel,
+                  locationFilter: activeHomeLocationFilter,
+                  type: "vendors",
+                })}
+                onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
+              />
+            </>
+          )}
           <ProductShowcaseSection
             title={
               activeCategoryLabel
