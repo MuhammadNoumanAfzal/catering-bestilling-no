@@ -258,6 +258,7 @@ function mapListOrder(node) {
   }, 0);
 
   const resolvedGrandTotal = resolveOrderGrandTotal(node, addOnsTotal);
+  const hasModifiedItems = Array.isArray(node.modifiedItems) && node.modifiedItems.length > 0;
 
   return {
     id: formatId(node.id),
@@ -269,8 +270,8 @@ function mapListOrder(node) {
     createdOnRaw: node.createdOn || "",
     person: formatNumber(node.personCount, 1),
     total: formatAmount(resolvedGrandTotal),
-    status: node.status || "Ready",
-    isModified: Array.isArray(node.modifiedItems) && node.modifiedItems.length > 0,
+    status: hasModifiedItems ? "Modified" : node.status || "Ready",
+    isModified: hasModifiedItems,
     orderedDate: formatDate(node.createdOn),
     deliveredDate: formatDate(node.dueDate || node.eventDate),
     location: node.deliveryAddressStr || "Not provided",
@@ -282,7 +283,7 @@ function mapListOrder(node) {
     orderNotes: node.orderNotes || "",
     eventTime: node.eventTime || "",
     items: mappedItems,
-    modifiedItems: Array.isArray(node.modifiedItems) ? node.modifiedItems : [],
+    modifiedItems: hasModifiedItems ? node.modifiedItems : [],
   };
 }
 
@@ -450,6 +451,8 @@ export const fetchClientOrderDetail = createAsyncThunk(
       const resolvedModifiedItems =
         modifiedItems.length > 0 ? modifiedItems : mapModificationCards(statuses, heroImage);
 
+      const hasPendingChanges = resolvedModifiedItems.length > 0;
+
       return {
         orderId: `${orderNode.id}`,
         detail: {
@@ -466,9 +469,9 @@ export const fetchClientOrderDetail = createAsyncThunk(
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),
           deliveryFee: formatAmount(orderNode.pricing?.deliveryFee || orderNode.deliveryFee),
           tipAmount: formatAmount(orderNode.pricing?.tipAmount || orderNode.tipAmount),
-          status: orderNode.status || "Pending",
+          status: hasPendingChanges ? "Modified" : orderNode.status || "Pending",
           canModify: orderNode.canModify !== false,
-          isModified: modifiedItems.length > 0,
+          isModified: hasPendingChanges,
           orderedDate: formatDate(orderNode.createdOn),
           deliveredDate: formatDate(orderNode.eventDate),
           location: orderNode.deliveryAddressStr || "Not provided",
