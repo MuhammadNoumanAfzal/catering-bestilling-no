@@ -6,6 +6,7 @@ export const GET_SETTINGS_PROFILE_QUERY = `
       lastName
       email
       phone
+      postCode
       workPhone
       secondaryEmail
       companyName
