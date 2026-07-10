@@ -1,6 +1,7 @@
 import {
   Apple,
   Baby,
+  Building2,
   BriefcaseBusiness,
   CakeSlice,
   Croissant,
@@ -187,6 +188,13 @@ const FALLBACK_ICON_MAP = {
   networking: Network,
   party: PartyPopper,
   reception: GlassWater,
+  "corporate-meetings": BriefcaseBusiness,
+  "corporate-meeting": BriefcaseBusiness,
+  "business-conferences": Presentation,
+  "business-conference": Presentation,
+  "office-lunch": Sandwich,
+  "company-party": PartyPopper,
+  "school-party": Building2,
 };
 
 function normalizeBrowseIconKey(value) {
