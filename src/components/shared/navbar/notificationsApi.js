@@ -101,11 +101,24 @@ function mapNotificationType(notificationType) {
   return "menu";
 }
 
+function sanitizeNotificationMessage(message) {
+  const rawMessage = `${message ?? ""}`.trim();
+
+  if (!rawMessage) {
+    return "";
+  }
+
+  return rawMessage
+    .replace(/\s*->\s*['"].*?['"]\s*$/u, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function mapNotificationNode(node) {
   return {
     id: node.id,
     title: node.title || "Notification",
-    message: node.message || "",
+    message: sanitizeNotificationMessage(node.message),
     timeLabel: formatNotificationTime(node.createdOn),
     unread: !node.isSeen,
     category: node.isSeen ? "read" : "unread",
