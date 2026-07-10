@@ -77,8 +77,10 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const price = parseFloat(product.priceWithTax || 0);
   const serves = product.minimumGuests || 1;
   const pricingType = product.pricingType === "per-person" ? "per-person" : "fixed";
-  const unitPrice =
-    pricingType === "per-person" ? price / Math.max(serves, 1) : price;
+  // Backend checkout pricing treats per-person items as:
+  // unitPrice × personCount × quantity
+  // so the menu should display the actual unit price directly.
+  const unitPrice = price;
   const detailLines = [
     product.description || "",
     product.allergens?.length
