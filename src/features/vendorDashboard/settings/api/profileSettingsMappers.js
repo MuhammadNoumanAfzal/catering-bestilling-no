@@ -31,6 +31,7 @@ export function mapSettingsProfileToFormState(user) {
     secondaryEmail: user?.secondaryEmail || "",
     mobilePhone: user?.phone || "",
     workPhone: user?.workPhone || "",
+    postCode: user?.postCode || "",
     company: user?.companyName || "",
     jobTitle: user?.jobTitle || "",
     industry: user?.industryUsage || "",

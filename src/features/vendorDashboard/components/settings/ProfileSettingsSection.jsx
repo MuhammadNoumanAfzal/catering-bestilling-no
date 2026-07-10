@@ -51,6 +51,14 @@ export default function ProfileSettingsSection({ formState, updateField }) {
           placeholder=""
         />
         <SettingsField
+          id="postCode"
+          label="Postal Code"
+          value={formState.postCode}
+          onChange={(event) => updateField("postCode", event.target.value)}
+          placeholder=""
+          readOnly
+        />
+        <SettingsField
           id="company"
           label="Company"
           value={formState.company}

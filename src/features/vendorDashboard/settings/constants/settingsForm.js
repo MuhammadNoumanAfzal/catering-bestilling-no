@@ -5,6 +5,7 @@ export const vendorSettingsInitialState = {
   secondaryEmail: "",
   mobilePhone: "",
   workPhone: "",
+  postCode: "",
   company: "",
   jobTitle: "",
   industry: "",
