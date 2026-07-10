@@ -119,6 +119,7 @@ export default function DeliveryDatePopover({
           <PreferredTimePicker
             value={draftTime}
             onChange={onTimeSelect}
+            selectedDate={draftDate}
             placeholder="Select preferred time"
           />
         </div>

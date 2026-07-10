@@ -6,6 +6,17 @@ export function getTodayDateValue() {
   return `${year}-${month}-${day}`;
 }
 
+function normalizeTimeValue(timeValue) {
+  const normalized = `${timeValue ?? ""}`.trim();
+  const match = normalized.match(/^(\d{1,2}):(\d{2})$/);
+
+  if (!match) {
+    return null;
+  }
+
+  return Number.parseInt(match[1], 10) * 60 + Number.parseInt(match[2], 10);
+}
+
 const MENU_DAY_TO_INDEX = {
   su: 0,
   mo: 1,
@@ -155,6 +166,19 @@ export function validateOrderSummaryBasics({
 
   if (!normalizedTime) {
     return "Please select a delivery time.";
+  }
+
+  if (normalizedDate === getTodayDateValue()) {
+    const selectedMinutes = normalizeTimeValue(normalizedTime);
+
+    if (selectedMinutes != null) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      if (selectedMinutes < currentMinutes) {
+        return "Please select a future delivery time for today.";
+      }
+    }
   }
 
   if (!normalizedAddress) {

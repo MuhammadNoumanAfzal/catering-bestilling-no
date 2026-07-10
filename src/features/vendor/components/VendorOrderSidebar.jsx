@@ -240,16 +240,21 @@ export default function VendorOrderSidebar({
                     key={option.label}
                     type="button"
                     onClick={() => {
+                      if (orderSummary.tipRate === option.value) {
+                        onTipChange(null, option.value === "other" ? "" : undefined);
+                        return;
+                      }
+
                       if (option.value === "other") {
                         onTipChange("other", orderSummary.customTipAmount ?? "");
                       } else {
                         onTipChange(option.value, 0);
                       }
                     }}
-                    className={`rounded-full cursor-pointer border px-3 py-1 text-[13px] leading-5 ${
+                    className={`rounded-full cursor-pointer border px-3 py-1 text-[13px] leading-5 transition ${
                       orderSummary.tipRate === option.value
                         ? "border-[#cf6e38] bg-[#fff3ec] text-[#cf6e38]"
-                        : "border-[#d4cfc8] bg-white text-[#555555]"
+                        : "border-[#d4cfc8] bg-white text-[#555555] hover:border-[#cf6e38]/40 hover:bg-[#fffaf6]"
                     }`}
                   >
                     {option.label}

@@ -40,6 +40,7 @@ export default function MenuDeliveryForm({
             <PreferredTimePicker
               value={orderSummary.deliveryTime}
               onChange={onDeliveryTimeChange}
+              selectedDate={orderSummary.deliveryDate}
               placeholder="Select preferred time"
             />
           </div>
