@@ -5,6 +5,15 @@ export default function TipSelector({
   customTipAmount,
   onSelect,
 }) {
+  function handleOptionClick(optionValue) {
+    if (selectedTipRate === optionValue) {
+      onSelect(null, optionValue === "other" ? "" : undefined);
+      return;
+    }
+
+    onSelect(optionValue);
+  }
+
   return (
     <div className="mt-4">
       <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#9a8f83]">
@@ -16,7 +25,7 @@ export default function TipSelector({
           <button
             key={option.label}
             type="button"
-            onClick={() => onSelect(option.value)}
+            onClick={() => handleOptionClick(option.value)}
             className={`min-w-[60px] cursor-pointer rounded-full border px-3 py-2 text-[13px] font-semibold transition ${
               selectedTipRate === option.value
                 ? "border-[#cf6e38] bg-[#fff3ec] text-[#cf6e38]"
