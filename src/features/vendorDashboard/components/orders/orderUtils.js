@@ -38,6 +38,10 @@ export function parseOrderDate(dateValue) {
 export function normalizeOrderStatus(status) {
   const normalizedStatus = `${status ?? ""}`.toLowerCase();
 
+  if (normalizedStatus === "modified" || normalizedStatus === "change requested") {
+    return "modified";
+  }
+
   if (normalizedStatus === "delivered") {
     return "completed";
   }
@@ -58,6 +62,10 @@ export function isActiveOrder(status) {
 
 export function getOrderStatusClasses(status) {
   const normalizedStatus = normalizeOrderStatus(status);
+
+  if (normalizedStatus === "modified") {
+    return "bg-[#fff2e9] text-[#cf6e38]";
+  }
 
   if (normalizedStatus === "completed") {
     return "bg-[#d9f5da] text-[#2ca44f]";

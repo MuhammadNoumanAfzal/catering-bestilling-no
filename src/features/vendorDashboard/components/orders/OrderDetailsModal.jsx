@@ -96,7 +96,7 @@ export default function OrderDetailsModal({
                 {order.isModified ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-3 py-1 text-xs font-semibold text-[#cf6e38] shadow-[inset_0_-1px_0_rgba(255,255,255,0.35)]">
                     <FiStar className="fill-current text-[12px]" />
-                    Modified Order
+                    Change Requested
                   </span>
                 ) : null}
                 <p>
@@ -180,7 +180,7 @@ export default function OrderDetailsModal({
                   <div>
                     <h3 className="type-h3 text-[#1f1f1f]">Modified Items</h3>
                     <p className="mt-1 text-sm text-[#746b63]">
-                      Updated request details shown in a visual item format.
+                      These are pending vendor-requested changes. The original order stays active until you approve and apply them.
                     </p>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">

@@ -129,6 +129,14 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
           }
         }
       }
+      modifiedItems {
+        id
+        name
+        changeLabel
+        summary
+        previousValue
+        newValue
+      }
     }
   }
 `;
@@ -301,6 +309,22 @@ function mapModificationCards(statuses, fallbackImage) {
   });
 }
 
+function mapBackendModifiedItems(modifiedItems, fallbackImage) {
+  if (!Array.isArray(modifiedItems) || modifiedItems.length === 0) {
+    return [];
+  }
+
+  return modifiedItems.map((item, index) => ({
+    id: item?.id || `modified-${index}`,
+    image: fallbackImage || "/home/hero1.webp",
+    name: item?.name || "Order update",
+    changeLabel: toTitleCase(item?.changeLabel || "Adjustment requested"),
+    summary: item?.summary || "The vendor requested a change to this order.",
+    previousValue: item?.previousValue || "Current order details",
+    newValue: item?.newValue || "Updated order details pending approval",
+  }));
+}
+
 export const fetchClientOrders = createAsyncThunk(
   "orders/fetchClientOrders",
   async (_, { rejectWithValue }) => {
@@ -420,7 +444,11 @@ export const fetchClientOrderDetail = createAsyncThunk(
 
       const resolvedGrandTotal = resolveOrderGrandTotal(orderNode, addOnsTotal);
 
-      const modifiedItems = mapModificationCards(statuses, heroImage);
+      const modifiedItems =
+        mapBackendModifiedItems(orderNode.modifiedItems, heroImage) ||
+        mapModificationCards(statuses, heroImage);
+      const resolvedModifiedItems =
+        modifiedItems.length > 0 ? modifiedItems : mapModificationCards(statuses, heroImage);
 
       return {
         orderId: `${orderNode.id}`,
@@ -453,7 +481,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           eventTime: orderNode.eventTime || "",
           image: heroImage,
           items,
-          modifiedItems,
+          modifiedItems: resolvedModifiedItems,
         },
       };
     } catch (error) {
