@@ -2,11 +2,15 @@ import { useState } from "react";
 import SupportTicketForm from "../components/support/SupportTicketForm";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { createSupportTicket } from "../support/api";
+import { uploadMenuImage } from "../../menu/api/menuUploadApi";
 
-const AUDIENCE_OPTIONS = [
-  { label: "Customer", value: "customer" },
-  { label: "Vendor", value: "vendor" },
+const ALLOWED_ATTACHMENT_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
 ];
+const MAX_ATTACHMENT_SIZE_BYTES = 2 * 1024 * 1024;
 
 const SUBJECT_OPTIONS = [
   { label: "Order not received", value: "order-not-received" },
@@ -24,7 +28,6 @@ const SUBJECT_OPTIONS = [
 ];
 
 const INITIAL_FORM_STATE = {
-  audience: "vendor",
   subject: "",
   orderId: "",
   description: "",
@@ -34,6 +37,7 @@ export default function VendorSupportPage() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [attachmentError, setAttachmentError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function updateField(key, value) {
@@ -56,29 +60,27 @@ export default function VendorSupportPage() {
     setIsSubmitting(true);
 
     try {
+      const uploadedAttachment = selectedFile
+        ? await uploadMenuImage(selectedFile)
+        : null;
+
       const response = await createSupportTicket({
-        userRole: formState.audience,
+        userRole: "customer",
         subject: getSubjectLabel(formState.subject),
         relatedOrderId: formState.orderId,
         description: formState.description,
-        attachmentUrl: null,
-        attachmentFileId: null,
+        attachmentUrl: uploadedAttachment?.fileUrl || null,
+        attachmentFileId: uploadedAttachment?.fileId || null,
       });
 
       await showSuccessToast(
         response.message || "Support ticket submitted successfully",
       );
 
-      if (selectedFile) {
-        await showAuthErrorAlert(
-          "Your ticket was submitted, but file upload is not connected yet. Please share attachments once backend upload API is available.",
-          "Attachment not uploaded",
-        );
-      }
-
       setFormState(INITIAL_FORM_STATE);
       setSelectedFileName("");
       setSelectedFile(null);
+      setAttachmentError("");
     } catch (error) {
       await showAuthErrorAlert(
         error?.message || "Unable to submit support ticket right now.",
@@ -99,16 +101,37 @@ export default function VendorSupportPage() {
       </section>
 
       <SupportTicketForm
-        audienceOptions={AUDIENCE_OPTIONS}
+        attachmentError={attachmentError}
         fileName={selectedFileName}
         formState={formState}
         isSubmitting={isSubmitting}
-        onAudienceChange={(value) => updateField("audience", value)}
         onFieldChange={updateField}
         onFileChange={(event) => {
           const nextFile = event.target.files?.[0] ?? null;
+          setAttachmentError("");
+
+          if (!nextFile) {
+            setSelectedFile(null);
+            setSelectedFileName("");
+            return;
+          }
+
+          if (!ALLOWED_ATTACHMENT_TYPES.includes(nextFile.type)) {
+            setSelectedFile(null);
+            setSelectedFileName("");
+            setAttachmentError("Please upload a PNG, JPG, JPEG, or WEBP image.");
+            return;
+          }
+
+          if (nextFile.size > MAX_ATTACHMENT_SIZE_BYTES) {
+            setSelectedFile(null);
+            setSelectedFileName("");
+            setAttachmentError("Please upload an image under 2MB.");
+            return;
+          }
+
           setSelectedFile(nextFile);
-          setSelectedFileName(nextFile?.name ?? "");
+          setSelectedFileName(nextFile.name);
         }}
         onSubmit={handleSubmit}
         subjectOptions={SUBJECT_OPTIONS}
