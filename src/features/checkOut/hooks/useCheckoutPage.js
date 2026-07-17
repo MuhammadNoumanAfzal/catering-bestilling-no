@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../auth";
+import { getConfiguredDeliverySlotsForDate } from "../../vendor";
 import {
   clearAllStoredOrderSummaries,
   clearStoredOrderSummary,
@@ -341,14 +342,19 @@ export function useCheckoutPage() {
           vendorId: primaryVendorId,
           date,
         });
+        const fallbackSlots =
+          slots.length === 0
+            ? getConfiguredDeliverySlotsForDate(carts[0]?.vendor, date)
+            : [];
+        const resolvedSlots = slots.length > 0 ? slots : fallbackSlots;
 
         if (!isCancelled) {
-          setDeliverySlots(slots);
+          setDeliverySlots(resolvedSlots);
 
           // Clear stale selections when the newly loaded day no longer supports the chosen time.
           if (formState.time) {
             const currentTime = formState.time;
-            const matchedSlot = slots.find(
+            const matchedSlot = resolvedSlots.find(
               (slot) => currentTime >= slot.start && currentTime <= slot.end,
             );
 
