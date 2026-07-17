@@ -19,6 +19,7 @@ import {
 } from "../ordersSlice";
 import {
   getRangeDays,
+  getOrderLifecycle,
   isActiveOrder,
   isOrderDateValid,
   normalizeOrderStatus,
@@ -117,12 +118,18 @@ export default function VendorOrdersPage() {
       const orderDateSource = order.eventDateRaw || order.createdOnRaw || order.date;
       const orderDate = parseOrderDate(orderDateSource);
       const hasValidOrderDate = !Number.isNaN(orderDate.getTime());
+      const orderLifecycle =
+        order.lifecycle ||
+        getOrderLifecycle(order.status, order.eventDateRaw || orderDateSource);
       const matchesView =
-        activeView === "active" ? isActiveOrder(order.status) : true;
+        activeView === "active"
+          ? isActiveOrder(order.status, order.eventDateRaw || orderDateSource)
+          : true;
       const matchesTab =
         selectedTabs.length === 0 || selectedTabs.includes("all")
           ? true
-          : selectedTabs.includes(normalizeOrderStatus(order.status));
+          : selectedTabs.includes(orderLifecycle) ||
+            selectedTabs.includes(normalizeOrderStatus(order.status));
 
       let matchesRange = true;
 
@@ -182,7 +189,7 @@ export default function VendorOrdersPage() {
     filteredOrders.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
   const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, filteredOrders.length);
   const activeOrdersCount = normalizedOrders.filter((order) =>
-    isActiveOrder(order.status),
+    isActiveOrder(order.status, order.eventDateRaw || order.createdOnRaw || order.date),
   ).length;
 
   useEffect(() => {
