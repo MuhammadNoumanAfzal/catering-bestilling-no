@@ -276,25 +276,19 @@ export default function MenuDetailsPage() {
     if (!menuItem || !menuItem.menuItems) {
       return [];
     }
-    return menuItem.menuItems.map((item) => {
-      const descParts = [];
-      if (item.description) {
-        descParts.push(item.description);
-      }
-      if (item.allergens && item.allergens.length > 0) {
-        const allergenLabels = item.allergens
-          .map((allergen) =>
-            typeof allergen === "string" ? allergen : allergen?.name,
-          )
-          .filter(Boolean);
 
-        if (allergenLabels.length > 0) {
-          descParts.push(`Allergens: ${allergenLabels.join(", ")}.`);
-        }
-      }
+    return menuItem.menuItems.map((item) => {
+      const allergenLabels = (item.allergens || [])
+        .map((allergen) =>
+          typeof allergen === "string" ? allergen : allergen?.name,
+        )
+        .filter(Boolean)
+        .join(", ");
+
       return {
         label: item.title || item.name,
-        description: descParts.join(" "),
+        description: item.description || "",
+        allergens: allergenLabels,
         image: item.imageUrl || item.image || menuItem.image || vendor.banner,
       };
     });
