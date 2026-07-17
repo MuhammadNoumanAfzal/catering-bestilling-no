@@ -348,10 +348,10 @@ export default function VendorProfilePage() {
                   <img
                     src={vendor.banner || vendor.logo}
                     alt={vendor.name}
-                    className="h-[260px] w-full rounded-[14px] object-cover"
+                    className="h-[260px] w-full rounded-[18px] border border-[#e8ddd2] object-cover object-center shadow-[0_12px_28px_rgba(31,19,8,0.08)] sm:h-[320px] lg:h-[380px]"
                   />
                 ) : (
-                  <div className="h-[260px] w-full rounded-[14px] border border-[#e7dfd6] bg-[#f7f1ea]" />
+                  <div className="h-[260px] w-full rounded-[18px] border border-[#e7dfd6] bg-[#f7f1ea] sm:h-[320px] lg:h-[380px]" />
                 )}
               </div>
 
