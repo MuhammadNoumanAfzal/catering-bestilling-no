@@ -221,10 +221,11 @@ export function useBrowseCatalogItems(mode = "food-type") {
     () => (categories.length > 8 ? categories.slice(8) : []),
     [categories],
   );
-  const hasVisibleContent =
-    categories.length > 0 || items.length > 0 || totalCount > 0;
-  const isInitialLoading = (isLoading || isTaxonomyLoading) && !hasVisibleContent;
-  const isRefreshing = (isLoading || isTaxonomyLoading) && hasVisibleContent;
+  const hasMenuContent = items.length > 0 || totalCount > 0;
+  const isInitialLoading =
+    isTaxonomyLoading || (isLoading && !hasMenuContent && !error);
+  const isRefreshing =
+    !isInitialLoading && (isLoading || isTaxonomyLoading) && !error;
 
   return {
     categories: primaryCategories,
