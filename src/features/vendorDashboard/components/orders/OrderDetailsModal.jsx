@@ -10,13 +10,82 @@ function getOrderMeta(order) {
     image: order?.image ?? "/home/hero1.webp",
     invoiceId: order?.invoiceId ?? "",
     orderedDate: order?.orderedDate ?? "",
-    deliveredDate: order?.deliveredDate ?? order?.date ?? "",
+    eventDate: order?.deliveredDate ?? order?.date ?? "",
+    eventTime: order?.eventTime ?? "",
     location: order?.location ?? "",
   };
 }
 
 function getModifiedItems(order) {
   return Array.isArray(order?.modifiedItems) ? order.modifiedItems : [];
+}
+
+function splitItemDetails(details) {
+  const entries = Array.isArray(details) ? details : [];
+
+  return entries.reduce(
+    (accumulator, entry) => {
+      const value = `${entry ?? ""}`.trim();
+
+      if (!value) {
+        return accumulator;
+      }
+
+      if (value.startsWith("Note:")) {
+        accumulator.notes.push(value.replace(/^Note:\s*/i, "").trim());
+        return accumulator;
+      }
+
+      if (value.startsWith("Add-on:")) {
+        accumulator.addOns.push(value.replace(/^Add-on:\s*/i, "").trim());
+        return accumulator;
+      }
+
+      if (value.startsWith("Included:")) {
+        accumulator.included.push(value.replace(/^Included:\s*/i, "").trim());
+        return accumulator;
+      }
+
+      if (value.includes(":")) {
+        accumulator.options.push(value);
+        return accumulator;
+      }
+
+      accumulator.description.push(value);
+      return accumulator;
+    },
+    {
+      notes: [],
+      description: [],
+      options: [],
+      addOns: [],
+      included: [],
+    },
+  );
+}
+
+function ItemDetailGroup({ label, items, accent = "default" }) {
+  if (!Array.isArray(items) || items.length === 0) {
+    return null;
+  }
+
+  const accentClasses =
+    accent === "highlight"
+      ? "bg-[#fff6ee] text-[#b86433]"
+      : accent === "soft"
+        ? "bg-[#f8f5f1] text-[#6f655d]"
+        : "bg-[#fcf7f2] text-[#5f554c]";
+
+  return (
+    <div className={`rounded-[16px] px-4 py-3 ${accentClasses}`}>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em]">{label}</p>
+      <div className="mt-2 space-y-2 text-sm leading-6">
+        {items.map((item) => (
+          <p key={`${label}-${item}`}>{item}</p>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function OrderDetailsModal({
@@ -140,32 +209,51 @@ export default function OrderDetailsModal({
               </div>
               <div className="mt-4 space-y-4">
                 {items.length > 0 ? (
-                  items.map((item, index) => (
-                    <div
-                      key={item.id || `${item.name}-${index}`}
-                      className="rounded-[22px] border border-[#efe5db] bg-white p-4 shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="type-h4 text-[#1f1f1f]">
-                            {item.quantity} {item.name}
-                          </p>
-                        </div>
-                        <p className="type-h4 shrink-0 text-[#1f1f1f]">{item.price}</p>
-                      </div>
+                  items.map((item, index) => {
+                    const detailGroups = splitItemDetails(item.details);
 
-                      {item.details?.length > 0 ? (
-                        <ul className="mt-3 space-y-2 text-sm leading-6 text-[#72695f]">
-                          {item.details.map((detail) => (
-                            <li key={detail} className="flex gap-2">
-                              <span className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#cf6e38]" />
-                              <span>{detail}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
-                  ))
+                    return (
+                      <div
+                        key={item.id || `${item.name}-${index}`}
+                        className="rounded-[22px] border border-[#efe5db] bg-white p-4 shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="type-h4 text-[#1f1f1f]">
+                              {item.quantity} {item.name}
+                            </p>
+                          </div>
+                          <p className="type-h4 shrink-0 text-[#1f1f1f]">{item.price}</p>
+                        </div>
+
+                        <div className="mt-4 space-y-3 text-sm leading-6 text-[#72695f]">
+                          <ItemDetailGroup
+                            label="Description"
+                            items={detailGroups.description}
+                            accent="soft"
+                          />
+                          <ItemDetailGroup
+                            label="Vendor note"
+                            items={detailGroups.notes}
+                            accent="highlight"
+                          />
+                          <ItemDetailGroup
+                            label="Selected options"
+                            items={detailGroups.options}
+                          />
+                          <ItemDetailGroup
+                            label="Add-ons"
+                            items={detailGroups.addOns}
+                            accent="highlight"
+                          />
+                          <ItemDetailGroup
+                            label="Included items"
+                            items={detailGroups.included}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
                 ) : (
                   <div className="rounded-[22px] border border-dashed border-[#ddd4cb] bg-white p-6 text-center text-sm text-[#776d64]">
                     Item details are not available in the current API response.
@@ -246,11 +334,11 @@ export default function OrderDetailsModal({
             ) : null}
 
             <section className="rounded-[24px] border border-[#efe5db] bg-[linear-gradient(180deg,#fffaf6_0%,#fff 100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
-              <h3 className="type-h3 text-[#1f1f1f]">Order info</h3>
+              <h3 className="type-h3 text-[#1f1f1f]">Order information</h3>
               <div className="mt-4 grid gap-4 text-sm text-[#5d554d] sm:grid-cols-2">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Invoice
+                    Invoice number
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
                     {meta.invoiceId || "Not available"}
@@ -258,7 +346,7 @@ export default function OrderDetailsModal({
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Order Date
+                    Order placed on
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
                     {meta.orderedDate || "Not available"}
@@ -266,21 +354,23 @@ export default function OrderDetailsModal({
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Event
-                  </p>
-                  <p className="mt-1 font-semibold text-[#1f1f1f]">{order.eventName}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Delivered On
+                    Event date
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
-                    {meta.deliveredDate || "Not available"}
+                    {meta.eventDate || "Not available"}
                   </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Persons
+                    Event time
+                  </p>
+                  <p className="mt-1 font-semibold text-[#1f1f1f]">
+                    {meta.eventTime || "Not available"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                    Guest count
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">{order.person}</p>
                 </div>
@@ -292,12 +382,22 @@ export default function OrderDetailsModal({
                 </div>
                 <div className="sm:col-span-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Location
+                    Delivery address
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
                     {meta.location || "Not available"}
                   </p>
                 </div>
+                {order.orderNotes ? (
+                  <div className="sm:col-span-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                      Order notes
+                    </p>
+                    <p className="mt-1 rounded-[16px] bg-white px-4 py-3 font-medium text-[#1f1f1f] shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
+                      {order.orderNotes}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </section>
           </div>
