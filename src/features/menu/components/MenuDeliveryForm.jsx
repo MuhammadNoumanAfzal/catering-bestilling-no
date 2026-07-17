@@ -1,4 +1,3 @@
-import { FiMapPin } from "react-icons/fi";
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
 import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 
@@ -10,7 +9,6 @@ export default function MenuDeliveryForm({
   onDeliveryDateChange,
   onDeliveryTimeChange,
   onPersonCountChange,
-  onDeliveryAddressChange,
   onVendorNoteChange,
   onAddToCart,
 }) {
@@ -73,19 +71,6 @@ export default function MenuDeliveryForm({
           </span>
         </div>
 
-        <label className="mt-4 block">
-          <span className="text-[13px] text-[#3f342b]">Delivery address</span>
-          <div className="relative mt-1">
-            <input
-              type="text"
-              value={orderSummary.deliveryAddress}
-              onChange={(event) => onDeliveryAddressChange(event.target.value)}
-              placeholder="Enter delivery address"
-              className="w-full rounded-[8px] border border-[#d7cdc4] px-4 py-2.5 pl-10 text-[14px] text-[#1d1713] outline-none placeholder:text-[#a49b92]"
-            />
-            <FiMapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-[#1d1713]" />
-          </div>
-        </label>
       </div>
 
       <div className="mt-6 border-t border-[#ece4dc] pt-4">
