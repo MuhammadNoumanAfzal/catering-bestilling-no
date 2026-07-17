@@ -6,7 +6,6 @@ export default function HeroSection({
   onDeliveryAddressChange,
   postalCode,
   onPostalCodeChange,
-  availableVendorCount,
   hasValidPostalCode,
   onSearch,
   searchValidationMessage,
@@ -79,24 +78,17 @@ export default function HeroSection({
                 <FiSearch className="text-base" />
                 Search
               </button>
-
-              <p className="mt-3 text-sm text-[#5f5a55]">
-                {searchValidationMessage ? (
-                  <span className="font-medium text-[#b6542c]">
-                    {searchValidationMessage}
-                  </span>
-                ) : postalCode && !hasValidPostalCode ? (
-                  "Enter a 4 or 5 digit postal code to search in your area."
-                ) : postalCode || deliveryAddress
-                  ? `${availableVendorCount} vendor${
-                      availableVendorCount === 1 ? "" : "s"
-                    } available for ${
-                      postalCode
-                        ? `postal code ${postalCode}`
-                        : `location ${deliveryAddress}`
-                    }.`
-                  : "Enter your delivery address or postal code to see vendors available in your area."}
-              </p>
+              {searchValidationMessage || (postalCode && !hasValidPostalCode) ? (
+                <p className="mt-3 text-sm text-[#5f5a55]">
+                  {searchValidationMessage ? (
+                    <span className="font-medium text-[#b6542c]">
+                      {searchValidationMessage}
+                    </span>
+                  ) : (
+                    "Enter a 4 or 5 digit postal code to search in your area."
+                  )}
+                </p>
+              ) : null}
             </div>
           </div>
 
