@@ -64,18 +64,34 @@ export function getOrderStatusClasses(status) {
   const normalizedStatus = normalizeOrderStatus(status);
 
   if (normalizedStatus === "modified") {
-    return "bg-[#fff2e9] text-[#cf6e38]";
+    return "border border-[#f4c8ad] bg-[#fff4ec] text-[#c8662f]";
   }
 
   if (normalizedStatus === "completed") {
-    return "bg-[#d9f5da] text-[#2ca44f]";
+    return "border border-[#bde6c3] bg-[#ecfbef] text-[#238a43]";
   }
 
   if (normalizedStatus === "scheduled") {
-    return "bg-[#e0ebff] text-[#4477d7]";
+    return "border border-[#c7dafd] bg-[#eef4ff] text-[#3568c9]";
   }
 
-  return "bg-[#ececec] text-[#676767]";
+  if (normalizedStatus === "draft") {
+    return "border border-[#e6ddd4] bg-[#f7f3ef] text-[#7a6f66]";
+  }
+
+  if (normalizedStatus === "pending" || normalizedStatus === "new") {
+    return "border border-[#f0d39b] bg-[#fff7e6] text-[#b97811]";
+  }
+
+  if (normalizedStatus === "preparing" || normalizedStatus === "accepted") {
+    return "border border-[#a9ddd6] bg-[#e9fbf8] text-[#177f74]";
+  }
+
+  if (normalizedStatus === "canceled" || normalizedStatus === "cancelled") {
+    return "border border-[#efc4bc] bg-[#fff1ee] text-[#c05445]";
+  }
+
+  return "border border-[#ddd9d4] bg-[#f5f4f2] text-[#6c655f]";
 }
 
 export function isOrderDateValid(dateValue) {
