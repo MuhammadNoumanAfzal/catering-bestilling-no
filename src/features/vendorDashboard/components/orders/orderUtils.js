@@ -42,6 +42,10 @@ export function normalizeOrderStatus(status) {
     return "modified";
   }
 
+  if (normalizedStatus === "confirmed") {
+    return "confirmed";
+  }
+
   if (normalizedStatus === "delivered") {
     return "completed";
   }
@@ -73,6 +77,10 @@ export function getOrderStatusClasses(status) {
 
   if (normalizedStatus === "scheduled") {
     return "border border-[#c7dafd] bg-[#eef4ff] text-[#3568c9]";
+  }
+
+  if (normalizedStatus === "confirmed") {
+    return "border border-[#bfe3cf] bg-[#edf9f1] text-[#237a49]";
   }
 
   if (normalizedStatus === "draft") {
