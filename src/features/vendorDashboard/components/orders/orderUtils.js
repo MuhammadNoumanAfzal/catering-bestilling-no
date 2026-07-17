@@ -20,6 +20,7 @@ export const ORDER_DATE_OPTIONS = [
 ];
 
 export const PAGE_SIZE = 8;
+const ORDER_CLASSIFICATION_TODAY = new Date("2026-07-17T00:00:00");
 
 export function parseOrderDate(dateValue) {
   if (!dateValue) {
@@ -33,6 +34,10 @@ export function parseOrderDate(dateValue) {
   }
 
   return new Date(`${dateValue} 00:00:00`);
+}
+
+function getStartOfDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 export function normalizeOrderStatus(status) {
@@ -65,15 +70,36 @@ export function normalizeOrderStatus(status) {
   return normalizedStatus;
 }
 
-export function isActiveOrder(status) {
+export function getOrderLifecycle(status, eventDate) {
   const normalizedStatus = normalizeOrderStatus(status);
 
-  return (
-    normalizedStatus !== "completed" &&
-    normalizedStatus !== "delivered" &&
-    normalizedStatus !== "canceled" &&
-    normalizedStatus !== "cancelled"
-  );
+  if (normalizedStatus === "draft") {
+    return "draft";
+  }
+
+  if (normalizedStatus === "completed") {
+    return "completed";
+  }
+
+  if (normalizedStatus === "canceled" || normalizedStatus === "cancelled") {
+    return "cancelled";
+  }
+
+  const parsedEventDate = parseOrderDate(eventDate);
+  if (!Number.isNaN(parsedEventDate.getTime())) {
+    const today = getStartOfDay(ORDER_CLASSIFICATION_TODAY);
+    const orderDay = getStartOfDay(parsedEventDate);
+
+    if (orderDay.getTime() > today.getTime()) {
+      return "scheduled";
+    }
+  }
+
+  return "active";
+}
+
+export function isActiveOrder(status, eventDate) {
+  return getOrderLifecycle(status, eventDate) === "active";
 }
 
 export function getOrderStatusClasses(status) {

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
+import { getOrderLifecycle } from "./components/orders/orderUtils";
 
 const FETCH_CLIENT_ORDERS_QUERY = `
   query FetchClientOrders($tab: String, $first: Int, $after: String) {
@@ -282,6 +283,10 @@ function mapListOrder(node) {
     deliveryFee: formatAmount(node.pricing?.deliveryFee || node.deliveryFee),
     orderNotes: node.orderNotes || "",
     eventTime: node.eventTime || "",
+    lifecycle: getOrderLifecycle(
+      hasModifiedItems ? "Modified" : node.status || "Ready",
+      node.eventDate || "",
+    ),
     items: mappedItems,
     modifiedItems: hasModifiedItems ? node.modifiedItems : [],
   };
@@ -342,13 +347,13 @@ export const fetchClientOrders = createAsyncThunk(
         mapListOrder(edge.node),
       );
       const completedCount = orders.filter(
-        (order) => `${order.status}`.toLowerCase() === "completed",
+        (order) => order.lifecycle === "completed",
       ).length;
       const scheduledCount = orders.filter(
-        (order) => `${order.status}`.toLowerCase() === "scheduled",
+        (order) => order.lifecycle === "scheduled",
       ).length;
       const draftsCount = orders.filter(
-        (order) => `${order.status}`.toLowerCase() === "draft",
+        (order) => order.lifecycle === "draft",
       ).length;
       const statusSummary = [
         {
