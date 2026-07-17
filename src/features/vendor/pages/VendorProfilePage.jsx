@@ -333,8 +333,8 @@ export default function VendorProfilePage() {
   return (
     <section className=" px-4 py-5 md:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[12px] border border-[#ddd6cd] bg-white">
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="min-w-0 border-r border-[#e7dfd6]">
+        <div>
+          <div className="min-w-0">
             <div className="p-4 sm:p-5">
               <Link
                 to="/"
@@ -423,55 +423,6 @@ export default function VendorProfilePage() {
               </div>
             </div>
           </div>
-
-          <VendorOrderSidebar
-            vendor={vendor}
-            orderSummary={orderSummary}
-            isVendorAvailable={isVendorAvailable}
-            onRemoveItem={async (itemId) => {
-              const itemName = orderSummary.items.find((item) => item.id === itemId)?.name;
-              const result = await confirmRemoveItem(itemName);
-
-              if (!result.isConfirmed) {
-                return;
-              }
-
-              setOrderSummary((current) => {
-                return {
-                  ...current,
-                  items: current.items.filter((item) => item.id !== itemId),
-                };
-              });
-            }}
-            onTipChange={(tipRate, customTipAmount) =>
-              setOrderSummary((current) => ({
-                ...current,
-                tipRate,
-                customTipAmount:
-                  customTipAmount !== undefined
-                    ? customTipAmount
-                    : current.customTipAmount,
-              }))
-            }
-            onDeliveryDateChange={(deliveryDate) =>
-              setOrderSummary((current) => ({ ...current, deliveryDate }))
-            }
-            onDeliveryTimeChange={(deliveryTime) =>
-              setOrderSummary((current) => ({ ...current, deliveryTime }))
-            }
-            onPersonCountChange={(personCount) =>
-              setOrderSummary((current) => ({ ...current, personCount }))
-            }
-            onDeliveryAddressChange={(deliveryAddress) =>
-              setOrderSummary((current) => ({ ...current, deliveryAddress }))
-            }
-            onInvoiceAddressChange={(invoiceAddress) =>
-              setOrderSummary((current) => ({ ...current, invoiceAddress }))
-            }
-            onTablewareChange={(tableware) =>
-              setOrderSummary((current) => ({ ...current, tableware }))
-            }
-          />
         </div>
       </div>
 
