@@ -108,6 +108,7 @@ export default function HomePage() {
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
   const vendorResultsRef = useRef(null);
+  const searchRequestStartedRef = useRef(false);
   const {
     searchedVendors,
     popularVendors,
@@ -122,6 +123,7 @@ export default function HomePage() {
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const normalizedCategoryFilter = normalizeCategorySelection(selectedCategory);
   const appliedSearchLabel = buildSearchSummaryLabel(appliedSearchFilters);
+  const appliedSearchFiltersKey = JSON.stringify(appliedSearchFilters);
   const activeHomeLocationFilter = buildLocationFilter({
     postalCode: normalizedPostalCode,
     deliveryAddress: draftDeliveryAddress,
@@ -255,14 +257,20 @@ export default function HomePage() {
 
     const nextAreaName = nextPostalCode ? "" : extractAreaName(draftDeliveryAddress);
     const hasSearchInput = Boolean(nextPostalCode || draftDeliveryAddress.trim());
+    const nextSearchFilters = {
+      postCode: nextPostalCode || undefined,
+      areaName: nextAreaName || undefined,
+    };
+    const nextSearchFiltersKey = JSON.stringify(nextSearchFilters);
     setSearchValidationMessage("");
 
     setDeliveryAddress(draftDeliveryAddress.trim());
     setLocationValue(nextPostalCode || nextAreaName);
-    setAppliedSearchFilters({
-      postCode: nextPostalCode || undefined,
-      areaName: nextAreaName || undefined,
-    });
+    setAppliedSearchFilters(nextSearchFilters);
+    searchRequestStartedRef.current =
+      hasSearchInput &&
+      nextSearchFiltersKey === appliedSearchFiltersKey &&
+      status !== "loading";
     setPendingSearchScroll(hasSearchInput);
   };
   const sharedFilters = useMemo(
@@ -341,11 +349,20 @@ export default function HomePage() {
       return;
     }
 
+    if (!searchRequestStartedRef.current) {
+      if (status === "loading") {
+        searchRequestStartedRef.current = true;
+      }
+
+      return;
+    }
+
     if (status === "loading") {
       return;
     }
 
     if (availableVendorCount <= 0) {
+      searchRequestStartedRef.current = false;
       setPendingSearchScroll(false);
       showNoVendorsAlert(appliedSearchLabel);
       return;
@@ -354,6 +371,7 @@ export default function HomePage() {
     const resultsElement = vendorResultsRef.current;
 
     if (!resultsElement) {
+      searchRequestStartedRef.current = false;
       setPendingSearchScroll(false);
       return;
     }
@@ -366,6 +384,7 @@ export default function HomePage() {
       top: Math.max(0, nextScrollTop),
       behavior: "smooth",
     });
+    searchRequestStartedRef.current = false;
     setPendingSearchScroll(false);
   }, [availableVendorCount, pendingSearchScroll, status]);
 
@@ -376,6 +395,7 @@ export default function HomePage() {
     setLocationValue("");
     setAppliedSearchFilters({});
     setSearchValidationMessage("");
+    searchRequestStartedRef.current = false;
     setPendingSearchScroll(false);
   };
 
@@ -392,7 +412,6 @@ export default function HomePage() {
             setSearchValidationMessage("");
           }
         }}
-        availableVendorCount={availableVendorCount}
         hasValidPostalCode={hasValidPostalCode}
         onSearch={handleHomeSearch}
         searchValidationMessage={searchValidationMessage}
@@ -410,23 +429,6 @@ export default function HomePage() {
           message="Refreshing vendors and products for your latest search."
         />
       ) : null}
-      {!error &&
-      !isInitialLoading &&
-      hasAppliedLocationSearch ? (
-        <HomeStatusBanner
-          tone={availableVendorCount > 0 ? "info" : "warning"}
-          message={
-            availableVendorCount > 0
-              ? `Showing ${availableVendorCount} vendor${
-                  availableVendorCount === 1 ? "" : "s"
-                } for ${appliedSearchLabel}.`
-              : `No vendors found servicing ${appliedSearchLabel}.`
-          }
-          actionLabel="Clear search"
-          onAction={handleClearLocationSearch}
-        />
-      ) : null}
-
       <FoodBrowsePreviewSection
         categories={previewCategories}
         moreOptions={previewMoreOptions}
