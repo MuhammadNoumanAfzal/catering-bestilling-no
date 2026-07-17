@@ -1,5 +1,3 @@
-import { getDefaultTableware } from "../../../components/shared/TablewareModal";
-
 const STORAGE_PREFIX = "vendor-order-summary:";
 const ORDER_SUMMARY_UPDATED_EVENT = "vendor-order-summary-updated";
 
@@ -22,7 +20,6 @@ export function createInitialOrderSummary(vendor) {
     invoiceAddress: vendor.orderSummary.invoiceAddress,
     vendorNote: vendor.orderSummary.vendorNote || "",
     tipRate: 0,
-    tableware: getDefaultTableware(),
   };
 }
 
@@ -126,10 +123,6 @@ export function readOrderSummary(vendor) {
       ...fallback,
       ...orderSummary,
       items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
-      tableware: {
-        ...fallback.tableware,
-        ...(orderSummary?.tableware ?? {}),
-      },
     };
   } catch {
     return fallback;
@@ -200,10 +193,6 @@ export function readAllStoredOrderSummaries() {
             ...createInitialOrderSummary(vendor),
             ...orderSummary,
             items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
-            tableware: {
-              ...getDefaultTableware(),
-              ...(orderSummary?.tableware ?? {}),
-            },
           },
         };
       } catch {

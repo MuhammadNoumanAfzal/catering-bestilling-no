@@ -1,9 +1,4 @@
 import { LuUtensilsCrossed } from "react-icons/lu";
-import TablewareModal, {
-  getSelectedTablewareCount,
-  getTablewareSummaryText,
-} from "../../../components/shared/TablewareModal";
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
 import { promptSignInRequired, showAuthErrorAlert } from "../../../utils/alerts";
@@ -50,38 +45,6 @@ function formatDateTime(date, time) {
   }).format(parsed);
 }
 
-function IncludedTablewareRow({ tableware, onEdit }) {
-  const selectedCount = getSelectedTablewareCount(tableware);
-  const summaryText = getTablewareSummaryText(tableware);
-
-  return (
-    <div className="border-b border-[#e2ddd8] pb-4 pt-3">
-      <div className="flex items-start justify-between gap-3">
-        <p className="type-h5 leading-5 text-[#252525]">
-          {selectedCount} Tableware
-        </p>
-        <p className="shrink-0 text-[14px] font-semibold text-[#252525]">
-          NOK 0.00
-        </p>
-      </div>
-
-      <p className="mt-2 type-para font-medium leading-5 text-[#8b8580]">
-        - {summaryText}
-      </p>
-
-      <div className="mt-3 flex justify-end">
-        <button
-          type="button"
-          onClick={onEdit}
-          className="cursor-pointer type-para font-medium text-[#4f7cff]"
-        >
-          Edit
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default function VendorOrderSidebar({
   vendor,
   orderSummary,
@@ -94,9 +57,7 @@ export default function VendorOrderSidebar({
   onPersonCountChange,
   onDeliveryAddressChange,
   onInvoiceAddressChange,
-  onTablewareChange,
 }) {
-  const [isTablewareModalOpen, setIsTablewareModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
@@ -183,10 +144,6 @@ export default function VendorOrderSidebar({
                 </div>
               ))}
 
-              <IncludedTablewareRow
-                tableware={orderSummary.tableware}
-                onEdit={() => setIsTablewareModalOpen(true)}
-              />
             </div>
 
             <div className="border-b border-[#e2ddd8] py-4 type-para ">
@@ -398,15 +355,6 @@ export default function VendorOrderSidebar({
         )}
       </div>
 
-      <TablewareModal
-        isOpen={isTablewareModalOpen}
-        initialValue={orderSummary.tableware}
-        onClose={() => setIsTablewareModalOpen(false)}
-        onSave={(tableware) => {
-          onTablewareChange(tableware);
-          setIsTablewareModalOpen(false);
-        }}
-      />
     </aside>
   );
 }
