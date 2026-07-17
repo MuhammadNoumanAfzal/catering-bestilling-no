@@ -532,22 +532,6 @@ export function useCheckoutPage() {
     );
   };
 
-  const handleTablewareChange = (vendorSlug, tableware) => {
-    setCarts((current) =>
-      current.map((cart) =>
-        cart.vendor.slug === vendorSlug
-          ? {
-              ...cart,
-              orderSummary: {
-                ...cart.orderSummary,
-                tableware,
-              },
-            }
-          : cart,
-      ),
-    );
-  };
-
   const handleRemoveItem = async (vendorSlug, itemId) => {
     const targetCart = carts.find((cart) => cart.vendor.slug === vendorSlug);
     const itemName = targetCart?.orderSummary.items.find((item) => item.id === itemId)?.name;
@@ -665,7 +649,6 @@ export function useCheckoutPage() {
     formState,
     handlePlaceOrder,
     handleRemoveItem,
-    handleTablewareChange,
     handleTipChange,
     handleTypeChange,
     hasItems,

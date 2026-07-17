@@ -11,7 +11,6 @@ export default function CheckoutSummaryPanel({
   isLoadingPricing = false,
   onTipChange,
   onRemoveItem,
-  onTablewareChange,
   onPlaceOrder,
 }) {
   const totals = getCheckoutTotals(carts);
@@ -42,7 +41,6 @@ export default function CheckoutSummaryPanel({
                 cart={cart}
                 onTipChange={onTipChange}
                 onRemoveItem={onRemoveItem}
-                onTablewareChange={onTablewareChange}
               />
             ))}
           </div>

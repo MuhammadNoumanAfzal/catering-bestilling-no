@@ -22,7 +22,6 @@ export default function CheckoutPage() {
     formState,
     handlePlaceOrder,
     handleRemoveItem,
-    handleTablewareChange,
     handleTipChange,
     handleTypeChange,
     hasItems,
@@ -192,7 +191,6 @@ export default function CheckoutPage() {
                   isLoadingPricing={isLoadingPricing}
                   onTipChange={handleTipChange}
                   onRemoveItem={handleRemoveItem}
-                  onTablewareChange={handleTablewareChange}
                   onPlaceOrder={handlePlaceOrder}
                 />
               ) : (

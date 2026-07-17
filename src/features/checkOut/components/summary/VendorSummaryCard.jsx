@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { FiShoppingBag } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import TablewareModal from "../../../../components/shared/TablewareModal";
-import IncludedTablewareRow from "./IncludedTablewareRow";
 import OrderItemCard from "./OrderItemCard";
 import PriceDetailsCard from "./PriceDetailsCard";
 import TipSelector from "./TipSelector";
@@ -16,9 +13,7 @@ export default function VendorSummaryCard({
   cart,
   onTipChange,
   onRemoveItem,
-  onTablewareChange,
 }) {
-  const [isTablewareModalOpen, setIsTablewareModalOpen] = useState(false);
   const personCount = cart.orderSummary.personCount;
   const items = sortSummaryItems(cart.orderSummary.items).map((item) => ({
     ...item,
@@ -80,11 +75,6 @@ export default function VendorSummaryCard({
               onRemoveItem={onRemoveItem}
             />
           ))}
-
-          <IncludedTablewareRow
-            tableware={cart.orderSummary.tableware}
-            onEdit={() => setIsTablewareModalOpen(true)}
-          />
         </div>
 
         <PriceDetailsCard
@@ -105,16 +95,6 @@ export default function VendorSummaryCard({
           }
         />
       </div>
-
-      <TablewareModal
-        isOpen={isTablewareModalOpen}
-        initialValue={cart.orderSummary.tableware}
-        onClose={() => setIsTablewareModalOpen(false)}
-        onSave={(tableware) => {
-          onTablewareChange(cart.vendor.slug, tableware);
-          setIsTablewareModalOpen(false);
-        }}
-      />
     </section>
   );
 }
