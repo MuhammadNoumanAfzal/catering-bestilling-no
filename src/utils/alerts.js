@@ -115,8 +115,19 @@ export function showNoVendorsAlert(locationLabel) {
   return Swal.fire(
     withBaseOptions({
       icon: "info",
-      title: "No Vendors Available",
-      text: `No vendors are currently available for ${locationLabel}. Please try another address, area, or postal code.`,
+      title: "No Vendors Found",
+      text: "Sorry! No vendors are available for the entered postal code.",
+      confirmButtonText: "Okay",
+    }),
+  );
+}
+
+export function showNoProductsAlert() {
+  return Swal.fire(
+    withBaseOptions({
+      icon: "info",
+      title: "No Products Found",
+      text: "There are currently no popular products available for this location.",
       confirmButtonText: "Okay",
     }),
   );

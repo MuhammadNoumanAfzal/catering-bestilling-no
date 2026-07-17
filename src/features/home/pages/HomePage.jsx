@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { showNoVendorsAlert } from "../../../utils/alerts";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
@@ -12,17 +11,13 @@ import {
 import {
   FoodBrowsePreviewSection,
   HeroSection,
-  HomeLoadingSection,
-  HomeStatusBanner,
   HowItWorksSection,
   ProductShowcaseSection,
   VendorShowcaseSection,
 } from "../components";
 import { useHomeData } from "../hooks/useHomeData";
-import { fetchHomeData } from "../store/homeSlice";
 import {
   buildActiveCategoryLabel,
-  buildAvailabilityEmptyMessage,
   buildCategoryQuery,
   buildHomeSectionTitle,
   buildLocationFilter,
@@ -81,7 +76,6 @@ function isValidPostalCode(postCode) {
 }
 
 export default function HomePage() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     attendeeCount,
@@ -107,6 +101,7 @@ export default function HomePage() {
   const [categoryBrowseProducts, setCategoryBrowseProducts] = useState([]);
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
+  const [searchSubmissionCount, setSearchSubmissionCount] = useState(0);
   const vendorResultsRef = useRef(null);
   const searchRequestStartedRef = useRef(false);
   const {
@@ -115,8 +110,6 @@ export default function HomePage() {
     featuredVendors,
     popularProducts,
     status,
-    error,
-    hasLoadedOnce,
   } =
     useHomeData(appliedSearchFilters);
   const normalizedPostalCode = normalizePostalCode(postalCode);
@@ -267,6 +260,7 @@ export default function HomePage() {
     setDeliveryAddress(draftDeliveryAddress.trim());
     setLocationValue(nextPostalCode || nextAreaName);
     setAppliedSearchFilters(nextSearchFilters);
+    setSearchSubmissionCount((currentCount) => currentCount + 1);
     searchRequestStartedRef.current =
       hasSearchInput &&
       nextSearchFiltersKey === appliedSearchFiltersKey &&
@@ -341,8 +335,6 @@ export default function HomePage() {
   const availableVendorCount = hasAppliedLocationSearch
     ? filteredSearchedVendors.length
     : filteredPopularVendors.length + filteredFeaturedVendors.length;
-  const isInitialLoading = status === "loading" && !hasLoadedOnce;
-  const isRefreshing = status === "loading" && hasLoadedOnce;
 
   useEffect(() => {
     if (!pendingSearchScroll) {
@@ -416,19 +408,6 @@ export default function HomePage() {
         onSearch={handleHomeSearch}
         searchValidationMessage={searchValidationMessage}
       />
-      {error ? (
-        <HomeStatusBanner
-          message={error}
-          actionLabel="Try again"
-          onAction={() => dispatch(fetchHomeData(appliedSearchFilters))}
-        />
-      ) : null}
-      {isRefreshing ? (
-        <HomeStatusBanner
-          tone="info"
-          message="Refreshing vendors and products for your latest search."
-        />
-      ) : null}
       <FoodBrowsePreviewSection
         categories={previewCategories}
         moreOptions={previewMoreOptions}
@@ -439,57 +418,54 @@ export default function HomePage() {
         activeCategoryLabel={activeCategoryLabel}
         onSeeAllClick={() => navigate(`/browse/food-type${menuQuery}`)}
       />
-      {isInitialLoading ? (
-        <>
-          <HomeLoadingSection title="Popular Vendors" />
-          <HomeLoadingSection title="Featured Vendors" />
-          <HomeLoadingSection
-            title="Popular Products"
-            compact
-            columnsClassName="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-          />
-        </>
-      ) : (
-        <div ref={vendorResultsRef}>
-          {hasAppliedLocationSearch ? (
-            <VendorShowcaseSection
-              title={
-                activeCategoryLabel
-                  ? `${activeCategoryLabel} Vendors Serving ${appliedSearchLabel}`
-                  : `Vendors Serving ${appliedSearchLabel}`
-              }
-              vendors={filteredSearchedVendors}
-              emptyMessage={buildAvailabilityEmptyMessage({
-                activeCategoryLabel,
-                locationFilter: activeHomeLocationFilter,
-                type: "vendors",
-              })}
-              limit={null}
-            />
-          ) : (
-            <>
+      <div ref={vendorResultsRef}>
+        {hasAppliedLocationSearch ? (
+          <>
+            {filteredSearchedVendors.length > 0 ? (
+              <VendorShowcaseSection
+                title={
+                  activeCategoryLabel
+                    ? `${activeCategoryLabel} Vendors Serving ${appliedSearchLabel}`
+                    : `Vendors Serving ${appliedSearchLabel}`
+                }
+                vendors={filteredSearchedVendors}
+                limit={null}
+              />
+            ) : null}
+            {filteredPopularVendors.length > 0 ? (
+              <VendorShowcaseSection
+                title={`Popular Vendors in ${appliedSearchLabel}`}
+                vendors={filteredPopularVendors}
+                onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
+              />
+            ) : null}
+            {filteredFeaturedVendors.length > 0 ? (
+              <VendorShowcaseSection
+                title={`Featured Vendors in ${appliedSearchLabel}`}
+                vendors={filteredFeaturedVendors}
+                onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
+              />
+            ) : null}
+          </>
+        ) : (
+          <>
+            {filteredPopularVendors.length > 0 ? (
               <VendorShowcaseSection
                 title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
                 vendors={filteredPopularVendors}
-                emptyMessage={buildAvailabilityEmptyMessage({
-                  activeCategoryLabel,
-                  locationFilter: activeHomeLocationFilter,
-                  type: "vendors",
-                })}
                 onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
               />
+            ) : null}
+            {filteredFeaturedVendors.length > 0 ? (
               <VendorShowcaseSection
                 title={buildHomeSectionTitle("Featured Vendors", activeCategoryLabel)}
                 vendors={filteredFeaturedVendors}
-                emptyMessage={buildAvailabilityEmptyMessage({
-                  activeCategoryLabel,
-                  locationFilter: activeHomeLocationFilter,
-                  type: "vendors",
-                })}
                 onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
               />
-            </>
-          )}
+            ) : null}
+          </>
+        )}
+        {filteredPopularProducts.length > 0 ? (
           <ProductShowcaseSection
             title={
               activeCategoryLabel
@@ -497,15 +473,10 @@ export default function HomePage() {
                 : buildHomeSectionTitle("Popular Products", activeCategoryLabel)
             }
             products={filteredPopularProducts}
-            emptyMessage={buildAvailabilityEmptyMessage({
-              activeCategoryLabel,
-              locationFilter: activeHomeLocationFilter,
-              type: "products",
-            })}
             onSeeAllClick={() => navigate(`/products/popular${menuQuery}`)}
           />
-        </div>
-      )}
+        ) : null}
+      </div>
       <HowItWorksSection />
     </div>
   );
