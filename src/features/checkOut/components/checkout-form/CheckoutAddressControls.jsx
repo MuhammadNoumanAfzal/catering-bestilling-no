@@ -6,20 +6,24 @@ export default function CheckoutAddressControls({
   isEditing,
   onToggleEditing,
 }) {
+  const hasSavedAddresses = Array.isArray(savedAddresses) && savedAddresses.length > 0;
+
   return (
     <div className="flex flex-col gap-2 sm:items-end">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <select
-          value={selectedAddressId}
-          onChange={(event) => onSelectAddress(event.target.value)}
-          className="type-subpara min-w-[170px] rounded-full border border-[#d8d0c7] bg-[#fcfaf8] px-3 py-2 text-[#37322f] outline-none"
-        >
-          {savedAddresses.map((address) => (
-            <option key={address.id} value={address.id}>
-              {address.label || "Saved address"}
-            </option>
-          ))}
-        </select>
+        {hasSavedAddresses ? (
+          <select
+            value={selectedAddressId}
+            onChange={(event) => onSelectAddress(event.target.value)}
+            className="type-subpara min-w-[170px] rounded-full border border-[#d8d0c7] bg-[#fcfaf8] px-3 py-2 text-[#37322f] outline-none"
+          >
+            {savedAddresses.map((address) => (
+              <option key={address.id} value={address.id}>
+                {address.label || "Saved address"}
+              </option>
+            ))}
+          </select>
+        ) : null}
 
         <button
           type="button"
@@ -30,7 +34,9 @@ export default function CheckoutAddressControls({
         </button>
       </div>
       <p className="text-[12px] text-[#8b8177]">
-        Auto-filled from saved addresses, but you can still customize it here.
+        {hasSavedAddresses
+          ? "Auto-filled from saved addresses, but you can still customize it here."
+          : "No saved address found yet. Please add your address below."}
       </p>
     </div>
   );

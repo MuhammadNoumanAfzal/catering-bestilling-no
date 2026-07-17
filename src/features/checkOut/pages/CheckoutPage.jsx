@@ -60,8 +60,9 @@ export default function CheckoutPage() {
 
               <div className="mt-3 space-y-3">
                 {pricingError ? (
-                  <div className="rounded-[12px] border border-red-200 bg-red-50 px-3 py-3 text-[13px] text-red-700">
-                    {pricingError}
+                  <div className="rounded-[12px] border border-[#f2dfd0] bg-[#fff8f3] px-3 py-3 text-[13px] text-[#8a5a3b]">
+                    Live price preview is temporarily unavailable. You can still place your
+                    order and the final total will be confirmed during checkout.
                   </div>
                 ) : null}
 
@@ -186,7 +187,7 @@ export default function CheckoutPage() {
               {hasItems ? (
                 <CheckoutSummaryPanel
                   carts={carts}
-                  canPlaceOrder={hasLivePricing && !pricingError && !isLoadingPricing}
+                  canPlaceOrder
                   isSubmitting={isSubmittingOrder}
                   isLoadingPricing={isLoadingPricing}
                   onTipChange={handleTipChange}

@@ -31,6 +31,10 @@ function mapUserAddress(addressNode, user) {
   };
 }
 
+function isUsableAddress(address) {
+  return Boolean(`${address?.addressLine1 ?? ""}`.trim());
+}
+
 function ensureDefaultAddress(addresses) {
   if (addresses.length === 0) {
     return [];
@@ -51,12 +55,14 @@ export function mapCurrentUserToCheckoutProfile(user) {
   const baseDeliveryAddresses = ensureDefaultAddress(
     rawAddresses
       .filter((address) => normalizeAddressType(address.addressType) === "delivery")
-      .map((address) => mapUserAddress(address, user)),
+      .map((address) => mapUserAddress(address, user))
+      .filter(isUsableAddress),
   );
   const baseInvoiceAddresses = ensureDefaultAddress(
     rawAddresses
       .filter((address) => normalizeAddressType(address.addressType) === "invoice")
-      .map((address) => mapUserAddress(address, user)),
+      .map((address) => mapUserAddress(address, user))
+      .filter(isUsableAddress),
   );
   const deliveryAddresses =
     baseDeliveryAddresses.length > 0 ? baseDeliveryAddresses : baseInvoiceAddresses;

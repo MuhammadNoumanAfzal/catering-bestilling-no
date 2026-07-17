@@ -6,7 +6,7 @@ export default function OrderStatusSummary({ primaryOrderId }) {
           Status
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
-          Confirmed
+          Placed
         </p>
       </div>
       <div>
