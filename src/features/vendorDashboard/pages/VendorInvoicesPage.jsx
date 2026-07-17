@@ -75,7 +75,7 @@ export default function VendorInvoicesPage() {
 
     dispatch(
       fetchInvoices({
-        status: selectedStatus === "all" ? null : selectedStatus,
+        status: null,
         search: debouncedSearchValue || null,
         dateFrom,
         dateTo,
@@ -114,14 +114,19 @@ export default function VendorInvoicesPage() {
   }, []);
 
   const totalPages = Math.max(1, Math.ceil(records.length / PAGE_SIZE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const visibleInvoices = records.slice(
+  const filteredRecords =
+    selectedStatus === "all"
+      ? records
+      : records.filter((invoice) => invoice.statusKey === selectedStatus);
+  const filteredTotalPages = Math.max(1, Math.ceil(filteredRecords.length / PAGE_SIZE));
+  const safeCurrentPage = Math.min(currentPage, filteredTotalPages);
+  const visibleInvoices = filteredRecords.slice(
     (safeCurrentPage - 1) * PAGE_SIZE,
     safeCurrentPage * PAGE_SIZE,
   );
   const startIndex =
-    records.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
-  const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, records.length);
+    filteredRecords.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
+  const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, filteredRecords.length);
 
   if (isLoading) {
     return (
@@ -198,7 +203,11 @@ export default function VendorInvoicesPage() {
                   return;
                 }
 
-                const blob = new Blob([buildInvoiceCsv(records)], {
+                if (filteredRecords.length === 0) {
+                  return;
+                }
+
+                const blob = new Blob([buildInvoiceCsv(filteredRecords)], {
                   type: "text/csv;charset=utf-8",
                 });
                 const url = window.URL.createObjectURL(blob);
@@ -340,8 +349,8 @@ export default function VendorInvoicesPage() {
           endIndex={endIndex}
           onPageChange={setCurrentPage}
           startIndex={startIndex}
-          totalItems={records.length}
-          totalPages={totalPages}
+          totalItems={filteredRecords.length}
+          totalPages={filteredTotalPages}
         />
       </section>
     </div>
