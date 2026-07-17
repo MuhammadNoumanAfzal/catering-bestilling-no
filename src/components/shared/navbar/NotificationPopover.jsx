@@ -33,6 +33,7 @@ function getNotificationStyle(type) {
 export default function NotificationPopover({
   notifications,
   className = "",
+  onNotificationClick,
 }) {
   const unreadCount = notifications.filter((item) => item.unread).length;
 
@@ -69,11 +70,13 @@ export default function NotificationPopover({
             return (
               <article
                 key={notification.id}
+                onClick={() => onNotificationClick?.(notification)}
                 className={[
                   "group relative flex items-start gap-3 rounded-[20px] border px-4 py-4 transition-all duration-200",
                   notification.unread
                     ? "border-[#efcdb7] bg-white shadow-[0_10px_28px_rgba(36,24,18,0.08)]"
                     : "border-[#f0e7df] bg-white/78",
+                  onNotificationClick ? "cursor-pointer hover:border-[#dfb291]" : "",
                   index !== notifications.length - 1 ? "mb-3" : "",
                 ].join(" ")}
               >

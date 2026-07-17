@@ -5,7 +5,6 @@ import {
   FiGift,
   FiPackage,
 } from "react-icons/fi";
-import { Link } from "react-router-dom";
 
 const ICON_BY_TYPE = {
   "order-update": FiPackage,
@@ -16,22 +15,19 @@ const ICON_BY_TYPE = {
   menu: FiBell,
 };
 
-export default function NotificationListItem({ notification }) {
+export default function NotificationListItem({ notification, onOpen }) {
   const Icon = ICON_BY_TYPE[notification.type] ?? FiBell;
-  const Wrapper = notification.actionUrl ? Link : "article";
-  const wrapperProps = notification.actionUrl
-    ? { to: notification.actionUrl }
-    : {};
 
   return (
-    <Wrapper
-      {...wrapperProps}
+    <button
+      type="button"
+      onClick={() => onOpen?.(notification)}
       className={[
-        "grid gap-3 rounded-[22px] border px-4 py-4 transition sm:grid-cols-[auto_1fr_auto] sm:items-start",
+        "grid w-full gap-3 rounded-[22px] border px-4 py-4 text-left transition sm:grid-cols-[auto_1fr_auto] sm:items-start",
         notification.category === "unread"
           ? "border-[#f0b79e] bg-[#fff7f2]"
           : "border-[#ece3db] bg-white",
-        notification.actionUrl ? "cursor-pointer hover:border-[#cf6e38]" : "",
+        onOpen ? "cursor-pointer hover:border-[#cf6e38]" : "",
       ].join(" ")}
     >
       <div
@@ -62,7 +58,7 @@ export default function NotificationListItem({ notification }) {
         <span className="text-xs font-medium text-[#978d84]">
           {notification.timeLabel}
         </span>
-        {notification.actionUrl ? (
+        {onOpen ? (
           <span className="rounded-full bg-[#fff2eb] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
             Open
           </span>
@@ -75,6 +71,6 @@ export default function NotificationListItem({ notification }) {
           </span>
         )}
       </div>
-    </Wrapper>
+    </button>
   );
 }

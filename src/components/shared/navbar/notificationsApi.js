@@ -1,21 +1,31 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 
 const FETCH_USER_NOTIFICATIONS_QUERY = `
-  query FetchUserNotifications($first: Int, $after: String) {
-    userNotifications(first: $first, after: $after) {
+  query GetUserNotifications(
+    $status: NotificationReadStatus
+    $datePreset: NotificationDatePreset
+    $first: Int = 20
+    $after: String
+  ) {
+    userNotifications(
+      status: $status
+      datePreset: $datePreset
+      first: $first
+      after: $after
+    ) {
       totalCount
       unreadCount
       edges {
+        cursor
         node {
           id
+          notificationType
           title
           message
-          notificationType
-          objectId
-          status
-          isSeen
-          createdOn
-          actionUrl
+          isRead
+          createdAt
+          orderId
+          reviewId
         }
       }
       pageInfo {
@@ -26,18 +36,42 @@ const FETCH_USER_NOTIFICATIONS_QUERY = `
   }
 `;
 
-function formatNotificationTime(createdOn) {
-  if (!createdOn) {
+const MARK_USER_NOTIFICATION_AS_READ_MUTATION = `
+  mutation MarkUserNotificationAsRead($id: ID!) {
+    markUserNotificationAsRead(id: $id) {
+      success
+      message
+      unreadCount
+      notification {
+        id
+        isRead
+      }
+    }
+  }
+`;
+
+const MARK_ALL_USER_NOTIFICATIONS_AS_READ_MUTATION = `
+  mutation MarkAllUserNotificationsAsRead {
+    markAllUserNotificationsAsRead {
+      success
+      message
+      unreadCount
+    }
+  }
+`;
+
+function formatNotificationTime(createdAt) {
+  if (!createdAt) {
     return "Just now";
   }
 
-  const createdAt = new Date(createdOn);
+  const createdDate = new Date(createdAt);
 
-  if (Number.isNaN(createdAt.getTime())) {
+  if (Number.isNaN(createdDate.getTime())) {
     return "Just now";
   }
 
-  const diffInSeconds = Math.round((createdAt.getTime() - Date.now()) / 1000);
+  const diffInSeconds = Math.round((createdDate.getTime() - Date.now()) / 1000);
   const absSeconds = Math.abs(diffInSeconds);
   const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
@@ -46,29 +80,26 @@ function formatNotificationTime(createdOn) {
   }
 
   const diffInMinutes = Math.round(diffInSeconds / 60);
-
   if (Math.abs(diffInMinutes) < 60) {
     return rtf.format(diffInMinutes, "minute");
   }
 
   const diffInHours = Math.round(diffInMinutes / 60);
-
   if (Math.abs(diffInHours) < 24) {
     return rtf.format(diffInHours, "hour");
   }
 
-  const diffInDays = Math.round(diffInHours / 24);
-  return rtf.format(diffInDays, "day");
+  return rtf.format(Math.round(diffInHours / 24), "day");
 }
 
-function formatDayLabel(createdOn) {
-  if (!createdOn) {
+function formatDayLabel(createdAt) {
+  if (!createdAt) {
     return "Unknown date";
   }
 
-  const createdAt = new Date(createdOn);
+  const createdDate = new Date(createdAt);
 
-  if (Number.isNaN(createdAt.getTime())) {
+  if (Number.isNaN(createdDate.getTime())) {
     return "Unknown date";
   }
 
@@ -76,7 +107,7 @@ function formatDayLabel(createdOn) {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  }).format(createdAt);
+  }).format(createdDate);
 }
 
 function mapNotificationType(notificationType) {
@@ -90,7 +121,7 @@ function mapNotificationType(notificationType) {
     return "order-update";
   }
 
-  if (normalizedType.includes("payment")) {
+  if (normalizedType.includes("payment") || normalizedType.includes("payout")) {
     return "payment";
   }
 
@@ -114,29 +145,50 @@ function sanitizeNotificationMessage(message) {
     .trim();
 }
 
+function resolveNotificationTarget(node) {
+  if (node?.orderId) {
+    return "/vendor-dashboard/orders";
+  }
+
+  if (node?.reviewId) {
+    return "/vendor-dashboard/notifications";
+  }
+
+  return "";
+}
+
 function mapNotificationNode(node) {
   return {
     id: node.id,
     title: node.title || "Notification",
     message: sanitizeNotificationMessage(node.message),
-    timeLabel: formatNotificationTime(node.createdOn),
-    unread: !node.isSeen,
-    category: node.isSeen ? "read" : "unread",
+    timeLabel: formatNotificationTime(node.createdAt),
+    unread: !node.isRead,
+    category: node.isRead ? "read" : "unread",
     type: mapNotificationType(node.notificationType),
-    createdAt: node.createdOn ? `${node.createdOn}`.split("T")[0] : "",
-    dayLabel: formatDayLabel(node.createdOn),
+    createdAt: node.createdAt ? `${node.createdAt}`.split("T")[0] : "",
+    dayLabel: formatDayLabel(node.createdAt),
     notificationType: node.notificationType,
-    objectId: node.objectId,
-    status: node.status,
-    createdOn: node.createdOn,
-    actionUrl: node.actionUrl || "",
+    orderId: node.orderId || "",
+    reviewId: node.reviewId || "",
+    createdOn: node.createdAt || "",
+    actionUrl: resolveNotificationTarget(node),
   };
 }
 
-export async function fetchUserNotifications({ first = 50, after = null } = {}) {
+function getMutationErrorMessage(result, fallbackMessage) {
+  return result?.message || fallbackMessage;
+}
+
+export async function fetchUserNotifications({
+  status = null,
+  datePreset = null,
+  first = 50,
+  after = null,
+} = {}) {
   const response = await graphqlRequest({
     query: FETCH_USER_NOTIFICATIONS_QUERY,
-    variables: { first, after },
+    variables: { status, datePreset, first, after },
   });
 
   const connection = response.userNotifications || {};
@@ -149,5 +201,45 @@ export async function fetchUserNotifications({ first = 50, after = null } = {}) 
     totalCount: Number(connection.totalCount ?? 0) || 0,
     hasNextPage: Boolean(connection.pageInfo?.hasNextPage),
     endCursor: connection.pageInfo?.endCursor || null,
+  };
+}
+
+export async function markUserNotificationAsRead(id) {
+  const response = await graphqlRequest({
+    query: MARK_USER_NOTIFICATION_AS_READ_MUTATION,
+    variables: { id },
+  });
+
+  const result = response?.markUserNotificationAsRead;
+
+  if (!result?.success) {
+    throw new Error(
+      getMutationErrorMessage(result, "Unable to mark the notification as read."),
+    );
+  }
+
+  return {
+    message: result.message || "Notification marked as read.",
+    unreadCount: Number(result.unreadCount ?? 0) || 0,
+    notification: result.notification || null,
+  };
+}
+
+export async function markAllUserNotificationsAsRead() {
+  const response = await graphqlRequest({
+    query: MARK_ALL_USER_NOTIFICATIONS_AS_READ_MUTATION,
+  });
+
+  const result = response?.markAllUserNotificationsAsRead;
+
+  if (!result?.success) {
+    throw new Error(
+      getMutationErrorMessage(result, "Unable to mark all notifications as read."),
+    );
+  }
+
+  return {
+    message: result.message || "All notifications marked as read.",
+    unreadCount: Number(result.unreadCount ?? 0) || 0,
   };
 }

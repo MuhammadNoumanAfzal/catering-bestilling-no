@@ -12,6 +12,7 @@ export default function CommonNavbarActions({
   notifications,
   onCheckoutClick,
   onCloseActionMenu,
+  onNotificationClick,
   onNotificationToggle,
   onSignOut,
   onToggleActionMenu,
@@ -50,7 +51,10 @@ export default function CommonNavbarActions({
           </button>
 
           {isNotificationOpen ? (
-            <NotificationPopover notifications={notifications} />
+            <NotificationPopover
+              notifications={notifications}
+              onNotificationClick={onNotificationClick}
+            />
           ) : null}
         </div>
 

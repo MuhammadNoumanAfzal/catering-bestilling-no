@@ -131,6 +131,8 @@ export default function CommonNavbar({
     acknowledgeFreshNotifications,
     hasFreshNotification,
     notifications,
+    openNotification,
+    readAllNotifications,
     unreadNotificationCount,
   } =
     useUserNotifications();
@@ -371,6 +373,11 @@ export default function CommonNavbar({
           menuItems={commonProfileMenuItems}
           notifications={notifications}
           notificationRef={notificationRef}
+          onNotificationClick={(notification) =>
+            openNotification(notification, {
+              closePopover: () => setIsNotificationOpen(false),
+            })
+          }
           onCheckoutClick={() => {
             setIsActionMenuOpen(false);
             setIsNotificationOpen(false);

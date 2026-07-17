@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
-import { fetchUserNotifications } from "../../../components/shared/navbar/notificationsApi";
+import {
+  fetchUserNotifications,
+  markAllUserNotificationsAsRead,
+  markUserNotificationAsRead,
+} from "../../../components/shared/navbar/notificationsApi";
 import NotificationSection from "../components/notification/NotificationSection";
 import NotificationDateFilter from "../components/notification/NotificationDateFilter";
 import NotificationTabs from "../components/notification/NotificationTabs";
@@ -28,6 +33,7 @@ function NotificationsErrorState({ message, onRetry }) {
 }
 
 export default function VendorNotificationsPage() {
+  const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +45,7 @@ export default function VendorNotificationsPage() {
     to: "",
   });
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
+  const [isUpdatingReadState, setIsUpdatingReadState] = useState(false);
   const dateMenuRef = useRef(null);
 
   useEffect(() => {
@@ -144,6 +151,49 @@ export default function VendorNotificationsPage() {
     selectedRange,
   ]);
 
+  async function handleOpenNotification(notification) {
+    if (!notification) {
+      return;
+    }
+
+    if (notification.unread) {
+      try {
+        const result = await markUserNotificationAsRead(notification.id);
+        setNotifications((current) =>
+          current.map((item) =>
+            item.id === notification.id
+              ? { ...item, unread: false, category: "read" }
+              : item,
+          ),
+        );
+        if (typeof result?.unreadCount === "number") {
+          // counts derive from state, so only local state update is needed.
+        }
+      } catch {
+        // Allow the user to continue even if read update fails.
+      }
+    }
+
+    navigate(notification.actionUrl || "/vendor-dashboard/notifications");
+  }
+
+  async function handleMarkAllRead() {
+    setIsUpdatingReadState(true);
+
+    try {
+      await markAllUserNotificationsAsRead();
+      setNotifications((current) =>
+        current.map((item) => ({
+          ...item,
+          unread: false,
+          category: "read",
+        })),
+      );
+    } finally {
+      setIsUpdatingReadState(false);
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -189,27 +239,36 @@ export default function VendorNotificationsPage() {
                 onChange={setActiveTab}
                 counts={counts}
               />
-
-              <NotificationDateFilter
-                customDateRange={customDateRange}
-                isOpen={isDateMenuOpen}
-                menuRef={dateMenuRef}
-                onApplyCustomDate={() => setIsDateMenuOpen(false)}
-                onCustomDateChange={(field, value) =>
-                  setCustomDateRange((current) => ({
-                    ...current,
-                    [field]: value,
-                  }))
-                }
-                onSelect={(value) => {
-                  setSelectedRange(value);
-                  if (value !== "custom-date") {
-                    setIsDateMenuOpen(false);
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <button
+                  type="button"
+                  onClick={handleMarkAllRead}
+                  disabled={isUpdatingReadState || counts.unread === 0}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#ead8cb] bg-white px-4 text-sm font-semibold text-[#7a6253] transition hover:border-[#cf6e38] hover:text-[#cf6e38] disabled:cursor-not-allowed disabled:opacity-55"
+                >
+                  {isUpdatingReadState ? "Updating..." : "Mark all as read"}
+                </button>
+                <NotificationDateFilter
+                  customDateRange={customDateRange}
+                  isOpen={isDateMenuOpen}
+                  menuRef={dateMenuRef}
+                  onApplyCustomDate={() => setIsDateMenuOpen(false)}
+                  onCustomDateChange={(field, value) =>
+                    setCustomDateRange((current) => ({
+                      ...current,
+                      [field]: value,
+                    }))
                   }
-                }}
-                onToggle={() => setIsDateMenuOpen((open) => !open)}
-                selectedRange={selectedRange}
-              />
+                  onSelect={(value) => {
+                    setSelectedRange(value);
+                    if (value !== "custom-date") {
+                      setIsDateMenuOpen(false);
+                    }
+                  }}
+                  onToggle={() => setIsDateMenuOpen((open) => !open)}
+                  selectedRange={selectedRange}
+                />
+              </div>
             </div>
           </div>
 
@@ -220,6 +279,7 @@ export default function VendorNotificationsPage() {
                   key={group.dayLabel}
                   dayLabel={group.dayLabel}
                   items={group.items}
+                  onOpenNotification={handleOpenNotification}
                 />
               ))
             ) : (
