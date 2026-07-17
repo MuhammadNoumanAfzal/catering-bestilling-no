@@ -1,8 +1,8 @@
 export const STATUS_OPTIONS = [
   { label: "Status: All", value: "all" },
-  { label: "Paid", value: "payment-paid" },
-  { label: "Pending", value: "payment-pending" },
-  { label: "Overdue", value: "payment-overdue" },
+  { label: "Paid", value: "paid" },
+  { label: "Pending", value: "pending" },
+  { label: "Overdue", value: "overdue" },
 ];
 
 export const DATE_OPTIONS = [
