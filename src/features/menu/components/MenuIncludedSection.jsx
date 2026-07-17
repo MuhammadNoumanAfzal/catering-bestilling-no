@@ -2,7 +2,20 @@ import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
-function IncludedMenuRow({ description, image, label }) {
+function InfoRow({ label, value }) {
+  if (!value) {
+    return null;
+  }
+
+  return (
+    <div className="mt-1.5 text-[12px] leading-5 text-[#6f655d]">
+      <span className="font-semibold text-[#3b3029]">{label}:</span>{" "}
+      <span>{value}</span>
+    </div>
+  );
+}
+
+function IncludedMenuRow({ allergens, description, image, label }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -21,10 +34,11 @@ function IncludedMenuRow({ description, image, label }) {
           <span className="block text-[15px] font-medium text-[#1b1713]">
             {label}
           </span>
-          {isOpen && description ? (
-            <span className="mt-1 block text-[12px] leading-5 text-[#6f655d]">
-              {description}
-            </span>
+          {isOpen ? (
+            <div className="mt-1">
+              <InfoRow label="Description" value={description} />
+              <InfoRow label="Allergens" value={allergens} />
+            </div>
           ) : null}
         </div>
       </div>
@@ -55,6 +69,7 @@ export default function MenuIncludedSection({
         {includedMenuItems.map((includedItem) => (
           <IncludedMenuRow
             key={includedItem.label}
+            allergens={includedItem.allergens}
             description={includedItem.description}
             image={includedItem.image}
             label={includedItem.label}
