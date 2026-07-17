@@ -114,23 +114,36 @@ export function isVendorDeliverySlotAvailable(vendor, date, time) {
     return true;
   }
 
+  const hasConfiguredDays = Array.isArray(deliverySchedule.days) && deliverySchedule.days.length > 0;
+  const hasConfiguredSlots =
+    Array.isArray(deliverySchedule.slots) && deliverySchedule.slots.length > 0;
+  const hasConfiguredRange =
+    `${deliverySchedule.start ?? ""}`.trim() && `${deliverySchedule.end ?? ""}`.trim();
+
   const selectedDate = normalizeSelectedDate(date);
+  if (selectedDate && !hasConfiguredDays) {
+    return false;
+  }
+
+  if (time && !hasConfiguredSlots && !hasConfiguredRange) {
+    return false;
+  }
+
   const matchesDay = selectedDate
     ? deliverySchedule.days.includes(selectedDate.getDay())
     : true;
 
   let matchesTime = true;
   if (time) {
-    if (
-      Array.isArray(deliverySchedule.slots) &&
-      deliverySchedule.slots.length > 0
-    ) {
+    if (hasConfiguredSlots) {
       matchesTime = deliverySchedule.slots.some(
         (slot) => time >= slot.start && time <= slot.end,
       );
-    } else {
+    } else if (hasConfiguredRange) {
       matchesTime =
         time >= deliverySchedule.start && time <= deliverySchedule.end;
+    } else {
+      matchesTime = false;
     }
   }
 
