@@ -144,13 +144,11 @@ export function getMenuAvailabilityError(menuLike, deliveryDate) {
 export function validateOrderSummaryBasics({
   deliveryDate,
   deliveryTime,
-  deliveryAddress,
   personCount,
   minimumPersons = 1,
 }) {
   const normalizedDate = `${deliveryDate ?? ""}`.trim();
   const normalizedTime = `${deliveryTime ?? ""}`.trim();
-  const normalizedAddress = `${deliveryAddress ?? ""}`.trim();
   const normalizedPersonCount = Math.max(
     Number(minimumPersons ?? 1) || 1,
     Number(personCount ?? 0) || 0,
@@ -179,10 +177,6 @@ export function validateOrderSummaryBasics({
         return "Please select a future delivery time for today.";
       }
     }
-  }
-
-  if (!normalizedAddress) {
-    return "Please enter the delivery address.";
   }
 
   if (normalizedPersonCount < (Number(minimumPersons ?? 1) || 1)) {
