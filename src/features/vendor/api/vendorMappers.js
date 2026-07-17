@@ -73,6 +73,10 @@ function isPrimaryMenuProduct(product) {
   return `${product?.productType ?? "menu"}`.toLowerCase() === "menu";
 }
 
+function isCustomerVisibleMenuProduct(product) {
+  return `${product?.menuStatus ?? "active"}`.toLowerCase() === "active";
+}
+
 function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const price = parseFloat(product.priceWithTax || 0);
   const serves = product.minimumGuests || 1;
@@ -125,7 +129,7 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
 }
 
 export function adaptApiProductToMenuItem(product, subcategory = "Menu Item") {
-  if (!product) {
+  if (!product || !isCustomerVisibleMenuProduct(product)) {
     return null;
   }
 
@@ -230,7 +234,7 @@ export function adaptApiVendorToProfile(apiVendor) {
   const menuSections = (apiVendor.menuCategories || [])
     .map((category, categoryIndex) => {
       const primaryProducts = (category.vendorProducts || []).filter(
-        isPrimaryMenuProduct,
+        (product) => isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product),
       );
 
       return {
