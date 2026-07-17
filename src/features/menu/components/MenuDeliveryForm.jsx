@@ -1,17 +1,48 @@
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
 import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
+import { formatTimeTo24Hour } from "../../../components/shared/navbar/navbarDateUtils";
 
 export default function MenuDeliveryForm({
   minimumPersons = 1,
   isVendorAvailable = true,
   orderSummary,
   vendorNote,
+  deliverySlots = [],
+  isLoadingSlots = false,
+  hasDeliverySchedule = false,
   onDeliveryDateChange,
   onDeliveryTimeChange,
   onPersonCountChange,
   onVendorNoteChange,
   onAddToCart,
 }) {
+  const hasSlots = deliverySlots.length > 0;
+  const selectedTime = orderSummary.deliveryTime || "";
+
+  function isTimeInSlot(time, slot) {
+    return time >= slot.start && time <= slot.end;
+  }
+
+  function handleSelectSlot(slot) {
+    if (slot.isFullyBooked) {
+      return;
+    }
+
+    onDeliveryTimeChange(slot.start);
+  }
+
+  function getCapacityLabel(slot) {
+    if (slot.isFullyBooked) {
+      return "Fully booked";
+    }
+
+    if (slot.remainingCapacity >= 9999) {
+      return "Available";
+    }
+
+    return `${slot.remainingCapacity} spot${slot.remainingCapacity !== 1 ? "s" : ""} left`;
+  }
+
   return (
     <div className="mt-6 rounded-[16px] border border-[#e8ddd2] bg-white p-4">
       <h2 className="text-[18px] font-semibold text-[#1c1713]">
@@ -35,12 +66,73 @@ export default function MenuDeliveryForm({
         <label className="block">
           <span className="text-[13px] text-[#3f342b]">Time</span>
           <div className="mt-1">
-            <PreferredTimePicker
-              value={orderSummary.deliveryTime}
-              onChange={onDeliveryTimeChange}
-              selectedDate={orderSummary.deliveryDate}
-              placeholder="Select preferred time"
-            />
+            {!orderSummary.deliveryDate ? (
+              <p className="rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2 text-[13px] text-[#9b8f84]">
+                Select a date first
+              </p>
+            ) : isLoadingSlots ? (
+              <div className="flex items-center gap-2 rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2">
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
+                <span className="text-[13px] text-[#9b8f84]">Checking available delivery slots...</span>
+              </div>
+            ) : hasSlots ? (
+              <div className="flex flex-col gap-2">
+                {deliverySlots.map((slot) => {
+                  const isSelected = isTimeInSlot(selectedTime, slot);
+                  const shouldShowExactTime =
+                    isSelected && selectedTime && selectedTime !== slot.start;
+
+                  return (
+                    <button
+                      key={`${slot.start}-${slot.end}`}
+                      type="button"
+                      disabled={slot.isFullyBooked}
+                      onClick={() => handleSelectSlot(slot)}
+                      className={`flex w-full items-center justify-between rounded-[8px] border px-3 py-2 text-left text-[13px] transition ${
+                        slot.isFullyBooked
+                          ? "cursor-not-allowed border-[#e4ddd7] bg-[#f5f2ef] text-[#b0a49a] line-through"
+                          : isSelected
+                            ? "border-[#cf6e38] bg-[#fff4ed] font-semibold text-[#cf6e38] ring-1 ring-[#cf6e38]/30"
+                            : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/50 hover:bg-[#fdf8f4]"
+                      }`}
+                    >
+                      <span className="flex flex-col">
+                        <span>{slot.label}</span>
+                        {shouldShowExactTime ? (
+                          <span className="mt-1 text-[11px] font-medium text-[#8a5a3a]">
+                            Selected time: {formatTimeTo24Hour(selectedTime)}
+                          </span>
+                        ) : null}
+                      </span>
+                      <span
+                        className={`ml-3 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                          slot.isFullyBooked
+                            ? "bg-[#f0e8e4] text-[#b08a7a]"
+                            : slot.remainingCapacity >= 9999
+                              ? "bg-[#eaf5ee] text-[#2f8a4b]"
+                              : slot.remainingCapacity <= 3
+                                ? "bg-[#fff0e5] text-[#cf6e38]"
+                                : "bg-[#eaf5ee] text-[#2f8a4b]"
+                        }`}
+                      >
+                        {getCapacityLabel(slot)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : hasDeliverySchedule ? (
+              <p className="rounded-[8px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-2 text-[13px] text-[#8a5a3a]">
+                No delivery slots are available for the selected date. Please choose another day.
+              </p>
+            ) : (
+              <PreferredTimePicker
+                value={orderSummary.deliveryTime}
+                onChange={onDeliveryTimeChange}
+                selectedDate={orderSummary.deliveryDate}
+                placeholder="Select preferred time"
+              />
+            )}
           </div>
         </label>
       </div>

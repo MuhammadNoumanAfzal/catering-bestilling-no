@@ -345,13 +345,14 @@ export function useCheckoutPage() {
         if (!isCancelled) {
           setDeliverySlots(slots);
 
-          // If the currently selected time falls in a fully-booked slot, clear it
-          if (formState.time && slots.length > 0) {
+          // Clear stale selections when the newly loaded day no longer supports the chosen time.
+          if (formState.time) {
             const currentTime = formState.time;
             const matchedSlot = slots.find(
               (slot) => currentTime >= slot.start && currentTime <= slot.end,
             );
-            if (matchedSlot?.isFullyBooked) {
+
+            if (!matchedSlot || matchedSlot.isFullyBooked) {
               updateField("time", "");
               updateCartField("deliveryTime", "");
             }

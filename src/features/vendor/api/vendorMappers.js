@@ -157,42 +157,34 @@ export function adaptApiVendorToProfile(apiVendor) {
   const cuisine = apiVendor.categoryTags?.[0] || "";
   const city = extractCityFromAddress(address);
 
-  const deliveryDays =
-    apiVendor.deliverySettings?.deliveryDays || [
-      "mo",
-      "tu",
-      "we",
-      "th",
-      "fr",
-      "sa",
-      "su",
-    ];
-  const deliverySlots = [
-    ...(apiVendor.deliverySettings?.deliveryTimeSlots || []),
-  ];
+  const deliveryDays = Array.isArray(apiVendor.deliverySettings?.deliveryDays)
+    ? apiVendor.deliverySettings.deliveryDays
+    : [];
+  const deliverySlots = Array.isArray(apiVendor.deliverySettings?.deliveryTimeSlots)
+    ? [...apiVendor.deliverySettings.deliveryTimeSlots]
+    : [];
   const deliveryDayIndexes = deliveryDays
     .map((day) => DAY_MAP[day.toLowerCase()])
     .filter((value) => value !== undefined);
 
-  let deliveryStart = "08:00";
-  let deliveryEnd = "17:00";
+  let deliveryStart = "";
+  let deliveryEnd = "";
 
   if (deliverySlots.length > 0) {
     const sortedStarts = deliverySlots.map((slot) => slot.start).sort();
     const sortedEnds = deliverySlots.map((slot) => slot.end).sort();
     deliveryStart = sortedStarts[0];
     deliveryEnd = sortedEnds[sortedEnds.length - 1];
-  } else {
-    deliverySlots.push({ start: deliveryStart, end: deliveryEnd });
   }
 
   const deliveryDaysLabel = formatDaysRange(deliveryDays);
   const deliverySlotsLabel = deliverySlots
     .map((slot) => `${slot.start} - ${slot.end}`)
     .join(", ");
-  const deliveryLabel = deliveryDaysLabel
-    ? `${deliveryDaysLabel}: ${deliverySlotsLabel}`
-    : "Closed / Not available";
+  const deliveryLabel =
+    deliveryDaysLabel && deliverySlotsLabel
+      ? `${deliveryDaysLabel}: ${deliverySlotsLabel}`
+      : "Delivery schedule not set";
 
   const businessHours = apiVendor.businessSettings?.businessHours || [];
   const activeBusinessHours = businessHours.filter((hours) => hours.enabled);

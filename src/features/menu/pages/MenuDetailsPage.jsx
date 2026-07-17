@@ -31,6 +31,7 @@ import {
 } from "../components";
 import { useMenuDetails } from "../hooks/useMenuDetails";
 import { useSavedVendorStatus } from "../../vendor/hooks/useSavedVendorStatus";
+import { fetchAvailableDeliverySlots } from "../../checkOut/api";
 import {
   getMenuAvailabilityError,
   validateOrderSummaryBasics,
@@ -56,6 +57,8 @@ export default function MenuDetailsPage() {
   const [isAvailabilityPopupDismissed, setIsAvailabilityPopupDismissed] =
     useState(false);
   const [vendorOptions, setVendorOptions] = useState([]);
+  const [deliverySlots, setDeliverySlots] = useState([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const addOnsSliderRef = useRef(null);
   const lastMenuAvailabilityAlertKeyRef = useRef("");
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
@@ -135,6 +138,65 @@ export default function MenuDetailsPage() {
 
     writeOrderSummary(vendor, orderSummary);
   }, [orderSummary, vendor]);
+
+  useEffect(() => {
+    const date = `${orderSummary?.deliveryDate ?? ""}`.trim();
+    const vendorId = vendor?.id;
+
+    if (!date || !vendorId) {
+      setDeliverySlots([]);
+      return;
+    }
+
+    let isCancelled = false;
+
+    async function loadSlots() {
+      setIsLoadingSlots(true);
+
+      try {
+        const nextSlots = await fetchAvailableDeliverySlots({
+          vendorId,
+          date,
+        });
+
+        if (isCancelled) {
+          return;
+        }
+
+        setDeliverySlots(nextSlots);
+
+        if (orderSummary?.deliveryTime) {
+          const matchesExistingSlot = nextSlots.some(
+            (slot) =>
+              !slot.isFullyBooked &&
+              orderSummary.deliveryTime >= slot.start &&
+              orderSummary.deliveryTime <= slot.end,
+          );
+
+          if (!matchesExistingSlot && nextSlots.length > 0) {
+            setOrderSummary((current) => ({
+              ...current,
+              deliveryTime: "",
+            }));
+          }
+        }
+      } catch {
+        if (!isCancelled) {
+          setDeliverySlots([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingSlots(false);
+        }
+      }
+    }
+
+    loadSlots();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [orderSummary?.deliveryDate, orderSummary?.deliveryTime, vendor?.id]);
 
   const addOnItems = useMemo(() => {
     if (!menuItem || !vendor) {
@@ -239,6 +301,15 @@ export default function MenuDetailsPage() {
     orderSummary?.deliveryDate,
     orderSummary?.deliveryTime,
   );
+  const hasDeliverySchedule = Boolean(
+    vendor?.availability?.delivery?.days?.length ||
+      vendor?.availability?.delivery?.slots?.length,
+  );
+  const hasNoSlotsForSelectedDate =
+    Boolean(orderSummary?.deliveryDate) &&
+    hasDeliverySchedule &&
+    !isLoadingSlots &&
+    deliverySlots.length === 0;
   const menuAvailabilityError = getMenuAvailabilityError(
     menuItem,
     orderSummary?.deliveryDate,
@@ -265,7 +336,9 @@ export default function MenuDetailsPage() {
   }, [menuItem]);
   const isMenuAvailableForSelection = !menuAvailabilityError;
   const isOrderableForSelection =
-    vendorAvailableForSelection && isMenuAvailableForSelection;
+    vendorAvailableForSelection &&
+    isMenuAvailableForSelection &&
+    !hasNoSlotsForSelectedDate;
 
   useEffect(() => {
     const deliveryDate = `${orderSummary?.deliveryDate ?? ""}`.trim();
@@ -505,8 +578,15 @@ export default function MenuDetailsPage() {
                 isVendorAvailable={isOrderableForSelection}
                 orderSummary={orderSummary}
                 vendorNote={vendorNote}
+                deliverySlots={deliverySlots}
+                isLoadingSlots={isLoadingSlots}
+                hasDeliverySchedule={hasDeliverySchedule}
                 onDeliveryDateChange={(deliveryDate) =>
-                  setOrderSummary((current) => ({ ...current, deliveryDate }))
+                  setOrderSummary((current) => ({
+                    ...current,
+                    deliveryDate,
+                    deliveryTime: "",
+                  }))
                 }
                 onDeliveryTimeChange={(deliveryTime) =>
                   setOrderSummary((current) => ({ ...current, deliveryTime }))
