@@ -75,6 +75,10 @@ function isValidPostalCode(postCode) {
   return /^\d{4,5}$/.test(`${postCode ?? ""}`.trim());
 }
 
+function removeDuplicateVendors(vendors, excludedVendorIds = new Set()) {
+  return vendors.filter((vendor) => !excludedVendorIds.has(vendor.id));
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const {
@@ -101,7 +105,6 @@ export default function HomePage() {
   const [categoryBrowseProducts, setCategoryBrowseProducts] = useState([]);
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
-  const [searchSubmissionCount, setSearchSubmissionCount] = useState(0);
   const vendorResultsRef = useRef(null);
   const searchRequestStartedRef = useRef(false);
   const {
@@ -260,7 +263,6 @@ export default function HomePage() {
     setDeliveryAddress(draftDeliveryAddress.trim());
     setLocationValue(nextPostalCode || nextAreaName);
     setAppliedSearchFilters(nextSearchFilters);
-    setSearchSubmissionCount((currentCount) => currentCount + 1);
     searchRequestStartedRef.current =
       hasSearchInput &&
       nextSearchFiltersKey === appliedSearchFiltersKey &&
@@ -335,6 +337,18 @@ export default function HomePage() {
   const availableVendorCount = hasAppliedLocationSearch
     ? filteredSearchedVendors.length
     : filteredPopularVendors.length + filteredFeaturedVendors.length;
+  const searchedVendorIds = useMemo(
+    () => new Set(filteredSearchedVendors.map((vendor) => vendor.id).filter(Boolean)),
+    [filteredSearchedVendors],
+  );
+  const curatedPopularSearchVendors = useMemo(
+    () => removeDuplicateVendors(filteredPopularVendors, searchedVendorIds),
+    [filteredPopularVendors, searchedVendorIds],
+  );
+  const curatedFeaturedSearchVendors = useMemo(
+    () => removeDuplicateVendors(filteredFeaturedVendors, searchedVendorIds),
+    [filteredFeaturedVendors, searchedVendorIds],
+  );
 
   useEffect(() => {
     if (!pendingSearchScroll) {
@@ -396,6 +410,7 @@ export default function HomePage() {
       <HeroSection
         deliveryAddress={draftDeliveryAddress}
         onDeliveryAddressChange={setDraftDeliveryAddress}
+        onBrowseVendors={() => navigate(`/vendors/all${menuQuery}`)}
         postalCode={normalizedPostalCode}
         onPostalCodeChange={(value) => {
           setPostalCode(value);
@@ -432,17 +447,17 @@ export default function HomePage() {
                 limit={null}
               />
             ) : null}
-            {filteredPopularVendors.length > 0 ? (
+            {curatedPopularSearchVendors.length > 0 ? (
               <VendorShowcaseSection
-                title={`Popular Vendors in ${appliedSearchLabel}`}
-                vendors={filteredPopularVendors}
+                title={`More Popular Vendors Near ${appliedSearchLabel}`}
+                vendors={curatedPopularSearchVendors}
                 onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
               />
             ) : null}
-            {filteredFeaturedVendors.length > 0 ? (
+            {curatedFeaturedSearchVendors.length > 0 ? (
               <VendorShowcaseSection
-                title={`Featured Vendors in ${appliedSearchLabel}`}
-                vendors={filteredFeaturedVendors}
+                title={`Featured Vendors Near ${appliedSearchLabel}`}
+                vendors={curatedFeaturedSearchVendors}
                 onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
               />
             ) : null}
@@ -470,7 +485,9 @@ export default function HomePage() {
             title={
               activeCategoryLabel
                 ? `${activeCategoryLabel} Products`
-                : buildHomeSectionTitle("Popular Products", activeCategoryLabel)
+                : hasAppliedLocationSearch
+                  ? `Popular Products Near ${appliedSearchLabel}`
+                  : buildHomeSectionTitle("Popular Products", activeCategoryLabel)
             }
             products={filteredPopularProducts}
             onSeeAllClick={() => navigate(`/products/popular${menuQuery}`)}
