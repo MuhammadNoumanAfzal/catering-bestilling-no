@@ -1,3 +1,4 @@
+import AccountSafetySection from "../components/settings/AccountSafetySection";
 import NotificationSettingsSection from "../components/settings/NotificationSettingsSection";
 import PasswordSettingsSection from "../components/settings/PasswordSettingsSection";
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
@@ -45,6 +46,7 @@ export default function VendorSettingsPage() {
           formState={formState}
           updateField={updateField}
         />
+        <AccountSafetySection email={formState.primaryEmail} />
         <SettingsActions
           isDirty={isDirty}
           isSaving={isSaving}
