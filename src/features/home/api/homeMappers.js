@@ -60,6 +60,10 @@ function isPrimaryMenuProduct(node) {
   return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
 }
 
+function isCustomerVisibleMenuProduct(node) {
+  return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
+}
+
 function mapVendorNode(node) {
   const name = node?.name || "Vendor";
   const minTime = node?.deliverySettings?.minDeliveryTime;
@@ -188,7 +192,10 @@ export function mapHomeResponse(response) {
       (edge) => mapVendorNode(edge.node),
     ),
     popularProducts: (response?.popularProducts?.edges || [])
-      .filter((edge) => isPrimaryMenuProduct(edge?.node))
+      .filter(
+        (edge) =>
+          isPrimaryMenuProduct(edge?.node) && isCustomerVisibleMenuProduct(edge?.node),
+      )
       .map((edge) => mapProductNode(edge.node)),
   };
 }

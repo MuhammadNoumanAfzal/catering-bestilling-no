@@ -232,6 +232,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          menuStatus
           productType
           description
           averageRating

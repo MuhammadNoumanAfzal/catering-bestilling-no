@@ -131,6 +131,10 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
     throw new Error("Product not found.");
   }
 
+  if (`${response.product.menuStatus ?? ""}`.toLowerCase() !== "active") {
+    throw new Error("Product is not available.");
+  }
+
   const responseVendorSlug =
     response.product.vendor?.slug ||
     `${response.product.vendor?.name ?? ""}`
