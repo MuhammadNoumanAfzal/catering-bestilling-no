@@ -17,27 +17,48 @@ function getStatusClasses(status) {
 
   if (
     normalizedStatus === "completed" ||
-    normalizedStatus === "delivered" ||
-    normalizedStatus === "ready"
+    normalizedStatus === "delivered"
   ) {
-    return "bg-[#e8f6ed] text-[#1b7a3e]";
+    return "border border-[#bde6c3] bg-[#ecfbef] text-[#238a43]";
   }
 
-  if (
-    normalizedStatus === "scheduled" ||
-    normalizedStatus === "pending" ||
-    normalizedStatus === "preparing" ||
-    normalizedStatus === "placed" ||
-    normalizedStatus === "confirmed"
-  ) {
-    return "bg-[#fff3eb] text-[#c95f33]";
+  if (normalizedStatus === "confirmed" || normalizedStatus === "ready") {
+    return "border border-[#bfe3cf] bg-[#edf9f1] text-[#237a49]";
+  }
+
+  if (normalizedStatus === "preparing" || normalizedStatus === "accepted") {
+    return "border border-[#a9ddd6] bg-[#e9fbf8] text-[#177f74]";
+  }
+
+  if (normalizedStatus === "scheduled") {
+    return "border border-[#c7dafd] bg-[#eef4ff] text-[#3568c9]";
+  }
+
+  if (normalizedStatus === "placed") {
+    return "border border-[#cdd7f8] bg-[#f1f4ff] text-[#4d63c7]";
+  }
+
+  if (normalizedStatus === "pending" || normalizedStatus === "unpaid" || normalizedStatus === "new") {
+    return "border border-[#f0d39b] bg-[#fff7e6] text-[#b97811]";
   }
 
   if (normalizedStatus === "draft") {
-    return "bg-[#e5e5e5] text-[#555555]";
+    return "border border-[#e6ddd4] bg-[#f7f3ef] text-[#7a6f66]";
   }
 
-  return "bg-[#f5f3f0] text-[#716a62]";
+  if (normalizedStatus === "paid") {
+    return "border border-[#bfe3cf] bg-[#edf9f1] text-[#237a49]";
+  }
+
+  if (normalizedStatus === "overdue" || normalizedStatus === "canceled" || normalizedStatus === "cancelled") {
+    return "border border-[#efc4bc] bg-[#fff1ee] text-[#c05445]";
+  }
+
+  if (normalizedStatus === "modified") {
+    return "border border-[#f4c8ad] bg-[#fff4ec] text-[#c8662f]";
+  }
+
+  return "border border-[#ddd9d4] bg-[#f5f4f2] text-[#6c655f]";
 }
 
 function VendorStatCard({ label, value, icon: Icon }) {
