@@ -23,10 +23,43 @@ import {
 
 const ITEMS_PER_PAGE = 6;
 
+function BrowsePageLoader() {
+  return (
+    <section className="w-full px-6 py-12 md:px-20">
+      <div className="mx-auto flex min-h-[48vh] w-full max-w-7xl items-center justify-center">
+        <div className="relative flex w-full max-w-xl flex-col items-center overflow-hidden rounded-[32px] border border-[#eadfd7] bg-[linear-gradient(145deg,#fffaf6_0%,#fff2ea_52%,#fffdfb_100%)] px-8 py-14 text-center shadow-[0_24px_60px_rgba(35,22,12,0.12)]">
+          <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(207,110,56,0.38),transparent)]" />
+          <div className="relative flex h-24 w-24 items-center justify-center">
+            <div className="absolute inset-0 animate-ping rounded-full bg-[#cf6e38]/10" />
+            <div className="absolute inset-[10px] rounded-full border border-[#cf6e38]/20" />
+            <div className="absolute inset-0 animate-spin rounded-full border-[3px] border-[#f2d7c8] border-t-[#cf6e38] border-r-[#e8a37d]" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-[0_10px_24px_rgba(207,110,56,0.18)]">
+            <div className="h-5 w-5 animate-bounce rounded-full bg-[#cf6e38]" />
+          </div>
+        </div>
+          <h2 className="mt-8 text-2xl font-semibold text-[#201b17]">
+            Loading the menu, please wait...
+          </h2>
+          <p className="mt-3 max-w-md text-sm leading-6 text-[#73665c]">
+            We&apos;re loading the best matching menu options for your selected
+            category and filters.
+          </p>
+          <div className="mt-8 flex items-center gap-3">
+            <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#cf6e38] [animation-delay:-0.3s]" />
+            <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#e29a72] [animation-delay:-0.15s]" />
+            <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#f0c2a6]" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function BrowseCatalogView({
   categories,
   error = "",
   isLoading = false,
+  isRefreshing = false,
   menuItems,
   disableLocationFiltering = false,
   moreOptions,
@@ -159,13 +192,7 @@ export default function BrowseCatalogView({
     : resolveCategoryLabel(formatCategoryLabel(selectedCategory));
 
   if (isLoading) {
-    return (
-      <section className="w-full px-6 py-12 md:px-20">
-        <div className="mx-auto flex min-h-[40vh] w-full max-w-7xl items-center justify-center">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
-        </div>
-      </section>
-    );
+    return <BrowsePageLoader />;
   }
 
   if (error) {
@@ -193,6 +220,12 @@ export default function BrowseCatalogView({
           onApply={() => setCurrentPage(1)}
           resultsAnchorId="browse-results"
         />
+        {isRefreshing ? (
+          <div className="mt-4 flex items-center gap-3 rounded-full border border-[#eadfd7] bg-[#fffaf6] px-4 py-2 text-sm text-[#7a6d61]">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#cf6e38] border-t-transparent" />
+            Updating menu results...
+          </div>
+        ) : null}
       </div>
 
       <BrowseMenuSection
