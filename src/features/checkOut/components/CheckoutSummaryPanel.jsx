@@ -75,12 +75,15 @@ export default function CheckoutSummaryPanel({
             >
               {isSubmitting
                 ? "Placing order..."
-                : isLoadingPricing
-                  ? "Loading live pricing..."
-                  : !canPlaceOrder
+                : !canPlaceOrder
                     ? "Live pricing required"
                     : "Place Order"}
             </button>
+            {isLoadingPricing ? (
+              <p className="mt-2 text-center text-[12px] text-[#8b8580]">
+                Updating totals in the background...
+              </p>
+            ) : null}
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@ export default function OrderConfirmationHero() {
         Order placed successfully
       </p>
       <h1 className="mt-3 text-[34px] font-semibold leading-tight text-[#201b17] sm:text-[42px]">
-        Your catering order is confirmed
+        Your catering order has been placed
       </h1>
       <p className="mx-auto mt-4 max-w-2xl text-[17px] leading-7 text-[#5f5a55]">
         We have received your request and sent it to the vendor. You will

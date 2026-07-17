@@ -99,6 +99,18 @@ function getMirroredInvoiceFields(formState) {
   };
 }
 
+function getSelectedAddress(addresses, addressId) {
+  if (!Array.isArray(addresses) || addresses.length === 0 || !addressId) {
+    return null;
+  }
+
+  return addresses.find((address) => address.id === addressId) ?? null;
+}
+
+function hasMeaningfulAddressValue(value) {
+  return Boolean(`${value ?? ""}`.trim());
+}
+
 export function useCheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -199,15 +211,11 @@ export function useCheckoutPage() {
 
         writeSavedSettings(profile.settings);
 
-        if (profile.deliveryAddresses.length > 0) {
-          writeSavedAddresses("delivery", profile.deliveryAddresses);
-          setDeliveryAddresses(profile.deliveryAddresses);
-        }
+        writeSavedAddresses("delivery", profile.deliveryAddresses);
+        setDeliveryAddresses(profile.deliveryAddresses);
 
-        if (profile.invoiceAddresses.length > 0) {
-          writeSavedAddresses("invoice", profile.invoiceAddresses);
-          setInvoiceAddresses(profile.invoiceAddresses);
-        }
+        writeSavedAddresses("invoice", profile.invoiceAddresses);
+        setInvoiceAddresses(profile.invoiceAddresses);
 
         if (!hasSavedDraft) {
           setFormState((current) => ({
@@ -230,6 +238,88 @@ export function useCheckoutPage() {
       isMounted = false;
     };
   }, [isLoggedIn, normalizedType]);
+
+  useEffect(() => {
+    setFormState((current) => {
+      const selectedDeliveryAddress = getSelectedAddress(
+        deliveryAddresses,
+        current.selectedDeliveryAddressId,
+      );
+      const selectedInvoiceAddress = getSelectedAddress(
+        invoiceAddresses,
+        current.selectedInvoiceAddressId,
+      );
+
+      const nextState = { ...current };
+      let hasChanges = false;
+
+      if (!selectedDeliveryAddress && current.selectedDeliveryAddressId) {
+        nextState.selectedDeliveryAddressId = "";
+        nextState.deliveryAddressLabel = "";
+        hasChanges = true;
+      }
+
+      if (!selectedInvoiceAddress && current.selectedInvoiceAddressId) {
+        nextState.selectedInvoiceAddressId = "";
+        nextState.invoiceAddressLabel = "";
+        hasChanges = true;
+      }
+
+      if (
+        selectedDeliveryAddress &&
+        !hasMeaningfulAddressValue(current.deliveryAddress) &&
+        !hasMeaningfulAddressValue(current.deliveryCity) &&
+        !hasMeaningfulAddressValue(current.deliveryPostalCode)
+      ) {
+        Object.assign(
+          nextState,
+          buildCheckoutAddressFields("delivery", selectedDeliveryAddress),
+        );
+        hasChanges = true;
+      }
+
+      if (
+        selectedInvoiceAddress &&
+        !current.invoiceSameAsDelivery &&
+        !hasMeaningfulAddressValue(current.invoiceAddress) &&
+        !hasMeaningfulAddressValue(current.invoiceCity) &&
+        !hasMeaningfulAddressValue(current.invoicePostalCode)
+      ) {
+        Object.assign(
+          nextState,
+          buildCheckoutAddressFields("invoice", selectedInvoiceAddress),
+        );
+        hasChanges = true;
+      }
+
+      if (
+        !selectedDeliveryAddress &&
+        !hasMeaningfulAddressValue(current.deliveryAddress) &&
+        !hasMeaningfulAddressValue(current.deliveryCity) &&
+        !hasMeaningfulAddressValue(current.deliveryPostalCode)
+      ) {
+        nextState.deliveryContactName = "";
+        nextState.deliveryPhoneNumber = "";
+        nextState.deliveryInstructions = "";
+        hasChanges = true;
+      }
+
+      if (
+        !selectedInvoiceAddress &&
+        !current.invoiceSameAsDelivery &&
+        !hasMeaningfulAddressValue(current.invoiceAddress) &&
+        !hasMeaningfulAddressValue(current.invoiceCity) &&
+        !hasMeaningfulAddressValue(current.invoicePostalCode)
+      ) {
+        nextState.invoiceContactName = "";
+        nextState.invoicePhoneNumber = "";
+        nextState.invoiceInstructions = "";
+        hasChanges = true;
+      }
+
+      return hasChanges ? nextState : current;
+    });
+  }, [deliveryAddresses, invoiceAddresses]);
 
   useEffect(() => {
     carts.forEach(({ vendor, orderSummary }) => {
@@ -575,15 +665,6 @@ export function useCheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
-    if (isLoadingPricing || pricingError || !hasLivePricing) {
-      await showAuthErrorAlert(
-        pricingError ||
-          "Live backend pricing is required before placing this order. Please wait for pricing to load and try again.",
-        "Live pricing required",
-      );
-      return;
-    }
-
     const validationError = validateCheckoutForm({
       formState,
       checkoutType: normalizedType,
