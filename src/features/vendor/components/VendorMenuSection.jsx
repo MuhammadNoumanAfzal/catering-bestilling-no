@@ -18,7 +18,7 @@ export default function VendorMenuSection({ section, onItemClick }) {
         ) : null}
       </div>
 
-      <div className="mt-3 grid gap-3 xl:grid-cols-2">
+      <div className="mt-3 grid gap-3 lg:grid-cols-3">
         {section.items.map((item) => (
           <VendorMenuItemCard
             key={item.id}
