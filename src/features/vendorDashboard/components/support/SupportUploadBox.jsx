@@ -27,7 +27,7 @@ export default function SupportUploadBox({ fileName, onChange }) {
             Click or drag to upload
           </span>
           <span className="mt-1 text-xs text-[#8b8177]">
-            PNG, JPG or PDF file max 5MB
+            PNG, JPG, JPEG or WEBP image max 2MB
           </span>
           {fileName ? (
             <span className="mt-3 rounded-full bg-[#f8f2ec] px-3 py-1 text-xs font-semibold text-[#8a5d3b]">

@@ -1,13 +1,11 @@
-import SupportAudienceSelector from "./SupportAudienceSelector";
 import SupportField from "./SupportField";
 import SupportUploadBox from "./SupportUploadBox";
 
 export default function SupportTicketForm({
-  audienceOptions,
+  attachmentError,
   fileName,
   formState,
   isSubmitting = false,
-  onAudienceChange,
   onFieldChange,
   onFileChange,
   onSubmit,
@@ -25,17 +23,6 @@ export default function SupportTicketForm({
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4 px-5 py-5 sm:px-6">
-        <div>
-          <span className="mb-2 block text-sm font-semibold text-[#2d2d2d]">
-            I am
-          </span>
-          <SupportAudienceSelector
-            value={formState.audience}
-            onChange={onAudienceChange}
-            options={audienceOptions}
-          />
-        </div>
-
         <div className="grid gap-4 md:grid-cols-2">
           <SupportField
             as="select"
@@ -73,10 +60,11 @@ export default function SupportTicketForm({
 
         <SupportUploadBox fileName={fileName} onChange={onFileChange} />
 
-        {fileName ? (
+        {attachmentError ? (
+          <p className="text-xs text-[#c05445]">{attachmentError}</p>
+        ) : fileName ? (
           <p className="text-xs text-[#8b8177]">
-            Attachment selected. It will be linked once file upload API is
-            available.
+            Attachment selected and ready to send with your ticket.
           </p>
         ) : null}
 
