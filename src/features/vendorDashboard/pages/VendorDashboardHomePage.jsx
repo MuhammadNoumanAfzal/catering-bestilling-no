@@ -13,33 +13,41 @@ import VendorSectionCard from "../components/VendorSectionCard";
 import { fetchDashboardData } from "../dashboardSlice";
 
 function getStatusClasses(status) {
-  const normalizedStatus = `${status ?? ""}`.toLowerCase();
+  const normalizedStatus = `${status ?? ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
   if (
     normalizedStatus === "completed" ||
     normalizedStatus === "delivered"
   ) {
-    return "border border-[#bde6c3] bg-[#ecfbef] text-[#238a43]";
+    return "border border-[#bfe7c8] bg-[#edf9f0] text-[#227a43]";
   }
 
   if (normalizedStatus === "confirmed" || normalizedStatus === "ready") {
-    return "border border-[#bfe3cf] bg-[#edf9f1] text-[#237a49]";
+    return "border border-[#bfd6ff] bg-[#edf3ff] text-[#315fc2]";
   }
 
   if (normalizedStatus === "preparing" || normalizedStatus === "accepted") {
-    return "border border-[#a9ddd6] bg-[#e9fbf8] text-[#177f74]";
+    return "border border-[#b7e6da] bg-[#ecfbf6] text-[#177c71]";
   }
 
   if (normalizedStatus === "scheduled") {
-    return "border border-[#c7dafd] bg-[#eef4ff] text-[#3568c9]";
+    return "border border-[#c7d9fd] bg-[#eef4ff] text-[#315fbc]";
   }
 
   if (normalizedStatus === "placed") {
-    return "border border-[#cdd7f8] bg-[#f1f4ff] text-[#4d63c7]";
+    return "border border-[#d8ccff] bg-[#f5f0ff] text-[#6b46c1]";
+  }
+
+  if (normalizedStatus === "out for delivery") {
+    return "border border-[#f6d0b6] bg-[#fff3ea] text-[#cb6b2f]";
   }
 
   if (normalizedStatus === "pending" || normalizedStatus === "unpaid" || normalizedStatus === "new") {
-    return "border border-[#f0d39b] bg-[#fff7e6] text-[#b97811]";
+    return "border border-[#f2d7a8] bg-[#fff7e8] text-[#b57612]";
   }
 
   if (normalizedStatus === "draft") {
@@ -47,7 +55,7 @@ function getStatusClasses(status) {
   }
 
   if (normalizedStatus === "paid") {
-    return "border border-[#bfe3cf] bg-[#edf9f1] text-[#237a49]";
+    return "border border-[#bfe7c8] bg-[#edf9f0] text-[#227a43]";
   }
 
   if (normalizedStatus === "overdue" || normalizedStatus === "canceled" || normalizedStatus === "cancelled") {
@@ -55,7 +63,7 @@ function getStatusClasses(status) {
   }
 
   if (normalizedStatus === "modified") {
-    return "border border-[#f4c8ad] bg-[#fff4ec] text-[#c8662f]";
+    return "border border-[#f5cfb6] bg-[#fff4ea] text-[#cb6b2f]";
   }
 
   return "border border-[#ddd9d4] bg-[#f5f4f2] text-[#6c655f]";
