@@ -4,6 +4,7 @@ export {
   filterVendorsByLocation,
   filterVendorsByPostalCode,
   getAvailableVendorsForSlot,
+  getConfiguredDeliverySlotsForDate,
   isVendorAvailableForLocation,
   isVendorAvailableForPostalCode,
   isVendorDeliverySlotAvailable,

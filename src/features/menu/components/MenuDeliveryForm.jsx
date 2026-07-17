@@ -18,9 +18,16 @@ export default function MenuDeliveryForm({
 }) {
   const hasSlots = deliverySlots.length > 0;
   const selectedTime = orderSummary.deliveryTime || "";
+  const firstAvailableSlot = deliverySlots.find((slot) => !slot.isFullyBooked) || null;
 
   function isTimeInSlot(time, slot) {
     return time >= slot.start && time <= slot.end;
+  }
+
+  function getMatchingSlot(time) {
+    return deliverySlots.find(
+      (slot) => !slot.isFullyBooked && isTimeInSlot(time, slot),
+    ) || null;
   }
 
   function handleSelectSlot(slot) {
@@ -41,6 +48,23 @@ export default function MenuDeliveryForm({
     }
 
     return `${slot.remainingCapacity} spot${slot.remainingCapacity !== 1 ? "s" : ""} left`;
+  }
+
+  const selectedSlot = getMatchingSlot(selectedTime);
+  const editableSlot = selectedSlot || firstAvailableSlot;
+  const availabilityHint = editableSlot
+    ? `Vendor available between ${editableSlot.start} and ${editableSlot.end} for this selection.`
+    : "";
+
+  function handleExactTimeChange(nextTime) {
+    if (!editableSlot) {
+      onDeliveryTimeChange(nextTime);
+      return;
+    }
+
+    if (nextTime >= editableSlot.start && nextTime <= editableSlot.end) {
+      onDeliveryTimeChange(nextTime);
+    }
   }
 
   return (
@@ -79,8 +103,6 @@ export default function MenuDeliveryForm({
               <div className="flex flex-col gap-2">
                 {deliverySlots.map((slot) => {
                   const isSelected = isTimeInSlot(selectedTime, slot);
-                  const shouldShowExactTime =
-                    isSelected && selectedTime && selectedTime !== slot.start;
 
                   return (
                     <button
@@ -96,14 +118,7 @@ export default function MenuDeliveryForm({
                             : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/50 hover:bg-[#fdf8f4]"
                       }`}
                     >
-                      <span className="flex flex-col">
-                        <span>{slot.label}</span>
-                        {shouldShowExactTime ? (
-                          <span className="mt-1 text-[11px] font-medium text-[#8a5a3a]">
-                            Selected time: {formatTimeTo24Hour(selectedTime)}
-                          </span>
-                        ) : null}
-                      </span>
+                      <span>{slot.label}</span>
                       <span
                         className={`ml-3 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                           slot.isFullyBooked
@@ -120,6 +135,35 @@ export default function MenuDeliveryForm({
                     </button>
                   );
                 })}
+
+                {editableSlot ? (
+                  <div className="rounded-[10px] border border-[#ead8ca] bg-[#fffaf5] p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8a5a3a]">
+                        Choose exact time
+                      </p>
+                      {selectedTime ? (
+                        <span className="rounded-full bg-[#fff1e8] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
+                          {formatTimeTo24Hour(selectedTime)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="mt-2">
+                      <input
+                        type="time"
+                        value={selectedTime}
+                        step={900}
+                        min={editableSlot.start}
+                        max={editableSlot.end}
+                        onChange={(event) => handleExactTimeChange(event.target.value)}
+                        className="w-full cursor-pointer rounded-[8px] border border-[#d9d1c7] bg-white px-3 py-2 text-[14px] text-[#2d2d2d] outline-none focus:border-[#cf6e38] focus:ring-1 focus:ring-[#cf6e38]/30"
+                      />
+                    </div>
+                    <p className="mt-2 text-[12px] leading-5 text-[#8a5a3a]">
+                      {availabilityHint}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             ) : hasDeliverySchedule ? (
               <p className="rounded-[8px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-2 text-[13px] text-[#8a5a3a]">

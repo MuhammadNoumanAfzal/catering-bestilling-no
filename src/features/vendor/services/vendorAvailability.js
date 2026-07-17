@@ -46,6 +46,10 @@ function normalizeSelectedDate(date) {
   );
 }
 
+function createSlotLabel(start, end) {
+  return `${start} - ${end}`;
+}
+
 export function isVendorAvailableForPostalCode(vendor, postalCode) {
   const normalizedInput = normalizePostalCode(postalCode);
 
@@ -171,4 +175,37 @@ export function getAvailableVendorsForSlot(
       vendor.slug !== excludedVendorSlug &&
       isVendorDeliverySlotAvailable(vendor, date, time),
   );
+}
+
+export function getConfiguredDeliverySlotsForDate(vendor, date) {
+  const matchedVendor = resolveVendorReference(vendor);
+  const deliverySchedule =
+    vendor?.availability?.delivery ?? matchedVendor?.availability?.delivery;
+  const selectedDate = normalizeSelectedDate(date);
+
+  if (!deliverySchedule || !selectedDate) {
+    return [];
+  }
+
+  const hasMatchingDay =
+    Array.isArray(deliverySchedule.days) &&
+    deliverySchedule.days.includes(selectedDate.getDay());
+
+  if (!hasMatchingDay) {
+    return [];
+  }
+
+  const configuredSlots = Array.isArray(deliverySchedule.slots)
+    ? deliverySchedule.slots
+    : [];
+
+  return configuredSlots
+    .filter((slot) => `${slot?.start ?? ""}`.trim() && `${slot?.end ?? ""}`.trim())
+    .map((slot) => ({
+      start: slot.start,
+      end: slot.end,
+      label: createSlotLabel(slot.start, slot.end),
+      isFullyBooked: false,
+      remainingCapacity: 9999,
+    }));
 }

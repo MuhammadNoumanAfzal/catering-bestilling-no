@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
+  getConfiguredDeliverySlotsForDate,
   fetchVendorProfiles,
   getAvailableVendorsForSlot,
   isVendorDeliverySlotAvailable,
@@ -158,22 +159,25 @@ export default function MenuDetailsPage() {
           vendorId,
           date,
         });
+        const fallbackSlots =
+          nextSlots.length === 0 ? getConfiguredDeliverySlotsForDate(vendor, date) : [];
+        const resolvedSlots = nextSlots.length > 0 ? nextSlots : fallbackSlots;
 
         if (isCancelled) {
           return;
         }
 
-        setDeliverySlots(nextSlots);
+        setDeliverySlots(resolvedSlots);
 
         if (orderSummary?.deliveryTime) {
-          const matchesExistingSlot = nextSlots.some(
+          const matchesExistingSlot = resolvedSlots.some(
             (slot) =>
               !slot.isFullyBooked &&
               orderSummary.deliveryTime >= slot.start &&
               orderSummary.deliveryTime <= slot.end,
           );
 
-          if (!matchesExistingSlot && nextSlots.length > 0) {
+          if (!matchesExistingSlot && resolvedSlots.length > 0) {
             setOrderSummary((current) => ({
               ...current,
               deliveryTime: "",
