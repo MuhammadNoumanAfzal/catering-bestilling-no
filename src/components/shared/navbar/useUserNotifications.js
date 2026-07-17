@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../features/auth";
-import { fetchUserNotifications } from "./notificationsApi";
+import {
+  fetchUserNotifications,
+  markAllUserNotificationsAsRead,
+  markUserNotificationAsRead,
+} from "./notificationsApi";
 import { showSuccessToast } from "../../../utils/alerts";
 
 const NOTIFICATIONS_POLL_INTERVAL_MS = 30000;
@@ -27,6 +32,7 @@ function writeLastAcknowledgedNotificationId(notificationId) {
 }
 
 export default function useUserNotifications() {
+  const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
@@ -125,10 +131,54 @@ export default function useUserNotifications() {
     setHasFreshNotification(false);
   };
 
+  const openNotification = async (notification, { closePopover } = {}) => {
+    if (!notification) {
+      return;
+    }
+
+    if (notification.unread) {
+      try {
+        const result = await markUserNotificationAsRead(notification.id);
+        setNotifications((current) =>
+          current.map((item) =>
+            item.id === notification.id
+              ? { ...item, unread: false, category: "read" }
+              : item,
+          ),
+        );
+        setUnreadNotificationCount(Number(result.unreadCount ?? 0) || 0);
+      } catch {
+        // Keep navigation usable even if read state update fails.
+      }
+    }
+
+    if (typeof closePopover === "function") {
+      closePopover();
+    }
+
+    const target = notification.actionUrl || "/vendor-dashboard/notifications";
+    navigate(target);
+  };
+
+  const readAllNotifications = async () => {
+    const result = await markAllUserNotificationsAsRead();
+    setNotifications((current) =>
+      current.map((item) => ({
+        ...item,
+        unread: false,
+        category: "read",
+      })),
+    );
+    setUnreadNotificationCount(Number(result.unreadCount ?? 0) || 0);
+    return result;
+  };
+
   return {
     acknowledgeFreshNotifications,
     hasFreshNotification,
     notifications,
+    openNotification,
+    readAllNotifications,
     unreadNotificationCount,
   };
 }

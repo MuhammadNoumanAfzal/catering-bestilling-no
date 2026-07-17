@@ -1,6 +1,6 @@
 import NotificationListItem from "./NotificationListItem";
 
-export default function NotificationSection({ dayLabel, items }) {
+export default function NotificationSection({ dayLabel, items, onOpenNotification }) {
   return (
     <section>
       <div className="mb-3 flex items-center justify-between">
@@ -15,6 +15,7 @@ export default function NotificationSection({ dayLabel, items }) {
           <NotificationListItem
             key={notification.id}
             notification={notification}
+            onOpen={onOpenNotification}
           />
         ))}
       </div>

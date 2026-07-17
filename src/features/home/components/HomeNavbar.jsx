@@ -32,6 +32,7 @@ export default function HomeNavbar() {
     acknowledgeFreshNotifications,
     hasFreshNotification,
     notifications,
+    openNotification,
     unreadNotificationCount,
   } = useUserNotifications();
   const desktopNotificationRef = useRef(null);
@@ -136,6 +137,11 @@ export default function HomeNavbar() {
                   <NotificationPopover
                     notifications={notifications}
                     className="right-0 top-[calc(100%+14px)]"
+                    onNotificationClick={(notification) =>
+                      openNotification(notification, {
+                        closePopover: () => setIsNotificationOpen(false),
+                      })
+                    }
                   />
                 ) : null}
               </div>
@@ -328,6 +334,11 @@ export default function HomeNavbar() {
                     <NotificationPopover
                       notifications={notifications}
                       className="static mt-1 w-full max-w-none shadow-none sm:shadow-[0_18px_40px_rgba(22,22,22,0.14)]"
+                      onNotificationClick={(notification) =>
+                        openNotification(notification, {
+                          closePopover: () => setIsNotificationOpen(false),
+                        })
+                      }
                     />
                   </div>
                 ) : null}
