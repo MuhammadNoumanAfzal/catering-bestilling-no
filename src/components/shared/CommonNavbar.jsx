@@ -17,7 +17,7 @@ const commonProfileMenuItems = [
   ...vendorNavigationItems.filter((item) => item.to !== "/vendor-dashboard"),
 ];
 
-const DEFAULT_SEARCH_ROUTE = "/vendors/popular";
+const DEFAULT_SEARCH_ROUTE = "/vendors/all";
 const DEFAULT_FILTER_ROUTE = "/";
 
 function resolveNavbarSearchRoute(pathname) {
@@ -31,6 +31,10 @@ function resolveNavbarSearchRoute(pathname) {
 
   if (pathname.startsWith("/vendors/featured")) {
     return "/vendors/featured";
+  }
+
+  if (pathname.startsWith("/vendors/all")) {
+    return "/vendors/all";
   }
 
   if (pathname.startsWith("/vendors/popular")) {
@@ -48,6 +52,7 @@ function shouldPreserveSearchParams(pathname) {
   return (
     pathname.startsWith("/browse/food-type") ||
     pathname.startsWith("/browse/occasion") ||
+    pathname.startsWith("/vendors/all") ||
     pathname.startsWith("/vendors/featured") ||
     pathname.startsWith("/vendors/popular") ||
     pathname.startsWith("/products/popular")
@@ -59,6 +64,7 @@ function resolveNavbarFilterRoute(pathname) {
     pathname === "/" ||
     pathname.startsWith("/browse/food-type") ||
     pathname.startsWith("/browse/occasion") ||
+    pathname.startsWith("/vendors/all") ||
     pathname.startsWith("/vendors/featured") ||
     pathname.startsWith("/vendors/popular") ||
     pathname.startsWith("/products/popular")

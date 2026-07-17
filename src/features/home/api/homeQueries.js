@@ -1,5 +1,59 @@
 export const FETCH_HOME_DATA_QUERY = `
   query FetchHomeData($postCode: String, $areaName: String, $includeSearchVendors: Boolean! = false) {
+    allVendors: vendors {
+      edges {
+        node {
+          id
+          name
+          postCode
+          rating
+          discountPercentage
+          logoUrl
+          coverPhotoUrl
+          categoryTags
+          foodTypes {
+            id
+            name
+            slug
+          }
+          occasions {
+            id
+            name
+            slug
+          }
+          reviewsCount
+          businessSettings {
+            businessAddress
+            businessHours {
+              id
+              day
+              enabled
+              openTime
+              closeTime
+            }
+          }
+          serviceAreas {
+            id
+            name
+            postCode
+            isActive
+          }
+          deliverySettings {
+            minDeliveryTime
+            maxDeliveryTime
+            baseDeliveryFee
+            freeDeliveryOver
+            pickupAddress
+            pickupInstructions
+            deliveryDays
+            deliveryTimeSlots {
+              start
+              end
+            }
+          }
+        }
+      }
+    }
     searchVendors: vendors(
       postCode: $postCode
       areaName: $areaName

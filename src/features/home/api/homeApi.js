@@ -16,7 +16,14 @@ export async function fetchHomeContent(filters = {}, signal) {
   });
   const mapped = mapHomeResponse(response);
 
-  const [searchedVendors, featuredVendors, popularVendors, popularProducts] = await Promise.all([
+  const [
+    allVendors,
+    searchedVendors,
+    featuredVendors,
+    popularVendors,
+    popularProducts,
+  ] = await Promise.all([
+    hydrateRatingsForItems(mapped.allVendors || []),
     hydrateRatingsForItems(mapped.searchedVendors || []),
     hydrateRatingsForItems(mapped.featuredVendors),
     hydrateRatingsForItems(mapped.popularVendors),
@@ -24,6 +31,7 @@ export async function fetchHomeContent(filters = {}, signal) {
   ]);
 
   return {
+    allVendors,
     searchedVendors,
     featuredVendors,
     popularVendors,

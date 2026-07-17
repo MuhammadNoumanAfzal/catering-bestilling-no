@@ -18,7 +18,7 @@ export default function VendorListingPage() {
   const { vendorType } = useParams();
   const [searchParams] = useSearchParams();
   const { locationValue, searchQuery } = useBrowseFilters();
-  const { popularVendors, featuredVendors } = useHomeData();
+  const { allVendors, popularVendors, featuredVendors } = useHomeData();
   const [visibleCount, setVisibleCount] = useState(HOME_LISTING_PAGE_SIZE);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
   const activeCategoryLabel = formatCategoryLabel(selectedCategory);
@@ -27,18 +27,29 @@ export default function VendorListingPage() {
     setVisibleCount(HOME_LISTING_PAGE_SIZE);
   }, [selectedCategory, vendorType]);
 
+  const isAll = vendorType === "all";
   const isPopular = vendorType === "popular";
   const isFeatured = vendorType === "featured";
 
-  if (!isPopular && !isFeatured) {
+  if (!isAll && !isPopular && !isFeatured) {
     return <Navigate to="/" replace />;
   }
 
-  const title = isPopular ? "Popular Vendors" : "Featured Vendors";
-  const description = isPopular
-    ? "Explore the vendors customers order from most often for everyday lunches and office catering."
-    : "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.";
-  const vendors = isPopular ? popularVendors : featuredVendors;
+  const title = isAll
+    ? "All Vendors"
+    : isPopular
+      ? "Popular Vendors"
+      : "Featured Vendors";
+  const description = isAll
+    ? "Browse all available vendors in one place and filter by location, category, or search to find the best fit for your event."
+    : isPopular
+      ? "Explore the vendors customers order from most often for everyday lunches and office catering."
+      : "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.";
+  const vendors = isAll
+    ? allVendors
+    : isPopular
+      ? popularVendors
+      : featuredVendors;
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const filteredVendors = useMemo(
     () =>

@@ -4,6 +4,7 @@ import HomeNavbar from "./HomeNavbar";
 export default function HeroSection({
   deliveryAddress,
   onDeliveryAddressChange,
+  onBrowseVendors,
   postalCode,
   onPostalCodeChange,
   hasValidPostalCode,
@@ -78,6 +79,15 @@ export default function HeroSection({
                 <FiSearch className="text-base" />
                 Search
               </button>
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={onBrowseVendors}
+                  className="type-h6 inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-[#e6d5c8] bg-[linear-gradient(135deg,#fffaf6_0%,#fff1e9_100%)] px-6 text-[#191919] shadow-[0_10px_24px_rgba(201,95,51,0.14)] transition duration-200 hover:-translate-y-[1px] hover:border-[#c46a35] hover:text-[#c46a35] hover:shadow-[0_16px_30px_rgba(201,95,51,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#cf6e38]/30"
+                >
+                  Browse all vendors
+                </button>
+              </div>
               {searchValidationMessage || (postalCode && !hasValidPostalCode) ? (
                 <p className="mt-3 text-sm text-[#5f5a55]">
                   {searchValidationMessage ? (
