@@ -7,6 +7,7 @@ export default function AuthPageFooter({
   actionState,
   secondaryLabel = "I'm a Caterer",
   secondaryTo = "/",
+  secondaryHref,
 }) {
   return (
     <div className="flex flex-col gap-3 text-left sm:flex-row sm:items-center sm:justify-between">
@@ -16,9 +17,15 @@ export default function AuthPageFooter({
           {actionLabel}
         </Link>
       </p>
-      <Link to={secondaryTo} className="text-[15px] font-semibold text-[#c85f33]">
-        {secondaryLabel}
-      </Link>
+      {secondaryHref ? (
+        <a href={secondaryHref} className="text-[15px] font-semibold text-[#c85f33]">
+          {secondaryLabel}
+        </a>
+      ) : (
+        <Link to={secondaryTo} className="text-[15px] font-semibold text-[#c85f33]">
+          {secondaryLabel}
+        </Link>
+      )}
     </div>
   );
 }

@@ -12,6 +12,10 @@ import {
 import { AUTH_ROLE } from "../../constants/authForms";
 import { useAuth } from "../../hooks/useAuth";
 
+const VENDOR_REGISTER_URL =
+  import.meta.env.VITE_VENDOR_REGISTER_URL ||
+  "https://catering-bestilling-no-vendor-panel.vercel.app/";
+
 export default function SignInPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,6 +71,7 @@ export default function SignInPage() {
           actionLabel="Create one"
           actionTo="/signup"
           actionState={location.state}
+          secondaryHref={VENDOR_REGISTER_URL}
         />
       }
     >
