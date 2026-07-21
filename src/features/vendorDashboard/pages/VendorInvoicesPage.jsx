@@ -157,7 +157,28 @@ export default function VendorInvoicesPage() {
         ))}
       </section>
 
-      <section className="rounded-[28px] border border-[#ddd4cb] bg-white p-4 shadow-[0_16px_34px_rgba(28,28,28,0.06)] md:p-5">
+      <section className="overflow-hidden rounded-[30px] border border-[#ddd4cb] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f1_100%)] shadow-[0_20px_40px_rgba(28,28,28,0.08)]">
+        <div className="border-b border-[#ece4dc] px-4 py-4 md:px-5 md:py-5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#c46a35]">
+                Finance Snapshot
+              </p>
+              <h2 className="mt-2 text-[22px] font-semibold text-[#1f1914]">
+                Invoice activity at a glance
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-[#75685f]">
+                Review totals, export records, and narrow down invoices faster.
+              </p>
+            </div>
+
+            <div className="rounded-full border border-[#f0dfd3] bg-white/85 px-4 py-2 text-sm font-semibold text-[#8b796d]">
+              {filteredRecords.length} invoice{filteredRecords.length === 1 ? "" : "s"} visible
+            </div>
+          </div>
+        </div>
+
+        <div className="px-4 py-4 md:px-5">
         <div className="grid grid-cols-2 gap-3 border-b border-[#ece4dc] pb-4 xl:grid-cols-4">
           {totals.map((item) => (
             <InvoiceTotalCard key={item.label} {...item} />
@@ -165,7 +186,7 @@ export default function VendorInvoicesPage() {
         </div>
 
         <div className="mt-4 flex flex-col gap-3 border-b border-[#ece4dc] pb-4 lg:flex-row lg:items-center lg:justify-between">
-          <label className="flex w-full items-center gap-2 rounded-full border border-[#ded6ce] bg-[#fcfaf8] px-4 py-3 text-sm text-[#7a7a7a] lg:max-w-[320px]">
+          <label className="flex w-full items-center gap-2 rounded-full border border-[#e3d8ce] bg-white px-4 py-3 text-sm text-[#7a7a7a] shadow-[0_6px_16px_rgba(32,22,16,0.04)] lg:max-w-[340px]">
             <FiSearch className="text-[16px]" />
             <input
               value={searchValue}
@@ -219,7 +240,7 @@ export default function VendorInvoicesPage() {
                 anchor.remove();
                 window.URL.revokeObjectURL(url);
               }}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#e3d8ce] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] shadow-[0_6px_16px_rgba(32,22,16,0.04)] transition hover:bg-[#faf7f3] sm:w-auto"
             >
               <FiDownload className="text-[15px]" />
               <span>Export</span>
@@ -352,6 +373,7 @@ export default function VendorInvoicesPage() {
           totalItems={filteredRecords.length}
           totalPages={filteredTotalPages}
         />
+        </div>
       </section>
     </div>
   );
