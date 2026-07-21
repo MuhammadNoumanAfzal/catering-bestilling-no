@@ -73,8 +73,8 @@ export default function MenuDeliveryForm({
         Delivery Date & Time
       </h2>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-[176px_176px]">
-        <label className="block">
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[176px_176px]">
+        <label className="block min-w-0">
           <span className="text-[13px] text-[#3f342b]">Date</span>
           <div className="mt-1">
             <input
@@ -82,20 +82,20 @@ export default function MenuDeliveryForm({
               value={orderSummary.deliveryDate}
               onChange={(event) => onDeliveryDateChange(event.target.value)}
               min={getTodayDateValue()}
-              className="w-full cursor-pointer rounded-[8px] border border-[#d7cdc4] px-4 py-2.5 text-[14px] text-[#1d1713] outline-none"
+              className="block min-w-0 w-full max-w-full cursor-pointer rounded-[8px] border border-[#d7cdc4] px-3 py-2.5 text-[14px] text-[#1d1713] outline-none sm:px-4"
             />
           </div>
         </label>
 
-        <label className="block">
+        <label className="block min-w-0">
           <span className="text-[13px] text-[#3f342b]">Time</span>
           <div className="mt-1">
             {!orderSummary.deliveryDate ? (
-              <p className="rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2 text-[13px] text-[#9b8f84]">
+              <p className="min-w-0 rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2 text-[13px] text-[#9b8f84]">
                 Select a date first
               </p>
             ) : isLoadingSlots ? (
-              <div className="flex items-center gap-2 rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2">
+              <div className="flex min-w-0 items-center gap-2 rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2">
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
                 <span className="text-[13px] text-[#9b8f84]">Checking available delivery slots...</span>
               </div>
@@ -186,7 +186,7 @@ export default function MenuDeliveryForm({
           Event Details
         </h3>
 
-        <div className="mt-3 flex items-center gap-3">
+        <div className="mt-3 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
           <span className="text-[15px] text-[#1d1713]">Persons:</span>
           <select
             value={orderSummary.personCount}
