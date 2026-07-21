@@ -183,8 +183,15 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
       </div>
 
       {invoices.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[#ddd4cb] px-4 py-10 text-center text-sm text-[#777777]">
-          No invoices matched your current filter.
+        <div className="rounded-[24px] border border-dashed border-[#e2d6cb] bg-[linear-gradient(180deg,#fffdfa_0%,#fff7f2_100%)] px-4 py-12 text-center">
+          <div className="mx-auto max-w-[280px]">
+            <p className="text-[15px] font-semibold text-[#3e342d]">
+              No invoices matched your current filter.
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[#7b6f66]">
+              Try changing the status, date range, or search term to explore more invoice records.
+            </p>
+          </div>
         </div>
       ) : null}
     </div>
