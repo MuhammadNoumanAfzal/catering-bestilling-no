@@ -59,6 +59,7 @@ export const FETCH_PRODUCT_QUERY = `
           maxDeliveryTime
           deliveryDays
           deliveryTimeSlots {
+            day
             start
             end
           }
