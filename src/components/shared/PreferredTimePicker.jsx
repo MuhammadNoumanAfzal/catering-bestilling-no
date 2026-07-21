@@ -59,6 +59,22 @@ function buildTimeValue(hour, minute) {
   return `${hour}:${minute}`;
 }
 
+function compareTimeValues(leftTime, rightTime) {
+  if (!leftTime || !rightTime) {
+    return 0;
+  }
+
+  const leftParts = parseTimeValue(leftTime);
+  const rightParts = parseTimeValue(rightTime);
+
+  if (!leftParts.hour || !leftParts.minute || !rightParts.hour || !rightParts.minute) {
+    return 0;
+  }
+
+  return buildTimeValue(leftParts.hour, leftParts.minute)
+    .localeCompare(buildTimeValue(rightParts.hour, rightParts.minute));
+}
+
 function getMinimumSelectableTime(selectedDate) {
   if (!isTodayDate(selectedDate)) {
     return { hour: 0, minute: 0 };
@@ -86,7 +102,7 @@ function buildHourOptions() {
   );
 }
 
-function buildMinuteOptions(selectedHour, minimumTime) {
+function buildMinuteOptions(selectedHour, minimumTime, maximumTime = null) {
   if (!selectedHour) {
     return MINUTE_OPTIONS;
   }
@@ -96,13 +112,23 @@ function buildMinuteOptions(selectedHour, minimumTime) {
     return MINUTE_OPTIONS;
   }
 
-  if (selectedHourNumber !== minimumTime.hour) {
-    return MINUTE_OPTIONS;
-  }
+  return MINUTE_OPTIONS.filter((minute) => {
+    const minuteNumber = Number.parseInt(minute, 10);
 
-  return MINUTE_OPTIONS.filter(
-    (minute) => Number.parseInt(minute, 10) >= minimumTime.minute,
-  );
+    if (selectedHourNumber === minimumTime.hour && minuteNumber < minimumTime.minute) {
+      return false;
+    }
+
+    if (
+      maximumTime &&
+      selectedHourNumber === maximumTime.hour &&
+      minuteNumber > maximumTime.minute
+    ) {
+      return false;
+    }
+
+    return true;
+  });
 }
 
 function formatTimeLabel(timeValue) {
@@ -114,11 +140,17 @@ function formatTimeLabel(timeValue) {
   return `${parts.hour}:${parts.minute}`;
 }
 
-function buildQuickTimeOptions(minimumTime) {
+function buildQuickTimeOptions(minimumTime, maximumTime = null) {
   const options = [];
   const startHour = minimumTime.hour >= 24 ? 24 : minimumTime.hour;
   let hour = startHour;
   let minute = minimumTime.minute || 0;
+  const maxComparable = maximumTime
+    ? buildTimeValue(
+      String(maximumTime.hour).padStart(2, "0"),
+      String(maximumTime.minute).padStart(2, "0"),
+    )
+    : "";
 
   while (minute % 30 !== 0 && hour < 24) {
     minute += 15;
@@ -129,7 +161,16 @@ function buildQuickTimeOptions(minimumTime) {
   }
 
   while (hour < 24 && options.length < 5) {
-    options.push(buildTimeValue(String(hour).padStart(2, "0"), String(minute).padStart(2, "0")));
+    const nextValue = buildTimeValue(
+      String(hour).padStart(2, "0"),
+      String(minute).padStart(2, "0"),
+    );
+
+    if (maximumTime && compareTimeValues(nextValue, maxComparable) > 0) {
+      break;
+    }
+
+    options.push(nextValue);
     minute += 60;
     if (minute >= 60) {
       hour += Math.floor(minute / 60);
@@ -185,6 +226,8 @@ export default function PreferredTimePicker({
   onChange,
   placeholder = "HH:MM",
   selectedDate = null,
+  minTimeValue = "",
+  maxTimeValue = "",
 }) {
   const wrapperRef = useRef(null);
   const [inputValue, setInputValue] = useState(value || "");
@@ -196,6 +239,43 @@ export default function PreferredTimePicker({
     () => getMinimumSelectableTime(normalizedSelectedDate),
     [normalizedSelectedDate],
   );
+  const minimumSlotTime = useMemo(
+    () => parseTimeValue(minTimeValue),
+    [minTimeValue],
+  );
+  const maximumSlotTime = useMemo(
+    () => parseTimeValue(maxTimeValue),
+    [maxTimeValue],
+  );
+  const effectiveMinimumTime = useMemo(() => {
+    const dateMinimumValue = buildTimeValue(
+      String(minimumTime.hour).padStart(2, "0"),
+      String(minimumTime.minute).padStart(2, "0"),
+    );
+
+    if (
+      minimumSlotTime.hour &&
+      minimumSlotTime.minute &&
+      compareTimeValues(minTimeValue, dateMinimumValue) > 0
+    ) {
+      return {
+        hour: Number.parseInt(minimumSlotTime.hour, 10),
+        minute: Number.parseInt(minimumSlotTime.minute, 10),
+      };
+    }
+
+    return minimumTime;
+  }, [minTimeValue, minimumSlotTime.hour, minimumSlotTime.minute, minimumTime]);
+  const effectiveMaximumTime = useMemo(() => {
+    if (!maximumSlotTime.hour || !maximumSlotTime.minute) {
+      return null;
+    }
+
+    return {
+      hour: Number.parseInt(maximumSlotTime.hour, 10),
+      minute: Number.parseInt(maximumSlotTime.minute, 10),
+    };
+  }, [maximumSlotTime.hour, maximumSlotTime.minute]);
   const selectedParts = useMemo(() => parseTimeValue(value), [value]);
   const hourOptions = useMemo(
     () => buildHourOptions(),
@@ -205,8 +285,8 @@ export default function PreferredTimePicker({
     ? selectedParts.hour
     : "";
   const minuteOptions = useMemo(
-    () => buildMinuteOptions(validSelectedHour, minimumTime),
-    [minimumTime, validSelectedHour],
+    () => buildMinuteOptions(validSelectedHour, effectiveMinimumTime, effectiveMaximumTime),
+    [effectiveMaximumTime, effectiveMinimumTime, validSelectedHour],
   );
   const validSelectedMinute = minuteOptions.includes(selectedParts.minute)
     ? selectedParts.minute
@@ -256,19 +336,23 @@ export default function PreferredTimePicker({
   }, []);
 
   useEffect(() => {
-    const allowedMinutes = buildMinuteOptions(draftHour, minimumTime);
+    const allowedMinutes = buildMinuteOptions(
+      draftHour,
+      effectiveMinimumTime,
+      effectiveMaximumTime,
+    );
     if (!allowedMinutes.includes(draftMinute)) {
       setDraftMinute(allowedMinutes[0] || "");
     }
-  }, [draftHour, draftMinute, minimumTime]);
+  }, [draftHour, draftMinute, effectiveMaximumTime, effectiveMinimumTime]);
 
   const draftMinuteOptions = useMemo(
-    () => buildMinuteOptions(draftHour, minimumTime),
-    [draftHour, minimumTime],
+    () => buildMinuteOptions(draftHour, effectiveMinimumTime, effectiveMaximumTime),
+    [draftHour, effectiveMaximumTime, effectiveMinimumTime],
   );
   const quickTimeOptions = useMemo(
-    () => buildQuickTimeOptions(minimumTime),
-    [minimumTime],
+    () => buildQuickTimeOptions(effectiveMinimumTime, effectiveMaximumTime),
+    [effectiveMaximumTime, effectiveMinimumTime],
   );
   const canSave = Boolean(draftHour && draftMinute);
 
@@ -278,12 +362,28 @@ export default function PreferredTimePicker({
       return true;
     }
 
-    return optionHour < minimumTime.hour || minimumTime.hour >= 24;
+    if (effectiveMinimumTime.hour >= 24) {
+      return true;
+    }
+
+    if (optionHour < effectiveMinimumTime.hour) {
+      return true;
+    }
+
+    if (effectiveMaximumTime && optionHour > effectiveMaximumTime.hour) {
+      return true;
+    }
+
+    return false;
   }
 
   function handleOpen() {
     const nextHour = validSelectedHour || hourOptions.find((option) => !isHourDisabled(option)) || "";
-    const nextMinuteOptions = buildMinuteOptions(nextHour, minimumTime);
+    const nextMinuteOptions = buildMinuteOptions(
+      nextHour,
+      effectiveMinimumTime,
+      effectiveMaximumTime,
+    );
     const nextMinute = validSelectedMinute || nextMinuteOptions[0] || "";
 
     setDraftHour(nextHour);
@@ -349,15 +449,26 @@ export default function PreferredTimePicker({
       return false;
     }
 
-    if (!isTodayDate(normalizedSelectedDate)) {
-      return true;
-    }
-
-    if (hourNumber < minimumTime.hour) {
+    if (hourNumber < effectiveMinimumTime.hour) {
       return false;
     }
 
-    if (hourNumber === minimumTime.hour && minuteNumber < minimumTime.minute) {
+    if (
+      hourNumber === effectiveMinimumTime.hour &&
+      minuteNumber < effectiveMinimumTime.minute
+    ) {
+      return false;
+    }
+
+    if (effectiveMaximumTime && hourNumber > effectiveMaximumTime.hour) {
+      return false;
+    }
+
+    if (
+      effectiveMaximumTime &&
+      hourNumber === effectiveMaximumTime.hour &&
+      minuteNumber > effectiveMaximumTime.minute
+    ) {
       return false;
     }
 
