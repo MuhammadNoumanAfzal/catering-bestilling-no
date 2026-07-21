@@ -50,6 +50,20 @@ function createSlotLabel(start, end) {
   return `${start} - ${end}`;
 }
 
+function normalizeSlotDay(day) {
+  return `${day ?? ""}`.trim().toLowerCase();
+}
+
+function getSelectedDayCode(date) {
+  const selectedDate = normalizeSelectedDate(date);
+
+  if (!selectedDate) {
+    return "";
+  }
+
+  return ["su", "mo", "tu", "we", "th", "fr", "sa"][selectedDate.getDay()] || "";
+}
+
 export function isVendorAvailableForPostalCode(vendor, postalCode) {
   const normalizedInput = normalizePostalCode(postalCode);
 
@@ -140,8 +154,13 @@ export function isVendorDeliverySlotAvailable(vendor, date, time) {
   let matchesTime = true;
   if (time) {
     if (hasConfiguredSlots) {
+      const selectedDayCode = getSelectedDayCode(date);
       matchesTime = deliverySchedule.slots.some(
-        (slot) => time >= slot.start && time <= slot.end,
+        (slot) => {
+          const slotDay = normalizeSlotDay(slot?.day);
+          const matchesSlotDay = selectedDayCode ? !slotDay || slotDay === selectedDayCode : true;
+          return matchesSlotDay && time >= slot.start && time <= slot.end;
+        },
       );
     } else if (hasConfiguredRange) {
       matchesTime =
@@ -198,9 +217,17 @@ export function getConfiguredDeliverySlotsForDate(vendor, date) {
   const configuredSlots = Array.isArray(deliverySchedule.slots)
     ? deliverySchedule.slots
     : [];
+  const selectedDayCode = getSelectedDayCode(date);
 
   return configuredSlots
-    .filter((slot) => `${slot?.start ?? ""}`.trim() && `${slot?.end ?? ""}`.trim())
+    .filter((slot) => {
+      const slotDay = normalizeSlotDay(slot?.day);
+      return (
+        `${slot?.start ?? ""}`.trim() &&
+        `${slot?.end ?? ""}`.trim() &&
+        (!slotDay || slotDay === selectedDayCode)
+      );
+    })
     .map((slot) => ({
       start: slot.start,
       end: slot.end,

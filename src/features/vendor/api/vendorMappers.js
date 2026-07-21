@@ -73,6 +73,18 @@ function isPrimaryMenuProduct(product) {
   return `${product?.productType ?? "menu"}`.toLowerCase() === "menu";
 }
 
+function normalizeDeliverySlot(slot) {
+  const day = `${slot?.day ?? ""}`.trim().toLowerCase();
+  const start = `${slot?.start ?? ""}`.trim();
+  const end = `${slot?.end ?? ""}`.trim();
+
+  if (!day || !start || !end) {
+    return null;
+  }
+
+  return { day, start, end };
+}
+
 function isCustomerVisibleMenuProduct(product) {
   return `${product?.menuStatus ?? "active"}`.toLowerCase() === "active";
 }
@@ -165,7 +177,9 @@ export function adaptApiVendorToProfile(apiVendor) {
     ? apiVendor.deliverySettings.deliveryDays
     : [];
   const deliverySlots = Array.isArray(apiVendor.deliverySettings?.deliveryTimeSlots)
-    ? [...apiVendor.deliverySettings.deliveryTimeSlots]
+    ? apiVendor.deliverySettings.deliveryTimeSlots
+      .map(normalizeDeliverySlot)
+      .filter(Boolean)
     : [];
   const deliveryDayIndexes = deliveryDays
     .map((day) => DAY_MAP[day.toLowerCase()])
@@ -183,7 +197,10 @@ export function adaptApiVendorToProfile(apiVendor) {
 
   const deliveryDaysLabel = formatDaysRange(deliveryDays);
   const deliverySlotsLabel = deliverySlots
-    .map((slot) => `${slot.start} - ${slot.end}`)
+    .map((slot) => {
+      const dayName = DAY_NAMES_SHORT[slot.day] || slot.day;
+      return `${dayName}: ${slot.start} - ${slot.end}`;
+    })
     .join(", ");
   const deliveryLabel =
     deliveryDaysLabel && deliverySlotsLabel
