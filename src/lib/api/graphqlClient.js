@@ -1,7 +1,7 @@
 import { getStoredAccessToken } from "../auth/authSession";
 
 const DEFAULT_GRAPHQL_ENDPOINT =
-  "https://live-api.lunsjavtale.no/graphql/";
+  "https://api.gocatering.no/graphql/";
 
 export const GRAPHQL_ENDPOINT =
   import.meta.env.VITE_GRAPHQL_URL ??
