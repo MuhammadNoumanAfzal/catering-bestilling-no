@@ -64,6 +64,7 @@ export default function SignInPage() {
       badge="Sign In"
       title="Welcome back"
       subtitle="Sign in to continue managing your catering account."
+      backTo="/"
       footer={
         <AuthPageFooter
           prompt="Don&apos;t have an account?"

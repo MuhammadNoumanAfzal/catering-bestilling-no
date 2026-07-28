@@ -57,6 +57,8 @@ export default function ResetPasswordPage() {
     <AuthCard
       title="New password"
       subtitle="Choose a strong password for your account."
+      backTo="/forgot-password/verify"
+      backState={{ email }}
       footer={
         <Link to="/signin" className="type-para font-semibold text-[#c85f33]">
           Back to sign in

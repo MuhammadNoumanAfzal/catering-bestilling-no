@@ -64,6 +64,7 @@ export default function SignUpPage() {
       badge="Create Account"
       title="Create your account"
       subtitle="Join quickly and start ordering with a cleaner, simpler flow."
+      backTo="/"
       footer={
         <AuthPageFooter
           prompt="Already have an account?"

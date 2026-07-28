@@ -49,6 +49,8 @@ export default function ForgotPasswordOtpPage() {
     <AuthCard
       title="Forgot password"
       subtitle={`Enter the ${PASSWORD_RESET_OTP_LENGTH}-digit code sent to your email.`}
+      backTo="/forgot-password"
+      backState={{ email }}
       footer={
         <p className="type-para text-[#7c746d]">
           Didn&apos;t get the code?{" "}
