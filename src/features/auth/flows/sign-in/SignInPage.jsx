@@ -13,7 +13,6 @@ import { AUTH_ROLE } from "../../constants/authForms";
 import { useAuth } from "../../hooks/useAuth";
 
 const VENDOR_REGISTER_URL =
-  import.meta.env.VITE_VENDOR_REGISTER_URL ||
   "https://catering-bestilling-no-vendor-panel.vercel.app/";
 
 export default function SignInPage() {

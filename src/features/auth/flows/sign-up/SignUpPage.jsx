@@ -14,6 +14,9 @@ import {
   SIGN_UP_INITIAL_FORM_STATE,
 } from "../../constants/authForms";
 
+const VENDOR_REGISTER_URL =
+  "https://catering-bestilling-no-vendor-panel.vercel.app/";
+
 export default function SignUpPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,6 +70,7 @@ export default function SignUpPage() {
           actionLabel="Sign in"
           actionTo="/signin"
           actionState={location.state}
+          secondaryHref={VENDOR_REGISTER_URL}
         />
       }
     >
