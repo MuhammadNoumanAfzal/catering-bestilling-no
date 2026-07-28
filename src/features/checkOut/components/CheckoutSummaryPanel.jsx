@@ -1,4 +1,5 @@
 import VendorSummaryCard from "./summary/VendorSummaryCard";
+import { Link } from "react-router-dom";
 import {
   formatCurrency,
   getCheckoutTotals,
@@ -64,8 +65,21 @@ export default function CheckoutSummaryPanel({
 
           <div className="mt-3 rounded-[16px] border border-[#ead6ca] bg-white px-4 py-4">
             <p className="type-subpara text-[#8b8580]">
-              I agree to the Terms &amp; Conditions and complete payment for
-              this order.
+              I agree to the{" "}
+              <Link
+                to="/terms-and-conditions"
+                className="font-semibold text-[#c85f33]"
+              >
+                Terms &amp; Conditions
+              </Link>{" "}
+              and{" "}
+              <Link
+                to="/privacy-policy"
+                className="font-semibold text-[#c85f33]"
+              >
+                Privacy Policy
+              </Link>{" "}
+              and complete payment for this order.
             </p>
             <button
               type="button"

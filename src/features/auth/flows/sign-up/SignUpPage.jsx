@@ -147,8 +147,15 @@ export default function SignUpPage() {
 
         <p className="text-[12px] leading-5 text-[#867d75]">
           By creating an account, you agree to our{" "}
-          <Link to="/" className="font-semibold text-[#c85f33]">
-            Terms and Privacy Policy
+          <Link
+            to="/terms-and-conditions"
+            className="font-semibold text-[#c85f33]"
+          >
+            Terms &amp; Conditions
+          </Link>{" "}
+          and{" "}
+          <Link to="/privacy-policy" className="font-semibold text-[#c85f33]">
+            Privacy Policy
           </Link>
           .
         </p>

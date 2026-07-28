@@ -56,6 +56,10 @@ const BrowseOccasionPage = lazy(() =>
   import("../../features/browse/pages/BrowseOccasionPage"),
 );
 const ContactPage = lazy(() => import("../../features/contact/pages/ContactPage"));
+const TermsPage = lazy(() => import("../../features/legal/pages/TermsPage"));
+const PrivacyPolicyPage = lazy(() =>
+  import("../../features/legal/pages/PrivacyPolicyPage"),
+);
 const OrderConfirmedPage = lazy(() =>
   import("../../features/order").then((module) => ({
     default: module.OrderConfirmedPage,
@@ -144,6 +148,8 @@ export default function AppRouter() {
             <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
             <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/terms-and-conditions" element={<TermsPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
             <Route
               path="/vendor/:vendorSlug/reviews"
