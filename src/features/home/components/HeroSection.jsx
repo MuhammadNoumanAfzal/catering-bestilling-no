@@ -1,4 +1,4 @@
-import { FiMapPin, FiSearch } from "react-icons/fi";
+import { FiArrowRight, FiMapPin, FiSearch } from "react-icons/fi";
 import HomeNavbar from "./HomeNavbar";
 
 export default function HeroSection({
@@ -79,13 +79,24 @@ export default function HeroSection({
                 <FiSearch className="text-base" />
                 Search
               </button>
-              <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={onBrowseVendors}
-                  className="type-h6 inline-flex h-12 cursor-pointer items-center justify-center rounded-xl border border-[#e6d5c8] bg-[linear-gradient(135deg,#fffaf6_0%,#fff1e9_100%)] px-6 text-[#191919] shadow-[0_10px_24px_rgba(201,95,51,0.14)] transition duration-200 hover:-translate-y-[1px] hover:border-[#c46a35] hover:text-[#c46a35] hover:shadow-[0_16px_30px_rgba(201,95,51,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#cf6e38]/30"
+                  className="group type-h6 inline-flex h-[52px] cursor-pointer items-center justify-center gap-3 self-start rounded-2xl border border-[#e8d4c8] bg-white px-5 text-[#241815] shadow-[0_14px_34px_rgba(115,63,37,0.12)] transition duration-200 hover:-translate-y-[2px] hover:border-[#cf6e38] hover:shadow-[0_20px_44px_rgba(201,95,51,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#cf6e38]/30"
                 >
-                  Browse all vendors
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#d97845_0%,#bf5c31_100%)] text-white shadow-[0_8px_16px_rgba(191,92,49,0.28)] transition duration-200 group-hover:scale-105">
+                    <FiSearch className="text-sm" />
+                  </span>
+                  <span className="flex flex-col items-start leading-none">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#c46a35]">
+                      Explore
+                    </span>
+                    <span className="text-[15px] font-semibold text-[#241815]">
+                      Browse All Vendors
+                    </span>
+                  </span>
+                  <FiArrowRight className="ml-1 text-base text-[#c46a35] transition duration-200 group-hover:translate-x-1" />
                 </button>
               </div>
               {searchValidationMessage || (postalCode && !hasValidPostalCode) ? (
