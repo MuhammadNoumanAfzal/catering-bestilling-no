@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import BackLinkButton from "../../../components/shared/BackLinkButton";
 
 export default function CatalogListingPageLayout({
   badge,
@@ -30,12 +30,9 @@ export default function CatalogListingPageLayout({
             ) : null}
           </div>
 
-          <Link
-            to="/"
-            className="rounded-full border border-[#d7cec3] px-4 py-2 text-[13px] font-semibold text-[#2b2b2b] transition hover:border-[#c85f33] hover:text-[#c85f33]"
-          >
+          <BackLinkButton to="/" className="text-[13px]">
             Back to home
-          </Link>
+          </BackLinkButton>
         </div>
 
         {children}

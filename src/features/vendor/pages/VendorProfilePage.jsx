@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Link,
   Navigate,
   useLocation,
   useNavigate,
@@ -20,6 +19,7 @@ import {
   showAuthErrorAlert,
   showSuccessToast,
 } from "../../../utils/alerts";
+import BackLinkButton from "../../../components/shared/BackLinkButton";
 import {
   VendorAvailabilityPopup,
   VendorCategoryTabs,
@@ -336,12 +336,9 @@ export default function VendorProfilePage() {
         <div>
           <div className="min-w-0">
             <div className="p-4 sm:p-5">
-              <Link
-                to="/"
-                className="text-[16px] font-medium text-[#2C76FF] transition hover:text-[#cf6e38]"
-              >
-                &lt; Back to search
-              </Link>
+              <BackLinkButton to="/">
+                Back to search
+              </BackLinkButton>
 
               <div className="mt-3">
                 {vendor.banner || vendor.logo ? (

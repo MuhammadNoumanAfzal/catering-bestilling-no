@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 import {
-  FiChevronLeft,
   FiMapPin,
   FiMessageSquare,
   FiPlus,
   FiStar,
   FiTruck,
 } from "react-icons/fi";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import BackLinkButton from "../../../components/shared/BackLinkButton";
 import { useVendorProfile } from "../hooks/useVendorProfile";
 import { useVendorReviews } from "../hooks/useVendorReviews";
 import VendorReviewModal from "../components/VendorReviewModal";
@@ -218,13 +218,9 @@ export default function VendorReviewsPage() {
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,#fff1e6_0%,transparent_32%),radial-gradient(circle_at_top_right,#f4eee6_0%,transparent_28%),linear-gradient(180deg,#f9f3ec_0%,#fffdfa_34%,#f7f0e9_100%)]" />
 
       <div className="mx-auto max-w-6xl">
-        <Link
-          to={`/vendor/${vendor.slug}`}
-          className="inline-flex items-center gap-2 text-[16px] font-medium text-[#2c76ff] transition hover:text-[#cf6e38]"
-        >
-          <FiChevronLeft className="text-[18px]" />
+        <BackLinkButton to={`/vendor/${vendor.slug}`}>
           Back to vendor page
-        </Link>
+        </BackLinkButton>
 
         <div className="mt-5 overflow-hidden rounded-[30px] border border-[#eadfd2] bg-[linear-gradient(135deg,#fffaf6_0%,#fff2e9_45%,#fff9f3_100%)] shadow-[0_24px_56px_rgba(31,19,8,0.08)]">
           <div className="p-6 lg:p-8">

@@ -1,5 +1,5 @@
 import { FiHeart } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import BackLinkButton from "../../../components/shared/BackLinkButton";
 
 export default function MenuHeroBanner({
   vendorSlug,
@@ -16,12 +16,12 @@ export default function MenuHeroBanner({
         className="h-[240px] w-full rounded-t-[30px] object-cover sm:h-[320px] lg:h-[460px]"
       />
 
-      <Link
+      <BackLinkButton
         to={`/vendor/${vendorSlug}`}
-        className="absolute left-4 top-4 cursor-pointer rounded-full bg-white/95 px-3 py-1.5 text-[13px] font-medium text-[#382d24] shadow"
+        className="absolute left-4 top-4 bg-white/95"
       >
         Back
-      </Link>
+      </BackLinkButton>
 
       <button
         type="button"
