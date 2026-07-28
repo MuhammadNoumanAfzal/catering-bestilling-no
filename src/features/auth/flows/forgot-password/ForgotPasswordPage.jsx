@@ -42,6 +42,7 @@ export default function ForgotPasswordPage() {
     <AuthCard
       title="Forgot password"
       subtitle="Enter your email and we&apos;ll send you a verification code."
+      backTo="/signin"
       footer={
         <Link to="/signin" className="type-para font-semibold text-[#c85f33]">
           Back to sign in
