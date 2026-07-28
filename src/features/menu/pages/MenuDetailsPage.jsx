@@ -553,8 +553,9 @@ export default function MenuDetailsPage() {
   };
 
   return (
-    <section className="px-4 py-5 md:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[30px] border border-[#ddd3c8] bg-[#fffaf6] shadow-[0_14px_40px_rgba(55,34,19,0.08)]">
+    <section className="relative overflow-hidden px-4 py-5 md:px-6 lg:px-8">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(255,236,224,0.9),transparent_28%),radial-gradient(circle_at_top_right,rgba(244,229,215,0.82),transparent_32%),linear-gradient(180deg,#fff9f4_0%,#fffdfb_38%,#f8f1ea_100%)]" />
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[34px] border border-[#ddd3c8] bg-[#fffaf6] shadow-[0_24px_56px_rgba(55,34,19,0.09)]">
         <MenuHeroBanner
           vendorSlug={vendor.slug}
           image={menuItem.image}
@@ -563,9 +564,9 @@ export default function MenuDetailsPage() {
           onSaveToggle={handleSaveToggle}
         />
 
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="min-w-0 border-r border-[#e7dfd6] bg-white">
-            <div className="p-4 sm:p-5">
+            <div className="space-y-6 p-4 sm:p-5 lg:p-6">
               <MenuOverviewSection vendor={vendor} menuItem={menuItem} />
               <MenuIncludedSection
                 vendorSlug={vendor.slug}
@@ -611,7 +612,21 @@ export default function MenuDetailsPage() {
             </div>
           </div>
 
-            <VendorOrderSidebar
+          <div className="bg-[linear-gradient(180deg,#fff9f4_0%,#fff6ef_100%)]">
+            <div className="p-4 sm:p-5 lg:sticky lg:top-[92px] lg:p-6">
+              <div className="mb-4 rounded-[24px] border border-[#eadfd5] bg-white/90 p-4 shadow-[0_14px_34px_rgba(55,34,19,0.05)]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
+                  Order summary
+                </p>
+                <h2 className="mt-2 text-[22px] font-semibold text-[#1c1713]">
+                  Review before checkout
+                </h2>
+                <p className="mt-2 text-[14px] leading-6 text-[#6b5d53]">
+                  Your selected item, quantities, tip, and delivery details will stay visible here while you configure the order.
+                </p>
+              </div>
+
+              <VendorOrderSidebar
             vendor={vendor}
             orderSummary={orderSummary}
             isVendorAvailable={isOrderableForSelection}
@@ -659,7 +674,9 @@ export default function MenuDetailsPage() {
               setOrderSummary((current) => ({ ...current, invoiceAddress }))
             }
             minimumPersons={minimumPersons}
-          />
+              />
+            </div>
+          </div>
         </div>
 
         {addOnItems.length > 0 ? (

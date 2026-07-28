@@ -22,16 +22,16 @@ function IncludedMenuRow({ allergens, description, image, label }) {
     <button
       type="button"
       onClick={() => setIsOpen((current) => !current)}
-      className="flex w-full cursor-pointer items-center justify-between gap-4 py-3 text-left"
+      className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-[18px] border border-transparent px-3 py-3 text-left transition hover:border-[#ece1d7] hover:bg-[#fff9f4]"
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <img
           src={image}
           alt={label}
-          className="h-11 w-16 rounded-[6px] object-cover"
+          className="h-12 w-16 rounded-[10px] object-cover shadow-[0_8px_18px_rgba(55,34,19,0.08)]"
         />
         <div className="min-w-0 flex-1">
-          <span className="block text-[15px] font-medium text-[#1b1713]">
+          <span className="block text-[15px] font-semibold text-[#1b1713]">
             {label}
           </span>
           {isOpen ? (
@@ -133,37 +133,64 @@ export default function MenuIncludedSection({
   }
 
   return (
-    <div className="mt-6 rounded-[16px] border border-[#e8ddd2] bg-white p-4">
-      <h2 className="text-[18px] font-semibold text-[#1c1713]">
-        What&apos;s included in this menu
-      </h2>
-      <div className="mt-4 border-t border-[#ece4dc]">
-        {includedMenuItems.map((includedItem) => (
-          <IncludedMenuRow
-            key={includedItem.label}
-            allergens={includedItem.allergens}
-            description={includedItem.description}
-            image={includedItem.image}
-            label={includedItem.label}
-          />
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={() => setIsDetailsModalOpen(true)}
-        className="mt-3 inline-flex cursor-pointer text-[15px] font-medium text-[#1d1713]"
-      >
-        View Full Menu details..
-      </button>
-
-      <div className="mt-5 border-t border-[#ece4dc] pt-4">
-        <div className="max-w-[340px] rounded-[10px] bg-[#f2f2f2] px-4 py-3">
-          <p className="text-[18px] font-semibold text-[#1c1713]">
-            Minimum Order Requirement
+    <div className="mt-6 rounded-[28px] border border-[#eadfd5] bg-white p-4 shadow-[0_18px_40px_rgba(55,34,19,0.05)] sm:p-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
+            Included in this order
           </p>
-          <p className="mt-2 text-[14px] text-[#3c322c]">
-            Minimum order required:{" "}
-            <span className="font-semibold">{menuItem.serves} Persons</span>
+          <h2 className="mt-2 text-[22px] font-semibold text-[#1c1713]">
+            What&apos;s included in this menu
+          </h2>
+          <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
+            Expand any row to preview item details and allergens before you place the order.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsDetailsModalOpen(true)}
+          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-[#e1d4c8] bg-[#fff8f2] px-4 py-2 text-[14px] font-semibold text-[#2b221d] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
+        >
+          View full menu
+        </button>
+      </div>
+
+      <div className="mt-5 rounded-[22px] border border-[#efe4da] bg-[#fffdfa] p-3 sm:p-4">
+        <h3 className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#8d7768]">
+          Quick preview
+        </h3>
+        <div className="mt-3 border-t border-[#ece4dc] pt-2">
+          {includedMenuItems.map((includedItem) => (
+            <IncludedMenuRow
+              key={includedItem.label}
+              allergens={includedItem.allergens}
+              description={includedItem.description}
+              image={includedItem.image}
+              label={includedItem.label}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="rounded-[20px] border border-[#efe4da] bg-[linear-gradient(180deg,#fffdfb_0%,#fff6ee_100%)] p-4">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#8d7768]">
+            Ordering note
+          </p>
+          <p className="mt-2 text-[14px] leading-7 text-[#4d433c]">
+            The final mix may vary slightly by vendor availability, but this section shows the expected structure and serving components for the selected menu.
+          </p>
+        </div>
+
+        <div className="rounded-[20px] border border-[#eddccf] bg-[#fff4ea] p-4">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#9e6b4f]">
+            Minimum order
+          </p>
+          <p className="mt-2 text-[24px] font-semibold tracking-[-0.04em] text-[#1c1713]">
+            {menuItem.serves} persons
+          </p>
+          <p className="mt-2 text-[14px] leading-6 text-[#5e5046]">
+            This menu is configured for group ordering and cannot be booked below the minimum guest count.
           </p>
         </div>
       </div>

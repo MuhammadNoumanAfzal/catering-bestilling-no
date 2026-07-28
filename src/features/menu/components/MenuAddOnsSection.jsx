@@ -2,26 +2,26 @@ import { formatCurrency } from "../utils/formatters";
 
 function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
   return (
-    <article className="w-[calc(50%-0.375rem)] shrink-0 overflow-hidden rounded-[16px] border border-[#d9d0c8] bg-white shadow-[0_4px_12px_rgba(39,24,13,0.06)] sm:w-[calc((100%-0.75rem)/3)] lg:w-[calc((100%-3rem)/5)] xl:w-[calc((100%-5.25rem)/10 )]">
+    <article className="w-[188px] shrink-0 overflow-hidden rounded-[22px] border border-[#ddd3cb] bg-white shadow-[0_12px_28px_rgba(39,24,13,0.06)] sm:w-[210px] lg:w-[228px]">
       <img
         src={option.image}
         alt={option.label}
-        className="h-[104px] w-full object-cover"
+        className="h-[112px] w-full object-cover"
       />
-      <div className="p-2.5">
+      <div className="p-3">
         <p className="text-para font-semibold leading-5 text-[#1d1713]">
           {option.label}
         </p>
-        <p className="mt-1 type-para text-[#7d736b]">
+        <p className="mt-1 text-[13px] text-[#7d736b]">
           NOK {formatCurrency(option.price)}
         </p>
 
         {quantity > 0 ? (
-          <div className="mt-3 flex items-center justify-between rounded-[10px] border border-[#d8cec4] px-3 py-1.5 text-[13px] text-[#3e332b]">
+          <div className="mt-3 flex items-center justify-between rounded-[14px] border border-[#d8cec4] bg-[#fff8f3] px-3 py-2 text-[13px] font-medium text-[#3e332b]">
             <button
               type="button"
               onClick={onDecrease}
-              className="cursor-pointer px-1 text-[16px]"
+              className="cursor-pointer px-1 text-[16px] text-[#8a7364]"
             >
               -
             </button>
@@ -29,7 +29,7 @@ function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
             <button
               type="button"
               onClick={onIncrease}
-              className="cursor-pointer px-1 text-[16px]"
+              className="cursor-pointer px-1 text-[16px] text-[#cf6e38]"
             >
               +
             </button>
@@ -38,7 +38,7 @@ function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
           <button
             type="button"
             onClick={onIncrease}
-            className="mt-3 w-full cursor-pointer rounded-[10px] border border-[#ddd3c8] px-3 py-2 text-[13px] font-medium text-[#4c4037]"
+            className="mt-3 w-full cursor-pointer rounded-[14px] border border-[#ddd3c8] px-3 py-2 text-[13px] font-medium text-[#4c4037] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
           >
             Add
           </button>
@@ -56,21 +56,29 @@ export default function MenuAddOnsSection({
   onUpdateOptionalQuantity,
 }) {
   return (
-    <div className="border-t border-[#ece4dc] bg-white px-4 py-5 sm:px-5">
+    <div className="border-t border-[#ece4dc] bg-[linear-gradient(180deg,#fffdfa_0%,#fff6ef_100%)] px-4 py-4 sm:px-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-[20px] font-semibold text-[#1c1713]">Add-ons</h2>
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
+            Customize your order
+          </p>
+          <h2 className="mt-2 text-[24px] font-semibold text-[#1c1713]">Add-ons</h2>
+          <p className="mt-1 text-[14px] leading-6 text-[#6b5d53]">
+            Add extras or side items to tailor the menu for your team.
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => onScroll(-1)}
-            className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[#d8cec4] text-[#8a7e74]"
+            className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#d8cec4] bg-white text-[#8a7e74] shadow-[0_10px_18px_rgba(39,24,13,0.05)] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
           >
             &#8249;
           </button>
           <button
             type="button"
             onClick={() => onScroll(1)}
-            className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[#d8cec4] text-[#8a7e74]"
+            className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#d8cec4] bg-white text-[#8a7e74] shadow-[0_10px_18px_rgba(39,24,13,0.05)] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
           >
             &#8250;
           </button>
@@ -79,7 +87,7 @@ export default function MenuAddOnsSection({
 
       <div
         ref={addOnsSliderRef}
-        className="mt-4 flex w-full gap-3 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden"
+        className="mt-4 flex w-full gap-4 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {addOnItems.map((option) => {
