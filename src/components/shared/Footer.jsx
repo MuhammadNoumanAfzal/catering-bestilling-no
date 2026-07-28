@@ -9,6 +9,8 @@ const footerLinks = [
   { label: "Occasions", to: "/browse/occasion" },
   { label: "Vendors", to: "/vendors/featured" },
   { label: "Contact", to: "/contact" },
+  { label: "Terms", to: "/terms-and-conditions" },
+  { label: "Privacy", to: "/privacy-policy" },
 ];
 
 const socialLinks = [
@@ -107,7 +109,6 @@ export default function Footer() {
 
             <div className="mt-4 flex flex-col gap-1 text-[12px] text-[#ffd9c7] sm:flex-row sm:items-center sm:justify-between">
               <p>© 2026 Cateringbestilling</p>
-              <p>Designed for faster, calmer ordering.</p>
             </div>
           </div>
         </div>
