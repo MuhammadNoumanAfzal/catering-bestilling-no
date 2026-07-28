@@ -10,7 +10,7 @@ import {
   initialContactFormState,
   responseSteps,
 } from "../data/contactPageData";
-import { showSuccessToast } from "../../../utils/alerts";
+import { showContactRequestSubmittedAlert } from "../../../utils/alerts";
 
 export default function ContactPage() {
   const [formState, setFormState] = useState(initialContactFormState);
@@ -21,7 +21,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await showSuccessToast("Message sent successfully");
+    await showContactRequestSubmittedAlert();
     setFormState(initialContactFormState);
   };
 

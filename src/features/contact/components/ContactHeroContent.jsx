@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { FiArrowRight, FiHeadphones } from "react-icons/fi";
 
 const heroStats = [
-  { label: "Average reply", value: "< 1 day" },
+  { label: "Average reply", value: "1 day" },
   { label: "Coverage", value: "Office + private" },
   { label: "Support hours", value: "08:00-18:00" },
 ];
@@ -27,7 +27,7 @@ export default function ContactHeroContent() {
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <a
-          href="mailto:support@lunsjavtale.no"
+          href="mailto:dev@gocatering.com"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[#c86135] px-6 py-3 text-[15px] font-semibold text-white shadow-[0_18px_34px_rgba(200,97,53,0.24)] transition hover:bg-[#b5542b]"
         >
           Email support
