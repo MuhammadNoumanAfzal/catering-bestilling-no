@@ -28,6 +28,17 @@ export function showSuccessToast(title) {
   );
 }
 
+export function showContactRequestSubmittedAlert() {
+  return Swal.fire(
+    withBaseOptions({
+      icon: "success",
+      title: "Request submitted",
+      text: "Your request has been submitted successfully. Our team will review it and contact you soon.",
+      confirmButtonText: "Okay",
+    }),
+  );
+}
+
 export function showAuthErrorAlert(message, title = "Something went wrong") {
   return Swal.fire(
     withBaseOptions({

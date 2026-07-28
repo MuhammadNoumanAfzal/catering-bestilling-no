@@ -7,7 +7,7 @@ import {
 export const contactCards = [
   {
     title: "General support",
-    value: "support@lunsjavtale.no",
+    value: "dev@gocatering.com",
     description:
       "Help with bookings, delivery details, account questions, and order updates.",
     icon: FiMail,
@@ -70,6 +70,7 @@ export const contactFormTopics = [
   "Order support",
   "Vendor partnership",
   "General question",
+  "Other",
 ];
 
 export const initialContactFormState = {
