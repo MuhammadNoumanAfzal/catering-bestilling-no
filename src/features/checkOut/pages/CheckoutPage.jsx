@@ -28,6 +28,7 @@ export default function CheckoutPage() {
     hasLivePricing,
     invoiceAddresses,
     isAutofilling,
+    checkoutErrorMessage,
     isDeliveryAddressEditing,
     isInvoiceAddressEditing,
     isLoadingPricing,
@@ -59,6 +60,12 @@ export default function CheckoutPage() {
               />
 
               <div className="mt-3 space-y-3">
+                {checkoutErrorMessage ? (
+                  <div className="rounded-[12px] border border-[#f2d8cb] bg-[#fff7f2] px-3 py-3 text-[13px] text-[#9a5838]">
+                    {checkoutErrorMessage}
+                  </div>
+                ) : null}
+
                 {pricingError ? (
                   <div className="rounded-[12px] border border-[#f2dfd0] bg-[#fff8f3] px-3 py-3 text-[13px] text-[#8a5a3b]">
                     Live price preview is temporarily unavailable. You can still place your

@@ -135,8 +135,10 @@ export function useCheckoutPage() {
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isLoadingPricing, setIsLoadingPricing] = useState(false);
   const [pricingError, setPricingError] = useState("");
+  const [checkoutErrorMessage, setCheckoutErrorMessage] = useState("");
 
   const updateField = (key, value) => {
+    setCheckoutErrorMessage("");
     setFormState((current) => {
       const nextState = { ...current, [key]: value };
 
@@ -166,6 +168,7 @@ export function useCheckoutPage() {
   };
 
   const updateCartField = (key, value) => {
+    setCheckoutErrorMessage("");
     setCarts((current) =>
       current.map((cart) => ({
         ...cart,
@@ -672,9 +675,33 @@ export function useCheckoutPage() {
     });
 
     if (validationError) {
+      setCheckoutErrorMessage(validationError);
+
+      if (
+        validationError.includes("delivery address") ||
+        validationError.includes("delivery postal code") ||
+        validationError.includes("delivery city")
+      ) {
+        setIsDeliveryAddressEditing(true);
+      }
+
+      if (
+        validationError.includes("invoice address") ||
+        validationError.includes("invoice postal code") ||
+        validationError.includes("invoice city")
+      ) {
+        if (formState.invoiceSameAsDelivery) {
+          setIsDeliveryAddressEditing(true);
+        } else {
+          setIsInvoiceAddressEditing(true);
+        }
+      }
+
       await showAuthErrorAlert(validationError, "Checkout details required");
       return;
     }
+
+    setCheckoutErrorMessage("");
 
     const result = await confirmPlaceOrder();
 
@@ -747,6 +774,7 @@ export function useCheckoutPage() {
     isInvoiceAddressEditing,
     isLoadingSlots,
     isLoadingPricing,
+    checkoutErrorMessage,
     pricingError,
     isSubmittingOrder,
     normalizedType,

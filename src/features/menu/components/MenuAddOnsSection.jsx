@@ -1,6 +1,12 @@
 import { formatCurrency } from "../utils/formatters";
 
-function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
+function AddOnCard({
+  option,
+  quantity,
+  onDecrease,
+  onIncrease,
+  canAdd = true,
+}) {
   return (
     <article className="w-[188px] shrink-0 overflow-hidden rounded-[22px] border border-[#ddd3cb] bg-white shadow-[0_12px_28px_rgba(39,24,13,0.06)] sm:w-[210px] lg:w-[228px]">
       <img
@@ -21,6 +27,7 @@ function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
             <button
               type="button"
               onClick={onDecrease}
+              disabled={!canAdd}
               className="cursor-pointer px-1 text-[16px] text-[#8a7364]"
             >
               -
@@ -29,6 +36,7 @@ function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
             <button
               type="button"
               onClick={onIncrease}
+              disabled={!canAdd}
               className="cursor-pointer px-1 text-[16px] text-[#cf6e38]"
             >
               +
@@ -38,9 +46,14 @@ function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
           <button
             type="button"
             onClick={onIncrease}
-            className="mt-3 w-full cursor-pointer rounded-[14px] border border-[#ddd3c8] px-3 py-2 text-[13px] font-medium text-[#4c4037] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
+            disabled={!canAdd}
+            className={`mt-3 w-full rounded-[14px] border px-3 py-2 text-[13px] font-medium transition ${
+              canAdd
+                ? "cursor-pointer border-[#ddd3c8] text-[#4c4037] hover:border-[#cf6e38] hover:text-[#cf6e38]"
+                : "cursor-not-allowed border-[#e7ddd4] bg-[#f7f2ed] text-[#a39286]"
+            }`}
           >
-            Add
+            {canAdd ? "Add" : "Add main dish first"}
           </button>
         )}
       </div>
@@ -51,6 +64,7 @@ function AddOnCard({ option, quantity, onDecrease, onIncrease }) {
 export default function MenuAddOnsSection({
   addOnsSliderRef,
   addOnItems,
+  hasMainDishInCart = false,
   selectedOptional,
   onScroll,
   onUpdateOptionalQuantity,
@@ -66,6 +80,11 @@ export default function MenuAddOnsSection({
           <p className="mt-1 text-[14px] leading-6 text-[#6b5d53]">
             Add extras or side items to tailor the menu for your team.
           </p>
+          {!hasMainDishInCart ? (
+            <p className="mt-2 text-[13px] leading-5 text-[#9a5f3d]">
+              Select any add-ons you want, then add the main dish to cart. Add-ons cannot be ordered alone.
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -99,6 +118,7 @@ export default function MenuAddOnsSection({
               key={option.id}
               option={option}
               quantity={quantity}
+              canAdd={hasMainDishInCart}
               onDecrease={() =>
                 onUpdateOptionalQuantity(option.groupTitle, option.label, -1)
               }

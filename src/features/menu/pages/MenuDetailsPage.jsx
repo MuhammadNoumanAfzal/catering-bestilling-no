@@ -222,56 +222,6 @@ export default function MenuDetailsPage() {
     );
   }, [menuItem, vendor]);
 
-  useEffect(() => {
-    if (!menuItem || !addOnItems.length) {
-      return;
-    }
-
-    setOrderSummary((current) => {
-      if (!current) {
-        return current;
-      }
-
-      const syncedAddOnItems = Object.entries(selectedOptional)
-        .filter(([, quantity]) => quantity > 0)
-        .map(([key, quantity]) => {
-          const matchedOption = addOnItems.find(
-            (option) => `${option.groupTitle}:${option.label}` === key,
-          );
-
-          if (!matchedOption) {
-            return null;
-          }
-
-          return {
-            id: `addon-${menuItem.id}-${key}`,
-            productId: matchedOption.productId ?? matchedOption.id,
-            addOnKey: key,
-            parentMenuItemId: menuItem.id,
-            name: matchedOption.label,
-            quantity,
-            serves: quantity,
-            totalServes: quantity,
-            unitPrice: Number(matchedOption.price),
-            price: Number(matchedOption.price) * quantity,
-            pricingType: "fixed",
-            isAddOn: true,
-            details: [`Qty: ${quantity}`, "Add-on item"],
-          };
-        })
-        .filter(Boolean);
-
-      const remainingItems = current.items.filter(
-        (item) => !(item.isAddOn && item.parentMenuItemId === menuItem.id),
-      );
-
-      return {
-        ...current,
-        items: [...remainingItems, ...syncedAddOnItems],
-      };
-    });
-  }, [addOnItems, menuItem, selectedOptional]);
-
   const includedMenuItems = useMemo(() => {
     if (!menuItem || !menuItem.menuItems) {
       return [];
@@ -337,6 +287,11 @@ export default function MenuDetailsPage() {
     vendorAvailableForSelection &&
     isMenuAvailableForSelection &&
     !hasNoSlotsForSelectedDate;
+  const hasMainDishInCart = Boolean(
+    orderSummary?.items?.some(
+      (item) => !item?.isAddOn && item?.productId === menuItem?.id,
+    ),
+  );
 
   useEffect(() => {
     const deliveryDate = `${orderSummary?.deliveryDate ?? ""}`.trim();
@@ -390,6 +345,14 @@ export default function MenuDetailsPage() {
   }
 
   const updateOptionalQuantity = (groupTitle, optionLabel, delta) => {
+    if (delta > 0 && !hasMainDishInCart) {
+      showAuthErrorAlert(
+        "Please add the main dish to cart first. Add-ons cannot be ordered on their own.",
+        "Add main dish first",
+      );
+      return;
+    }
+
     if (delta > 0) {
       showSuccessToast(`${optionLabel} add-on added to cart`);
     }
@@ -463,6 +426,34 @@ export default function MenuDetailsPage() {
         : baseItemUnitPrice * quantityCount;
     const normalizedVendorNote = vendorNote.trim();
     const selectedOptions = {};
+    const syncedAddOnItems = Object.entries(selectedOptional)
+      .filter(([, quantity]) => quantity > 0)
+      .map(([key, quantity]) => {
+        const matchedOption = addOnItems.find(
+          (option) => `${option.groupTitle}:${option.label}` === key,
+        );
+
+        if (!matchedOption) {
+          return null;
+        }
+
+        return {
+          id: `addon-${menuItem.id}-${key}-${Date.now()}`,
+          productId: matchedOption.productId ?? matchedOption.id,
+          addOnKey: key,
+          parentMenuItemId: menuItem.id,
+          name: matchedOption.label,
+          quantity,
+          serves: quantity,
+          totalServes: quantity,
+          unitPrice: Number(matchedOption.price),
+          price: Number(matchedOption.price) * quantity,
+          pricingType: "fixed",
+          isAddOn: true,
+          details: [`Qty: ${quantity}`, "Add-on item"],
+        };
+      })
+      .filter(Boolean);
 
     if (selectedRequired) {
       const requiredSelectionLabel =
@@ -508,7 +499,7 @@ export default function MenuDetailsPage() {
         minimumPersons,
         Number(current.personCount ?? minimumPersons),
       ),
-      items: [summaryItem, ...current.items],
+      items: [summaryItem, ...syncedAddOnItems, ...current.items],
     }));
 
     showSuccessToast(`${itemName} added to cart`);
@@ -683,6 +674,7 @@ export default function MenuDetailsPage() {
           <MenuAddOnsSection
             addOnsSliderRef={addOnsSliderRef}
             addOnItems={addOnItems}
+            hasMainDishInCart={hasMainDishInCart}
             selectedOptional={selectedOptional}
             onScroll={scrollAddOns}
             onUpdateOptionalQuantity={updateOptionalQuantity}
