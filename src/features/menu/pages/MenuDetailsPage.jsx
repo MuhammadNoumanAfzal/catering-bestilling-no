@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FiArrowUp } from "react-icons/fi";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   getConfiguredDeliverySlotsForDate,
@@ -60,6 +61,7 @@ export default function MenuDetailsPage() {
   const [vendorOptions, setVendorOptions] = useState([]);
   const [deliverySlots, setDeliverySlots] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
   const addOnsSliderRef = useRef(null);
   const lastMenuAvailabilityAlertKeyRef = useRef("");
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
@@ -139,6 +141,19 @@ export default function MenuDetailsPage() {
 
     writeOrderSummary(vendor, orderSummary);
   }, [orderSummary, vendor]);
+
+  useEffect(() => {
+    function handleScroll() {
+      setShowScrollToTop(window.scrollY > 480);
+    }
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const date = `${orderSummary?.deliveryDate ?? ""}`.trim();
@@ -543,6 +558,13 @@ export default function MenuDetailsPage() {
     }
   };
 
+  const handleScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <section className="relative overflow-hidden px-4 py-5 md:px-6 lg:px-8">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(255,236,224,0.9),transparent_28%),radial-gradient(circle_at_top_right,rgba(244,229,215,0.82),transparent_32%),linear-gradient(180deg,#fff9f4_0%,#fffdfb_38%,#f8f1ea_100%)]" />
@@ -688,6 +710,17 @@ export default function MenuDetailsPage() {
           availableRestaurants={availableRestaurants}
           onClose={() => setIsAvailabilityPopupDismissed(true)}
         />
+      ) : null}
+
+      {showScrollToTop ? (
+        <button
+          type="button"
+          onClick={handleScrollToTop}
+          aria-label="Scroll to top"
+          className="fixed bottom-6 right-6 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#cf6e38]/20 bg-[#cf6e38] text-white shadow-[0_18px_36px_rgba(207,110,56,0.28)] transition hover:bg-[#bb602d]"
+        >
+          <FiArrowUp className="text-[20px]" />
+        </button>
       ) : null}
     </section>
   );

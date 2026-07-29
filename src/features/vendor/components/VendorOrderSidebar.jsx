@@ -39,9 +39,9 @@ function formatDateTime(date, time) {
     day: "numeric",
     month: "short",
     year: "numeric",
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour12: false,
   }).format(parsed);
 }
 
