@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   FiBell,
   FiGrid,
@@ -29,6 +29,7 @@ const homeProfileMenuItems = [
 ];
 
 export default function HomeNavbar() {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -224,6 +225,7 @@ export default function HomeNavbar() {
           ) : (
             <Link
               to="/signin"
+              state={{ from: location }}
               className="type-h6 cursor-pointer rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:opacity-90"
             >
               Sign in
@@ -365,6 +367,7 @@ export default function HomeNavbar() {
             ) : (
               <Link
                 to="/signin"
+                state={{ from: location }}
                 onClick={closeMenu}
                 className="mt-1 w-full cursor-pointer rounded-full bg-[#c85f33] px-5 py-2.5 text-center text-sm font-medium text-white transition hover:opacity-90"
               >
