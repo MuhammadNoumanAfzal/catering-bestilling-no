@@ -19,9 +19,13 @@ import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
 const homeProfileMenuItems = [
   { label: "Home", to: "/", icon: FiHome },
-  { label: "Settings", to: "/settings", icon: FiSettings },
+  { label: "Settings", to: "/vendor-dashboard/settings", icon: FiSettings },
   { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
-  ...vendorNavigationItems.filter((item) => item.to !== "/vendor-dashboard"),
+  ...vendorNavigationItems.filter(
+    (item) =>
+      item.to !== "/vendor-dashboard" &&
+      item.to !== "/vendor-dashboard/settings",
+  ),
 ];
 
 export default function HomeNavbar() {

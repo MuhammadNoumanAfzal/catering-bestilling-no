@@ -85,9 +85,6 @@ const CheckoutPage = lazy(() =>
     default: module.CheckoutPage,
   })),
 );
-const ClientSettingsPage = lazy(() =>
-  import("../../features/clientSettings/pages/ClientSettingsPage"),
-);
 const VendorDashboardHomePage = lazy(() =>
   import("../../features/vendorDashboard/pages/VendorDashboardHomePage"),
 );
@@ -151,7 +148,10 @@ export default function AppRouter() {
             <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
             <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/settings" element={<ClientSettingsPage />} />
+            <Route
+              path="/settings"
+              element={<Navigate to="/vendor-dashboard/settings" replace />}
+            />
             <Route path="/terms-and-conditions" element={<TermsPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
