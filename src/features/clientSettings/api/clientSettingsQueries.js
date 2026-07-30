@@ -4,7 +4,6 @@ export const GET_CLIENT_NOTIFICATION_SETTINGS_QUERY = `
       smsEnabled
       emailEnabled
       pushEnabled
-      orderAlertsEnabled
     }
   }
 `;

@@ -40,8 +40,8 @@ export default function ClientSettingsPage() {
             Settings
           </h1>
           <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
-            Manage how Catering bestilling.no contacts you about orders, reviews,
-            promotions, and updates.
+            Manage whether Catering bestilling.no contacts you by email, text
+            message, or push notification.
           </p>
         </div>
 

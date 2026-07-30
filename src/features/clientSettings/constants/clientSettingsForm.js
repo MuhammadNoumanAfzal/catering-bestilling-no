@@ -1,10 +1,5 @@
 export const clientSettingsInitialState = {
-  newOrders: true,
-  orderUpdates: true,
-  reviewsAndRatings: true,
-  promotionsAndTips: true,
-  emailNotifications: true,
+  emailEnabled: true,
   smsEnabled: true,
   pushEnabled: true,
-  orderAlertsEnabled: true,
 };

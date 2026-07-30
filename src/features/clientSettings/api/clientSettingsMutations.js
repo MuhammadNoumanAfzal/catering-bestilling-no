@@ -7,7 +7,6 @@ export const UPDATE_CLIENT_NOTIFICATION_SETTINGS_MUTATION = `
         smsEnabled
         emailEnabled
         pushEnabled
-        orderAlertsEnabled
       }
     }
   }
