@@ -7,9 +7,68 @@ import {
 } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
 
-function InfoCard({ icon, label, value, subvalue }) {
+const DAY_LABELS = {
+  0: "Sun",
+  1: "Mon",
+  2: "Tue",
+  3: "Wed",
+  4: "Thu",
+  5: "Fri",
+  6: "Sat",
+  su: "Sun",
+  sun: "Sun",
+  sunday: "Sun",
+  mo: "Mon",
+  mon: "Mon",
+  monday: "Mon",
+  tu: "Tue",
+  tue: "Tue",
+  tuesday: "Tue",
+  we: "Wed",
+  wed: "Wed",
+  wednesday: "Wed",
+  th: "Thu",
+  thu: "Thu",
+  thursday: "Thu",
+  fr: "Fri",
+  fri: "Fri",
+  friday: "Fri",
+  sa: "Sat",
+  sat: "Sat",
+  saturday: "Sat",
+};
+
+function normalizeTimingEntries(vendor) {
+  const rawSlots = Array.isArray(vendor?.availability?.delivery?.slots)
+    ? vendor.availability.delivery.slots
+    : [];
+
+  const slotEntries = rawSlots
+    .map((slot) => {
+      const dayKey = `${slot?.day ?? ""}`.trim().toLowerCase();
+      const dayLabel = DAY_LABELS[dayKey] ?? DAY_LABELS[slot?.day] ?? `${slot?.day ?? ""}`.trim();
+      const start = `${slot?.start ?? ""}`.trim();
+      const end = `${slot?.end ?? ""}`.trim();
+
+      if (!dayLabel || !start || !end) {
+        return null;
+      }
+
+      return `${dayLabel} ${start}-${end}`;
+    })
+    .filter(Boolean);
+
+  if (slotEntries.length > 0) {
+    return [...new Set(slotEntries)];
+  }
+
+  const fallbackLabel = `${vendor?.availability?.delivery?.label ?? ""}`.trim();
+  return fallbackLabel ? [fallbackLabel] : [];
+}
+
+function InfoCard({ icon, label, value, subvalue, className = "", children }) {
   return (
-    <div className="min-h-[126px] rounded-[24px] border border-[#ecddd1] bg-[linear-gradient(180deg,#fffdfb_0%,#fff5ed_100%)] px-4 py-4 shadow-[0_14px_32px_rgba(39,24,13,0.05)] sm:min-h-[138px] sm:px-5">
+    <div className={`min-h-[126px] rounded-[24px] border border-[#ecddd1] bg-[linear-gradient(180deg,#fffdfb_0%,#fff5ed_100%)] px-4 py-4 shadow-[0_14px_32px_rgba(39,24,13,0.05)] sm:min-h-[138px] sm:px-5 ${className}`}>
       <div className="flex items-start gap-3.5">
         <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[15px] text-[#cf6e38] shadow-[0_8px_18px_rgba(39,24,13,0.08)]">
           {icon}
@@ -26,6 +85,7 @@ function InfoCard({ icon, label, value, subvalue }) {
               {subvalue}
             </p>
           ) : null}
+          {children}
         </div>
       </div>
     </div>
@@ -43,6 +103,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
   const description =
     menuItem.description ||
     "A curated catering option prepared for dependable delivery and easy team ordering.";
+  const timingEntries = normalizeTimingEntries(vendor);
 
   return (
     <>
@@ -106,7 +167,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3.5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-6 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
         <InfoCard
           icon={<FiStar className="fill-[#f4b400] text-[#f4b400]" />}
           label="Rating"
@@ -129,8 +190,22 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
           icon={<FiClock />}
           label="Timing"
           value={vendor.leadTime || "Not available"}
-          subvalue={vendor.availability?.delivery?.label || ""}
-        />
+          className="sm:col-span-2 xl:col-span-1"
+          subvalue={timingEntries.length === 0 ? "Delivery schedule not available" : ""}
+        >
+          {timingEntries.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {timingEntries.map((entry) => (
+                <span
+                  key={entry}
+                  className="inline-flex max-w-full rounded-full border border-[#ead9cd] bg-white/90 px-3 py-1.5 text-[12px] font-medium leading-5 text-[#5d5147]"
+                >
+                  <span className="break-words">{entry}</span>
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </InfoCard>
       </div>
 
       <div className="mt-5 rounded-[24px] border border-[#efe4da] bg-white p-5 shadow-[0_14px_28px_rgba(55,34,19,0.04)] sm:p-6">
