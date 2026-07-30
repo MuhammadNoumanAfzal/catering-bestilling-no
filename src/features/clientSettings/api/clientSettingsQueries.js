@@ -1,9 +1,10 @@
-export const GET_CLIENT_SETTINGS_PROFILE_QUERY = `
-  query GetClientSettingsProfile {
-    me {
-      id
-      phone
-      notificationPreferences
+export const GET_CLIENT_NOTIFICATION_SETTINGS_QUERY = `
+  query GetUserNotificationSettings {
+    userNotificationSettings {
+      smsEnabled
+      emailEnabled
+      pushEnabled
+      orderAlertsEnabled
     }
   }
 `;

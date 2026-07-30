@@ -27,6 +27,10 @@ function readInitialClientSettings() {
       savedSettings.emailNotifications ?? clientSettingsInitialState.emailNotifications,
     smsEnabled:
       savedSettings.smsEnabled ?? clientSettingsInitialState.smsEnabled,
+    pushEnabled:
+      savedSettings.pushEnabled ?? clientSettingsInitialState.pushEnabled,
+    orderAlertsEnabled:
+      savedSettings.orderAlertsEnabled ?? clientSettingsInitialState.orderAlertsEnabled,
   };
 }
 

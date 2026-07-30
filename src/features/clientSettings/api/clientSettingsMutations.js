@@ -1,12 +1,13 @@
-export const UPDATE_CLIENT_SETTINGS_MUTATION = `
-  mutation GeneralProfileUpdate($input: UserProfileInput!) {
-    generalProfileUpdate(input: $input) {
+export const UPDATE_CLIENT_NOTIFICATION_SETTINGS_MUTATION = `
+  mutation UpdateUserNotificationSettings($input: UserNotificationSettingsInput!) {
+    updateUserNotificationSettings(input: $input) {
       success
       message
-      user {
-        id
-        phone
-        notificationPreferences
+      settings {
+        smsEnabled
+        emailEnabled
+        pushEnabled
+        orderAlertsEnabled
       }
     }
   }
