@@ -1,52 +1,29 @@
 import { clientSettingsInitialState } from "../constants/clientSettingsForm";
 
-function parseNotificationPreferences(rawValue) {
-  if (!rawValue) {
-    return {};
-  }
-
-  if (typeof rawValue === "object") {
-    return rawValue;
-  }
-
-  try {
-    return JSON.parse(rawValue);
-  } catch {
-    return {};
-  }
-}
-
-export function mapClientSettingsProfileToFormState(user) {
-  const notificationPreferences = parseNotificationPreferences(
-    user?.notificationPreferences,
-  );
-  const deliveryUpdates = notificationPreferences.deliveryUpdates ?? {};
-  const orderConfirmation = notificationPreferences.orderConfirmation ?? {};
+export function mapClientSettingsProfileToFormState(notificationSettings) {
+  const settings = notificationSettings || {};
 
   return {
     ...clientSettingsInitialState,
-    newOrders:
-      notificationPreferences.newOrders ??
-      orderConfirmation.pushNotification ??
-      clientSettingsInitialState.newOrders,
     orderUpdates:
-      notificationPreferences.orderUpdates ??
-      deliveryUpdates.pushNotification ??
+      settings.orderAlertsEnabled ??
       clientSettingsInitialState.orderUpdates,
     reviewsAndRatings:
-      notificationPreferences.reviewsAndRatings ??
       clientSettingsInitialState.reviewsAndRatings,
     promotionsAndTips:
-      notificationPreferences.promotionsAndTips ??
       clientSettingsInitialState.promotionsAndTips,
     emailNotifications:
-      notificationPreferences.emailNotifications ??
-      deliveryUpdates.email ??
+      settings.emailEnabled ??
       clientSettingsInitialState.emailNotifications,
     smsEnabled:
-      notificationPreferences.smsEnabled ??
-      deliveryUpdates.textMessage ??
+      settings.smsEnabled ??
       clientSettingsInitialState.smsEnabled,
+    pushEnabled:
+      settings.pushEnabled ??
+      clientSettingsInitialState.pushEnabled,
+    orderAlertsEnabled:
+      settings.orderAlertsEnabled ??
+      clientSettingsInitialState.orderAlertsEnabled,
   };
 }
 
