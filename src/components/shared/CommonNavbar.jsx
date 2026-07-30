@@ -13,10 +13,16 @@ import { confirmLogout, showSuccessToast } from "../../utils/alerts";
 
 const commonProfileMenuItems = [
   { label: "Home", to: "/", icon: FiHome },
-  { label: "Settings", to: "/settings", icon: FiSettings },
+  { label: "Settings", to: "/vendor-dashboard/settings", icon: FiSettings },
   { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
-  ...vendorNavigationItems.filter((item) => item.to !== "/vendor-dashboard"),
+  ...vendorNavigationItems.filter(
+    (item) =>
+      item.to !== "/vendor-dashboard" &&
+      item.to !== "/vendor-dashboard/settings",
+  ),
 ];
+
+const guestMenuItems = [{ label: "Home", to: "/", icon: FiHome }];
 
 const DEFAULT_SEARCH_ROUTE = "/vendors/all";
 const DEFAULT_FILTER_ROUTE = "/";
@@ -214,6 +220,7 @@ export default function CommonNavbar({
   const eventLabel = formatEventLabel(attendeeCount, eventName);
   const hasDeliverySelection = Boolean(deliveryDate || deliveryTime);
   const hasEventSelection = Boolean(attendeeCount > 0 || eventName.trim());
+  const actionMenuItems = isLoggedIn ? commonProfileMenuItems : guestMenuItems;
 
   const applyDeliverySelection = () => {
     setDeliveryDate(draftDate);
@@ -371,7 +378,7 @@ export default function CommonNavbar({
           isActionMenuOpen={isActionMenuOpen}
           isLoggedIn={isLoggedIn}
           isNotificationOpen={isNotificationOpen}
-          menuItems={commonProfileMenuItems}
+          menuItems={actionMenuItems}
           notifications={notifications}
           notificationRef={notificationRef}
           onNotificationClick={(notification) =>

@@ -96,7 +96,7 @@ export default function CommonNavbarActions({
           </button>
 
           {isActionMenuOpen ? (
-            <div className="absolute right-0 top-[calc(100%+10px)] z-50 min-w-[220px] rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)]">
+            <div className="absolute right-0 top-[calc(100%+10px)] z-50 max-h-[min(70vh,calc(100vh-96px))] min-w-[220px] overflow-y-auto rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)]">
               <div className="space-y-1">
                 {menuItems.map((item) => {
                   const Icon = item.icon;
