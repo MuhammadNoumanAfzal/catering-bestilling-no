@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiGrid, FiHome, FiSettings } from "react-icons/fi";
 import CommonNavbarActions from "./navbar/CommonNavbarActions";
 import CommonNavbarFilters from "./navbar/CommonNavbarFilters";
-import { formatNavbarDate } from "./navbar/navbarDateUtils";
+import { formatNavbarDate, isPastDate } from "./navbar/navbarDateUtils";
 import useUserNotifications from "./navbar/useUserNotifications";
 import useNavbarCartSummary from "./navbar/useNavbarCartSummary";
 import { useAuth } from "../../features/auth";
@@ -57,6 +57,18 @@ function resolveNavbarSearchRoute(pathname) {
 
 function shouldPreserveSearchParams(pathname) {
   return (
+    pathname.startsWith("/browse/food-type") ||
+    pathname.startsWith("/browse/occasion") ||
+    pathname.startsWith("/vendors/all") ||
+    pathname.startsWith("/vendors/featured") ||
+    pathname.startsWith("/vendors/popular") ||
+    pathname.startsWith("/products/popular")
+  );
+}
+
+function shouldNavigateForNavbarFilters(pathname) {
+  return (
+    pathname === "/" ||
     pathname.startsWith("/browse/food-type") ||
     pathname.startsWith("/browse/occasion") ||
     pathname.startsWith("/vendors/all") ||
@@ -175,7 +187,7 @@ export default function CommonNavbar({
       const nextDropdown = current === key ? null : key;
 
       if (nextDropdown === "delivery") {
-        const nextDate = deliveryDate ?? null;
+        const nextDate = isPastDate(deliveryDate) ? null : (deliveryDate ?? null);
         const monthSource = nextDate ?? new Date();
         setDraftDate(nextDate);
         setDraftTime(deliveryTime);
@@ -223,9 +235,16 @@ export default function CommonNavbar({
   const actionMenuItems = isLoggedIn ? commonProfileMenuItems : guestMenuItems;
 
   const applyDeliverySelection = () => {
-    setDeliveryDate(draftDate);
+    const nextDeliveryDate = isPastDate(draftDate) ? null : draftDate;
+
+    setDeliveryDate(nextDeliveryDate);
     setDeliveryTime(draftTime);
     setOpenDropdown(null);
+
+    if (!shouldNavigateForNavbarFilters(location.pathname)) {
+      return;
+    }
+
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
       search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
@@ -236,6 +255,11 @@ export default function CommonNavbar({
     setAttendeeCount(draftAttendeeCount);
     setEventName(draftEventName.trim());
     setOpenDropdown(null);
+
+    if (!shouldNavigateForNavbarFilters(location.pathname)) {
+      return;
+    }
+
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
       search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
@@ -248,6 +272,11 @@ export default function CommonNavbar({
     setDeliveryDate(null);
     setDeliveryTime("");
     setOpenDropdown(null);
+
+    if (!shouldNavigateForNavbarFilters(location.pathname)) {
+      return;
+    }
+
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
       search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
@@ -261,6 +290,11 @@ export default function CommonNavbar({
     setAttendeeCount(0);
     setEventName("");
     setOpenDropdown(null);
+
+    if (!shouldNavigateForNavbarFilters(location.pathname)) {
+      return;
+    }
+
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
       search: shouldPreserveSearchParams(location.pathname) ? location.search : "",

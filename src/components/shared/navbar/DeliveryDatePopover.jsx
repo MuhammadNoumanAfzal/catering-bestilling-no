@@ -3,7 +3,13 @@ import {
   FiArrowRight,
   FiChevronDown,
 } from "react-icons/fi";
-import { getMonthDays, isSameDay, weekdayLabels } from "./navbarDateUtils";
+import {
+  getMonthDays,
+  getTodayStart,
+  isPastDate,
+  isSameDay,
+  weekdayLabels,
+} from "./navbarDateUtils";
 import PreferredTimePicker from "../PreferredTimePicker";
 
 export default function DeliveryDatePopover({
@@ -21,6 +27,14 @@ export default function DeliveryDatePopover({
     month: "long",
     year: "numeric",
   });
+  const today = getTodayStart();
+  const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const calendarMonthStart = new Date(
+    calendarMonth.getFullYear(),
+    calendarMonth.getMonth(),
+    1,
+  );
+  const previousMonthDisabled = calendarMonthStart <= currentMonthStart;
 
   return (
     <div className="absolute left-[108px] top-[calc(100%+10px)] z-50 max-h-[calc(100vh-96px)] w-[330px] overflow-y-auto rounded-[22px] border border-[#e6ded4] bg-white p-4 shadow-[0_18px_60px_rgba(26,18,9,0.18)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -54,8 +68,13 @@ export default function DeliveryDatePopover({
           <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => onMonthChange(-1)}
-              className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-black transition hover:bg-[#f4efe9]"
+              onClick={() => {
+                if (!previousMonthDisabled) {
+                  onMonthChange(-1);
+                }
+              }}
+              disabled={previousMonthDisabled}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full text-black transition hover:bg-[#f4efe9] disabled:cursor-not-allowed disabled:text-[#d2c8be] disabled:hover:bg-transparent"
               aria-label="Previous month"
             >
               <FiArrowLeft className="text-[14px]" />
@@ -86,13 +105,20 @@ export default function DeliveryDatePopover({
               <button
                 key={date.toISOString()}
                 type="button"
-                onClick={() =>
-                  onDateSelect(isSameDay(date, draftDate) ? null : date)
-                }
-                className={`mx-auto inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-[13px] transition ${
+                onClick={() => {
+                  if (!isPastDate(date)) {
+                    onDateSelect(isSameDay(date, draftDate) ? null : date);
+                  }
+                }}
+                disabled={isPastDate(date)}
+                className={`mx-auto inline-flex h-7 w-7 items-center justify-center rounded-full text-[13px] transition ${
                   isSameDay(date, draftDate)
                     ? "bg-[#d56d41] font-semibold text-white"
-                    : "text-[#2b2b2b] hover:bg-[#f4efe9]"
+                    : isPastDate(date)
+                      ? "cursor-not-allowed text-[#d8cec4]"
+                      : isSameDay(date, today)
+                        ? "font-semibold text-[#c85f33] hover:bg-[#fff1e8]"
+                        : "cursor-pointer text-[#2b2b2b] hover:bg-[#f4efe9]"
                 }`}
               >
                 {date.getDate()}
