@@ -1,13 +1,42 @@
-const DAY_MAP = { su: 0, mo: 1, tu: 2, we: 3, th: 4, fr: 5, sa: 6 };
+const DAY_MAP = {
+  su: 0,
+  sun: 0,
+  sunday: 0,
+  mo: 1,
+  mon: 1,
+  monday: 1,
+  tu: 2,
+  tue: 2,
+  tuesday: 2,
+  we: 3,
+  wed: 3,
+  wednesday: 3,
+  th: 4,
+  thu: 4,
+  thursday: 4,
+  fr: 5,
+  fri: 5,
+  friday: 5,
+  sa: 6,
+  sat: 6,
+  saturday: 6,
+};
 const DAY_NAMES_SHORT = {
+  su: "Sun",
   mo: "Mon",
   tu: "Tue",
   we: "Wed",
   th: "Thu",
   fr: "Fri",
   sa: "Sat",
-  su: "Sun",
 };
+const DAY_CODE_BY_INDEX = ["su", "mo", "tu", "we", "th", "fr", "sa"];
+
+function normalizeDayCode(day) {
+  const normalized = `${day ?? ""}`.trim().toLowerCase();
+  const dayIndex = DAY_MAP[normalized];
+  return dayIndex === undefined ? "" : DAY_CODE_BY_INDEX[dayIndex];
+}
 
 function slugify(text) {
   return String(text)
@@ -35,18 +64,21 @@ function formatDaysRange(days) {
   }
 
   const capitalized = days.map(
-    (day) => DAY_NAMES_SHORT[day.toLowerCase()] || day,
+    (day) => DAY_NAMES_SHORT[normalizeDayCode(day)] || `${day}`,
   );
+
+  const normalizedIndices = days
+    .map((day) => DAY_MAP[`${day}`.trim().toLowerCase()])
+    .filter((value) => value !== undefined);
 
   if (capitalized.length <= 2) {
     return capitalized.join(", ");
   }
 
-  const indices = days.map((day) => DAY_MAP[day.toLowerCase()]);
   let isConsecutive = true;
 
-  for (let index = 1; index < indices.length; index += 1) {
-    if (indices[index] !== indices[index - 1] + 1) {
+  for (let index = 1; index < normalizedIndices.length; index += 1) {
+    if (normalizedIndices[index] !== normalizedIndices[index - 1] + 1) {
       isConsecutive = false;
       break;
     }
@@ -74,11 +106,11 @@ function isPrimaryMenuProduct(product) {
 }
 
 function normalizeDeliverySlot(slot) {
-  const day = `${slot?.day ?? ""}`.trim().toLowerCase();
+  const day = normalizeDayCode(slot?.day);
   const start = `${slot?.start ?? ""}`.trim();
   const end = `${slot?.end ?? ""}`.trim();
 
-  if (!day || !start || !end) {
+  if (!start || !end) {
     return null;
   }
 
@@ -175,6 +207,8 @@ export function adaptApiVendorToProfile(apiVendor) {
 
   const deliveryDays = Array.isArray(apiVendor.deliverySettings?.deliveryDays)
     ? apiVendor.deliverySettings.deliveryDays
+      .map((day) => normalizeDayCode(day))
+      .filter(Boolean)
     : [];
   const deliverySlots = Array.isArray(apiVendor.deliverySettings?.deliveryTimeSlots)
     ? apiVendor.deliverySettings.deliveryTimeSlots
@@ -182,7 +216,7 @@ export function adaptApiVendorToProfile(apiVendor) {
       .filter(Boolean)
     : [];
   const deliveryDayIndexes = deliveryDays
-    .map((day) => DAY_MAP[day.toLowerCase()])
+    .map((day) => DAY_MAP[day])
     .filter((value) => value !== undefined);
 
   let deliveryStart = "";
@@ -199,12 +233,16 @@ export function adaptApiVendorToProfile(apiVendor) {
   const deliverySlotsLabel = deliverySlots
     .map((slot) => {
       const dayName = DAY_NAMES_SHORT[slot.day] || slot.day;
-      return `${dayName}: ${slot.start} - ${slot.end}`;
+      return dayName
+        ? `${dayName}: ${slot.start} - ${slot.end}`
+        : `${slot.start} - ${slot.end}`;
     })
-    .join(", ");
+    .join(" | ");
   const deliveryLabel =
-    deliveryDaysLabel && deliverySlotsLabel
-      ? `${deliveryDaysLabel}: ${deliverySlotsLabel}`
+    deliverySlotsLabel
+      ? deliveryDaysLabel
+        ? `${deliveryDaysLabel}: ${deliverySlotsLabel}`
+        : deliverySlotsLabel
       : "Delivery schedule not set";
 
   const businessHours = apiVendor.businessSettings?.businessHours || [];

@@ -51,7 +51,33 @@ function createSlotLabel(start, end) {
 }
 
 function normalizeSlotDay(day) {
-  return `${day ?? ""}`.trim().toLowerCase();
+  const normalized = `${day ?? ""}`.trim().toLowerCase();
+
+  switch (normalized) {
+    case "sun":
+    case "sunday":
+      return "su";
+    case "mon":
+    case "monday":
+      return "mo";
+    case "tue":
+    case "tuesday":
+      return "tu";
+    case "wed":
+    case "wednesday":
+      return "we";
+    case "thu":
+    case "thursday":
+      return "th";
+    case "fri":
+    case "friday":
+      return "fr";
+    case "sat":
+    case "saturday":
+      return "sa";
+    default:
+      return normalized;
+  }
 }
 
 function getSelectedDayCode(date) {
