@@ -8,10 +8,9 @@ import { GET_CLIENT_NOTIFICATION_SETTINGS_QUERY } from "./clientSettingsQueries"
 
 function buildNotificationSettingsInput(formState) {
   return {
-    emailEnabled: Boolean(formState.emailNotifications),
+    emailEnabled: Boolean(formState.emailEnabled),
     smsEnabled: Boolean(formState.smsEnabled),
     pushEnabled: Boolean(formState.pushEnabled),
-    orderAlertsEnabled: Boolean(formState.orderUpdates),
   };
 }
 

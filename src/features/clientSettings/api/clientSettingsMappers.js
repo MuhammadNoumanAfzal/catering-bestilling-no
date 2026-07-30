@@ -5,25 +5,15 @@ export function mapClientSettingsProfileToFormState(notificationSettings) {
 
   return {
     ...clientSettingsInitialState,
-    orderUpdates:
-      settings.orderAlertsEnabled ??
-      clientSettingsInitialState.orderUpdates,
-    reviewsAndRatings:
-      clientSettingsInitialState.reviewsAndRatings,
-    promotionsAndTips:
-      clientSettingsInitialState.promotionsAndTips,
-    emailNotifications:
+    emailEnabled:
       settings.emailEnabled ??
-      clientSettingsInitialState.emailNotifications,
+      clientSettingsInitialState.emailEnabled,
     smsEnabled:
       settings.smsEnabled ??
       clientSettingsInitialState.smsEnabled,
     pushEnabled:
       settings.pushEnabled ??
       clientSettingsInitialState.pushEnabled,
-    orderAlertsEnabled:
-      settings.orderAlertsEnabled ??
-      clientSettingsInitialState.orderAlertsEnabled,
   };
 }
 

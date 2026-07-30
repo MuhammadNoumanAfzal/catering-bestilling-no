@@ -15,22 +15,12 @@ function readInitialClientSettings() {
 
   return {
     ...clientSettingsInitialState,
-    newOrders:
-      savedSettings.newOrders ?? clientSettingsInitialState.newOrders,
-    orderUpdates:
-      savedSettings.orderUpdates ?? clientSettingsInitialState.orderUpdates,
-    reviewsAndRatings:
-      savedSettings.reviewsAndRatings ?? clientSettingsInitialState.reviewsAndRatings,
-    promotionsAndTips:
-      savedSettings.promotionsAndTips ?? clientSettingsInitialState.promotionsAndTips,
-    emailNotifications:
-      savedSettings.emailNotifications ?? clientSettingsInitialState.emailNotifications,
+    emailEnabled:
+      savedSettings.emailEnabled ?? clientSettingsInitialState.emailEnabled,
     smsEnabled:
       savedSettings.smsEnabled ?? clientSettingsInitialState.smsEnabled,
     pushEnabled:
       savedSettings.pushEnabled ?? clientSettingsInitialState.pushEnabled,
-    orderAlertsEnabled:
-      savedSettings.orderAlertsEnabled ?? clientSettingsInitialState.orderAlertsEnabled,
   };
 }
 
