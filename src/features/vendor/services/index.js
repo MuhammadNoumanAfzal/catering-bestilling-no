@@ -1,4 +1,5 @@
 export {
+  filterDeliverySlotsForDate,
   filterItemsByVendorLocation,
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,

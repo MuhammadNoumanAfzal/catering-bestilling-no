@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
+  filterDeliverySlotsForDate,
   getConfiguredDeliverySlotsForDate,
   fetchVendorProfiles,
   getAvailableVendorsForSlot,
@@ -174,9 +175,11 @@ export default function MenuDetailsPage() {
           vendorId,
           date,
         });
+        const filteredLiveSlots = filterDeliverySlotsForDate(nextSlots, vendor, date);
         const fallbackSlots =
-          nextSlots.length === 0 ? getConfiguredDeliverySlotsForDate(vendor, date) : [];
-        const resolvedSlots = nextSlots.length > 0 ? nextSlots : fallbackSlots;
+          filteredLiveSlots.length === 0 ? getConfiguredDeliverySlotsForDate(vendor, date) : [];
+        const resolvedSlots =
+          filteredLiveSlots.length > 0 ? filteredLiveSlots : fallbackSlots;
 
         if (isCancelled) {
           return;

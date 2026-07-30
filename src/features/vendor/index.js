@@ -9,6 +9,7 @@ export {
   fetchVendors,
 } from "./api";
 export {
+  filterDeliverySlotsForDate,
   filterItemsByVendorLocation,
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,

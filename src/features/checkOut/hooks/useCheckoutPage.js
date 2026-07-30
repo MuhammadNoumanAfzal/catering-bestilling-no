@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../auth";
-import { getConfiguredDeliverySlotsForDate } from "../../vendor";
+import {
+  filterDeliverySlotsForDate,
+  getConfiguredDeliverySlotsForDate,
+} from "../../vendor";
 import {
   clearAllStoredOrderSummaries,
   clearStoredOrderSummary,
@@ -435,11 +438,18 @@ export function useCheckoutPage() {
           vendorId: primaryVendorId,
           date,
         });
+        const primaryVendor = carts[0]?.vendor;
+        const filteredLiveSlots = filterDeliverySlotsForDate(
+          slots,
+          primaryVendor,
+          date,
+        );
         const fallbackSlots =
-          slots.length === 0
-            ? getConfiguredDeliverySlotsForDate(carts[0]?.vendor, date)
+          filteredLiveSlots.length === 0
+            ? getConfiguredDeliverySlotsForDate(primaryVendor, date)
             : [];
-        const resolvedSlots = slots.length > 0 ? slots : fallbackSlots;
+        const resolvedSlots =
+          filteredLiveSlots.length > 0 ? filteredLiveSlots : fallbackSlots;
 
         if (!isCancelled) {
           setDeliverySlots(resolvedSlots);

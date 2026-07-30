@@ -236,3 +236,39 @@ export function getConfiguredDeliverySlotsForDate(vendor, date) {
       remainingCapacity: 9999,
     }));
 }
+
+export function filterDeliverySlotsForDate(slots, vendor, date) {
+  const normalizedSlots = Array.isArray(slots) ? slots : [];
+
+  if (normalizedSlots.length === 0) {
+    return [];
+  }
+
+  const configuredSlots = getConfiguredDeliverySlotsForDate(vendor, date);
+
+  if (configuredSlots.length === 0) {
+    return [];
+  }
+
+  const allowedRanges = new Set(
+    configuredSlots.map((slot) => `${slot.start}-${slot.end}`),
+  );
+
+  const seenRanges = new Set();
+
+  return normalizedSlots
+    .filter((slot) => {
+      const rangeKey = `${slot?.start ?? ""}-${slot?.end ?? ""}`;
+
+      if (!allowedRanges.has(rangeKey) || seenRanges.has(rangeKey)) {
+        return false;
+      }
+
+      seenRanges.add(rangeKey);
+      return true;
+    })
+    .map((slot) => ({
+      ...slot,
+      label: createSlotLabel(slot.start, slot.end),
+    }));
+}
