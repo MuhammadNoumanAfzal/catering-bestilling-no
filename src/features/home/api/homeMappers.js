@@ -5,7 +5,29 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, "");
 }
 
-const DAY_MAP = { su: 0, mo: 1, tu: 2, we: 3, th: 4, fr: 5, sa: 6 };
+const DAY_MAP = {
+  su: 0,
+  sun: 0,
+  sunday: 0,
+  mo: 1,
+  mon: 1,
+  monday: 1,
+  tu: 2,
+  tue: 2,
+  tuesday: 2,
+  we: 3,
+  wed: 3,
+  wednesday: 3,
+  th: 4,
+  thu: 4,
+  thursday: 4,
+  fr: 5,
+  fri: 5,
+  friday: 5,
+  sa: 6,
+  sat: 6,
+  saturday: 6,
+};
 
 function extractCityFromAddress(address) {
   const segments = `${address ?? ""}`

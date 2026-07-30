@@ -20,6 +20,7 @@ export const FETCH_VENDORS_QUERY = `
             pickupInstructions
             deliveryDays
             deliveryTimeSlots {
+              day
               start
               end
             }
@@ -132,6 +133,7 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
         pickupInstructions
         deliveryDays
         deliveryTimeSlots {
+          day
           start
           end
         }
