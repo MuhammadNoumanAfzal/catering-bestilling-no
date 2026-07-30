@@ -66,26 +66,73 @@ function normalizeTimingEntries(vendor) {
   return fallbackLabel ? [fallbackLabel] : [];
 }
 
-function InfoCard({ icon, label, value, subvalue, className = "", children }) {
+function MetricCard({ icon, label, value, subvalue }) {
   return (
-    <div className={`min-h-[126px] rounded-[24px] border border-[#ecddd1] bg-[linear-gradient(180deg,#fffdfb_0%,#fff5ed_100%)] px-4 py-4 shadow-[0_14px_32px_rgba(39,24,13,0.05)] sm:min-h-[138px] sm:px-5 ${className}`}>
-      <div className="flex items-start gap-3.5">
-        <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[15px] text-[#cf6e38] shadow-[0_8px_18px_rgba(39,24,13,0.08)]">
+    <div className="rounded-[24px] border border-[#eadfd5] bg-white p-4 shadow-[0_14px_30px_rgba(55,34,19,0.05)] sm:p-5">
+      <div className="flex items-start gap-3">
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] bg-[linear-gradient(180deg,#fff4ec_0%,#fff8f4_100%)] text-[15px] text-[#cf6e38] shadow-[0_10px_18px_rgba(207,110,56,0.12)]">
           {icon}
         </span>
-        <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#947867]">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9b7a66]">
             {label}
           </p>
-          <p className="mt-2 text-[16px] font-semibold leading-6 text-[#111111] sm:text-[17px]">
+          <p className="mt-2 text-[20px] font-semibold leading-6 tracking-[-0.03em] text-[#17120f]">
             {value}
           </p>
           {subvalue ? (
-            <p className="mt-1.5 text-[12px] leading-5 text-[#5d5147] sm:text-[13px]">
+            <p className="mt-2 text-[13px] leading-6 text-[#66584d]">
               {subvalue}
             </p>
           ) : null}
-          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TimingPanel({ leadTime, entries }) {
+  return (
+    <div className="rounded-[28px] border border-[#e8ddd3] bg-[linear-gradient(135deg,#fffaf6_0%,#fff4eb_100%)] p-4 shadow-[0_18px_36px_rgba(55,34,19,0.05)] sm:p-5">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="max-w-xl">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-[18px] bg-white text-[18px] text-[#cf6e38] shadow-[0_10px_20px_rgba(55,34,19,0.08)]">
+              <FiClock />
+            </span>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9b7a66]">
+                Timing
+              </p>
+              <p className="mt-1 text-[24px] font-semibold tracking-[-0.04em] text-[#17120f] sm:text-[28px]">
+                {leadTime || "Not available"}
+              </p>
+            </div>
+          </div>
+          <p className="mt-3 text-[13px] leading-6 text-[#66584d] sm:text-[14px]">
+            Delivery windows are shown below so customers can quickly understand when this vendor is available.
+          </p>
+        </div>
+
+        <div className="w-full lg:max-w-[520px]">
+          {entries.length ? (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {entries.map((entry) => (
+                <div
+                  key={entry}
+                  className="rounded-[18px] border border-[#ead8ca] bg-white px-4 py-3 shadow-[0_8px_18px_rgba(55,34,19,0.04)]"
+                >
+                  <p className="text-[14px] font-semibold leading-6 text-[#2a211b] break-words">
+                    {entry}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[20px] border border-dashed border-[#e1d4c7] bg-white/80 px-4 py-5 text-[14px] font-medium text-[#77685e]">
+              Delivery schedule not available.
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -167,45 +214,29 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
-        <InfoCard
+      <div className="mt-6 grid gap-3.5 md:grid-cols-3">
+        <MetricCard
           icon={<FiStar className="fill-[#f4b400] text-[#f4b400]" />}
           label="Rating"
           value={`${vendor.rating} / 5`}
           subvalue={vendor.reviewCount ? `${vendor.reviewCount} reviews` : ""}
         />
-        <InfoCard
+        <MetricCard
           icon={<FiMapPin />}
           label="Location"
           value={vendor.city || vendor.addressLine || "Not available"}
           subvalue={vendor.addressLine || ""}
         />
-        <InfoCard
+        <MetricCard
           icon={<FiTruck />}
           label="Delivery"
           value={vendor.deliveryFee ? vendor.deliveryFee.replace(" fee", "").trim() : "Not available"}
           subvalue="Visible before checkout"
         />
-        <InfoCard
-          icon={<FiClock />}
-          label="Timing"
-          value={vendor.leadTime || "Not available"}
-          className="sm:col-span-2 xl:col-span-1"
-          subvalue={timingEntries.length === 0 ? "Delivery schedule not available" : ""}
-        >
-          {timingEntries.length > 0 ? (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {timingEntries.map((entry) => (
-                <span
-                  key={entry}
-                  className="inline-flex max-w-full rounded-full border border-[#ead9cd] bg-white/90 px-3 py-1.5 text-[12px] font-medium leading-5 text-[#5d5147]"
-                >
-                  <span className="break-words">{entry}</span>
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </InfoCard>
+      </div>
+
+      <div className="mt-4">
+        <TimingPanel entries={timingEntries} leadTime={vendor.leadTime} />
       </div>
 
       <div className="mt-5 rounded-[24px] border border-[#efe4da] bg-white p-5 shadow-[0_14px_28px_rgba(55,34,19,0.04)] sm:p-6">
