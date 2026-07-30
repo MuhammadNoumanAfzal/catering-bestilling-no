@@ -1,5 +1,30 @@
 export const weekdayLabels = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
+export function getTodayStart() {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
+export function isPastDate(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  return date < getTodayStart();
+}
+
+export function isBeforeCurrentMonth(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return false;
+  }
+
+  const today = getTodayStart();
+  const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const targetMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+
+  return targetMonth < currentMonth;
+}
+
 export function getMonthDays(viewDate) {
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
