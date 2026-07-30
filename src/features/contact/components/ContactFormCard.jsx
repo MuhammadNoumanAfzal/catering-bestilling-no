@@ -1,5 +1,4 @@
 import { FiClock, FiMessageSquare, FiSend } from "react-icons/fi";
-import { contactFormTopics } from "../data/contactPageData";
 
 function ContactFieldLabel({ children }) {
   return (
@@ -13,14 +12,26 @@ function ContactInput({ className = "", ...props }) {
   return (
     <input
       {...props}
-      className={`h-12 w-full rounded-[16px] border border-[#dfd1c4] bg-white px-4 text-[15px] text-[#2a2520] outline-none transition placeholder:text-[#aa9b8e] focus:border-[#c86135] ${className}`}
+      className={`h-12 w-full rounded-[16px] border border-[#dfd1c4] bg-white px-4 text-[15px] text-[#2a2520] outline-none transition placeholder:text-[#aa9b8e] focus:border-[#c86135] disabled:cursor-not-allowed disabled:bg-[#f8f3ee] ${className}`}
     />
   );
 }
 
+function ContactFieldError({ message }) {
+  if (!message) {
+    return null;
+  }
+
+  return <p className="mt-2 text-sm text-[#b84c23]">{message}</p>;
+}
+
 export default function ContactFormCard({
+  fieldErrors = {},
   formState,
+  isLoadingTopics = false,
+  isSubmitting = false,
   onSubmit,
+  topics = [],
   updateField,
 }) {
   return (
@@ -50,8 +61,10 @@ export default function ContactFormCard({
                 value={formState.name}
                 onChange={(event) => updateField("name", event.target.value)}
                 placeholder="Alex Johnson"
+                disabled={isSubmitting}
                 required
               />
+              <ContactFieldError message={fieldErrors.name} />
             </label>
 
             <label className="block">
@@ -61,8 +74,10 @@ export default function ContactFormCard({
                 value={formState.email}
                 onChange={(event) => updateField("email", event.target.value)}
                 placeholder="alex@company.com"
+                disabled={isSubmitting}
                 required
               />
+              <ContactFieldError message={fieldErrors.email} />
             </label>
           </div>
 
@@ -74,7 +89,9 @@ export default function ContactFormCard({
                 value={formState.company}
                 onChange={(event) => updateField("company", event.target.value)}
                 placeholder="Lunsjavtale Studio"
+                disabled={isSubmitting}
               />
+              <ContactFieldError message={fieldErrors.company} />
             </label>
 
             <label className="block">
@@ -84,7 +101,9 @@ export default function ContactFormCard({
                 value={formState.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
                 placeholder="+47 000 00 000"
+                disabled={isSubmitting}
               />
+              <ContactFieldError message={fieldErrors.phone} />
             </label>
           </div>
 
@@ -93,12 +112,19 @@ export default function ContactFormCard({
             <select
               value={formState.topic}
               onChange={(event) => updateField("topic", event.target.value)}
-              className="h-12 w-full rounded-[16px] border border-[#dfd1c4] bg-white px-4 text-[15px] text-[#2a2520] outline-none transition focus:border-[#c86135]"
+              disabled={isSubmitting || isLoadingTopics}
+              className="h-12 w-full rounded-[16px] border border-[#dfd1c4] bg-white px-4 text-[15px] text-[#2a2520] outline-none transition focus:border-[#c86135] disabled:cursor-not-allowed disabled:bg-[#f8f3ee]"
             >
-              {contactFormTopics.map((topic) => (
-                <option key={topic}>{topic}</option>
+              {topics.map((topic) => (
+                <option
+                  key={topic.id ?? topic}
+                  value={topic.id ?? topic}
+                >
+                  {topic.label ?? topic}
+                </option>
               ))}
             </select>
+            <ContactFieldError message={fieldErrors.topic} />
           </label>
 
           <label className="block">
@@ -107,9 +133,11 @@ export default function ContactFormCard({
               value={formState.message}
               onChange={(event) => updateField("message", event.target.value)}
               placeholder="Tell us your event date, headcount, preferred cuisine, delivery location, or any issue you need help with."
-              className="min-h-[150px] w-full rounded-[20px] border border-[#dfd1c4] bg-white px-4 py-3 text-[15px] leading-7 text-[#2a2520] outline-none transition placeholder:text-[#aa9b8e] focus:border-[#c86135]"
+              disabled={isSubmitting}
+              className="min-h-[150px] w-full rounded-[20px] border border-[#dfd1c4] bg-white px-4 py-3 text-[15px] leading-7 text-[#2a2520] outline-none transition placeholder:text-[#aa9b8e] focus:border-[#c86135] disabled:cursor-not-allowed disabled:bg-[#f8f3ee]"
               required
             />
+            <ContactFieldError message={fieldErrors.message} />
           </label>
 
           <div className="flex flex-col gap-3 border-t border-[#eee2d8] pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -119,9 +147,10 @@ export default function ContactFormCard({
             </p>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#201b17] px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-[#342b24]"
+              disabled={isSubmitting}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#201b17] px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-[#342b24] disabled:cursor-not-allowed disabled:bg-[#7b736c]"
             >
-              Send message
+              {isSubmitting ? "Sending..." : "Send message"}
               <FiSend className="text-[16px]" />
             </button>
           </div>

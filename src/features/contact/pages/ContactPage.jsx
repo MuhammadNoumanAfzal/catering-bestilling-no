@@ -5,24 +5,154 @@ import ContactHeroContent from "../components/ContactHeroContent";
 import ContactInfoCards from "../components/ContactInfoCards";
 import ContactProcessSection from "../components/ContactProcessSection";
 import {
+  fetchContactPrefill,
+  fetchContactTopics,
+  submitContactInquiry,
+} from "../api/contactService";
+import {
   contactCards,
+  contactFormTopics,
   faqItems,
   initialContactFormState,
   responseSteps,
 } from "../data/contactPageData";
-import { showContactRequestSubmittedAlert } from "../../../utils/alerts";
+import {
+  showAuthErrorAlert,
+  showContactRequestSubmittedAlert,
+} from "../../../utils/alerts";
+
+function buildFallbackTopics() {
+  return contactFormTopics.map((topic) => ({
+    id: topic,
+    label: topic,
+  }));
+}
 
 export default function ContactPage() {
   const [formState, setFormState] = useState(initialContactFormState);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [topics, setTopics] = useState(buildFallbackTopics);
+  const [isLoadingTopics, setIsLoadingTopics] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [prefillState, setPrefillState] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadContactPageDependencies() {
+      try {
+        const [loadedTopics, prefillData] = await Promise.allSettled([
+          fetchContactTopics(),
+          fetchContactPrefill(),
+        ]);
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (
+          loadedTopics.status === "fulfilled" &&
+          Array.isArray(loadedTopics.value) &&
+          loadedTopics.value.length > 0
+        ) {
+          setTopics(loadedTopics.value);
+          setFormState((current) => ({
+            ...current,
+            topic:
+              loadedTopics.value.some(
+                (topic) => (topic.id ?? topic) === current.topic,
+              )
+                ? current.topic
+                : loadedTopics.value[0]?.id ??
+                  loadedTopics.value[0]?.label ??
+                  current.topic,
+          }));
+        } else {
+          setTopics(buildFallbackTopics());
+        }
+
+        if (prefillData.status === "fulfilled" && prefillData.value) {
+          setPrefillState(prefillData.value);
+          setFormState((current) => ({
+            ...current,
+            name: prefillData.value.name || current.name,
+            email: prefillData.value.email || current.email,
+            company: prefillData.value.company || current.company,
+            phone: prefillData.value.phone || current.phone,
+          }));
+        }
+      } catch {
+        if (isMounted) {
+          setTopics(buildFallbackTopics());
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingTopics(false);
+        }
+      }
+    }
+
+    loadContactPageDependencies();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const updateField = (key, value) => {
+    setFieldErrors((current) => {
+      if (!current[key]) {
+        return current;
+      }
+
+      const nextErrors = { ...current };
+      delete nextErrors[key];
+      return nextErrors;
+    });
     setFormState((current) => ({ ...current, [key]: value }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await showContactRequestSubmittedAlert();
-    setFormState(initialContactFormState);
+    setIsSubmitting(true);
+    setFieldErrors({});
+
+    try {
+      const result = await submitContactInquiry(formState);
+
+      if (!result.success && result.errorType === "validation") {
+        setFieldErrors(result.errors || {});
+        return;
+      }
+
+      if (!result.success && result.errorType === "rate-limit") {
+        await showAuthErrorAlert(
+          result.message || "Too many requests. Please try again later.",
+          "Please slow down",
+        );
+        return;
+      }
+
+      await showContactRequestSubmittedAlert();
+      setFormState({
+        ...initialContactFormState,
+        name: prefillState?.name || "",
+        email: prefillState?.email || "",
+        company: prefillState?.company || "",
+        phone: prefillState?.phone || "",
+        topic: topics[0]?.id ?? topics[0]?.label ?? initialContactFormState.topic,
+        message: "",
+      });
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error
+          ? error.message
+          : "Unable to submit your request right now.",
+        "Contact request failed",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -32,8 +162,12 @@ export default function ContactPage() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-16">
           <ContactHeroContent />
           <ContactFormCard
+            fieldErrors={fieldErrors}
             formState={formState}
+            isLoadingTopics={isLoadingTopics}
+            isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
+            topics={topics}
             updateField={updateField}
           />
         </div>
