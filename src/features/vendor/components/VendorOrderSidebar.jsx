@@ -308,9 +308,21 @@ export default function VendorOrderSidebar({
                     const result = await promptSignInRequired();
 
                     if (result.isConfirmed) {
-                      navigate("/signin", { state: { from: location } });
+                      navigate("/signin", {
+                        state: {
+                          from: {
+                            pathname: "/checkout/corporate",
+                          },
+                        },
+                      });
                     } else if (result.isDenied) {
-                      navigate("/signup", { state: { from: location } });
+                      navigate("/signup", {
+                        state: {
+                          from: {
+                            pathname: "/checkout/corporate",
+                          },
+                        },
+                      });
                     }
 
                     return;

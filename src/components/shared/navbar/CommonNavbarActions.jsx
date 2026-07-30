@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FiBell, FiMenu, FiShoppingCart, FiUser } from "react-icons/fi";
 import NotificationPopover from "./NotificationPopover";
 
@@ -21,6 +21,8 @@ export default function CommonNavbarActions({
   user,
   menuItems,
 }) {
+  const location = useLocation();
+
   return (
     <div className="ml-auto" ref={actionMenuRef}>
       <div className="flex items-center gap-2">
@@ -137,6 +139,7 @@ export default function CommonNavbarActions({
                 ) : (
                   <Link
                     to="/signin"
+                    state={{ from: location }}
                     onClick={onCloseActionMenu}
                     className="mt-2 flex cursor-pointer items-center justify-center rounded-full bg-[#c85f33] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b6542c]"
                   >

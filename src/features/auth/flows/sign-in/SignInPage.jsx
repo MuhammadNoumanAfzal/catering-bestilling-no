@@ -15,6 +15,20 @@ import { useAuth } from "../../hooks/useAuth";
 const VENDOR_REGISTER_URL =
   "https://catering-bestilling-no-vendor-panel.vercel.app/";
 
+function resolvePostSignInDestination(state) {
+  const from = state?.from;
+
+  if (from?.pathname) {
+    return {
+      pathname: from.pathname,
+      search: from.search ?? "",
+      hash: from.hash ?? "",
+    };
+  }
+
+  return "/";
+}
+
 export default function SignInPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -48,7 +62,7 @@ export default function SignInPage() {
       await showSuccessToast(
         `Welcome back, ${result.user.firstName || result.user.email}`,
       );
-      navigate(location.state?.from?.pathname ?? "/", { replace: true });
+      navigate(resolvePostSignInDestination(location.state), { replace: true });
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error ? error.message : "Unable to sign in right now.",
