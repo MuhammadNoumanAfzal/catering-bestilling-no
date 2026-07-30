@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FiGrid, FiHome } from "react-icons/fi";
+import { FiGrid, FiHome, FiSettings } from "react-icons/fi";
 import CommonNavbarActions from "./navbar/CommonNavbarActions";
 import CommonNavbarFilters from "./navbar/CommonNavbarFilters";
 import { formatNavbarDate } from "./navbar/navbarDateUtils";
@@ -13,6 +13,7 @@ import { confirmLogout, showSuccessToast } from "../../utils/alerts";
 
 const commonProfileMenuItems = [
   { label: "Home", to: "/", icon: FiHome },
+  { label: "Settings", to: "/settings", icon: FiSettings },
   { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
   ...vendorNavigationItems.filter((item) => item.to !== "/vendor-dashboard"),
 ];

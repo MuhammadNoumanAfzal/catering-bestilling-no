@@ -4,6 +4,7 @@ import {
   FiGrid,
   FiHome,
   FiMenu,
+  FiSettings,
   FiShoppingCart,
   FiUser,
   FiX,
@@ -18,6 +19,7 @@ import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
 const homeProfileMenuItems = [
   { label: "Home", to: "/", icon: FiHome },
+  { label: "Settings", to: "/settings", icon: FiSettings },
   { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
   ...vendorNavigationItems.filter((item) => item.to !== "/vendor-dashboard"),
 ];
