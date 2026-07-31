@@ -17,6 +17,7 @@ export default function EventDetailsSection({
   formState,
   updateField,
   updateCartField,
+  onDateChange,
   deliverySlots = [],
   isLoadingSlots = false,
 }) {
@@ -95,6 +96,11 @@ export default function EventDetailsSection({
           value={formState.date}
           min={getTodayDateValue()}
           onChange={(event) => {
+            if (onDateChange) {
+              onDateChange(event.target.value);
+              return;
+            }
+
             updateField("date", event.target.value);
             updateCartField("deliveryDate", event.target.value);
           }}

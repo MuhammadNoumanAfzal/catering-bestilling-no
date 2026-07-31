@@ -14,7 +14,9 @@ export {
   filterVendorsByDeliverySlot,
   filterVendorsByLocation,
   getAvailableVendorsForSlot,
+  getVendorClosureForDate,
   getConfiguredDeliverySlotsForDate,
+  isVendorClosedOnDate,
   isVendorDeliverySlotAvailable,
 } from "./services";
 export { default as VendorProfilePage } from "./pages/VendorProfilePage";

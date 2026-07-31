@@ -24,6 +24,7 @@ export default function CheckoutPage() {
     handleRemoveItem,
     handleTipChange,
     handleTypeChange,
+    handleDateChange,
     hasItems,
     hasLivePricing,
     invoiceAddresses,
@@ -179,6 +180,7 @@ export default function CheckoutPage() {
                   formState={formState}
                   updateField={updateField}
                   updateCartField={updateCartField}
+                  onDateChange={handleDateChange}
                   deliverySlots={deliverySlots}
                   isLoadingSlots={isLoadingSlots}
                 />

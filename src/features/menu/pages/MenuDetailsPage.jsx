@@ -6,6 +6,7 @@ import {
   getConfiguredDeliverySlotsForDate,
   fetchVendorProfiles,
   getAvailableVendorsForSlot,
+  getVendorClosureForDate,
   isVendorDeliverySlotAvailable,
 } from "../../vendor";
 import {
@@ -20,6 +21,7 @@ import {
   showAuthErrorAlert,
   showMenuUnavailableAlert,
   showSuccessToast,
+  showVendorClosureAlert,
 } from "../../../utils/alerts";
 import {
   VendorAvailabilityPopup,
@@ -219,6 +221,34 @@ export default function MenuDetailsPage() {
       isCancelled = true;
     };
   }, [orderSummary?.deliveryDate, orderSummary?.deliveryTime, vendor?.id]);
+
+  useEffect(() => {
+    const selectedDate = `${orderSummary?.deliveryDate ?? ""}`.trim();
+
+    if (!vendor || !selectedDate) {
+      return;
+    }
+
+    const matchedClosure = getVendorClosureForDate(vendor, selectedDate);
+
+    if (!matchedClosure) {
+      return;
+    }
+
+    showVendorClosureAlert({
+      vendorName: vendor.name,
+      selectedDate,
+      closureReason: matchedClosure.reason,
+      closureStartDate: matchedClosure.startDate,
+      closureEndDate: matchedClosure.endDate,
+    });
+
+    setOrderSummary((current) => ({
+      ...current,
+      deliveryDate: "",
+      deliveryTime: "",
+    }));
+  }, [orderSummary?.deliveryDate, vendor]);
 
   const addOnItems = useMemo(() => {
     if (!menuItem || !vendor) {
@@ -523,6 +553,27 @@ export default function MenuDetailsPage() {
     showSuccessToast(`${itemName} added to cart`);
   };
 
+  const handleDeliveryDateChange = (deliveryDate) => {
+    const matchedClosure = getVendorClosureForDate(vendor, deliveryDate);
+
+    if (matchedClosure) {
+      showVendorClosureAlert({
+        vendorName: vendor?.name,
+        selectedDate: deliveryDate,
+        closureReason: matchedClosure.reason,
+        closureStartDate: matchedClosure.startDate,
+        closureEndDate: matchedClosure.endDate,
+      });
+      return;
+    }
+
+    setOrderSummary((current) => ({
+      ...current,
+      deliveryDate,
+      deliveryTime: "",
+    }));
+  };
+
   const showAvailabilityPopup = !vendorAvailableForSelection;
   const availableRestaurants = getAvailableVendorsForSlot(
     vendorOptions,
@@ -596,13 +647,7 @@ export default function MenuDetailsPage() {
                 deliverySlots={deliverySlots}
                 isLoadingSlots={isLoadingSlots}
                 hasDeliverySchedule={hasDeliverySchedule}
-                onDeliveryDateChange={(deliveryDate) =>
-                  setOrderSummary((current) => ({
-                    ...current,
-                    deliveryDate,
-                    deliveryTime: "",
-                  }))
-                }
+                onDeliveryDateChange={handleDeliveryDateChange}
                 onDeliveryTimeChange={(deliveryTime) =>
                   setOrderSummary((current) => ({ ...current, deliveryTime }))
                 }

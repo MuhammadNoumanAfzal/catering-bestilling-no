@@ -75,6 +75,22 @@ export const FETCH_PRODUCT_QUERY = `
             closeTime
           }
         }
+        specialClosures {
+          edges {
+            node {
+              id
+              startDate
+              endDate
+              reason
+              status
+              type {
+                id
+                name
+                slug
+              }
+            }
+          }
+        }
         serviceAreas {
           id
           name

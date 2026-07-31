@@ -38,6 +38,22 @@ export const FETCH_VENDORS_QUERY = `
               closeTime
             }
           }
+          specialClosures {
+            edges {
+              node {
+                id
+                startDate
+                endDate
+                reason
+                status
+                type {
+                  id
+                  name
+                  slug
+                }
+              }
+            }
+          }
           serviceAreas {
             id
             name
@@ -115,6 +131,22 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
           enabled
           openTime
           closeTime
+        }
+      }
+      specialClosures {
+        edges {
+          node {
+            id
+            startDate
+            endDate
+            reason
+            status
+            type {
+              id
+              name
+              slug
+            }
+          }
         }
       }
       serviceAreas {

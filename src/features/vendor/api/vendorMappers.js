@@ -117,6 +117,40 @@ function normalizeDeliverySlot(slot) {
   return { day, start, end };
 }
 
+function normalizeSpecialClosure(closure) {
+  const startDate = `${closure?.startDate ?? ""}`.trim();
+  const endDate = `${closure?.endDate ?? ""}`.trim();
+
+  if (!startDate || !endDate) {
+    return null;
+  }
+
+  return {
+    id: closure?.id || `${startDate}-${endDate}`,
+    startDate,
+    endDate,
+    reason: closure?.reason || "",
+    status: closure?.status || "",
+    type: {
+      id: closure?.type?.id || "",
+      name: closure?.type?.name || "",
+      slug: closure?.type?.slug || "",
+    },
+  };
+}
+
+function unwrapSpecialClosures(specialClosures) {
+  if (Array.isArray(specialClosures)) {
+    return specialClosures;
+  }
+
+  if (Array.isArray(specialClosures?.edges)) {
+    return specialClosures.edges.map((edge) => edge?.node).filter(Boolean);
+  }
+
+  return [];
+}
+
 function isCustomerVisibleMenuProduct(product) {
   return `${product?.menuStatus ?? "active"}`.toLowerCase() === "active";
 }
@@ -285,6 +319,9 @@ export function adaptApiVendorToProfile(apiVendor) {
     }));
 
   const servicePostalCodes = serviceAreas.map((area) => area.postCode);
+  const specialClosures = unwrapSpecialClosures(apiVendor.specialClosures)
+    .map(normalizeSpecialClosure)
+    .filter(Boolean);
 
   const menuSections = (apiVendor.menuCategories || [])
     .map((category, categoryIndex) => {
@@ -328,6 +365,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     pickupInstructions,
     serviceAreas,
     servicePostalCodes,
+    specialClosures,
     deliveryFee: `NOK ${parseFloat(fee).toFixed(0)} Delivery fee`,
     freeDeliveryOver: freeDeliveryOver ? `NOK ${parseFloat(freeDeliveryOver).toFixed(0)}` : "",
     leadTime: minTime || maxTime ? `${minTime}-${maxTime} min` : "",

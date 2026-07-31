@@ -46,6 +46,59 @@ function normalizeSelectedDate(date) {
   );
 }
 
+function normalizeDateKey(date) {
+  const normalizedDate = normalizeSelectedDate(date);
+
+  if (!normalizedDate) {
+    return "";
+  }
+
+  const year = normalizedDate.getFullYear();
+  const month = `${normalizedDate.getMonth() + 1}`.padStart(2, "0");
+  const day = `${normalizedDate.getDate()}`.padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function normalizeClosureStatus(status) {
+  return `${status ?? ""}`.trim().toLowerCase();
+}
+
+function isBlockingClosureStatus(status) {
+  const normalizedStatus = normalizeClosureStatus(status);
+
+  return !["cancelled", "canceled", "inactive", "deleted"].includes(normalizedStatus);
+}
+
+function getVendorSpecialClosures(vendor) {
+  return Array.isArray(vendor?.specialClosures) ? vendor.specialClosures : [];
+}
+
+export function getVendorClosureForDate(vendor, date) {
+  const selectedDateKey = normalizeDateKey(date);
+
+  if (!selectedDateKey) {
+    return null;
+  }
+
+  return (
+    getVendorSpecialClosures(vendor).find((closure) => {
+      const startDateKey = normalizeDateKey(closure?.startDate || closure?.start);
+      const endDateKey = normalizeDateKey(closure?.endDate || closure?.end);
+
+      if (!startDateKey || !endDateKey || !isBlockingClosureStatus(closure?.status)) {
+        return false;
+      }
+
+      return selectedDateKey >= startDateKey && selectedDateKey <= endDateKey;
+    }) || null
+  );
+}
+
+export function isVendorClosedOnDate(vendor, date) {
+  return Boolean(getVendorClosureForDate(vendor, date));
+}
+
 function createSlotLabel(start, end) {
   return `${start} - ${end}`;
 }
@@ -154,6 +207,10 @@ export function isVendorDeliverySlotAvailable(vendor, date, time) {
   const deliverySchedule =
     vendor?.availability?.delivery ?? matchedVendor?.availability?.delivery;
 
+  if (isVendorClosedOnDate(matchedVendor, date)) {
+    return false;
+  }
+
   if (!deliverySchedule) {
     return true;
   }
@@ -232,6 +289,10 @@ export function getConfiguredDeliverySlotsForDate(vendor, date) {
     return [];
   }
 
+  if (isVendorClosedOnDate(matchedVendor, selectedDate)) {
+    return [];
+  }
+
   const hasMatchingDay =
     Array.isArray(deliverySchedule.days) &&
     deliverySchedule.days.includes(selectedDate.getDay());
@@ -267,6 +328,10 @@ export function filterDeliverySlotsForDate(slots, vendor, date) {
   const normalizedSlots = Array.isArray(slots) ? slots : [];
 
   if (normalizedSlots.length === 0) {
+    return [];
+  }
+
+  if (isVendorClosedOnDate(vendor, date)) {
     return [];
   }
 
