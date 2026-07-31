@@ -177,3 +177,66 @@ export function showMenuUnavailableAlert({
     }),
   );
 }
+
+function formatClosureDate(dateValue) {
+  const parsedDate = new Date(dateValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return dateValue || "";
+  }
+
+  return parsedDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export function showVendorClosureAlert({
+  vendorName,
+  selectedDate,
+  closureReason,
+  closureStartDate,
+  closureEndDate,
+}) {
+  const dateLabel = formatClosureDate(selectedDate);
+  const startLabel = formatClosureDate(closureStartDate);
+  const endLabel = formatClosureDate(closureEndDate);
+  const isSingleDayClosure =
+    Boolean(startLabel) && startLabel === endLabel;
+  const rangeLabel = isSingleDayClosure
+    ? startLabel
+    : [startLabel, endLabel].filter(Boolean).join(" - ");
+
+  return Swal.fire(
+    withBaseOptions({
+      icon: "warning",
+      title: "Vendor closed on selected date",
+      confirmButtonText: "Choose another date",
+      html: `
+        <div style="text-align:left;padding-top:6px">
+          <div style="margin-bottom:12px;border:1px solid #f1ddcf;background:#fff4ec;border-radius:16px;padding:14px 16px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cf6e38;margin-bottom:6px">
+              ${vendorName || "This vendor"}
+            </div>
+            <div style="font-size:20px;font-weight:800;color:#201b17;line-height:1.25">
+              ${dateLabel || "Selected date unavailable"}
+            </div>
+          </div>
+          <div style="font-size:15px;line-height:1.6;color:#5b4d42">
+            ${
+              closureReason
+                ? `Closed reason: ${closureReason}<br /><br />`
+                : ""
+            }
+            ${
+              rangeLabel
+                ? `This vendor is not accepting orders for ${rangeLabel}.`
+                : "This vendor is not accepting orders on the selected date."
+            }
+          </div>
+        </div>
+      `,
+    }),
+  );
+}

@@ -4,6 +4,7 @@ import { useAuth } from "../../auth";
 import {
   filterDeliverySlotsForDate,
   getConfiguredDeliverySlotsForDate,
+  getVendorClosureForDate,
 } from "../../vendor";
 import {
   clearAllStoredOrderSummaries,
@@ -22,6 +23,7 @@ import {
   confirmRemoveItem,
   showAuthErrorAlert,
   showOrderPlacedSuccess,
+  showVendorClosureAlert,
 } from "../../../utils/alerts";
 import { writePlacedOrderDraft } from "../../order/services";
 import {
@@ -181,6 +183,35 @@ export function useCheckoutPage() {
         },
       })),
     );
+  };
+
+  const handleDateChange = (dateValue) => {
+    const matchedCart = carts.find((cart) =>
+      getVendorClosureForDate(cart.vendor, dateValue),
+    );
+    const matchedClosure = matchedCart
+      ? getVendorClosureForDate(matchedCart.vendor, dateValue)
+      : null;
+
+    if (matchedCart && matchedClosure) {
+      setCheckoutErrorMessage(
+        `${matchedCart.vendor.name} is closed on ${dateValue}. Please choose another date.`,
+      );
+      showVendorClosureAlert({
+        vendorName: matchedCart.vendor.name,
+        selectedDate: dateValue,
+        closureReason: matchedClosure.reason,
+        closureStartDate: matchedClosure.startDate,
+        closureEndDate: matchedClosure.endDate,
+      });
+      return false;
+    }
+
+    updateField("date", dateValue);
+    updateCartField("deliveryDate", dateValue);
+    updateField("time", "");
+    updateCartField("deliveryTime", "");
+    return true;
   };
 
   useEffect(() => {
@@ -502,6 +533,39 @@ export function useCheckoutPage() {
   ]);
 
   useEffect(() => {
+    if (!formState.date || carts.length === 0) {
+      return;
+    }
+
+    const matchedCart = carts.find((cart) =>
+      getVendorClosureForDate(cart.vendor, formState.date),
+    );
+    const matchedClosure = matchedCart
+      ? getVendorClosureForDate(matchedCart.vendor, formState.date)
+      : null;
+
+    if (!matchedCart || !matchedClosure) {
+      return;
+    }
+
+    setCheckoutErrorMessage(
+      `${matchedCart.vendor.name} is closed on ${formState.date}. Please choose another date.`,
+    );
+    showVendorClosureAlert({
+      vendorName: matchedCart.vendor.name,
+      selectedDate: formState.date,
+      closureReason: matchedClosure.reason,
+      closureStartDate: matchedClosure.startDate,
+      closureEndDate: matchedClosure.endDate,
+    });
+    updateField("date", "");
+    updateCartField("deliveryDate", "");
+    updateField("time", "");
+    updateCartField("deliveryTime", "");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [carts.length, formState.date]);
+
+  useEffect(() => {
     if (!normalizedType || carts.length === 0) {
       return;
     }
@@ -790,6 +854,7 @@ export function useCheckoutPage() {
     normalizedType,
     setIsDeliveryAddressEditing,
     setIsInvoiceAddressEditing,
+    handleDateChange,
     updateCartField,
     updateField,
   };
