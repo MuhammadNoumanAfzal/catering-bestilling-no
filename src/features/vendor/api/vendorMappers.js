@@ -172,6 +172,8 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const availableDays = Array.isArray(product.availableDays)
     ? product.availableDays
     : [];
+  const minLeadTimeHours = Number(product.minLeadTimeHours || 0);
+  const minLeadTimeDays = Number(product.minLeadTimeDays || 0);
 
   return {
     id: product.id || fallbackId,
@@ -187,6 +189,8 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
     price,
     pricingType,
     availableDays,
+    minLeadTimeHours,
+    minLeadTimeDays,
     isAvailabilityWindowEnabled: Boolean(product.isAvailabilityWindowEnabled),
     availableFrom: product.availableFrom || "",
     availableUntil: product.availableUntil || "",

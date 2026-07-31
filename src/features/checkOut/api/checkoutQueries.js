@@ -41,8 +41,18 @@ export const GET_CHECKOUT_PREVIEW_QUERY = `
       currency
       availability {
         isValid
-        errors
-        warnings
+        errors {
+          code
+          message
+          field
+          meta
+        }
+        warnings {
+          code
+          message
+          field
+          meta
+        }
       }
       pricing {
         subtotal
@@ -72,6 +82,11 @@ export const GET_CHECKOUT_PREVIEW_QUERY = `
           quantity
           totalPrice
         }
+      }
+      promisedDeliveryWindow {
+        minMinutes
+        maxMinutes
+        label
       }
     }
   }

@@ -21,6 +21,13 @@ function normalizePlacedOrders(placedOrders) {
         vendorName: order.vendorName,
         orderId: order.orderId,
         message: order.message,
+        promisedDeliveryWindow: order.promisedDeliveryWindow
+          ? {
+              minMinutes: order.promisedDeliveryWindow.minMinutes ?? null,
+              maxMinutes: order.promisedDeliveryWindow.maxMinutes ?? null,
+              label: order.promisedDeliveryWindow.label || "",
+            }
+          : null,
       }))
     : [];
 }

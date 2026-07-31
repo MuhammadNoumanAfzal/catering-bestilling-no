@@ -8,6 +8,8 @@ import {
 export default function CheckoutSummaryPanel({
   carts,
   canPlaceOrder = true,
+  buttonLabel = "Place Order",
+  buttonHelpText = "",
   isSubmitting = false,
   isLoadingPricing = false,
   onTipChange,
@@ -87,12 +89,13 @@ export default function CheckoutSummaryPanel({
               disabled={isSubmitting || !canPlaceOrder}
               className="type-h5 mt-3 w-full rounded-[6px] bg-[#cf6e38] px-4 py-3 text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isSubmitting
-                ? "Placing order..."
-                : !canPlaceOrder
-                    ? "Live pricing required"
-                    : "Place Order"}
+              {buttonLabel}
             </button>
+            {buttonHelpText ? (
+              <p className="mt-2 text-center text-[12px] text-[#8b8580]">
+                {buttonHelpText}
+              </p>
+            ) : null}
             {isLoadingPricing ? (
               <p className="mt-2 text-center text-[12px] text-[#8b8580]">
                 Updating totals in the background...

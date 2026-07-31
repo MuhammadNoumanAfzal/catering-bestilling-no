@@ -73,7 +73,17 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
   const result = response?.placeClientOrder;
 
   if (!result?.success) {
-    throw new Error(result?.message || `Failed to place order for ${cart.vendor.name}.`);
+    const availabilityErrors = Array.isArray(result?.availability?.errors)
+      ? result.availability.errors
+      : [];
+    const firstAvailabilityMessage = availabilityErrors
+      .map((issue) => `${issue?.message ?? ""}`.trim())
+      .find(Boolean);
+    throw new Error(
+      firstAvailabilityMessage ||
+        result?.message ||
+        `Failed to place order for ${cart.vendor.name}.`,
+    );
   }
 
   return {
@@ -81,6 +91,7 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
     vendorName: cart.vendor.name,
     orderId: result.orderId,
     message: result.message || "Order placed successfully.",
+    promisedDeliveryWindow: result.promisedDeliveryWindow || null,
   };
 }
 

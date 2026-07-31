@@ -3,7 +3,7 @@ import { FiArrowUp } from "react-icons/fi";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   filterDeliverySlotsForDate,
-  getConfiguredDeliverySlotsForDate,
+  fetchVendorProfileBySlug,
   fetchVendorProfiles,
   getAvailableVendorsForSlot,
   getVendorClosureForDate,
@@ -67,6 +67,7 @@ export default function MenuDetailsPage() {
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const addOnsSliderRef = useRef(null);
   const lastMenuAvailabilityAlertKeyRef = useRef("");
+  const lastClosureAlertKeyRef = useRef("");
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
   const minimumPersons = menuItem?.serves ?? 1;
   const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
@@ -177,17 +178,60 @@ export default function MenuDetailsPage() {
           vendorId,
           date,
         });
+        let latestVendor = null;
+        let didRefreshVendor = false;
+
         const filteredLiveSlots = filterDeliverySlotsForDate(nextSlots, vendor, date);
-        const fallbackSlots =
-          filteredLiveSlots.length === 0 ? getConfiguredDeliverySlotsForDate(vendor, date) : [];
-        const resolvedSlots =
-          filteredLiveSlots.length > 0 ? filteredLiveSlots : fallbackSlots;
+
+        if (filteredLiveSlots.length === 0 && vendorSlug) {
+          try {
+            latestVendor = await fetchVendorProfileBySlug(vendorSlug);
+            didRefreshVendor = Boolean(latestVendor?.id);
+          } catch {
+            latestVendor = null;
+            didRefreshVendor = false;
+          }
+        }
+
+        const slotVendor = latestVendor || vendor;
+        const refreshedFilteredLiveSlots =
+          latestVendor && filteredLiveSlots.length === 0
+            ? filterDeliverySlotsForDate(nextSlots, latestVendor, date)
+            : filteredLiveSlots;
+        const resolvedSlots = refreshedFilteredLiveSlots;
 
         if (isCancelled) {
           return;
         }
 
         setDeliverySlots(resolvedSlots);
+
+        const matchedClosure =
+          resolvedSlots.length === 0 && didRefreshVendor
+            ? getVendorClosureForDate(slotVendor, date)
+            : null;
+        const closureAlertKey = matchedClosure
+          ? `${slotVendor?.id || slotVendor?.slug || "vendor"}:${date}:${matchedClosure.id}`
+          : "";
+
+        if (
+          matchedClosure &&
+          resolvedSlots.length === 0 &&
+          lastClosureAlertKeyRef.current !== closureAlertKey
+        ) {
+          lastClosureAlertKeyRef.current = closureAlertKey;
+          showVendorClosureAlert({
+            vendorName: slotVendor?.name || vendor?.name,
+            selectedDate: date,
+            closureReason: matchedClosure.reason,
+            closureStartDate: matchedClosure.startDate,
+            closureEndDate: matchedClosure.endDate,
+          });
+        }
+
+        if (!matchedClosure || resolvedSlots.length > 0) {
+          lastClosureAlertKeyRef.current = "";
+        }
 
         if (orderSummary?.deliveryTime) {
           const matchesExistingSlot = resolvedSlots.some(
@@ -221,34 +265,6 @@ export default function MenuDetailsPage() {
       isCancelled = true;
     };
   }, [orderSummary?.deliveryDate, orderSummary?.deliveryTime, vendor?.id]);
-
-  useEffect(() => {
-    const selectedDate = `${orderSummary?.deliveryDate ?? ""}`.trim();
-
-    if (!vendor || !selectedDate) {
-      return;
-    }
-
-    const matchedClosure = getVendorClosureForDate(vendor, selectedDate);
-
-    if (!matchedClosure) {
-      return;
-    }
-
-    showVendorClosureAlert({
-      vendorName: vendor.name,
-      selectedDate,
-      closureReason: matchedClosure.reason,
-      closureStartDate: matchedClosure.startDate,
-      closureEndDate: matchedClosure.endDate,
-    });
-
-    setOrderSummary((current) => ({
-      ...current,
-      deliveryDate: "",
-      deliveryTime: "",
-    }));
-  }, [orderSummary?.deliveryDate, vendor]);
 
   const addOnItems = useMemo(() => {
     if (!menuItem || !vendor) {
@@ -309,6 +325,7 @@ export default function MenuDetailsPage() {
   const menuAvailabilityError = getMenuAvailabilityError(
     menuItem,
     orderSummary?.deliveryDate,
+    orderSummary?.deliveryTime,
   );
   const menuAvailableDaysLabel = useMemo(() => {
     const labels = {
@@ -520,11 +537,15 @@ export default function MenuDetailsPage() {
       price: baseItemPricingType === "fixed" ? linePrice : 0,
       pricingType: baseItemPricingType,
       availableDays: Array.isArray(menuItem.availableDays) ? menuItem.availableDays : [],
+      minLeadTimeHours: Number(menuItem.minLeadTimeHours || 0),
+      minLeadTimeDays: Number(menuItem.minLeadTimeDays || 0),
       isAvailabilityWindowEnabled: Boolean(menuItem.isAvailabilityWindowEnabled),
       availableFrom: menuItem.availableFrom || "",
       availableUntil: menuItem.availableUntil || "",
       menuAvailability: {
         availableDays: Array.isArray(menuItem.availableDays) ? menuItem.availableDays : [],
+        minLeadTimeHours: Number(menuItem.minLeadTimeHours || 0),
+        minLeadTimeDays: Number(menuItem.minLeadTimeDays || 0),
         isAvailabilityWindowEnabled: Boolean(menuItem.isAvailabilityWindowEnabled),
         availableFrom: menuItem.availableFrom || "",
         availableUntil: menuItem.availableUntil || "",
@@ -554,19 +575,6 @@ export default function MenuDetailsPage() {
   };
 
   const handleDeliveryDateChange = (deliveryDate) => {
-    const matchedClosure = getVendorClosureForDate(vendor, deliveryDate);
-
-    if (matchedClosure) {
-      showVendorClosureAlert({
-        vendorName: vendor?.name,
-        selectedDate: deliveryDate,
-        closureReason: matchedClosure.reason,
-        closureStartDate: matchedClosure.startDate,
-        closureEndDate: matchedClosure.endDate,
-      });
-      return;
-    }
-
     setOrderSummary((current) => ({
       ...current,
       deliveryDate,

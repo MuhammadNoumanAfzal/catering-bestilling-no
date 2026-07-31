@@ -25,6 +25,7 @@ export default function CheckoutPage() {
     handleTipChange,
     handleTypeChange,
     handleDateChange,
+    hasBlockingAvailabilityIssues,
     hasItems,
     hasLivePricing,
     invoiceAddresses,
@@ -37,6 +38,9 @@ export default function CheckoutPage() {
     pricingError,
     isSubmittingOrder,
     normalizedType,
+    checkoutActionLabel,
+    checkoutAvailabilityMessage,
+    requiredMinimumPersonCount,
     setIsDeliveryAddressEditing,
     setIsInvoiceAddressEditing,
     updateCartField,
@@ -71,6 +75,13 @@ export default function CheckoutPage() {
                   <div className="rounded-[12px] border border-[#f2dfd0] bg-[#fff8f3] px-3 py-3 text-[13px] text-[#8a5a3b]">
                     Live price preview is temporarily unavailable. You can still place your
                     order and the final total will be confirmed during checkout.
+                  </div>
+                ) : null}
+
+                {checkoutAvailabilityMessage &&
+                checkoutAvailabilityMessage !== checkoutErrorMessage ? (
+                  <div className="rounded-[12px] border border-[#f2dfd0] bg-[#fff8f3] px-3 py-3 text-[13px] text-[#8a5a3b]">
+                    {checkoutAvailabilityMessage}
                   </div>
                 ) : null}
 
@@ -183,6 +194,7 @@ export default function CheckoutPage() {
                   onDateChange={handleDateChange}
                   deliverySlots={deliverySlots}
                   isLoadingSlots={isLoadingSlots}
+                  minimumPersonCount={requiredMinimumPersonCount}
                 />
 
                 <AdditionalInfoSection
@@ -196,7 +208,9 @@ export default function CheckoutPage() {
               {hasItems ? (
                 <CheckoutSummaryPanel
                   carts={carts}
-                  canPlaceOrder
+                  canPlaceOrder={hasLivePricing && !hasBlockingAvailabilityIssues}
+                  buttonLabel={checkoutActionLabel}
+                  buttonHelpText={checkoutAvailabilityMessage}
                   isSubmitting={isSubmittingOrder}
                   isLoadingPricing={isLoadingPricing}
                   onTipChange={handleTipChange}

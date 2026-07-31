@@ -20,6 +20,7 @@ export default function EventDetailsSection({
   onDateChange,
   deliverySlots = [],
   isLoadingSlots = false,
+  minimumPersonCount = 1,
 }) {
   const eventLabel = mode === "corporate" ? "Event Name" : "Occasion";
   const eventKey = mode === "corporate" ? "eventName" : "occasion";
@@ -29,7 +30,10 @@ export default function EventDetailsSection({
       : CHECKOUT_PLACEHOLDERS.occasion;
 
   const adjustPersonCount = (delta) => {
-    const nextPersonCount = Math.max(1, Number(formState.personCount) + delta);
+    const nextPersonCount = Math.max(
+      Number(minimumPersonCount ?? 1) || 1,
+      Number(formState.personCount) + delta,
+    );
     updateField("personCount", nextPersonCount);
     updateCartField("personCount", nextPersonCount);
   };
@@ -252,6 +256,9 @@ export default function EventDetailsSection({
             +
           </button>
         </div>
+        <p className="mt-2 text-[12px] text-[#7e7469]">
+          Minimum {minimumPersonCount} guest{Number(minimumPersonCount) !== 1 ? "s" : ""}
+        </p>
       </div>
     </CheckoutSection>
   );
