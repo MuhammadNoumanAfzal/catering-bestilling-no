@@ -59,6 +59,21 @@ function normalizeDateOnlyValue(dateValue) {
   return `${year}-${month}-${day}`;
 }
 
+function normalizeDateTimeValue(dateValue, timeValue = "") {
+  const normalizedDate = normalizeDateOnlyValue(dateValue);
+  const normalizedTime = `${timeValue ?? ""}`.trim();
+
+  if (!normalizedDate || !/^\d{2}:\d{2}$/.test(normalizedTime)) {
+    return null;
+  }
+
+  const [year, month, day] = normalizedDate.split("-").map(Number);
+  const [hours, minutes] = normalizedTime.split(":").map(Number);
+  const parsedDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
 function normalizeDateToDayIndex(dateValue) {
   const normalizedDate = normalizeDateOnlyValue(dateValue);
 
@@ -90,7 +105,7 @@ function buildAvailableDaysLabel(availableDays = []) {
   return labels.join(", ");
 }
 
-export function getMenuAvailabilityError(menuLike, deliveryDate) {
+export function getMenuAvailabilityError(menuLike, deliveryDate, deliveryTime = "") {
   const normalizedDate = normalizeDateOnlyValue(deliveryDate);
 
   if (!normalizedDate) {
@@ -135,6 +150,31 @@ export function getMenuAvailabilityError(menuLike, deliveryDate) {
 
     if (normalizedEnd && normalizedDate > normalizedEnd) {
       return `${itemName} is not available after ${normalizedEnd}.`;
+    }
+  }
+
+  const minLeadTimeHours = Number(
+    menuLike?.minLeadTimeHours ?? menuLike?.menuAvailability?.minLeadTimeHours ?? 0,
+  );
+  const minLeadTimeDays = Number(
+    menuLike?.minLeadTimeDays ?? menuLike?.menuAvailability?.minLeadTimeDays ?? 0,
+  );
+  const minimumNoticeHours = Math.max(
+    minLeadTimeHours,
+    minLeadTimeDays > 0 ? minLeadTimeDays * 24 : 0,
+  );
+
+  if (minimumNoticeHours > 0 && deliveryTime) {
+    const selectedDateTime = normalizeDateTimeValue(normalizedDate, deliveryTime);
+
+    if (selectedDateTime) {
+      const earliestAllowedDateTime = new Date(
+        Date.now() + minimumNoticeHours * 60 * 60 * 1000,
+      );
+
+      if (selectedDateTime.getTime() < earliestAllowedDateTime.getTime()) {
+        return `${itemName} requires at least ${minimumNoticeHours} hours notice before delivery. Please choose a later date or time.`;
+      }
     }
   }
 
@@ -219,7 +259,11 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
           continue;
         }
 
-        const menuAvailabilityError = getMenuAvailabilityError(item, formState.date);
+        const menuAvailabilityError = getMenuAvailabilityError(
+          item,
+          formState.date,
+          formState.time,
+        );
         if (menuAvailabilityError) {
           return menuAvailabilityError;
         }

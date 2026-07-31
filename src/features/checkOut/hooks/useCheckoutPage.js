@@ -3,8 +3,6 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../auth";
 import {
   filterDeliverySlotsForDate,
-  getConfiguredDeliverySlotsForDate,
-  getVendorClosureForDate,
 } from "../../vendor";
 import {
   clearAllStoredOrderSummaries,
@@ -23,7 +21,6 @@ import {
   confirmRemoveItem,
   showAuthErrorAlert,
   showOrderPlacedSuccess,
-  showVendorClosureAlert,
 } from "../../../utils/alerts";
 import { writePlacedOrderDraft } from "../../order/services";
 import {
@@ -37,6 +34,29 @@ import {
   VALID_CHECKOUT_TYPES,
 } from "../constants/checkoutForm";
 import { validateCheckoutForm } from "../../order/utils/orderFlowValidation";
+
+function collectAvailabilityMessages(availability) {
+  if (!availability || availability.isValid !== false) {
+    return [];
+  }
+
+  const errors = Array.isArray(availability.errors) ? availability.errors : [];
+  const warnings = Array.isArray(availability.warnings) ? availability.warnings : [];
+
+  return [...errors, ...warnings]
+    .map((item) => {
+      if (typeof item === "string") {
+        return item.trim();
+      }
+
+      if (item && typeof item === "object") {
+        return `${item.message ?? ""}`.trim();
+      }
+
+      return "";
+    })
+    .filter(Boolean);
+}
 
 const CHECKOUT_DRAFT_STORAGE_KEY = "checkout-form-draft";
 
@@ -116,6 +136,30 @@ function hasMeaningfulAddressValue(value) {
   return Boolean(`${value ?? ""}`.trim());
 }
 
+function getCartMinimumPersonCount(cart) {
+  const items = Array.isArray(cart?.orderSummary?.items)
+    ? cart.orderSummary.items
+    : [];
+
+  return (
+    items
+      .filter((item) => !item?.isAddOn)
+      .reduce((highestMinimum, item) => {
+        const nextMinimum = Math.max(
+          1,
+          Number(
+            item?.minimumGuests ??
+              item?.totalServes ??
+              item?.serves ??
+              1,
+          ) || 1,
+        );
+
+        return Math.max(highestMinimum, nextMinimum);
+      }, 1)
+  );
+}
+
 export function useCheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -186,27 +230,6 @@ export function useCheckoutPage() {
   };
 
   const handleDateChange = (dateValue) => {
-    const matchedCart = carts.find((cart) =>
-      getVendorClosureForDate(cart.vendor, dateValue),
-    );
-    const matchedClosure = matchedCart
-      ? getVendorClosureForDate(matchedCart.vendor, dateValue)
-      : null;
-
-    if (matchedCart && matchedClosure) {
-      setCheckoutErrorMessage(
-        `${matchedCart.vendor.name} is closed on ${dateValue}. Please choose another date.`,
-      );
-      showVendorClosureAlert({
-        vendorName: matchedCart.vendor.name,
-        selectedDate: dateValue,
-        closureReason: matchedClosure.reason,
-        closureStartDate: matchedClosure.startDate,
-        closureEndDate: matchedClosure.endDate,
-      });
-      return false;
-    }
-
     updateField("date", dateValue);
     updateCartField("deliveryDate", dateValue);
     updateField("time", "");
@@ -414,6 +437,79 @@ export function useCheckoutPage() {
     const pricing = cart?.orderSummary?.pricing;
     return pricing && pricing.grandTotal !== undefined && pricing.grandTotal !== null;
   });
+  const blockingAvailabilityIssues = useMemo(
+    () =>
+      carts.flatMap((cart) => {
+        const messages = collectAvailabilityMessages(cart?.orderSummary?.availability);
+
+        if (messages.length === 0) {
+          return [];
+        }
+
+        return messages.map((message) => `${cart.vendor.name}: ${message}`);
+      }),
+    [carts],
+  );
+  const checkoutAvailabilityMessage = blockingAvailabilityIssues[0] || "";
+  const requiredMinimumPersonCount = useMemo(
+    () =>
+      carts.reduce(
+        (highestMinimum, cart) =>
+          Math.max(highestMinimum, getCartMinimumPersonCount(cart)),
+        1,
+      ),
+    [carts],
+  );
+  const checkoutActionLabel = useMemo(() => {
+    if (isSubmittingOrder) {
+      return "Placing order...";
+    }
+
+    if (!`${formState.date ?? ""}`.trim()) {
+      return "Select delivery date";
+    }
+
+    if (!`${formState.time ?? ""}`.trim()) {
+      return "Select delivery time";
+    }
+
+    if (!`${formState.deliveryAddress ?? ""}`.trim()) {
+      return "Add delivery address";
+    }
+
+    if (!`${formState.deliveryPostalCode ?? ""}`.trim()) {
+      return "Add delivery postal code";
+    }
+
+    if (!`${formState.deliveryCity ?? ""}`.trim()) {
+      return "Add delivery city";
+    }
+
+    if (isLoadingPricing) {
+      return "Checking availability...";
+    }
+
+    if (blockingAvailabilityIssues.length > 0) {
+      return checkoutAvailabilityMessage || "Checkout unavailable";
+    }
+
+    if (!hasLivePricing) {
+      return "Waiting for live pricing";
+    }
+
+    return "Place Order";
+  }, [
+    blockingAvailabilityIssues.length,
+    checkoutAvailabilityMessage,
+    formState.date,
+    formState.deliveryAddress,
+    formState.deliveryCity,
+    formState.deliveryPostalCode,
+    formState.time,
+    hasLivePricing,
+    isLoadingPricing,
+    isSubmittingOrder,
+  ]);
 
   useEffect(() => {
     if (!normalizedType) {
@@ -442,11 +538,50 @@ export function useCheckoutPage() {
       return;
     }
 
-    setFormState((current) => ({
-      ...current,
-      personCount: totalPersonCount,
-    }));
-  }, [hasItems, totalPersonCount]);
+    const normalizedPersonCount = Math.max(
+      requiredMinimumPersonCount,
+      totalPersonCount,
+      1,
+    );
+
+    setFormState((current) =>
+      Number(current.personCount ?? 0) === normalizedPersonCount
+        ? current
+        : {
+            ...current,
+            personCount: normalizedPersonCount,
+          },
+    );
+
+    setCarts((current) => {
+      let hasChanges = false;
+
+      const nextCarts = current.map((cart) => {
+        const cartMinimum = getCartMinimumPersonCount(cart);
+        const nextPersonCount = Math.max(
+          normalizedPersonCount,
+          cartMinimum,
+          1,
+        );
+
+        if (Number(cart?.orderSummary?.personCount ?? 0) === nextPersonCount) {
+          return cart;
+        }
+
+        hasChanges = true;
+
+        return {
+          ...cart,
+          orderSummary: {
+            ...cart.orderSummary,
+            personCount: nextPersonCount,
+          },
+        };
+      });
+
+      return hasChanges ? nextCarts : current;
+    });
+  }, [hasItems, requiredMinimumPersonCount, totalPersonCount]);
 
   // Fetch live delivery slots when date or cart vendors change
   useEffect(() => {
@@ -475,12 +610,7 @@ export function useCheckoutPage() {
           primaryVendor,
           date,
         );
-        const fallbackSlots =
-          filteredLiveSlots.length === 0
-            ? getConfiguredDeliverySlotsForDate(primaryVendor, date)
-            : [];
-        const resolvedSlots =
-          filteredLiveSlots.length > 0 ? filteredLiveSlots : fallbackSlots;
+        const resolvedSlots = filteredLiveSlots;
 
         if (!isCancelled) {
           setDeliverySlots(resolvedSlots);
@@ -533,39 +663,6 @@ export function useCheckoutPage() {
   ]);
 
   useEffect(() => {
-    if (!formState.date || carts.length === 0) {
-      return;
-    }
-
-    const matchedCart = carts.find((cart) =>
-      getVendorClosureForDate(cart.vendor, formState.date),
-    );
-    const matchedClosure = matchedCart
-      ? getVendorClosureForDate(matchedCart.vendor, formState.date)
-      : null;
-
-    if (!matchedCart || !matchedClosure) {
-      return;
-    }
-
-    setCheckoutErrorMessage(
-      `${matchedCart.vendor.name} is closed on ${formState.date}. Please choose another date.`,
-    );
-    showVendorClosureAlert({
-      vendorName: matchedCart.vendor.name,
-      selectedDate: formState.date,
-      closureReason: matchedClosure.reason,
-      closureStartDate: matchedClosure.startDate,
-      closureEndDate: matchedClosure.endDate,
-    });
-    updateField("date", "");
-    updateCartField("deliveryDate", "");
-    updateField("time", "");
-    updateCartField("deliveryTime", "");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [carts.length, formState.date]);
-
-  useEffect(() => {
     if (!normalizedType || carts.length === 0) {
       return;
     }
@@ -579,6 +676,15 @@ export function useCheckoutPage() {
     async function loadCheckoutPricing() {
       setIsLoadingPricing(true);
       setPricingError("");
+      setCarts((current) =>
+        current.map((cart) => ({
+          ...cart,
+          orderSummary: {
+            ...cart.orderSummary,
+            availability: null,
+          },
+        })),
+      );
 
       try {
         const previewResults = await Promise.all(
@@ -640,6 +746,7 @@ export function useCheckoutPage() {
                 pricing: null,
                 previewItems: [],
                 pricingCurrency: "NOK",
+                availability: null,
               },
             })),
           );
@@ -657,6 +764,14 @@ export function useCheckoutPage() {
       isCancelled = true;
     };
   }, [carts.length, normalizedType, pricingRequestKey]);
+
+  useEffect(() => {
+    if (!checkoutAvailabilityMessage) {
+      return;
+    }
+
+    setCheckoutErrorMessage((current) => current || checkoutAvailabilityMessage);
+  }, [checkoutAvailabilityMessage]);
 
   const handleTypeChange = (nextType) => {
     navigate(`/checkout/${nextType}`);
@@ -775,6 +890,16 @@ export function useCheckoutPage() {
       return;
     }
 
+    if (blockingAvailabilityIssues.length > 0) {
+      const message = blockingAvailabilityIssues[0];
+      setCheckoutErrorMessage(message);
+      await showAuthErrorAlert(
+        message,
+        "Selected slot is no longer available",
+      );
+      return;
+    }
+
     setCheckoutErrorMessage("");
 
     const result = await confirmPlaceOrder();
@@ -840,6 +965,7 @@ export function useCheckoutPage() {
     handleRemoveItem,
     handleTipChange,
     handleTypeChange,
+    hasBlockingAvailabilityIssues: blockingAvailabilityIssues.length > 0,
     hasItems,
     hasLivePricing,
     invoiceAddresses,
@@ -848,6 +974,8 @@ export function useCheckoutPage() {
     isInvoiceAddressEditing,
     isLoadingSlots,
     isLoadingPricing,
+    checkoutActionLabel,
+    checkoutAvailabilityMessage,
     checkoutErrorMessage,
     pricingError,
     isSubmittingOrder,
@@ -857,5 +985,6 @@ export function useCheckoutPage() {
     handleDateChange,
     updateCartField,
     updateField,
+    requiredMinimumPersonCount,
   };
 }
