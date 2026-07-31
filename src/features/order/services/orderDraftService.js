@@ -48,3 +48,17 @@ export async function savePlacedOrderDraftChanges(placedOrderDraft, nextValues) 
 
   return nextPlacedOrderDraft;
 }
+
+export async function savePlacedOrderDraftModificationRequest(
+  placedOrderDraft,
+  request,
+) {
+  const nextPlacedOrderDraft = {
+    ...placedOrderDraft,
+    modificationRequest: request || null,
+  };
+
+  writePlacedOrderDraft(nextPlacedOrderDraft);
+
+  return nextPlacedOrderDraft;
+}

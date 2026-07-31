@@ -15,31 +15,59 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
       personCount
       orderNotes
       canModify
+      pendingModificationRequest {
+        id
+        status
+        requestedChanges {
+          eventDate
+          eventTime
+          personCount
+          deliveryAddress
+          deliverySuite
+          deliveryCity
+          deliveryPostalCode
+          orderNotes
+        }
+        currentSnapshot {
+          eventDate
+          eventTime
+          personCount
+        }
+        createdOn
+      }
+      latestModificationRequest {
+        id
+        status
+        resolvedOn
+      }
     }
   }
 `;
 
-const MODIFY_CLIENT_ORDER_MUTATION = `
-  mutation ModifyClientOrder($input: ModifyClientOrderInput!) {
-    modifyClientOrder(input: $input) {
+const REQUEST_CLIENT_ORDER_MODIFICATION_MUTATION = `
+  mutation RequestClientOrderModification($input: RequestClientOrderModificationInput!) {
+    requestClientOrderModification(input: $input) {
       success
       message
-      order {
+      request {
         id
         status
-        deliveryAddress
-        deliverySuite
-        deliveryCity
-        deliveryPostalCode
-        deliveryAddressStr
-        eventDate
-        eventTime
-        personCount
-        orderNotes
-        totalAmount
-        taxAmount
-        deliveryFee
-        grandTotal
+        requestedChanges {
+          eventDate
+          eventTime
+          personCount
+          deliveryAddress
+          deliverySuite
+          deliveryCity
+          deliveryPostalCode
+          orderNotes
+        }
+        currentSnapshot {
+          eventDate
+          eventTime
+          personCount
+        }
+        createdOn
       }
     }
   }
@@ -47,6 +75,34 @@ const MODIFY_CLIENT_ORDER_MUTATION = `
 
 function buildErrorMessage(result, fallbackMessage) {
   return result?.message || fallbackMessage;
+}
+
+function mapModificationRequest(request) {
+  if (!request?.id) {
+    return null;
+  }
+
+  return {
+    id: request.id,
+    status: request.status || "",
+    createdOn: request.createdOn || "",
+    resolvedOn: request.resolvedOn || "",
+    requestedChanges: {
+      eventDate: request.requestedChanges?.eventDate || "",
+      eventTime: request.requestedChanges?.eventTime || "",
+      personCount: Math.max(1, Number(request.requestedChanges?.personCount ?? 1) || 1),
+      deliveryAddress: request.requestedChanges?.deliveryAddress || "",
+      deliverySuite: request.requestedChanges?.deliverySuite || "",
+      deliveryCity: request.requestedChanges?.deliveryCity || "",
+      deliveryPostalCode: request.requestedChanges?.deliveryPostalCode || "",
+      orderNotes: request.requestedChanges?.orderNotes || "",
+    },
+    currentSnapshot: {
+      eventDate: request.currentSnapshot?.eventDate || "",
+      eventTime: request.currentSnapshot?.eventTime || "",
+      personCount: Math.max(1, Number(request.currentSnapshot?.personCount ?? 1) || 1),
+    },
+  };
 }
 
 export function mapOrderToModifyForm(order) {
@@ -90,6 +146,8 @@ export async function fetchOrderModificationDetails(orderId) {
     personCount: Math.max(1, Number(order.personCount ?? 1) || 1),
     additionalDetails: order.orderNotes || "",
     canModify: order.canModify !== false,
+    pendingModificationRequest: mapModificationRequest(order.pendingModificationRequest),
+    latestModificationRequest: mapModificationRequest(order.latestModificationRequest),
   };
 }
 
@@ -109,17 +167,17 @@ export async function submitOrderModification(input) {
   };
 
   const response = await graphqlRequest({
-    query: MODIFY_CLIENT_ORDER_MUTATION,
+    query: REQUEST_CLIENT_ORDER_MODIFICATION_MUTATION,
     variables,
   });
-  const result = response?.modifyClientOrder;
+  const result = response?.requestClientOrderModification;
 
   if (!result?.success) {
-    throw new Error(buildErrorMessage(result, "Unable to modify this order."));
+    throw new Error(buildErrorMessage(result, "Unable to submit this change request."));
   }
 
   return {
-    message: result.message || "Order modified successfully.",
-    order: result.order || null,
+    message: result.message || "Change request submitted successfully.",
+    request: mapModificationRequest(result.request),
   };
 }

@@ -2,6 +2,7 @@ export function formatOrderPreview(orderDraft) {
   const primaryCart = orderDraft?.carts?.[0];
   const formState = orderDraft?.formState ?? {};
   const placedOrders = orderDraft?.placedOrders ?? [];
+  const modificationRequest = orderDraft?.modificationRequest ?? null;
   const vendorLeadTime = `${primaryCart?.vendor?.leadTime ?? ""}`.trim();
   const promisedDeliveryWindowLabel =
     `${placedOrders?.[0]?.promisedDeliveryWindow?.label ?? ""}`.trim();
@@ -25,5 +26,6 @@ export function formatOrderPreview(orderDraft) {
     personCount:
       formState.personCount || primaryCart?.orderSummary?.personCount || 20,
     additionalDetails: formState.additionalInfo || "",
+    modificationRequest,
   };
 }

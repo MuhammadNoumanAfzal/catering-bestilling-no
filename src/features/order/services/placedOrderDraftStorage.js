@@ -32,6 +32,38 @@ function normalizePlacedOrders(placedOrders) {
     : [];
 }
 
+function normalizeModificationRequest(request) {
+  if (!request || typeof request !== "object") {
+    return null;
+  }
+
+  return {
+    id: request.id || "",
+    status: request.status || "",
+    createdOn: request.createdOn || "",
+    resolvedOn: request.resolvedOn || "",
+    requestedChanges: request.requestedChanges
+      ? {
+          eventDate: request.requestedChanges.eventDate || "",
+          eventTime: request.requestedChanges.eventTime || "",
+          personCount: Number(request.requestedChanges.personCount ?? 1) || 1,
+          deliveryAddress: request.requestedChanges.deliveryAddress || "",
+          deliverySuite: request.requestedChanges.deliverySuite || "",
+          deliveryCity: request.requestedChanges.deliveryCity || "",
+          deliveryPostalCode: request.requestedChanges.deliveryPostalCode || "",
+          orderNotes: request.requestedChanges.orderNotes || "",
+        }
+      : null,
+    currentSnapshot: request.currentSnapshot
+      ? {
+          eventDate: request.currentSnapshot.eventDate || "",
+          eventTime: request.currentSnapshot.eventTime || "",
+          personCount: Number(request.currentSnapshot.personCount ?? 1) || 1,
+        }
+      : null,
+  };
+}
+
 export function writePlacedOrderDraft(value) {
   if (typeof window === "undefined") {
     return;
@@ -42,6 +74,7 @@ export function writePlacedOrderDraft(value) {
     formState: value?.formState ?? {},
     carts: normalizeCarts(value?.carts),
     placedOrders: normalizePlacedOrders(value?.placedOrders),
+    modificationRequest: normalizeModificationRequest(value?.modificationRequest),
     createdAt: value?.createdAt ?? new Date().toISOString(),
   };
 
@@ -70,6 +103,7 @@ export function readPlacedOrderDraft() {
       formState: parsedValue?.formState ?? {},
       carts: normalizeCarts(parsedValue?.carts),
       placedOrders: normalizePlacedOrders(parsedValue?.placedOrders),
+      modificationRequest: normalizeModificationRequest(parsedValue?.modificationRequest),
       createdAt: parsedValue?.createdAt ?? null,
     };
   } catch {

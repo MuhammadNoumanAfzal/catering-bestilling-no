@@ -1,4 +1,43 @@
-export default function OrderStatusSummary({ primaryOrderId }) {
+function getModificationSummary(modificationRequest) {
+  const normalizedStatus = `${modificationRequest?.status ?? ""}`.trim().toUpperCase();
+
+  if (normalizedStatus === "PENDING") {
+    return {
+      statusLabel: "Modification requested",
+      nextStepLabel: "Vendor review pending",
+    };
+  }
+
+  if (normalizedStatus === "APPROVED") {
+    return {
+      statusLabel: "Modification approved",
+      nextStepLabel: "Updated order is confirmed",
+    };
+  }
+
+  if (normalizedStatus === "REJECTED") {
+    return {
+      statusLabel: "Modification rejected",
+      nextStepLabel: "Original order remains active",
+    };
+  }
+
+  if (normalizedStatus === "CANCELED") {
+    return {
+      statusLabel: "Modification replaced",
+      nextStepLabel: "Vendor review pending",
+    };
+  }
+
+  return {
+    statusLabel: "Placed",
+    nextStepLabel: "Check your email inbox",
+  };
+}
+
+export default function OrderStatusSummary({ primaryOrderId, modificationRequest }) {
+  const { statusLabel, nextStepLabel } = getModificationSummary(modificationRequest);
+
   return (
     <div className="mx-auto mt-8 grid max-w-2xl gap-4 rounded-[20px] border border-[#eee4da] bg-[#fcf9f6] p-5 text-left sm:grid-cols-3">
       <div>
@@ -6,7 +45,7 @@ export default function OrderStatusSummary({ primaryOrderId }) {
           Status
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
-          Placed
+          {statusLabel}
         </p>
       </div>
       <div>
@@ -22,7 +61,7 @@ export default function OrderStatusSummary({ primaryOrderId }) {
           Next step
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
-          Check your email inbox
+          {nextStepLabel}
         </p>
       </div>
     </div>

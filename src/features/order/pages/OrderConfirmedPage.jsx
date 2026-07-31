@@ -21,6 +21,14 @@ export default function OrderConfirmedPage() {
     primaryOrderId,
     setIsModifyModalOpen,
   } = useOrderConfirmedPage();
+  const modificationRequest = orderPreview.modificationRequest || null;
+  const normalizedModificationStatus = `${modificationRequest?.status ?? ""}`
+    .trim()
+    .toUpperCase();
+  const hasPendingModificationRequest = normalizedModificationStatus === "PENDING";
+  const modifyButtonLabel = hasPendingModificationRequest
+    ? "Request pending"
+    : "Modify Order";
 
   return (
     <section className="min-h-[calc(100vh-120px)] bg-[linear-gradient(180deg,#faf6f1_0%,#fffdf9_100%)] px-4 py-8 sm:px-6 lg:px-8">
@@ -38,7 +46,16 @@ export default function OrderConfirmedPage() {
 
           <div className="px-6 py-10 text-center sm:px-8 sm:py-12">
             <OrderConfirmationHero />
-            <OrderStatusSummary primaryOrderId={primaryOrderId} />
+            <OrderStatusSummary
+              primaryOrderId={primaryOrderId}
+              modificationRequest={modificationRequest}
+            />
+
+            {hasPendingModificationRequest ? (
+              <div className="mx-auto mt-4 max-w-2xl rounded-[16px] border border-[#f5d6c3] bg-[#fff7f1] px-4 py-3 text-left text-[14px] text-[#8a5a3a]">
+                Your change request has been sent to the vendor. The original order stays active until they approve or reject it.
+              </div>
+            ) : null}
 
             {placedOrderDraft ? (
               <OrderDetailsSummary orderPreview={orderPreview} />
@@ -46,6 +63,8 @@ export default function OrderConfirmedPage() {
 
             <OrderConfirmationActions
               canModify={Boolean(placedOrderDraft)}
+              modifyButtonLabel={modifyButtonLabel}
+              modifyDisabled={hasPendingModificationRequest}
               onModify={() => setIsModifyModalOpen(true)}
             />
           </div>
