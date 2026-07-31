@@ -4,7 +4,10 @@ import {
   fetchOrderModificationDetails,
   submitOrderModification,
 } from "../api/orderModificationService";
-import { readPlacedOrderDraft, savePlacedOrderDraftChanges } from "../services";
+import {
+  readPlacedOrderDraft,
+  savePlacedOrderDraftModificationRequest,
+} from "../services";
 import { formatOrderPreview } from "../utils/orderPreview";
 
 export function useOrderConfirmedPage() {
@@ -99,9 +102,9 @@ export function useOrderConfirmedPage() {
         orderId: rawPrimaryOrderId,
         ...nextValues,
       });
-      const nextPlacedOrderDraft = await savePlacedOrderDraftChanges(
+      const nextPlacedOrderDraft = await savePlacedOrderDraftModificationRequest(
         placedOrderDraft,
-        nextValues,
+        result.request,
       );
 
       setPlacedOrderDraft(nextPlacedOrderDraft);

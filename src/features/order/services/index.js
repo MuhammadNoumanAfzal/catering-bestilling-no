@@ -5,5 +5,6 @@ export {
 } from "./placedOrderDraftStorage";
 export {
   buildUpdatedPlacedOrderDraft,
+  savePlacedOrderDraftModificationRequest,
   savePlacedOrderDraftChanges,
 } from "./orderDraftService";
