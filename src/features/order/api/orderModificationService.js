@@ -40,6 +40,31 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
         status
         resolvedOn
       }
+      pendingVendorAdjustment {
+        id
+        status
+        vendorNote
+        reason
+        proposedEventDate
+        proposedDeliveryWindowStart
+        proposedDeliveryWindowEnd
+        proposedGuestCount
+        proposedAddressLine1
+        proposedAddressLine2
+        proposedCity
+        proposedPostalCode
+        removedItemsJson
+        addedItemsJson
+        oldTotal
+        newTotal
+        createdOn
+      }
+      latestVendorAdjustment {
+        id
+        status
+        resolvedOn
+        customerResponse
+      }
     }
   }
 `;
@@ -68,6 +93,43 @@ const REQUEST_CLIENT_ORDER_MODIFICATION_MUTATION = `
           personCount
         }
         createdOn
+      }
+    }
+  }
+`;
+
+const APPROVE_VENDOR_ORDER_ADJUSTMENT_MUTATION = `
+  mutation ApproveVendorOrderAdjustment($adjustmentId: ID!, $note: String) {
+    approveVendorOrderAdjustment(adjustmentId: $adjustmentId, note: $note) {
+      success
+      message
+      order {
+        id
+        status
+        eventDate
+        eventTime
+        personCount
+        grandTotal
+      }
+      adjustment {
+        id
+        status
+        resolvedOn
+      }
+    }
+  }
+`;
+
+const REJECT_VENDOR_ORDER_ADJUSTMENT_MUTATION = `
+  mutation RejectVendorOrderAdjustment($adjustmentId: ID!, $reason: String!) {
+    rejectVendorOrderAdjustment(adjustmentId: $adjustmentId, reason: $reason) {
+      success
+      message
+      adjustment {
+        id
+        status
+        customerResponse
+        resolvedOn
       }
     }
   }
@@ -105,6 +167,38 @@ function mapModificationRequest(request) {
   };
 }
 
+function mapVendorAdjustment(adjustment) {
+  if (!adjustment?.id) {
+    return null;
+  }
+
+  return {
+    id: adjustment.id,
+    status: adjustment.status || "",
+    vendorNote: adjustment.vendorNote || "",
+    reason: adjustment.reason || "",
+    proposedEventDate: adjustment.proposedEventDate || "",
+    proposedDeliveryWindowStart: adjustment.proposedDeliveryWindowStart || "",
+    proposedDeliveryWindowEnd: adjustment.proposedDeliveryWindowEnd || "",
+    proposedGuestCount: Math.max(1, Number(adjustment.proposedGuestCount ?? 1) || 1),
+    proposedAddressLine1: adjustment.proposedAddressLine1 || "",
+    proposedAddressLine2: adjustment.proposedAddressLine2 || "",
+    proposedCity: adjustment.proposedCity || "",
+    proposedPostalCode: adjustment.proposedPostalCode || "",
+    removedItemsJson: Array.isArray(adjustment.removedItemsJson)
+      ? adjustment.removedItemsJson
+      : [],
+    addedItemsJson: Array.isArray(adjustment.addedItemsJson)
+      ? adjustment.addedItemsJson
+      : [],
+    oldTotal: adjustment.oldTotal ?? null,
+    newTotal: adjustment.newTotal ?? null,
+    createdOn: adjustment.createdOn || "",
+    resolvedOn: adjustment.resolvedOn || "",
+    customerResponse: adjustment.customerResponse || "",
+  };
+}
+
 export function mapOrderToModifyForm(order) {
   if (!order) {
     return null;
@@ -137,6 +231,7 @@ export async function fetchOrderModificationDetails(orderId) {
 
   return {
     orderId: order.id,
+    status: order.status || "",
     address: order.deliveryAddress || "",
     addressLine2: order.deliverySuite || "",
     city: order.deliveryCity || "",
@@ -148,6 +243,8 @@ export async function fetchOrderModificationDetails(orderId) {
     canModify: order.canModify !== false,
     pendingModificationRequest: mapModificationRequest(order.pendingModificationRequest),
     latestModificationRequest: mapModificationRequest(order.latestModificationRequest),
+    pendingVendorAdjustment: mapVendorAdjustment(order.pendingVendorAdjustment),
+    latestVendorAdjustment: mapVendorAdjustment(order.latestVendorAdjustment),
   };
 }
 
@@ -179,5 +276,46 @@ export async function submitOrderModification(input) {
   return {
     message: result.message || "Change request submitted successfully.",
     request: mapModificationRequest(result.request),
+  };
+}
+
+export async function approveVendorOrderAdjustment({ adjustmentId, note = "" }) {
+  const response = await graphqlRequest({
+    query: APPROVE_VENDOR_ORDER_ADJUSTMENT_MUTATION,
+    variables: {
+      adjustmentId,
+      note: `${note ?? ""}`.trim() || null,
+    },
+  });
+  const result = response?.approveVendorOrderAdjustment;
+
+  if (!result?.success) {
+    throw new Error(buildErrorMessage(result, "Unable to approve the vendor adjustment."));
+  }
+
+  return {
+    message: result.message || "Adjustment approved successfully.",
+    order: result.order || null,
+    adjustment: mapVendorAdjustment(result.adjustment),
+  };
+}
+
+export async function rejectVendorOrderAdjustment({ adjustmentId, reason }) {
+  const response = await graphqlRequest({
+    query: REJECT_VENDOR_ORDER_ADJUSTMENT_MUTATION,
+    variables: {
+      adjustmentId,
+      reason: `${reason ?? ""}`.trim(),
+    },
+  });
+  const result = response?.rejectVendorOrderAdjustment;
+
+  if (!result?.success) {
+    throw new Error(buildErrorMessage(result, "Unable to reject the vendor adjustment."));
+  }
+
+  return {
+    message: result.message || "Adjustment rejected successfully.",
+    adjustment: mapVendorAdjustment(result.adjustment),
   };
 }
