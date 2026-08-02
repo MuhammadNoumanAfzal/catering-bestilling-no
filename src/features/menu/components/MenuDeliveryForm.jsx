@@ -26,6 +26,8 @@ export default function MenuDeliveryForm({
   deliverySlots = [],
   isLoadingSlots = false,
   hasDeliverySchedule = false,
+  slotAccessRequiresAuth = false,
+  slotAccessMessage = "",
   onDeliveryDateChange,
   onDeliveryTimeChange,
   onPersonCountChange,
@@ -125,6 +127,10 @@ export default function MenuDeliveryForm({
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
                 <span className="text-[13px] text-[#9b8f84]">Checking available delivery slots...</span>
               </div>
+            ) : slotAccessRequiresAuth ? (
+              <p className="rounded-[14px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-3 text-[13px] text-[#8a5a3a]">
+                {slotAccessMessage || "Sign in to view live delivery availability for the selected date."}
+              </p>
             ) : hasSlots ? (
               <div className="flex flex-col gap-3">
                 <div className="rounded-[20px] border border-[#eadfd6] bg-[#fffaf6] p-3.5 sm:p-4">

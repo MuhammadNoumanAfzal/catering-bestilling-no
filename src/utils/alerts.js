@@ -105,12 +105,15 @@ export function showOrderPlacedSuccess() {
   );
 }
 
-export function promptSignInRequired() {
+export function promptSignInRequired({
+  title = "Sign in required",
+  text = "Please sign in or create an account before placing an order.",
+} = {}) {
   return Swal.fire(
     withBaseOptions({
       icon: "info",
-      title: "Sign in required",
-      text: "Please sign in or create an account before placing an order.",
+      title,
+      text,
       showCancelButton: true,
       showDenyButton: true,
       confirmButtonText: "Sign in",

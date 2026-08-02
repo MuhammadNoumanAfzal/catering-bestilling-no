@@ -14,6 +14,23 @@ import {
   GET_AVAILABLE_DELIVERY_SLOTS_QUERY,
 } from "./checkoutQueries";
 
+function isAuthAvailabilityError(error) {
+  const message = `${error?.message ?? ""}`.toLowerCase();
+
+  return [
+    "sign in",
+    "signin",
+    "log in",
+    "login",
+    "authentication",
+    "authenticated",
+    "credentials",
+    "permission",
+    "unauthorized",
+    "forbidden",
+  ].some((fragment) => message.includes(fragment));
+}
+
 export async function fetchCheckoutAutofillProfile() {
   const response = await graphqlRequest({ query: GET_CURRENT_USER_DETAILS_QUERY });
 
@@ -43,7 +60,15 @@ export async function fetchAvailableDeliverySlots({ vendorId, date }) {
       isFullyBooked: Boolean(slot.isFullyBooked),
       remainingCapacity: Number(slot.remainingCapacity ?? 9999),
     }));
-  } catch {
+  } catch (error) {
+    if (isAuthAvailabilityError(error)) {
+      const authError = new Error(
+        "Sign in to view live delivery availability for the selected date.",
+      );
+      authError.code = "AUTH_REQUIRED";
+      throw authError;
+    }
+
     return [];
   }
 }
