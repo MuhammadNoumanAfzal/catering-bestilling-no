@@ -10,25 +10,35 @@ import { useOrderConfirmedPage } from "../hooks/useOrderConfirmedPage";
 
 export default function OrderConfirmedPage() {
   const {
+    handleApproveVendorAdjustment,
     handleModifySave,
+    handleRejectVendorAdjustment,
+    isResolvingVendorAdjustment,
     isModifyLoading,
     isModifyModalOpen,
     isModifySaving,
+    isWorkflowLoading,
     modifyError,
     modifyInitialValue,
     orderPreview,
+    orderWorkflow,
     placedOrderDraft,
     primaryOrderId,
     setIsModifyModalOpen,
   } = useOrderConfirmedPage();
   const modificationRequest = orderPreview.modificationRequest || null;
+  const pendingVendorAdjustment = orderWorkflow?.pendingVendorAdjustment || null;
+  const latestVendorAdjustment = orderWorkflow?.latestVendorAdjustment || null;
   const normalizedModificationStatus = `${modificationRequest?.status ?? ""}`
     .trim()
     .toUpperCase();
   const hasPendingModificationRequest = normalizedModificationStatus === "PENDING";
+  const hasPendingVendorAdjustment =
+    `${pendingVendorAdjustment?.status ?? ""}`.trim().toUpperCase() === "PENDING";
   const modifyButtonLabel = hasPendingModificationRequest
     ? "Request pending"
     : "Modify Order";
+  const modifyDisabled = hasPendingModificationRequest || hasPendingVendorAdjustment;
 
   return (
     <section className="min-h-[calc(100vh-120px)] bg-[linear-gradient(180deg,#faf6f1_0%,#fffdf9_100%)] px-4 py-8 sm:px-6 lg:px-8">
@@ -49,11 +59,100 @@ export default function OrderConfirmedPage() {
             <OrderStatusSummary
               primaryOrderId={primaryOrderId}
               modificationRequest={modificationRequest}
+              orderStatus={orderWorkflow?.status}
+              pendingVendorAdjustment={pendingVendorAdjustment}
+              latestVendorAdjustment={latestVendorAdjustment}
             />
 
             {hasPendingModificationRequest ? (
               <div className="mx-auto mt-4 max-w-2xl rounded-[16px] border border-[#f5d6c3] bg-[#fff7f1] px-4 py-3 text-left text-[14px] text-[#8a5a3a]">
                 Your change request has been sent to the vendor. The original order stays active until they approve or reject it.
+              </div>
+            ) : null}
+
+            {hasPendingVendorAdjustment ? (
+              <div className="mx-auto mt-4 max-w-2xl rounded-[18px] border border-[#f2d8cb] bg-[#fff8f3] px-4 py-4 text-left">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                  Vendor adjustment pending
+                </p>
+                <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
+                  Your vendor proposed changes to this order. Review them below and accept or reject.
+                </p>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                      Proposed date
+                    </p>
+                    <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
+                      {pendingVendorAdjustment.proposedEventDate || orderPreview.date || "No change"}
+                    </p>
+                  </div>
+                  <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                      Proposed time
+                    </p>
+                    <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
+                      {pendingVendorAdjustment.proposedDeliveryWindowStart || orderPreview.time || "No change"}
+                    </p>
+                  </div>
+                  <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                      Proposed guests
+                    </p>
+                    <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
+                      {pendingVendorAdjustment.proposedGuestCount || orderPreview.personCount}
+                    </p>
+                  </div>
+                  <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                      Proposed total
+                    </p>
+                    <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
+                      {pendingVendorAdjustment.newTotal != null
+                        ? `NOK ${pendingVendorAdjustment.newTotal}`
+                        : "Will be recalculated"}
+                    </p>
+                  </div>
+                </div>
+
+                {pendingVendorAdjustment.vendorNote ? (
+                  <div className="mt-3 rounded-[14px] border border-[#efe4da] bg-white p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+                      Vendor note
+                    </p>
+                    <p className="mt-2 text-[14px] font-semibold leading-6 text-[#201b17]">
+                      {pendingVendorAdjustment.vendorNote}
+                    </p>
+                  </div>
+                ) : null}
+
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    disabled={isResolvingVendorAdjustment || isWorkflowLoading}
+                    onClick={handleApproveVendorAdjustment}
+                    className={`inline-flex items-center justify-center rounded-[10px] px-5 py-3 text-[15px] font-semibold text-white transition ${
+                      isResolvingVendorAdjustment || isWorkflowLoading
+                        ? "cursor-not-allowed bg-[#d7c5b9]"
+                        : "cursor-pointer bg-[#cf6e38] hover:bg-[#bb602d]"
+                    }`}
+                  >
+                    {isResolvingVendorAdjustment ? "Updating..." : "Accept vendor changes"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isResolvingVendorAdjustment || isWorkflowLoading}
+                    onClick={handleRejectVendorAdjustment}
+                    className={`inline-flex items-center justify-center rounded-[10px] border px-5 py-3 text-[15px] font-semibold transition ${
+                      isResolvingVendorAdjustment || isWorkflowLoading
+                        ? "cursor-not-allowed border-[#e2d8cf] bg-[#f6f1eb] text-[#9b8f84]"
+                        : "cursor-pointer border-[#d9cec3] bg-white text-[#2b2622] hover:border-[#cf6e38] hover:text-[#cf6e38]"
+                    }`}
+                  >
+                    Reject vendor changes
+                  </button>
+                </div>
               </div>
             ) : null}
 
@@ -64,7 +163,7 @@ export default function OrderConfirmedPage() {
             <OrderConfirmationActions
               canModify={Boolean(placedOrderDraft)}
               modifyButtonLabel={modifyButtonLabel}
-              modifyDisabled={hasPendingModificationRequest}
+              modifyDisabled={modifyDisabled}
               onModify={() => setIsModifyModalOpen(true)}
             />
           </div>

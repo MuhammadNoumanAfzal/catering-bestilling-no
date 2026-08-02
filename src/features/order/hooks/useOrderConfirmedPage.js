@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
+import Swal from "sweetalert2";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import {
+  approveVendorOrderAdjustment,
   fetchOrderModificationDetails,
+  rejectVendorOrderAdjustment,
   submitOrderModification,
 } from "../api/orderModificationService";
 import {
   readPlacedOrderDraft,
+  savePlacedOrderDraftChanges,
   savePlacedOrderDraftModificationRequest,
 } from "../services";
 import { formatOrderPreview } from "../utils/orderPreview";
@@ -16,6 +20,9 @@ export function useOrderConfirmedPage() {
   const [modifyError, setModifyError] = useState("");
   const [isModifyLoading, setIsModifyLoading] = useState(false);
   const [isModifySaving, setIsModifySaving] = useState(false);
+  const [orderWorkflow, setOrderWorkflow] = useState(null);
+  const [isWorkflowLoading, setIsWorkflowLoading] = useState(false);
+  const [isResolvingVendorAdjustment, setIsResolvingVendorAdjustment] = useState(false);
   const [placedOrderDraft, setPlacedOrderDraft] = useState(() =>
     readPlacedOrderDraft(),
   );
@@ -26,6 +33,43 @@ export function useOrderConfirmedPage() {
   );
   const primaryOrderId = orderPreview.orderIds[0] || "#23459";
   const rawPrimaryOrderId = placedOrderDraft?.placedOrders?.[0]?.orderId || "";
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadOrderWorkflow() {
+      if (!rawPrimaryOrderId) {
+        setOrderWorkflow(null);
+        return;
+      }
+
+      setIsWorkflowLoading(true);
+
+      try {
+        const details = await fetchOrderModificationDetails(rawPrimaryOrderId);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setOrderWorkflow(details);
+      } catch {
+        if (isMounted) {
+          setOrderWorkflow(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsWorkflowLoading(false);
+        }
+      }
+    }
+
+    loadOrderWorkflow();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [rawPrimaryOrderId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,6 +100,7 @@ export function useOrderConfirmedPage() {
         }
 
         setModifyInitialValue(nextValue);
+        setOrderWorkflow(nextValue);
       } catch (error) {
         if (!isMounted) {
           return;
@@ -108,6 +153,15 @@ export function useOrderConfirmedPage() {
       );
 
       setPlacedOrderDraft(nextPlacedOrderDraft);
+      setOrderWorkflow((current) =>
+        current
+          ? {
+              ...current,
+              pendingModificationRequest: result.request,
+              latestModificationRequest: result.request,
+            }
+          : current,
+      );
       await showSuccessToast(result.message);
       setIsModifyModalOpen(false);
     } catch (error) {
@@ -121,14 +175,154 @@ export function useOrderConfirmedPage() {
     }
   };
 
+  const handleApproveVendorAdjustment = async () => {
+    const pendingVendorAdjustment = orderWorkflow?.pendingVendorAdjustment;
+
+    if (!pendingVendorAdjustment?.id || !placedOrderDraft) {
+      return;
+    }
+
+    setIsResolvingVendorAdjustment(true);
+
+    try {
+      const result = await approveVendorOrderAdjustment({
+        adjustmentId: pendingVendorAdjustment.id,
+        note: "Customer approved the vendor adjustment.",
+      });
+
+      const nextPlacedOrderDraft = await savePlacedOrderDraftChanges(
+        placedOrderDraft,
+        {
+          address:
+            pendingVendorAdjustment.proposedAddressLine1 ||
+            orderPreview.address,
+          addressLine2:
+            pendingVendorAdjustment.proposedAddressLine2 ||
+            orderPreview.addressLine2,
+          city: pendingVendorAdjustment.proposedCity || orderPreview.city,
+          postalCode:
+            pendingVendorAdjustment.proposedPostalCode || orderPreview.postalCode,
+          date: pendingVendorAdjustment.proposedEventDate || orderPreview.date,
+          time:
+            pendingVendorAdjustment.proposedDeliveryWindowStart ||
+            orderPreview.time,
+          personCount:
+            pendingVendorAdjustment.proposedGuestCount || orderPreview.personCount,
+          additionalDetails: orderPreview.additionalDetails || "",
+        },
+      );
+
+      const nextWorkflow = {
+        ...(orderWorkflow || {}),
+        status: result.order?.status || "Modified",
+        pendingVendorAdjustment: null,
+        latestVendorAdjustment: {
+          ...(pendingVendorAdjustment || {}),
+          status: result.adjustment?.status || "APPROVED",
+          resolvedOn: result.adjustment?.resolvedOn || new Date().toISOString(),
+        },
+      };
+
+      setPlacedOrderDraft(nextPlacedOrderDraft);
+      setOrderWorkflow(nextWorkflow);
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error
+          ? error.message
+          : "Unable to approve the vendor adjustment.",
+        "Adjustment approval failed",
+      );
+    } finally {
+      setIsResolvingVendorAdjustment(false);
+    }
+  };
+
+  const handleRejectVendorAdjustment = async () => {
+    const pendingVendorAdjustment = orderWorkflow?.pendingVendorAdjustment;
+
+    if (!pendingVendorAdjustment?.id) {
+      return;
+    }
+
+    const response = await Swal.fire({
+      title: "Reject vendor adjustment?",
+      text: "Tell the vendor why you cannot accept these changes.",
+      input: "textarea",
+      inputPlaceholder: "Enter rejection reason",
+      inputAttributes: {
+        "aria-label": "Rejection reason",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Reject adjustment",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#cf6e38",
+      cancelButtonColor: "#d7cec6",
+      background: "#fffaf6",
+      color: "#201b17",
+      inputValidator: (value) => {
+        if (!`${value ?? ""}`.trim()) {
+          return "A rejection reason is required.";
+        }
+
+        return undefined;
+      },
+    });
+
+    if (!response.isConfirmed) {
+      return;
+    }
+
+    setIsResolvingVendorAdjustment(true);
+
+    try {
+      const result = await rejectVendorOrderAdjustment({
+        adjustmentId: pendingVendorAdjustment.id,
+        reason: `${response.value ?? ""}`.trim(),
+      });
+
+      setOrderWorkflow((current) =>
+        current
+          ? {
+              ...current,
+              status: "Confirmed",
+              pendingVendorAdjustment: null,
+              latestVendorAdjustment: {
+                ...(pendingVendorAdjustment || {}),
+                status: result.adjustment?.status || "REJECTED",
+                customerResponse:
+                  result.adjustment?.customerResponse || `${response.value ?? ""}`.trim(),
+                resolvedOn: result.adjustment?.resolvedOn || new Date().toISOString(),
+              },
+            }
+          : current,
+      );
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error
+          ? error.message
+          : "Unable to reject the vendor adjustment.",
+        "Adjustment rejection failed",
+      );
+    } finally {
+      setIsResolvingVendorAdjustment(false);
+    }
+  };
+
   return {
+    handleApproveVendorAdjustment,
     handleModifySave,
+    handleRejectVendorAdjustment,
+    isResolvingVendorAdjustment,
     isModifyLoading,
     isModifyModalOpen,
     isModifySaving,
+    isWorkflowLoading,
     modifyError,
     modifyInitialValue,
     orderPreview,
+    orderWorkflow,
     placedOrderDraft,
     primaryOrderId,
     setIsModifyModalOpen,
