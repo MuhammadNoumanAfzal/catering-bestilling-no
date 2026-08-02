@@ -64,10 +64,15 @@ export default function MenuDetailsPage() {
   const [vendorOptions, setVendorOptions] = useState([]);
   const [deliverySlots, setDeliverySlots] = useState([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [slotAccessState, setSlotAccessState] = useState({
+    requiresAuth: false,
+    message: "",
+  });
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const addOnsSliderRef = useRef(null);
   const lastMenuAvailabilityAlertKeyRef = useRef("");
   const lastClosureAlertKeyRef = useRef("");
+  const lastSlotAuthPromptKeyRef = useRef("");
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
   const minimumPersons = menuItem?.serves ?? 1;
   const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
@@ -165,6 +170,43 @@ export default function MenuDetailsPage() {
 
     if (!date || !vendorId) {
       setDeliverySlots([]);
+      setSlotAccessState({ requiresAuth: false, message: "" });
+      lastSlotAuthPromptKeyRef.current = "";
+      return;
+    }
+
+    if (!isLoggedIn) {
+      const authMessage =
+        "Sign in to view live delivery availability for the selected date.";
+      const promptKey = `${vendorId}:${date}`;
+
+      setDeliverySlots([]);
+      setSlotAccessState({
+        requiresAuth: true,
+        message: authMessage,
+      });
+      setIsLoadingSlots(false);
+
+      if (lastSlotAuthPromptKeyRef.current !== promptKey) {
+        lastSlotAuthPromptKeyRef.current = promptKey;
+
+        Promise.resolve()
+          .then(() =>
+            promptSignInRequired({
+              title: "Sign in to view delivery slots",
+              text: authMessage,
+            }),
+          )
+          .then((result) => {
+            if (result?.isConfirmed) {
+              navigate("/signin", { state: { from: location } });
+            } else if (result?.isDenied) {
+              navigate("/signup", { state: { from: location } });
+            }
+          })
+          .catch(() => {});
+      }
+
       return;
     }
 
@@ -172,6 +214,7 @@ export default function MenuDetailsPage() {
 
     async function loadSlots() {
       setIsLoadingSlots(true);
+      setSlotAccessState({ requiresAuth: false, message: "" });
 
       try {
         const nextSlots = await fetchAvailableDeliverySlots({
@@ -248,9 +291,41 @@ export default function MenuDetailsPage() {
             }));
           }
         }
-      } catch {
+      } catch (error) {
         if (!isCancelled) {
           setDeliverySlots([]);
+
+          if (error?.code === "AUTH_REQUIRED" && !isLoggedIn) {
+            const authMessage =
+              error.message ||
+              "Sign in to view live delivery availability for the selected date.";
+
+            setSlotAccessState({
+              requiresAuth: true,
+              message: authMessage,
+            });
+
+            const promptKey = `${vendorId}:${date}`;
+
+            if (lastSlotAuthPromptKeyRef.current !== promptKey) {
+              lastSlotAuthPromptKeyRef.current = promptKey;
+
+              const result = await promptSignInRequired({
+                title: "Sign in to view delivery slots",
+                text: authMessage,
+              });
+
+              if (isCancelled) {
+                return;
+              }
+
+              if (result.isConfirmed) {
+                navigate("/signin", { state: { from: location } });
+              } else if (result.isDenied) {
+                navigate("/signup", { state: { from: location } });
+              }
+            }
+          }
         }
       } finally {
         if (!isCancelled) {
@@ -264,7 +339,15 @@ export default function MenuDetailsPage() {
     return () => {
       isCancelled = true;
     };
-  }, [orderSummary?.deliveryDate, orderSummary?.deliveryTime, vendor?.id]);
+  }, [
+    isLoggedIn,
+    location,
+    navigate,
+    orderSummary?.deliveryDate,
+    orderSummary?.deliveryTime,
+    vendor?.id,
+    vendorSlug,
+  ]);
 
   const addOnItems = useMemo(() => {
     if (!menuItem || !vendor) {
@@ -655,6 +738,8 @@ export default function MenuDetailsPage() {
                 deliverySlots={deliverySlots}
                 isLoadingSlots={isLoadingSlots}
                 hasDeliverySchedule={hasDeliverySchedule}
+                slotAccessRequiresAuth={slotAccessState.requiresAuth}
+                slotAccessMessage={slotAccessState.message}
                 onDeliveryDateChange={handleDeliveryDateChange}
                 onDeliveryTimeChange={(deliveryTime) =>
                   setOrderSummary((current) => ({ ...current, deliveryTime }))
