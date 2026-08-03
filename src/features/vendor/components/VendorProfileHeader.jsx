@@ -59,8 +59,6 @@ export default function VendorProfileHeader({
               >
                 ({vendor.reviewCount} reviews)
               </button>
-              <span className="text-[#8b8178]">•</span>
-              <span>{vendor.leadTime}</span>
             </div>
 
             <button

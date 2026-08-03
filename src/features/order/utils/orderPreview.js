@@ -3,7 +3,6 @@ export function formatOrderPreview(orderDraft) {
   const formState = orderDraft?.formState ?? {};
   const placedOrders = orderDraft?.placedOrders ?? [];
   const modificationRequest = orderDraft?.modificationRequest ?? null;
-  const vendorLeadTime = `${primaryCart?.vendor?.leadTime ?? ""}`.trim();
   const promisedDeliveryWindowLabel =
     `${placedOrders?.[0]?.promisedDeliveryWindow?.label ?? ""}`.trim();
   const orderIds = placedOrders
@@ -22,7 +21,7 @@ export function formatOrderPreview(orderDraft) {
     postalCode: formState.deliveryPostalCode || "",
     date: formState.date || primaryCart?.orderSummary?.deliveryDate || "",
     time: formState.time || primaryCart?.orderSummary?.deliveryTime || "",
-    deliveryEstimate: promisedDeliveryWindowLabel || vendorLeadTime,
+    deliveryEstimate: promisedDeliveryWindowLabel,
     personCount:
       formState.personCount || primaryCart?.orderSummary?.personCount || 20,
     additionalDetails: formState.additionalInfo || "",

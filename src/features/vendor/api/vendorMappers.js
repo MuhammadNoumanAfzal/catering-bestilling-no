@@ -224,8 +224,6 @@ export function adaptApiVendorToProfile(apiVendor) {
   }
 
   const slug = apiVendor.slug || slugify(apiVendor.name);
-  const minTime = apiVendor.deliverySettings?.minDeliveryTime ?? 0;
-  const maxTime = apiVendor.deliverySettings?.maxDeliveryTime ?? 0;
   const fee = apiVendor.deliverySettings?.baseDeliveryFee ?? "0";
   const freeDeliveryOver = apiVendor.deliverySettings?.freeDeliveryOver ?? "";
   const pickupAddress = apiVendor.deliverySettings?.pickupAddress || "";
@@ -372,7 +370,6 @@ export function adaptApiVendorToProfile(apiVendor) {
     specialClosures,
     deliveryFee: `NOK ${parseFloat(fee).toFixed(0)} Delivery fee`,
     freeDeliveryOver: freeDeliveryOver ? `NOK ${parseFloat(freeDeliveryOver).toFixed(0)}` : "",
-    leadTime: minTime || maxTime ? `${minTime}-${maxTime} min` : "",
     availability,
     categories,
     menuSections,

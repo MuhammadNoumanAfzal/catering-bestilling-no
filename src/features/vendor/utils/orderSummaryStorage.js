@@ -86,7 +86,6 @@ function toVendorSnapshot(vendor) {
       ? vendor.servicePostalCodes
       : [],
     deliveryFee: vendor.deliveryFee || "",
-    leadTime: vendor.leadTime || "",
     availability: vendor.availability || null,
     categories: Array.isArray(vendor.categories) ? vendor.categories : [],
     categoryTags: Array.isArray(vendor.categoryTags) ? vendor.categoryTags : [],

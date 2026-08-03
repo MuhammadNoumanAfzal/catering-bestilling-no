@@ -85,12 +85,12 @@ export function getVendorReviewSummaryCards(vendor) {
       note: "",
     },
     {
-      label: "Timing",
-      value: vendor?.leadTime || "Not available",
+      label: "Schedule",
+      value: vendor?.availability?.delivery?.label || "Not available",
       note:
         topRatingBand.count > 0
           ? `Most reviews are ${topRatingBand.stars}-star ratings`
-          : vendor?.availability?.delivery?.label || "",
+          : "",
     },
   ];
 }

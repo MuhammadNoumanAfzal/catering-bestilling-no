@@ -273,14 +273,6 @@ export default function VendorLocationModal({ vendor, onClose }) {
                     ) : null}
 
                     <div className="flex flex-wrap gap-2">
-                      {vendor.leadTime ? (
-                        <InfoPill tone="neutral">
-                          Typical lead time:
-                          <span className="ml-1 font-semibold text-[#1f1a16]">
-                            {vendor.leadTime}
-                          </span>
-                        </InfoPill>
-                      ) : null}
                       {displayCity ? (
                         <InfoPill tone="brand">
                           <FiNavigation className="mr-1.5" />
