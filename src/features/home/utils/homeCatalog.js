@@ -173,8 +173,15 @@ export function filterHomeProducts(products, filters) {
   );
 }
 
-export function filterVendorListingItems(vendors, { category, locationValue, searchQuery }) {
-  return filterVendorsByLocation(vendors, locationValue).filter((vendor) => {
+export function filterVendorListingItems(
+  vendors,
+  { category, deliveryDate, deliveryTime, locationValue, searchQuery },
+) {
+  return filterVendorsByDeliverySlot(
+    filterVendorsByLocation(vendors, locationValue),
+    deliveryDate,
+    deliveryTime,
+  ).filter((vendor) => {
     if (!matchesCategorySelection(vendor.categoryTags, category)) {
       return false;
     }
@@ -198,9 +205,19 @@ export function filterVendorListingItems(vendors, { category, locationValue, sea
 
 export function filterProductListingItems(
   products,
-  { category, locationValue, searchQuery },
+  { category, deliveryDate, deliveryTime, locationValue, searchQuery },
 ) {
   return filterItemsByVendorLocation(products, locationValue).filter((product) => {
+    if (
+      !isVendorDeliverySlotAvailable(
+        product?.vendorData ?? product?.vendor,
+        deliveryDate,
+        deliveryTime,
+      )
+    ) {
+      return false;
+    }
+
     if (!matchesCategorySelection(product.categoryTags, category)) {
       return false;
     }
