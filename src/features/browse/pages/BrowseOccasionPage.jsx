@@ -15,7 +15,6 @@ export default function BrowseOccasionPage() {
 
   return (
     <BrowseCatalogView
-      disableLocationFiltering
       error={error}
       isLoading={isLoading}
       isRefreshing={isRefreshing}

@@ -17,7 +17,7 @@ import {
 export default function VendorListingPage() {
   const { vendorType } = useParams();
   const [searchParams] = useSearchParams();
-  const { locationValue, searchQuery } = useBrowseFilters();
+  const { deliveryDate, deliveryTime, locationValue, searchQuery } = useBrowseFilters();
   const { allVendors, popularVendors, featuredVendors } = useHomeData();
   const [visibleCount, setVisibleCount] = useState(HOME_LISTING_PAGE_SIZE);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
@@ -55,10 +55,12 @@ export default function VendorListingPage() {
     () =>
       filterVendorListingItems(vendors, {
         category: selectedCategory,
+        deliveryDate,
+        deliveryTime,
         locationValue,
         searchQuery: normalizedSearchQuery,
       }),
-    [locationValue, normalizedSearchQuery, selectedCategory, vendors],
+    [deliveryDate, deliveryTime, locationValue, normalizedSearchQuery, selectedCategory, vendors],
   );
   const visibleVendors = filteredVendors.slice(0, visibleCount);
   const hasMore = visibleCount < filteredVendors.length;

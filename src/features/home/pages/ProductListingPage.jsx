@@ -20,7 +20,7 @@ import {
 export default function ProductListingPage() {
   const { productType } = useParams();
   const [searchParams] = useSearchParams();
-  const { locationValue, searchQuery } = useBrowseFilters();
+  const { deliveryDate, deliveryTime, locationValue, searchQuery } = useBrowseFilters();
   const { popularProducts } = useHomeData();
   const [visibleCount, setVisibleCount] = useState(HOME_LISTING_PAGE_SIZE);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
@@ -42,10 +42,12 @@ export default function ProductListingPage() {
     () =>
       filterProductListingItems(popularProducts, {
         category: selectedCategory,
+        deliveryDate,
+        deliveryTime,
         locationValue,
         searchQuery: normalizedSearchQuery,
       }),
-    [locationValue, normalizedSearchQuery, popularProducts, selectedCategory],
+    [deliveryDate, deliveryTime, locationValue, normalizedSearchQuery, popularProducts, selectedCategory],
   );
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;

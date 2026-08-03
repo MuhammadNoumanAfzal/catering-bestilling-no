@@ -5,7 +5,10 @@ import BrowseTabs from "./BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
 import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
 import BrowseMenuSection from "./BrowseMenuSection";
-import { filterItemsByVendorLocation } from "../../vendor";
+import {
+  filterItemsByVendorLocation,
+  isVendorDeliverySlotAvailable,
+} from "../../vendor";
 import {
   formatCategoryLabel,
   getCategoryParamValue,
@@ -67,6 +70,8 @@ export default function BrowseCatalogView({
 }) {
   const {
     attendeeCount,
+    deliveryDate,
+    deliveryTime,
     locationValue,
     otherFilters,
     searchQuery,
@@ -143,6 +148,11 @@ export default function BrowseCatalogView({
         matchesCategory &&
         matchesAttendees &&
         matchesSearch &&
+        isVendorDeliverySlotAvailable(
+          item?.vendorData ?? item?.vendor ?? null,
+          deliveryDate,
+          deliveryTime,
+        ) &&
         matchesRatingFilter(item.rating, selectedRating) &&
         matchesDietaryFilter(item, selectedDietary) &&
         matchesOfferFilter(item, selectedOffers) &&
@@ -155,7 +165,7 @@ export default function BrowseCatalogView({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [attendeeCount, locationValue, searchQuery, selectedCategory]);
+  }, [attendeeCount, deliveryDate, deliveryTime, locationValue, searchQuery, selectedCategory]);
 
   useEffect(() => {
     if (!hasMounted.current) {
@@ -232,7 +242,7 @@ export default function BrowseCatalogView({
         sectionId="browse-results"
         title="Menu"
         items={paginatedItems}
-        totalItems={totalItems ?? filteredMenuItems.length}
+        totalItems={filteredMenuItems.length}
         activeCategoryLabel={activeCategoryLabel}
       />
 
