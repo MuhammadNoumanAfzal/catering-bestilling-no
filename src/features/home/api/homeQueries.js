@@ -39,8 +39,6 @@ export const FETCH_HOME_DATA_QUERY = `
             isActive
           }
           deliverySettings {
-            minDeliveryTime
-            maxDeliveryTime
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
@@ -96,8 +94,6 @@ export const FETCH_HOME_DATA_QUERY = `
             isActive
           }
           deliverySettings {
-            minDeliveryTime
-            maxDeliveryTime
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
@@ -154,8 +150,6 @@ export const FETCH_HOME_DATA_QUERY = `
             isActive
           }
           deliverySettings {
-            minDeliveryTime
-            maxDeliveryTime
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
@@ -212,8 +206,6 @@ export const FETCH_HOME_DATA_QUERY = `
             isActive
           }
           deliverySettings {
-            minDeliveryTime
-            maxDeliveryTime
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
@@ -292,8 +284,6 @@ export const FETCH_HOME_DATA_QUERY = `
               isActive
             }
             deliverySettings {
-              minDeliveryTime
-              maxDeliveryTime
               baseDeliveryFee
               freeDeliveryOver
               pickupAddress

@@ -51,19 +51,6 @@ function formatDeliveryFee(value) {
   return Number.isFinite(amount) ? `${amount} NOK Delivery fee` : "";
 }
 
-function formatDeliveryTime(minTime, maxTime) {
-  if (
-    Number.isFinite(minTime) &&
-    Number.isFinite(maxTime) &&
-    minTime > 0 &&
-    maxTime > 0
-  ) {
-    return `${minTime}-${maxTime} minutes`;
-  }
-
-  return "";
-}
-
 function normalizeTags(tags, fallback = []) {
   return Array.isArray(tags) && tags.length > 0 ? tags : fallback;
 }
@@ -88,8 +75,6 @@ function isCustomerVisibleMenuProduct(node) {
 
 function mapVendorNode(node) {
   const name = node?.name || "Vendor";
-  const minTime = node?.deliverySettings?.minDeliveryTime;
-  const maxTime = node?.deliverySettings?.maxDeliveryTime;
   const fee = node?.deliverySettings?.baseDeliveryFee ?? 0;
   const freeDeliveryOver = node?.deliverySettings?.freeDeliveryOver ?? "";
   const address = node?.businessSettings?.businessAddress || "";
@@ -111,7 +96,6 @@ function mapVendorNode(node) {
     banner: node?.coverPhotoUrl || node?.logoUrl || "",
     heroSideImage: node?.coverPhotoUrl || node?.logoUrl || "",
     rating: formatRating(node?.rating),
-    deliveryTime: formatDeliveryTime(minTime, maxTime),
     deliveryFee: formatDeliveryFee(fee),
     discount:
       Number(node?.discountPercentage) > 0
@@ -184,8 +168,6 @@ export function mapProductNode(node) {
     vendorData: vendor,
     image: node?.coverImage?.fileUrl || vendor?.image || "",
     rating: formatRating(node?.averageRating || node?.vendor?.rating),
-    deliveryTime:
-      node?.deliveryTime || vendor?.deliveryTime || "",
     deliveryFee:
       formatDeliveryFee(node?.deliveryFee) || vendor?.deliveryFee || "",
     discount: node?.badge || null,

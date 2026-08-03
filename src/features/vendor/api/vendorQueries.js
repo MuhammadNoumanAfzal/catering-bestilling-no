@@ -14,8 +14,6 @@ export const FETCH_VENDORS_QUERY = `
             id
             baseDeliveryFee
             freeDeliveryOver
-            minDeliveryTime
-            maxDeliveryTime
             pickupAddress
             pickupInstructions
             deliveryDays
@@ -159,8 +157,6 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
         id
         baseDeliveryFee
         freeDeliveryOver
-        minDeliveryTime
-        maxDeliveryTime
         pickupAddress
         pickupInstructions
         deliveryDays

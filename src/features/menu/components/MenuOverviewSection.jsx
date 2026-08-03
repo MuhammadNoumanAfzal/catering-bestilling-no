@@ -91,7 +91,7 @@ function MetricCard({ icon, label, value, subvalue }) {
   );
 }
 
-function TimingPanel({ leadTime, entries }) {
+function TimingPanel({ entries }) {
   return (
     <div className="rounded-[28px] border border-[#e8ddd3] bg-[linear-gradient(135deg,#fffaf6_0%,#fff4eb_100%)] p-4 shadow-[0_18px_36px_rgba(55,34,19,0.05)] sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -105,7 +105,7 @@ function TimingPanel({ leadTime, entries }) {
                 Timing
               </p>
               <p className="mt-1 text-[24px] font-semibold tracking-[-0.04em] text-[#17120f] sm:text-[28px]">
-                {leadTime || "Not available"}
+                Delivery schedule
               </p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
       </div>
 
       <div className="mt-4">
-        <TimingPanel entries={timingEntries} leadTime={vendor.leadTime} />
+        <TimingPanel entries={timingEntries} />
       </div>
 
       <div className="mt-5 rounded-[24px] border border-[#efe4da] bg-white p-5 shadow-[0_14px_28px_rgba(55,34,19,0.04)] sm:p-6">

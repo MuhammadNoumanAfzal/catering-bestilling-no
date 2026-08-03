@@ -55,8 +55,6 @@ export const FETCH_PRODUCT_QUERY = `
         deliverySettings {
           id
           baseDeliveryFee
-          minDeliveryTime
-          maxDeliveryTime
           deliveryDays
           deliveryTimeSlots {
             day

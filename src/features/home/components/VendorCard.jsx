@@ -7,7 +7,6 @@ export default function VendorCard({
   name,
   slug,
   rating,
-  deliveryTime,
   deliveryFee,
   discount,
 }) {
@@ -35,11 +34,12 @@ export default function VendorCard({
         </div>
       </div>
 
-      <div className="type-subpara mt-1 flex items-center gap-1.5 text-[#666]">
-        <span>{deliveryTime}</span>
-        <LiaBicycleSolid className="text-[12px] text-[#888]" />
-        <span>{deliveryFee}</span>
-      </div>
+      {deliveryFee ? (
+        <div className="type-subpara mt-1 flex items-center gap-1.5 text-[#666]">
+          <LiaBicycleSolid className="text-[12px] text-[#888]" />
+          <span>{deliveryFee}</span>
+        </div>
+      ) : null}
 
       {discount ? (
         <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#fff1eb] px-2 py-1 text-[#ff6a3d]">
