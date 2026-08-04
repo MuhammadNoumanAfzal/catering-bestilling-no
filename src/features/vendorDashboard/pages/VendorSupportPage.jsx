@@ -2,7 +2,10 @@ import { useState } from "react";
 import SupportTicketForm from "../components/support/SupportTicketForm";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { createSupportTicket } from "../support/api";
-import { uploadMenuImage } from "../../menu/api/menuUploadApi";
+import {
+  isMenuImageUploadConfigured,
+  uploadMenuImage,
+} from "../../menu/api/menuUploadApi";
 
 const ALLOWED_ATTACHMENT_TYPES = [
   "image/png",
@@ -34,6 +37,7 @@ const INITIAL_FORM_STATE = {
 };
 
 export default function VendorSupportPage() {
+  const attachmentUploadAvailable = isMenuImageUploadConfigured();
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -56,7 +60,6 @@ export default function VendorSupportPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     setIsSubmitting(true);
 
     try {
@@ -102,6 +105,7 @@ export default function VendorSupportPage() {
 
       <SupportTicketForm
         attachmentError={attachmentError}
+        attachmentUploadAvailable={attachmentUploadAvailable}
         fileName={selectedFileName}
         formState={formState}
         isSubmitting={isSubmitting}
@@ -109,6 +113,15 @@ export default function VendorSupportPage() {
         onFileChange={(event) => {
           const nextFile = event.target.files?.[0] ?? null;
           setAttachmentError("");
+
+          if (!attachmentUploadAvailable) {
+            setSelectedFile(null);
+            setSelectedFileName("");
+            setAttachmentError(
+              "Attachments are temporarily unavailable right now. You can still submit your ticket without an image.",
+            );
+            return;
+          }
 
           if (!nextFile) {
             setSelectedFile(null);

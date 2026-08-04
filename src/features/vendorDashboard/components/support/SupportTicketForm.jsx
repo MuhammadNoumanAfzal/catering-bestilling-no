@@ -3,6 +3,7 @@ import SupportUploadBox from "./SupportUploadBox";
 
 export default function SupportTicketForm({
   attachmentError,
+  attachmentUploadAvailable = true,
   fileName,
   formState,
   isSubmitting = false,
@@ -22,13 +23,13 @@ export default function SupportTicketForm({
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-4 px-5 py-5 sm:px-6">
+      <form className="space-y-4 px-5 py-5 sm:px-6" onSubmit={onSubmit}>
         <div className="grid gap-4 md:grid-cols-2">
           <SupportField
             as="select"
             label="Subject/Issue Type"
-            value={formState.subject}
             onChange={(event) => onFieldChange("subject", event.target.value)}
+            value={formState.subject}
           >
             <option value="">Select issue type</option>
             {subjectOptions.map((option) => (
@@ -40,25 +41,29 @@ export default function SupportTicketForm({
 
           <SupportField
             label="Related Order (Optional)"
-            value={formState.orderId}
             onChange={(event) => onFieldChange("orderId", event.target.value)}
             placeholder="Enter Order ID (e.g. #12450)"
+            value={formState.orderId}
           />
         </div>
 
         <SupportField
           as="textarea"
           label="Description"
-          value={formState.description}
           onChange={(event) => onFieldChange("description", event.target.value)}
           placeholder="Please describe your issue in detail..."
+          value={formState.description}
         >
           <div className="mt-1 text-right text-[11px] text-[#9b9188]">
             {formState.description.length}/500
           </div>
         </SupportField>
 
-        <SupportUploadBox fileName={fileName} onChange={onFileChange} />
+        <SupportUploadBox
+          disabled={!attachmentUploadAvailable}
+          fileName={fileName}
+          onChange={onFileChange}
+        />
 
         {attachmentError ? (
           <p className="text-xs text-[#c05445]">{attachmentError}</p>
@@ -70,9 +75,9 @@ export default function SupportTicketForm({
 
         <div className="flex justify-end">
           <button
-            type="submit"
-            disabled={isSubmitting}
             className="rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#bb602d]"
+            disabled={isSubmitting}
+            type="submit"
           >
             {isSubmitting ? "Submitting..." : "Submit Ticket"}
           </button>
