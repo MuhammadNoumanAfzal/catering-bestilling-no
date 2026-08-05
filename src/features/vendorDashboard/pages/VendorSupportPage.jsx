@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import SupportTicketForm from "../components/support/SupportTicketForm";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { createSupportTicket } from "../support/api";
@@ -96,11 +97,20 @@ export default function VendorSupportPage() {
 
   return (
     <div className="space-y-6">
-      <section>
-        <h1 className="type-h2 text-[#191919]">Support Center</h1>
-        <p className="mt-2 type-para text-[#635b53]">
-          We&apos;re here to help. Find answers or get in touch with our team.
-        </p>
+      <section className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="type-h2 text-[#191919]">Support Center</h1>
+          <p className="mt-2 type-para text-[#635b53]">
+            We&apos;re here to help. Find answers or get in touch with our team.
+          </p>
+        </div>
+
+        <Link
+          className="inline-flex h-[42px] items-center justify-center rounded-[10px] border border-[#dfd3c8] bg-white px-4 text-[14px] font-bold text-[#2a211b] no-underline transition hover:bg-[#faf6f2] hover:text-[#cf6e38]"
+          to="/vendor-dashboard/support/responses"
+        >
+          View Responses
+        </Link>
       </section>
 
       <SupportTicketForm

@@ -1,1 +1,6 @@
-export { createSupportTicket } from "./supportService";
+export {
+  createSupportTicket,
+  getMySupportTicket,
+  getMySupportTickets,
+  replyToOwnSupportTicket,
+} from "./supportService";
