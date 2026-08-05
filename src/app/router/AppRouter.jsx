@@ -106,6 +106,9 @@ const VendorNotificationsPage = lazy(() =>
 const VendorSupportPage = lazy(() =>
   import("../../features/vendorDashboard/pages/VendorSupportPage"),
 );
+const VendorSupportResponsesPage = lazy(() =>
+  import("../../features/vendorDashboard/pages/VendorSupportResponsesPage"),
+);
 const VendorAddressPage = lazy(() =>
   import("../../features/vendorDashboard/pages/VendorAddressPage"),
 );
@@ -185,6 +188,7 @@ export default function AppRouter() {
             <Route path="invoices/:invoiceId" element={<VendorInvoiceDetailsPage />} />
             <Route path="notifications" element={<VendorNotificationsPage />} />
             <Route path="support" element={<VendorSupportPage />} />
+            <Route path="support/responses" element={<VendorSupportResponsesPage />} />
             {/* Rewards screen disabled */}
             <Route
               path="rewards"
