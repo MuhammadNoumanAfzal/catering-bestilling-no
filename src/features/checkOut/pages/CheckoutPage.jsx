@@ -12,8 +12,10 @@ import {
   EventDetailsSection,
 } from "../components";
 import { useCheckoutPage } from "../hooks/useCheckoutPage";
+import { useTranslation } from "react-i18next";
 
 export default function CheckoutPage() {
+  const { t } = useTranslation();
   const {
     applySavedAddress,
     carts,
@@ -73,8 +75,7 @@ export default function CheckoutPage() {
 
                 {pricingError ? (
                   <div className="rounded-[12px] border border-[#f2dfd0] bg-[#fff8f3] px-3 py-3 text-[13px] text-[#8a5a3b]">
-                    Live price preview is temporarily unavailable. You can still place your
-                    order and the final total will be confirmed during checkout.
+                    {t("checkout.pricingUnavailable")}
                   </div>
                 ) : null}
 
@@ -93,15 +94,15 @@ export default function CheckoutPage() {
 
                 {isAutofilling ? (
                   <div className="rounded-[12px] border border-[#eadfd5] bg-[#fffaf6] px-3 py-3 text-[13px] text-[#7f6c5d]">
-                    Loading your saved account details...
+                    {t("checkout.loadingSavedDetails")}
                   </div>
                 ) : null}
 
                 <CheckoutSection
-                  title="Delivery Address"
+                  title={t("checkout.deliveryAddress")}
                   actions={
                     <CheckoutAddressControls
-                      title="Edit address"
+                      title={t("checkout.editAddress")}
                       selectedAddressId={formState.selectedDeliveryAddressId}
                       savedAddresses={deliveryAddresses}
                       onSelectAddress={(addressId) => applySavedAddress("delivery", addressId)}
@@ -115,8 +116,8 @@ export default function CheckoutPage() {
                   <CheckoutAddressPreview
                     formState={formState}
                     prefix="delivery"
-                    title="Current delivery address"
-                    emptyText="Choose a saved delivery address or add a custom one."
+                    title={t("checkout.currentDeliveryAddress")}
+                    emptyText={t("checkout.deliveryAddressEmpty")}
                   />
 
                   {isDeliveryAddressEditing ? (
@@ -132,7 +133,7 @@ export default function CheckoutPage() {
                 </CheckoutSection>
 
                 <CheckoutSection
-                  title="Invoice Address"
+                  title={t("checkout.invoiceAddress")}
                   actions={
                     <div className="flex flex-col gap-3 sm:items-end">
                       <label className="flex cursor-pointer items-center gap-2 text-[13px] font-medium text-[#5f564f]">
@@ -147,12 +148,12 @@ export default function CheckoutPage() {
                           }
                           className="h-4 w-4 accent-[#cf6e38]"
                         />
-                        Use delivery address for invoice
+                        {t("checkout.useDeliveryForInvoice")}
                       </label>
 
                       {!formState.invoiceSameAsDelivery ? (
                         <CheckoutAddressControls
-                          title="Edit invoice address"
+                          title={t("checkout.editInvoiceAddress")}
                           selectedAddressId={formState.selectedInvoiceAddressId}
                           savedAddresses={invoiceAddresses}
                           onSelectAddress={(addressId) =>
@@ -170,8 +171,8 @@ export default function CheckoutPage() {
                   <CheckoutAddressPreview
                     formState={formState}
                     prefix="invoice"
-                    title="Current invoice address"
-                    emptyText="Choose a saved invoice address or add a custom one."
+                    title={t("checkout.currentInvoiceAddress")}
+                    emptyText={t("checkout.invoiceAddressEmpty")}
                   />
 
                   {isInvoiceAddressEditing && !formState.invoiceSameAsDelivery ? (
@@ -220,9 +221,9 @@ export default function CheckoutPage() {
               ) : (
                 <aside className="flex min-h-[360px] items-center justify-center border-l border-[#d8d2ca] bg-white p-6 text-center">
                   <div>
-                    <p className="type-h4 text-[#2d2d2d]">Your cart is empty</p>
+                    <p className="type-h4 text-[#2d2d2d]">{t("checkout.emptyCartTitle")}</p>
                     <p className="type-subpara mt-2 text-[#6f675f]">
-                      Add menu items before continuing to checkout.
+                      {t("checkout.emptyCartDescription")}
                     </p>
                   </div>
                 </aside>

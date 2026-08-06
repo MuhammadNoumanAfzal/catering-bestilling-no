@@ -1,25 +1,27 @@
 import CheckoutField from "./CheckoutField";
 import CheckoutSection from "./CheckoutSection";
 import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
+import { useTranslation } from "react-i18next";
 
 export default function ContactInfoSection({
   mode,
   formState,
   updateField,
 }) {
+  const { t } = useTranslation();
   return (
-    <CheckoutSection title="Contact Info">
+    <CheckoutSection title={t("checkout.contactInfo")}>
       {mode === "corporate" ? (
         <div className="grid gap-3 sm:grid-cols-2">
           <CheckoutField
-            label="CompanyName"
+            label={t("checkout.companyName")}
             value={formState.companyName}
             onChange={(event) => updateField("companyName", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.companyName}
             className="sm:col-span-2"
           />
           <CheckoutField
-            label="Organization number"
+            label={t("checkout.organizationNumber")}
             value={formState.organizationNumber}
             onChange={(event) =>
               updateField("organizationNumber", event.target.value)
@@ -27,7 +29,7 @@ export default function ContactInfoSection({
             placeholder={CHECKOUT_PLACEHOLDERS.organizationNumber}
           />
           <CheckoutField
-            label="Invoice Reference"
+            label={t("checkout.invoiceReference")}
             value={formState.invoiceReference}
             onChange={(event) =>
               updateField("invoiceReference", event.target.value)
@@ -35,14 +37,14 @@ export default function ContactInfoSection({
             placeholder={CHECKOUT_PLACEHOLDERS.invoiceReference}
           />
           <CheckoutField
-            label="Email"
+            label={t("checkout.email")}
             type="email"
             value={formState.email}
             onChange={(event) => updateField("email", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.email}
           />
           <CheckoutField
-            label="Phone"
+            label={t("checkout.phone")}
             value={formState.phone}
             onChange={(event) => updateField("phone", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.phone}
@@ -51,19 +53,19 @@ export default function ContactInfoSection({
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           <CheckoutField
-            label="First Name"
+            label={t("checkout.firstName")}
             value={formState.firstName}
             onChange={(event) => updateField("firstName", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.firstName}
           />
           <CheckoutField
-            label="Last Name"
+            label={t("checkout.lastName")}
             value={formState.lastName}
             onChange={(event) => updateField("lastName", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.lastName}
           />
           <CheckoutField
-            label="Invoice Reference"
+            label={t("checkout.invoiceReference")}
             value={formState.invoiceReference}
             onChange={(event) =>
               updateField("invoiceReference", event.target.value)
@@ -71,13 +73,13 @@ export default function ContactInfoSection({
             placeholder={CHECKOUT_PLACEHOLDERS.invoiceReference}
           />
           <CheckoutField
-            label="Phone"
+            label={t("checkout.phone")}
             value={formState.phone}
             onChange={(event) => updateField("phone", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.phone}
           />
           <CheckoutField
-            label="Email"
+            label={t("checkout.email")}
             type="email"
             value={formState.email}
             onChange={(event) => updateField("email", event.target.value)}

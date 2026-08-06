@@ -98,7 +98,7 @@ export function useOrderConfirmedPage() {
         }
 
         if (!nextValue.canModify) {
-          setModifyError("This order can no longer be modified.");
+          setModifyError(i18n.t("modifyOrder.noLongerModifiable"));
         }
 
         setModifyInitialValue(nextValue);
@@ -111,7 +111,7 @@ export function useOrderConfirmedPage() {
         setModifyError(
           error instanceof Error
             ? error.message
-            : "Unable to load current order details.",
+            : i18n.t("modifyOrder.loadFailed"),
         );
       } finally {
         if (isMounted) {
@@ -135,8 +135,8 @@ export function useOrderConfirmedPage() {
 
     if (!rawPrimaryOrderId) {
       await showAuthErrorAlert(
-        "This order does not have a valid id for modification.",
-        "Modify order failed",
+        i18n.t("modifyOrder.invalidIdMessage"),
+        i18n.t("modifyOrder.failedTitle"),
       );
       return;
     }
@@ -170,7 +170,7 @@ export function useOrderConfirmedPage() {
       const message =
         error instanceof Error
           ? error.message
-          : "Unable to modify this order right now.";
+          : i18n.t("modifyOrder.saveFailed");
       setModifyError(message);
     } finally {
       setIsModifySaving(false);
@@ -189,7 +189,7 @@ export function useOrderConfirmedPage() {
     try {
       const result = await approveVendorOrderAdjustment({
         adjustmentId: pendingVendorAdjustment.id,
-        note: "Customer approved the vendor adjustment.",
+        note: i18n.t("orderConfirmed.customerApprovedNote"),
       });
 
       const nextPlacedOrderDraft = await savePlacedOrderDraftChanges(
@@ -232,8 +232,8 @@ export function useOrderConfirmedPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to approve the vendor adjustment.",
-        "Adjustment approval failed",
+          : i18n.t("orderConfirmed.approveFailedMessage"),
+        i18n.t("orderConfirmed.approveFailedTitle"),
       );
     } finally {
       setIsResolvingVendorAdjustment(false);
@@ -303,8 +303,8 @@ export function useOrderConfirmedPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to reject the vendor adjustment.",
-        "Adjustment rejection failed",
+          : i18n.t("orderConfirmed.rejectFailedMessage"),
+        i18n.t("orderConfirmed.rejectFailedTitle"),
       );
     } finally {
       setIsResolvingVendorAdjustment(false);

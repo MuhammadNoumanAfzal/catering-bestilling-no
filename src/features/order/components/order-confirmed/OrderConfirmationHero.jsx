@@ -1,6 +1,8 @@
 import { FaCheck } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 export default function OrderConfirmationHero() {
+  const { t } = useTranslation();
   return (
     <>
       <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#fff1ea]">
@@ -10,14 +12,13 @@ export default function OrderConfirmationHero() {
       </div>
 
       <p className="mt-6 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#b77754]">
-        Order placed successfully
+        {t("orderConfirmed.placedSuccessfully")}
       </p>
       <h1 className="mt-3 text-[34px] font-semibold leading-tight text-[#201b17] sm:text-[42px]">
-        Your catering order has been placed
+        {t("orderConfirmed.heroTitle")}
       </h1>
       <p className="mx-auto mt-4 max-w-2xl text-[17px] leading-7 text-[#5f5a55]">
-        We have received your request and sent it to the vendor. You will
-        receive an email confirmation shortly with the final order details.
+        {t("orderConfirmed.heroDescription")}
       </p>
     </>
   );

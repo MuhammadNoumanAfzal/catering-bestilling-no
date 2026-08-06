@@ -3,16 +3,18 @@ import {
   CHECKOUT_MODE_LABELS,
   VALID_CHECKOUT_TYPES,
 } from "../../constants/checkoutForm";
+import { useTranslation } from "react-i18next";
 
 export default function CustomerTypeSelector({
   normalizedType,
   onTypeChange,
 }) {
+  const { t } = useTranslation();
   return (
     <section className="rounded-[10px] border border-[#e6dfd7] bg-white p-3 shadow-[0_2px_10px_rgba(26,18,10,0.08)]">
       <div className="flex items-center gap-2 text-[#222222]">
         <FiUser className="type-h3 text-[#d46331]" />
-        <p className="type-h3 font-semibold leading-none">Customer type</p>
+        <p className="type-h3 font-semibold leading-none">{t("checkout.customerType")}</p>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-4 type-h5">
@@ -32,7 +34,7 @@ export default function CustomerTypeSelector({
               }`}
             >
               <Icon className="type-h3" />
-              <span>{CHECKOUT_MODE_LABELS[type]}</span>
+              <span>{t(`checkout.mode.${type}`, CHECKOUT_MODE_LABELS[type])}</span>
             </button>
           );
         })}

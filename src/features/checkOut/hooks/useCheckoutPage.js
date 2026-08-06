@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import i18n from "../../../i18n";
 import { useAuth } from "../../auth";
 import {
   filterDeliverySlotsForDate,
@@ -462,42 +463,42 @@ export function useCheckoutPage() {
   );
   const checkoutActionLabel = useMemo(() => {
     if (isSubmittingOrder) {
-      return "Placing order...";
+      return i18n.t("checkout.placingOrder");
     }
 
     if (!`${formState.date ?? ""}`.trim()) {
-      return "Select delivery date";
+      return i18n.t("checkout.selectDeliveryDate");
     }
 
     if (!`${formState.time ?? ""}`.trim()) {
-      return "Select delivery time";
+      return i18n.t("checkout.selectDeliveryTime");
     }
 
     if (!`${formState.deliveryAddress ?? ""}`.trim()) {
-      return "Add delivery address";
+      return i18n.t("checkout.addDeliveryAddress");
     }
 
     if (!`${formState.deliveryPostalCode ?? ""}`.trim()) {
-      return "Add delivery postal code";
+      return i18n.t("checkout.addDeliveryPostalCode");
     }
 
     if (!`${formState.deliveryCity ?? ""}`.trim()) {
-      return "Add delivery city";
+      return i18n.t("checkout.addDeliveryCity");
     }
 
     if (isLoadingPricing) {
-      return "Checking availability...";
+      return i18n.t("checkout.checkingAvailability");
     }
 
     if (blockingAvailabilityIssues.length > 0) {
-      return checkoutAvailabilityMessage || "Checkout unavailable";
+      return checkoutAvailabilityMessage || i18n.t("checkout.unavailable");
     }
 
     if (!hasLivePricing) {
-      return "Waiting for live pricing";
+      return i18n.t("checkout.waitingForLivePricing");
     }
 
-    return "Place Order";
+    return i18n.t("checkout.placeOrder");
   }, [
     blockingAvailabilityIssues.length,
     checkoutAvailabilityMessage,
@@ -736,7 +737,7 @@ export function useCheckoutPage() {
           setPricingError(
             error instanceof Error && error.message
               ? error.message
-              : "Unable to load backend checkout pricing.",
+              : i18n.t("checkout.backendPricingError"),
           );
           setCarts((current) =>
             current.map((cart) => ({
@@ -886,7 +887,7 @@ export function useCheckoutPage() {
         }
       }
 
-      await showAuthErrorAlert(validationError, "Checkout details required");
+      await showAuthErrorAlert(validationError, i18n.t("checkout.detailsRequiredTitle"));
       return;
     }
 
@@ -895,7 +896,7 @@ export function useCheckoutPage() {
       setCheckoutErrorMessage(message);
       await showAuthErrorAlert(
         message,
-        "Selected slot is no longer available",
+        i18n.t("checkout.selectedSlotUnavailableTitle"),
       );
       return;
     }
@@ -947,8 +948,8 @@ export function useCheckoutPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to place your order right now.",
-        "Order placement failed",
+          : i18n.t("checkout.placeOrderFailedMessage"),
+        i18n.t("checkout.placeOrderFailedTitle"),
       );
     } finally {
       setIsSubmittingOrder(false);

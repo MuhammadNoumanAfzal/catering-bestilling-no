@@ -1,5 +1,6 @@
 import CheckoutField from "./CheckoutField";
 import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
+import { useTranslation } from "react-i18next";
 
 export default function CheckoutAddressFields({
   mode,
@@ -7,10 +8,11 @@ export default function CheckoutAddressFields({
   formState,
   updateField,
 }) {
+  const { t } = useTranslation();
   const lineTwoLabel =
-    mode === "corporate" ? "Suite/Floor(optional)" : "Apartment/Floor (Optional)";
-  const firstRowLabel = mode === "corporate" ? "City" : "Postal Code";
-  const secondRowLabel = mode === "corporate" ? "Postal Code" : "City";
+    mode === "corporate" ? t("checkout.suiteFloorOptional") : t("checkout.apartmentFloorOptional");
+  const firstRowLabel = mode === "corporate" ? t("checkout.city") : t("checkout.postalCode");
+  const secondRowLabel = mode === "corporate" ? t("checkout.postalCode") : t("checkout.city");
   const firstRowKey = mode === "corporate" ? `${prefix}City` : `${prefix}PostalCode`;
   const secondRowKey =
     mode === "corporate" ? `${prefix}PostalCode` : `${prefix}City`;
@@ -18,7 +20,7 @@ export default function CheckoutAddressFields({
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       <CheckoutField
-        label="Address"
+        label={t("checkout.address")}
         value={formState[`${prefix}Address`]}
         onChange={(event) => updateField(`${prefix}Address`, event.target.value)}
         placeholder={CHECKOUT_PLACEHOLDERS.address}

@@ -1,5 +1,6 @@
 import VendorSummaryCard from "./summary/VendorSummaryCard";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   formatCurrency,
   getCheckoutTotals,
@@ -16,6 +17,7 @@ export default function CheckoutSummaryPanel({
   onRemoveItem,
   onPlaceOrder,
 }) {
+  const { t } = useTranslation();
   const totals = getCheckoutTotals(carts);
   const grandTotal = totals.grandTotal;
 
@@ -25,11 +27,11 @@ export default function CheckoutSummaryPanel({
         <div className="rounded-[22px] border border-[#e1d8cf] bg-[#f8f5f1] p-3 shadow-[0_18px_40px_rgba(31,21,13,0.08)]">
           <div className="mb-3 rounded-[16px] bg-[#cf6e38] px-4 py-3 text-white">
             <p className="type-para font-semibold uppercase tracking-[0.16em] text-white/80">
-              Checkout summary
+              {t("checkout.summary")}
             </p>
             <div className="mt-2 flex items-center justify-between gap-3">
               <span className="type-para font-medium text-white/85">
-                Current total
+                {t("checkout.currentTotal")}
               </span>
               <span className="text-[24px] font-semibold leading-none text-white">
                 NOK {formatCurrency(grandTotal)}
@@ -52,10 +54,10 @@ export default function CheckoutSummaryPanel({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="type-para font-semibold uppercase tracking-[0.12em] text-white/70">
-                  Total to pay
+                  {t("checkout.totalToPay")}
                 </p>
                 <p className="mt-1 type-subpara text-white/85">
-                  Final amount shown to the customer
+                  {t("checkout.finalAmountShown")}
                 </p>
               </div>
 
@@ -67,21 +69,21 @@ export default function CheckoutSummaryPanel({
 
           <div className="mt-3 rounded-[16px] border border-[#ead6ca] bg-white px-4 py-4">
             <p className="type-subpara text-[#8b8580]">
-              I agree to the{" "}
+              {t("checkout.agreePrefix")}{" "}
               <Link
                 to="/terms-and-conditions"
                 className="font-semibold text-[#c85f33]"
               >
-                Terms &amp; Conditions
+                {t("footer.terms")}
               </Link>{" "}
-              and{" "}
+              {t("checkout.and")}{" "}
               <Link
                 to="/privacy-policy"
                 className="font-semibold text-[#c85f33]"
               >
-                Privacy Policy
+                {t("footer.privacy")}
               </Link>{" "}
-              and complete payment for this order.
+              {t("checkout.agreeSuffix")}
             </p>
             <button
               type="button"
@@ -98,7 +100,7 @@ export default function CheckoutSummaryPanel({
             ) : null}
             {isLoadingPricing ? (
               <p className="mt-2 text-center text-[12px] text-[#8b8580]">
-                Updating totals in the background...
+                {t("checkout.updatingTotals")}
               </p>
             ) : null}
           </div>
