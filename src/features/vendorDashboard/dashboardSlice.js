@@ -56,7 +56,7 @@ export const fetchDashboardData = createAsyncThunk(
       
       const recentOrders = (data.recentOrders || []).map((order) => ({
         id: formatId(order.id),
-        eventName: order.eventName || "Lunch Order",
+        eventName: order.eventName || "",
         date: formatDate(order.eventDate),
         status: order.status || "Pending",
         amount: formatAmount(order.grandTotal),
@@ -64,7 +64,7 @@ export const fetchDashboardData = createAsyncThunk(
 
       const recentInvoices = (data.recentInvoices || []).map((invoice) => ({
         id: formatId(invoice.id),
-        eventName: invoice.eventName || "Corporate Invoice",
+        eventName: invoice.eventName || "",
         date: formatDate(invoice.eventDate),
         status: invoice.status || "Pending",
         amount: formatAmount(invoice.grandTotal),
@@ -77,7 +77,7 @@ export const fetchDashboardData = createAsyncThunk(
         recentInvoices,
       };
     } catch (error) {
-      return rejectWithValue(error.message || "Failed to fetch dashboard data.");
+      return rejectWithValue(error.message || "");
     }
   }
 );
@@ -110,7 +110,7 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchDashboardData.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload || "Failed to load dashboard data.";
+        state.error = action.payload || "";
       });
   },
 });
