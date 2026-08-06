@@ -1,12 +1,14 @@
 import { FiUploadCloud } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import { translateSupport } from "./supportI18n";
 
 export default function SupportUploadBox({ disabled = false, fileName, onChange }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSupport(t, i18n, key, options);
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-semibold text-[#2d2d2d]">
-        {t("vendorPanel.supportPage.attachments")}
+        {st("attachments")}
       </span>
 
       <div
@@ -40,12 +42,12 @@ export default function SupportUploadBox({ disabled = false, fileName, onChange 
           </span>
 
           <span className="mt-3 text-sm font-semibold text-[#1f1f1f]">
-            {disabled ? t("vendorPanel.supportPage.attachmentUnavailable") : t("vendorPanel.supportPage.clickOrDrag")}
+            {disabled ? st("attachmentUnavailable") : st("clickOrDrag")}
           </span>
           <span className="mt-1 text-xs text-[#8b8177]">
             {disabled
-              ? t("vendorPanel.supportPage.attachmentDisabledHint")
-              : t("vendorPanel.supportPage.attachmentHint")}
+              ? st("attachmentDisabledHint")
+              : st("attachmentHint")}
           </span>
           {fileName && !disabled ? (
             <span className="mt-3 rounded-full bg-[#f8f2ec] px-3 py-1 text-xs font-semibold text-[#8a5d3b]">
