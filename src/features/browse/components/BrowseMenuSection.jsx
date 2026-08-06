@@ -1,13 +1,16 @@
 import MenuCard from "../../../components/shared/MenuCard";
+import { useTranslation } from "react-i18next";
 
 function EmptyState({ categoryLabel }) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-[28px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-16 text-center">
-      <h3 className="type-h3 text-[#1f1f1f]">No Menu Found</h3>
+      <h3 className="type-h3 text-[#1f1f1f]">{t("browse.noMenuFound")}</h3>
       <p className="mx-auto mt-3 max-w-[520px] text-sm leading-6 text-[#746b63]">
         {categoryLabel
-          ? `There are no available menu items for ${categoryLabel} right now. Try another category to see more options.`
-          : "There are no available menu items right now. Try another category to see more options."}
+          ? t("browse.noMenuForCategory", { categoryLabel })
+          : t("browse.noMenuGeneric")}
       </p>
     </div>
   );
@@ -22,6 +25,7 @@ export default function BrowseMenuSection({
   seeAllLabel = "See all",
   onSeeAllClick,
 }) {
+  const { t } = useTranslation();
   return (
     <section id={sectionId} className="mt-12 ">
       <div className="mx-auto px-4 w-full max-w-7xl">
@@ -29,7 +33,7 @@ export default function BrowseMenuSection({
           <h2 className="type-h3 font-semibold text-[#191919]">{title}</h2>
           <div className="flex items-center gap-3">
             <p className="text-sm text-[#777]">
-              {totalItems ?? items.length} items
+              {t("browse.itemsCount", { count: totalItems ?? items.length })}
             </p>
 
             {onSeeAllClick ? (
@@ -38,7 +42,7 @@ export default function BrowseMenuSection({
                 onClick={onSeeAllClick}
                 className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#d9d1c7] px-5 py-2 text-sm font-medium text-[#191919] transition hover:border-[#c46a35] hover:text-[#c46a35]"
               >
-                {seeAllLabel}
+                {seeAllLabel || t("browse.seeAll")}
               </button>
             ) : null}
           </div>

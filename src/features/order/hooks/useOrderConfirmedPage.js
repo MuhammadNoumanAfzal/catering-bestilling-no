@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
+import i18n from "../../../i18n";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import { withBaseOptions } from "../../../utils/alerts";
 import {
   approveVendorOrderAdjustment,
   fetchOrderModificationDetails,
@@ -245,29 +247,28 @@ export function useOrderConfirmedPage() {
       return;
     }
 
-    const response = await Swal.fire({
-      title: "Reject vendor adjustment?",
-      text: "Tell the vendor why you cannot accept these changes.",
-      input: "textarea",
-      inputPlaceholder: "Enter rejection reason",
-      inputAttributes: {
-        "aria-label": "Rejection reason",
-      },
-      showCancelButton: true,
-      confirmButtonText: "Reject adjustment",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#cf6e38",
-      cancelButtonColor: "#d7cec6",
-      background: "#fffaf6",
-      color: "#201b17",
-      inputValidator: (value) => {
-        if (!`${value ?? ""}`.trim()) {
-          return "A rejection reason is required.";
-        }
+    const response = await Swal.fire(
+      withBaseOptions({
+        title: i18n.t("alerts.rejectAdjustmentTitle"),
+        text: i18n.t("alerts.rejectAdjustmentText"),
+        input: "textarea",
+        inputPlaceholder: i18n.t("alerts.rejectionPlaceholder"),
+        inputAttributes: {
+          "aria-label": i18n.t("alerts.rejectionReasonLabel"),
+        },
+        showCancelButton: true,
+        confirmButtonText: i18n.t("alerts.rejectAdjustmentConfirm"),
+        cancelButtonText: i18n.t("alerts.cancel"),
+        cancelButtonColor: "#d7cec6",
+        inputValidator: (value) => {
+          if (!`${value ?? ""}`.trim()) {
+            return i18n.t("alerts.rejectionReasonRequired");
+          }
 
-        return undefined;
-      },
-    });
+          return undefined;
+        },
+      }),
+    );
 
     if (!response.isConfirmed) {
       return;

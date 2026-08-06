@@ -393,6 +393,95 @@ const en = {
     add: "Add",
     addMainDishFirst: "Add main dish first",
   },
+  alerts: {
+    okay: "Okay",
+    continue: "Continue",
+    tryAgain: "Try again",
+    somethingWentWrong: "Something went wrong",
+    requestSubmittedTitle: "Request submitted",
+    requestSubmittedText:
+      "Your request has been submitted successfully. Our team will review it and contact you soon.",
+    removeItemTitle: "Remove item?",
+    removeNamedItemText: 'Remove "{{itemName}}" from your cart?',
+    removeGenericItemText: "Remove this item from your cart?",
+    removeConfirm: "Yes, remove it",
+    keepIt: "Keep it",
+    placeOrderTitle: "Place order now?",
+    placeOrderText:
+      "We will submit your catering order and clear your current cart.",
+    placeOrderConfirm: "Place order",
+    notYet: "Not yet",
+    logoutTitle: "Log out now?",
+    logoutText: "You will be signed out of your current session.",
+    logoutConfirm: "Log out",
+    staySignedIn: "Stay signed in",
+    orderPlacedTitle: "Order placed",
+    orderPlacedText: "Your catering order was submitted successfully.",
+    signInRequiredTitle: "Sign in required",
+    signInRequiredText:
+      "Please sign in or create an account before placing an order.",
+    signIn: "Sign in",
+    createAccount: "Create account",
+    notNow: "Not now",
+    noVendorsTitle: "No Vendors Found",
+    noVendorsText:
+      "Sorry! No vendors are available for the entered postal code.",
+    noVendorsTextWithLocation:
+      "Sorry! No vendors are available for {{locationLabel}}.",
+    noProductsTitle: "No Products Found",
+    noProductsText:
+      "There are currently no popular products available for this location.",
+    thisMenu: "This menu",
+    availableOn: "Available on {{availableDaysLabel}}",
+    chooseAnotherDate: "Choose another date",
+    menuUnavailableTitle: "Menu unavailable",
+    vendorClosedTitle: "Vendor closed on selected date",
+    thisVendor: "This vendor",
+    selectedDateUnavailable: "Selected date unavailable",
+    closedReason: "Closed reason: {{closureReason}}",
+    vendorNotAcceptingRange:
+      "This vendor is not accepting orders for {{rangeLabel}}.",
+    vendorNotAcceptingSelectedDate:
+      "This vendor is not accepting orders on the selected date.",
+    deactivateTitle: "Deactivate account?",
+    deactivateText:
+      "You will be signed out and can reactivate later by signing in again.",
+    deactivateConfirm: "Deactivate account",
+    keepAccountActive: "Keep account active",
+    deleteTitle: "Delete account permanently?",
+    deleteIntro:
+      "This action permanently anonymizes your customer account and removes saved account data.",
+    deleteWarning: "This cannot be undone.",
+    deleteConfirm: "Delete permanently",
+    cancel: "Cancel",
+    rejectAdjustmentTitle: "Reject vendor adjustment?",
+    rejectAdjustmentText:
+      "Tell the vendor why you cannot accept these changes.",
+    rejectionPlaceholder: "Enter rejection reason",
+    rejectionReasonLabel: "Rejection reason",
+    rejectAdjustmentConfirm: "Reject adjustment",
+    rejectionReasonRequired: "A rejection reason is required.",
+  },
+  browse: {
+    loadingTitle: "Loading the menu, please wait...",
+    loadingDescription:
+      "We're loading the best matching menu options for your selected category and filters.",
+    loadErrorTitle: "Unable to load browse page",
+    updatingResults: "Updating menu results...",
+    menuTitle: "Menu",
+    previous: "Previous",
+    next: "Next",
+    itemsCount: "{{count}} items",
+    seeAll: "See all",
+    noMenuFound: "No Menu Found",
+    noMenuForCategory:
+      "There are no available menu items for {{categoryLabel}} right now. Try another category to see more options.",
+    noMenuGeneric:
+      "There are no available menu items right now. Try another category to see more options.",
+    clearFilter: "Clear filter",
+    apply: "Apply",
+    applied: "Applied",
+  },
 };
 
 export default en;

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FiMoreHorizontal } from "react-icons/fi";
 
 const CATEGORY_STRIP_VARIANTS = {
@@ -70,6 +71,7 @@ export default function BrowseCategoryStrip({
   isOpen,
   onOpenChange,
 }) {
+  const { t } = useTranslation();
   const [internalOpen, setInternalOpen] = useState(false);
   const [selectedMoreOptions, setSelectedMoreOptions] = useState([]);
 
@@ -242,7 +244,7 @@ export default function BrowseCategoryStrip({
               onClick={clearFilters}
               className={styles.clearButton}
             >
-              Clear filter
+              {t("browse.clearFilter")}
             </button>
 
             <button
@@ -250,7 +252,7 @@ export default function BrowseCategoryStrip({
               onClick={applyFilters}
               className={styles.applyButton}
             >
-              Apply
+              {t("browse.apply")}
             </button>
           </div>
         </div>
