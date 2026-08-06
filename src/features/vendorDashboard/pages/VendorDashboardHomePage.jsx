@@ -70,6 +70,38 @@ function getStatusClasses(status) {
   return "border border-[#ddd9d4] bg-[#f5f4f2] text-[#6c655f]";
 }
 
+function translateDashboardStatus(t, status) {
+  const normalizedStatus = `${status ?? ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const statusKeyMap = {
+    completed: "vendorPanel.dashboard.statuses.completed",
+    delivered: "vendorPanel.dashboard.statuses.delivered",
+    confirmed: "vendorPanel.dashboard.statuses.confirmed",
+    ready: "vendorPanel.dashboard.statuses.ready",
+    preparing: "vendorPanel.dashboard.statuses.preparing",
+    accepted: "vendorPanel.dashboard.statuses.accepted",
+    scheduled: "vendorPanel.dashboard.statuses.scheduled",
+    placed: "vendorPanel.dashboard.statuses.placed",
+    "out for delivery": "vendorPanel.dashboard.statuses.outForDelivery",
+    pending: "vendorPanel.dashboard.statuses.pending",
+    unpaid: "vendorPanel.dashboard.statuses.unpaid",
+    new: "vendorPanel.dashboard.statuses.new",
+    draft: "vendorPanel.dashboard.statuses.draft",
+    paid: "vendorPanel.dashboard.statuses.paid",
+    overdue: "vendorPanel.dashboard.statuses.overdue",
+    canceled: "vendorPanel.dashboard.statuses.canceled",
+    cancelled: "vendorPanel.dashboard.statuses.cancelled",
+    modified: "vendorPanel.dashboard.statuses.modified",
+  };
+
+  const key = statusKeyMap[normalizedStatus];
+  return key ? t(key, { defaultValue: status }) : status;
+}
+
 function VendorStatCard({ label, value, icon: Icon }) {
   return (
     <article className="flex flex-col items-center justify-center rounded-[20px] border border-[#e5e5e5] bg-white p-7 shadow-none transition-all duration-200 hover:border-[#ebdcd0] hover:shadow-sm">
@@ -93,7 +125,9 @@ function DashboardErrorState({ message, onRetry }) {
       <h2 className="text-lg font-semibold text-[#3a2218]">
         {t("vendorPanel.dashboard.loadErrorTitle")}
       </h2>
-      <p className="mt-2 text-sm text-[#8a5642]">{message}</p>
+      <p className="mt-2 text-sm text-[#8a5642]">
+        {message || t("vendorPanel.dashboard.loadErrorMessage")}
+      </p>
       <button
         type="button"
         onClick={onRetry}
@@ -175,7 +209,7 @@ export default function VendorDashboardHomePage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.nav.dashboard")}</h1>
+        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.dashboard.title")}</h1>
         <p className="mt-2 type-para text-[#5f5a54]">
           {t("vendorPanel.dashboard.welcomeBack", { name: userDisplayName })}
         </p>
@@ -209,7 +243,7 @@ export default function VendorDashboardHomePage() {
                     <span
                       className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getStatusClasses(order.status)}`}
                     >
-                      {order.status}
+                      {translateDashboardStatus(t, order.status)}
                     </span>
                   </div>
                 ))
@@ -263,7 +297,7 @@ export default function VendorDashboardHomePage() {
                       <span
                         className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getStatusClasses(invoice.status)}`}
                       >
-                        {invoice.status}
+                        {translateDashboardStatus(t, invoice.status)}
                       </span>
                       <span className="text-base font-bold text-[#232323] min-w-[100px] text-right">
                         {invoice.amount}
