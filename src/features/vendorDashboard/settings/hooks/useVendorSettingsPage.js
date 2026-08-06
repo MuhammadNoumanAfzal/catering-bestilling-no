@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { translateSettings } from "../../components/settings/settingsI18n";
 import { useLocation } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { changePassword } from "../../../auth/api";
@@ -44,7 +45,8 @@ function hasPasswordValues(formState) {
 }
 
 export function useVendorSettingsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSettings(t, i18n, key, options);
   const location = useLocation();
   const [savedFormState, setSavedFormState] = useState(() => ({
     ...vendorSettingsInitialState,
@@ -106,7 +108,7 @@ export function useVendorSettingsPage() {
           ...getPasswordFields(),
         });
         setLoadWarning(
-          t("vendorPanel.settingsPage.loadWarning"),
+          st("loadWarning"),
         );
       } finally {
         if (isMounted) {
@@ -180,15 +182,15 @@ export function useVendorSettingsPage() {
           !newPassword ||
           !confirmNewPassword
         ) {
-          throw new Error(t("vendorPanel.settingsPage.incompletePasswordFields"));
+          throw new Error(st("incompletePasswordFields"));
         }
 
         if (oldPassword !== confirmOldPassword) {
-          throw new Error(t("vendorPanel.settingsPage.oldPasswordMismatch"));
+          throw new Error(st("oldPasswordMismatch"));
         }
 
         if (newPassword !== confirmNewPassword) {
-          throw new Error(t("vendorPanel.settingsPage.newPasswordMismatch"));
+          throw new Error(st("newPasswordMismatch"));
         }
 
         const passwordResult = await changePassword({
@@ -202,7 +204,7 @@ export function useVendorSettingsPage() {
           ...getPasswordFields(),
         }));
         successMessages.push(
-          passwordResult.message || t("vendorPanel.settingsPage.passwordChangedSuccess"),
+          passwordResult.message || st("passwordChangedSuccess"),
         );
       }
 
@@ -213,8 +215,8 @@ export function useVendorSettingsPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : t("vendorPanel.settingsPage.updateFailedMessage"),
-        t("vendorPanel.settingsPage.updateFailedTitle"),
+          : st("updateFailedMessage"),
+        st("updateFailedTitle"),
       );
     } finally {
       setIsSaving(false);

@@ -1,19 +1,21 @@
 import SettingsField from "./SettingsField";
 import SettingsSection from "./SettingsSection";
 import { useTranslation } from "react-i18next";
+import { translateSettings } from "./settingsI18n";
 
 export default function PasswordSettingsSection({ formState, updateField }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSettings(t, i18n, key, options);
   return (
     <SettingsSection
       id="password"
-      title={t("vendorPanel.settingsPage.passwordTitle")}
-      subtitle={t("vendorPanel.settingsPage.passwordSubtitle")}
+      title={st("passwordTitle")}
+      subtitle={st("passwordSubtitle")}
     >
       <div className="grid gap-4 md:grid-cols-2">
         <SettingsField
           id="oldPassword"
-          label={t("vendorPanel.settingsPage.oldPassword")}
+          label={st("oldPassword")}
           value={formState.oldPassword}
           onChange={(event) => updateField("oldPassword", event.target.value)}
           placeholder=""
@@ -21,7 +23,7 @@ export default function PasswordSettingsSection({ formState, updateField }) {
         />
         <SettingsField
           id="confirmOldPassword"
-          label={t("vendorPanel.settingsPage.confirmPassword")}
+          label={st("confirmPassword")}
           value={formState.confirmOldPassword}
           onChange={(event) =>
             updateField("confirmOldPassword", event.target.value)
@@ -31,7 +33,7 @@ export default function PasswordSettingsSection({ formState, updateField }) {
         />
         <SettingsField
           id="newPassword"
-          label={t("vendorPanel.settingsPage.newPassword")}
+          label={st("newPassword")}
           value={formState.newPassword}
           onChange={(event) => updateField("newPassword", event.target.value)}
           placeholder=""
@@ -39,7 +41,7 @@ export default function PasswordSettingsSection({ formState, updateField }) {
         />
         <SettingsField
           id="confirmNewPassword"
-          label={t("vendorPanel.settingsPage.confirmPassword")}
+          label={st("confirmPassword")}
           value={formState.confirmNewPassword}
           onChange={(event) =>
             updateField("confirmNewPassword", event.target.value)

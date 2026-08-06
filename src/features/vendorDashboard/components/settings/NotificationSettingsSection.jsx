@@ -1,37 +1,39 @@
 import SettingsCheckboxField from "./SettingsCheckboxField";
 import SettingsSection from "./SettingsSection";
 import { useTranslation } from "react-i18next";
+import { translateSettings } from "./settingsI18n";
 
 export default function NotificationSettingsSection({ formState, updateField }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSettings(t, i18n, key, options);
   return (
     <SettingsSection
       id="notifications"
-      title={t("vendorPanel.settingsPage.notificationsTitle")}
-      subtitle={t("vendorPanel.settingsPage.notificationsSubtitle")}
+      title={st("notificationsTitle")}
+      subtitle={st("notificationsSubtitle")}
     >
       <div className="space-y-1.5">
         <SettingsCheckboxField
           id="textNotifications"
-          label={t("vendorPanel.settingsPage.textMessage")}
+          label={st("textMessage")}
           checked={formState.textNotifications}
           onChange={(event) =>
             updateField("textNotifications", event.target.checked)
           }
-          description={t("vendorPanel.settingsPage.textMessageDescription")}
+          description={st("textMessageDescription")}
         />
         <SettingsCheckboxField
           id="emailNotifications"
-          label={t("vendorPanel.settingsPage.email")}
+          label={st("email")}
           checked={formState.emailNotifications}
           onChange={(event) =>
             updateField("emailNotifications", event.target.checked)
           }
-          description={t("vendorPanel.settingsPage.emailDescription")}
+          description={st("emailDescription")}
         />
         <SettingsCheckboxField
           id="pushNotifications"
-          label={t("vendorPanel.settingsPage.pushNotification")}
+          label={st("pushNotification")}
           checked={formState.pushNotifications}
           onChange={(event) =>
             updateField("pushNotifications", event.target.checked)
@@ -40,10 +42,10 @@ export default function NotificationSettingsSection({ formState, updateField }) 
       </div>
 
       <div className="mt-4 border-t border-[#ece4dc] pt-3">
-        <p className="type-subpara mb-1.5 text-[#8b837b]">{t("vendorPanel.settingsPage.orderConfirmation")}</p>
+        <p className="type-subpara mb-1.5 text-[#8b837b]">{st("orderConfirmation")}</p>
         <SettingsCheckboxField
           id="orderConfirmationPush"
-          label={t("vendorPanel.settingsPage.pushNotification")}
+          label={st("pushNotification")}
           checked={formState.orderConfirmationPush}
           onChange={(event) =>
             updateField("orderConfirmationPush", event.target.checked)

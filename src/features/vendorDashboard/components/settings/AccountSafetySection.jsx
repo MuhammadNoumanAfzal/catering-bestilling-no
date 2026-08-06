@@ -10,6 +10,7 @@ import {
 } from "../../../../utils/alerts";
 import SettingsField from "./SettingsField";
 import SettingsSection from "./SettingsSection";
+import { translateSettings } from "./settingsI18n";
 import {
   deactivateCustomerAccount,
   deleteCustomerAccount,
@@ -38,6 +39,7 @@ function ActionCard({
   description,
   isLoading = false,
   onSubmit,
+  loadingLabel,
   title,
 }) {
   return (
@@ -59,14 +61,15 @@ function ActionCard({
         disabled={isLoading}
         className={`mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-[14px] px-4 text-[14px] font-bold text-white transition hover:brightness-[0.97] disabled:cursor-not-allowed disabled:opacity-70 ${buttonClassName}`}
       >
-        {isLoading ? t("vendorPanel.settingsPage.pleaseWait") : buttonLabel}
+        {isLoading ? loadingLabel : buttonLabel}
       </button>
     </div>
   );
 }
 
 export default function AccountSafetySection({ email = "" }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSettings(t, i18n, key, options);
   const navigate = useNavigate();
   const { signOut } = useAuth();
   const [deactivatePassword, setDeactivatePassword] = useState("");
@@ -89,8 +92,8 @@ export default function AccountSafetySection({ email = "" }) {
 
     if (!password) {
       await showAuthErrorAlert(
-        t("vendorPanel.settingsPage.passwordRequiredMessage"),
-        t("vendorPanel.settingsPage.passwordRequiredTitle"),
+        st("passwordRequiredMessage"),
+        st("passwordRequiredTitle"),
       );
       return;
     }
@@ -126,8 +129,8 @@ export default function AccountSafetySection({ email = "" }) {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : t("vendorPanel.settingsPage.deactivateFailedMessage"),
-        t("vendorPanel.settingsPage.deactivateFailedTitle"),
+          : st("deactivateFailedMessage"),
+        st("deactivateFailedTitle"),
       );
     } finally {
       setIsDeactivating(false);
@@ -141,16 +144,16 @@ export default function AccountSafetySection({ email = "" }) {
 
     if (!password) {
       await showAuthErrorAlert(
-        t("vendorPanel.settingsPage.deletePasswordRequiredMessage"),
-        t("vendorPanel.settingsPage.passwordRequiredTitle"),
+        st("deletePasswordRequiredMessage"),
+        st("passwordRequiredTitle"),
       );
       return;
     }
 
     if (confirmationText !== "DELETE") {
       await showAuthErrorAlert(
-        t("vendorPanel.settingsPage.deleteConfirmationMessage"),
-        t("vendorPanel.settingsPage.confirmationRequiredTitle"),
+        st("deleteConfirmationMessage"),
+        st("confirmationRequiredTitle"),
       );
       return;
     }
@@ -194,8 +197,8 @@ export default function AccountSafetySection({ email = "" }) {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : t("vendorPanel.settingsPage.deleteFailedMessage"),
-        t("vendorPanel.settingsPage.deleteFailedTitle"),
+          : st("deleteFailedMessage"),
+        st("deleteFailedTitle"),
       );
     } finally {
       setIsDeleting(false);
@@ -205,56 +208,57 @@ export default function AccountSafetySection({ email = "" }) {
   return (
     <SettingsSection
       id="account-safety"
-      title={t("vendorPanel.settingsPage.accountSafetyTitle")}
-      subtitle={t("vendorPanel.settingsPage.accountSafetySubtitle")}
+      title={st("accountSafetyTitle")}
+      subtitle={st("accountSafetySubtitle")}
     >
       <div className="rounded-[28px] border border-[#f0dfd1] bg-[linear-gradient(180deg,#fffdfb_0%,#fff6ef_100%)] p-6 shadow-[0_18px_48px_rgba(30,20,12,0.05)]">
         <div className="flex flex-col gap-3 border-b border-[#f1e4d8] pb-5">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex rounded-full border border-[#f0d1bf] bg-[#fff1e7] px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#cf6e38]">
-              {t("vendorPanel.settingsPage.accountControls")}
+              {st("accountControls")}
             </span>
             {email ? <DetailPill>{email}</DetailPill> : null}
           </div>
           <h3 className="text-[28px] font-black tracking-[-0.03em] text-[#1d1713]">
-            {t("vendorPanel.settingsPage.safetyHeroTitle")}
+            {st("safetyHeroTitle")}
           </h3>
           <p className="max-w-[760px] text-[15px] leading-7 text-[#6c5d52]">
-            {t("vendorPanel.settingsPage.safetyHeroDescription")}
+            {st("safetyHeroDescription")}
           </p>
         </div>
 
         <div className="mt-6 grid gap-5 xl:grid-cols-2">
           <ActionCard
-            title={t("vendorPanel.settingsPage.temporarilyDeactivate")}
-            description={t("vendorPanel.settingsPage.deactivateDescription")}
+            title={st("temporarilyDeactivate")}
+            description={st("deactivateDescription")}
             accentClassName="border-[#f0d8c6]"
             buttonClassName="bg-[#cf6e38]"
-            buttonLabel={t("vendorPanel.settingsPage.deactivateAccount")}
+            buttonLabel={st("deactivateAccount")}
+            loadingLabel={st("pleaseWait")}
             isLoading={isDeactivating}
             onSubmit={handleDeactivate}
           >
-            <DetailPill>{t("vendorPanel.settingsPage.profileInactive")}</DetailPill>
-            <DetailPill>{t("vendorPanel.settingsPage.signedOutInstantly")}</DetailPill>
-            <DetailPill>{t("vendorPanel.settingsPage.returnLater")}</DetailPill>
+            <DetailPill>{st("profileInactive")}</DetailPill>
+            <DetailPill>{st("signedOutInstantly")}</DetailPill>
+            <DetailPill>{st("returnLater")}</DetailPill>
 
             <div className="mt-4 w-full space-y-4">
               <SettingsField
                 id="deactivate-password"
-                label={t("vendorPanel.settingsPage.currentPassword")}
+                label={st("currentPassword")}
                 type="password"
                 value={deactivatePassword}
                 onChange={(event) => setDeactivatePassword(event.target.value)}
-                placeholder={t("vendorPanel.settingsPage.passwordPlaceholder")}
+                placeholder={st("passwordPlaceholder")}
               />
               <label className="block">
                 <span className="type-para mb-2 block text-[#8b837b]">
-                  {t("vendorPanel.settingsPage.reasonOptional")}
+                  {st("reasonOptional")}
                 </span>
                 <textarea
                   value={deactivateReason}
                   onChange={(event) => setDeactivateReason(event.target.value)}
-                  placeholder={t("vendorPanel.settingsPage.steppingAwayPlaceholder")}
+                  placeholder={st("steppingAwayPlaceholder")}
                   rows={4}
                   className="type-para w-full rounded-[14px] border border-[#d9d1c8] bg-white px-4 py-3 text-[#1f1f1f] outline-none placeholder:text-[#b4aca4]"
                 />
@@ -263,42 +267,43 @@ export default function AccountSafetySection({ email = "" }) {
           </ActionCard>
 
           <ActionCard
-            title={t("vendorPanel.settingsPage.deletePermanently")}
-            description={t("vendorPanel.settingsPage.deleteDescription")}
+            title={st("deletePermanently")}
+            description={st("deleteDescription")}
             accentClassName="border-[#f1c7c2] bg-[linear-gradient(180deg,#fffdfb_0%,#fff5f4_100%)]"
             buttonClassName="bg-[#c94d43]"
-            buttonLabel={t("vendorPanel.settingsPage.deleteForever")}
+            buttonLabel={st("deleteForever")}
+            loadingLabel={st("pleaseWait")}
             isLoading={isDeleting}
             onSubmit={handleDelete}
           >
-            <DetailPill tone="danger">{t("vendorPanel.settingsPage.savedDataRemoved")}</DetailPill>
-            <DetailPill tone="danger">{t("vendorPanel.settingsPage.supportHistoryAnonymized")}</DetailPill>
-            <DetailPill tone="danger">{t("vendorPanel.settingsPage.cannotUndo")}</DetailPill>
+            <DetailPill tone="danger">{st("savedDataRemoved")}</DetailPill>
+            <DetailPill tone="danger">{st("supportHistoryAnonymized")}</DetailPill>
+            <DetailPill tone="danger">{st("cannotUndo")}</DetailPill>
 
             <div className="mt-4 w-full space-y-4">
               <SettingsField
                 id="delete-password"
-                label={t("vendorPanel.settingsPage.currentPassword")}
+                label={st("currentPassword")}
                 type="password"
                 value={deletePassword}
                 onChange={(event) => setDeletePassword(event.target.value)}
-                placeholder={t("vendorPanel.settingsPage.passwordPlaceholder")}
+                placeholder={st("passwordPlaceholder")}
               />
               <SettingsField
                 id="delete-confirmation"
-                label={t("vendorPanel.settingsPage.typeDeleteToConfirm")}
+                label={st("typeDeleteToConfirm")}
                 value={deleteConfirmation}
                 onChange={(event) => setDeleteConfirmation(event.target.value.toUpperCase())}
-                placeholder={t("vendorPanel.settingsPage.deletePlaceholder")}
+                placeholder={st("deletePlaceholder")}
               />
               <label className="block">
                 <span className="type-para mb-2 block text-[#8b837b]">
-                  {t("vendorPanel.settingsPage.reasonOptional")}
+                  {st("reasonOptional")}
                 </span>
                 <textarea
                   value={deleteReason}
                   onChange={(event) => setDeleteReason(event.target.value)}
-                  placeholder={t("vendorPanel.settingsPage.leavingPlaceholder")}
+                  placeholder={st("leavingPlaceholder")}
                   rows={4}
                   className="type-para w-full rounded-[14px] border border-[#d9d1c8] bg-white px-4 py-3 text-[#1f1f1f] outline-none placeholder:text-[#b4aca4]"
                 />
