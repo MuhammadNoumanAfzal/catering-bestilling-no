@@ -4,6 +4,7 @@ import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
 import { getTodayDateValue } from "../../../order/utils/orderFlowValidation";
 import { formatTimeTo24Hour } from "../../../../components/shared/navbar/navbarDateUtils";
 import PreferredTimePicker from "../../../../components/shared/PreferredTimePicker";
+import { useTranslation } from "react-i18next";
 
 function getSlotStatusTone(slot) {
   if (slot.isFullyBooked) return "bg-[#f0e8e4] text-[#b08a7a]";
@@ -22,6 +23,7 @@ export default function EventDetailsSection({
   isLoadingSlots = false,
   minimumPersonCount = 1,
 }) {
+  const { t } = useTranslation();
   const eventLabel = mode === "corporate" ? "Event Name" : "Occasion";
   const eventKey = mode === "corporate" ? "eventName" : "occasion";
   const eventPlaceholder =
@@ -60,15 +62,18 @@ export default function EventDetailsSection({
   }
 
   function getCapacityLabel(slot) {
-    if (slot.isFullyBooked) return "Fully booked";
-    if (slot.remainingCapacity >= 9999) return "Available";
-    return `${slot.remainingCapacity} spot${slot.remainingCapacity !== 1 ? "s" : ""} left`;
+    if (slot.isFullyBooked) return t("menu.fullyBooked");
+    if (slot.remainingCapacity >= 9999) return t("menu.available");
+    return t("menu.spotsLeft", { count: slot.remainingCapacity });
   }
 
   const selectedSlot = getMatchingSlot(selectedTime);
   const editableSlot = selectedSlot || firstAvailableSlot;
   const availabilityHint = editableSlot
-    ? `Vendor available between ${editableSlot.start} and ${editableSlot.end} for this selection.`
+    ? t("menu.availabilityHint", {
+      start: editableSlot.start,
+      end: editableSlot.end,
+    })
     : "";
 
   function handleExactTimeChange(nextTime) {
@@ -85,7 +90,7 @@ export default function EventDetailsSection({
   }
 
   return (
-    <CheckoutSection title="Event Details">
+    <CheckoutSection title={t("menu.eventDetails")}>
       <div className="grid gap-3 sm:grid-cols-2">
         <CheckoutField
           label={eventLabel}
@@ -95,7 +100,7 @@ export default function EventDetailsSection({
           className="sm:col-span-2"
         />
         <CheckoutField
-          label="Date"
+          label={t("menu.date")}
           type="date"
           value={formState.date}
           min={getTodayDateValue()}
@@ -113,16 +118,16 @@ export default function EventDetailsSection({
 
         {/* Time / Slot Picker */}
         <div className="flex flex-col">
-          <span className="type-subpara mb-1 block text-[#2d2d2d]">Time</span>
+          <span className="type-subpara mb-1 block text-[#2d2d2d]">{t("menu.time")}</span>
 
           {!formState.date ? (
             <p className="rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2 text-[13px] text-[#9b8f84]">
-              Select a date first
+              {t("menu.selectDateFirst")}
             </p>
           ) : isLoadingSlots ? (
             <div className="flex items-center gap-2 rounded-[8px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-2">
               <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
-              <span className="text-[13px] text-[#9b8f84]">Checking availability...</span>
+              <span className="text-[13px] text-[#9b8f84]">{t("menu.checkingSlots")}</span>
             </div>
           ) : hasSlots ? (
             <div className="flex flex-col gap-3">
@@ -130,20 +135,20 @@ export default function EventDetailsSection({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9a6a4d]">
-                      Step 1
+                      {t("menu.stepOne")}
                     </p>
                     <p className="mt-1 text-[14px] font-semibold text-[#1d1713]">
-                      Choose a delivery window
+                      {t("menu.chooseWindow")}
                     </p>
                   </div>
                   {selectedSlot ? (
                     <span className="rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
-                      Selected: {selectedSlot.label}
+                      {t("menu.selectedWindow", { label: selectedSlot.label })}
                     </span>
                   ) : null}
                 </div>
 
-                <div className="mt-3 grid gap-2 lg:grid-cols-2">
+                <div className="mt-3 grid gap-3 xl:grid-cols-2">
                   {deliverySlots.map((slot) => {
                     const isSelected = isTimeInSlot(selectedTime, slot);
                     const isBooked = slot.isFullyBooked;
@@ -161,15 +166,17 @@ export default function EventDetailsSection({
                               : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/45 hover:bg-[#fdf8f4]"
                         }`}
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-[15px] font-semibold">{slot.label}</p>
-                            <p className="mt-1 text-[12px] text-[#8a7b70]">
-                              Tap to use this delivery window
+                        <div className="flex min-w-0 flex-col items-start gap-3">
+                          <div className="min-w-0">
+                            <p className="text-[15px] font-semibold leading-6 break-words">
+                              {slot.label}
+                            </p>
+                            <p className="mt-1 text-[12px] leading-5 text-[#8a7b70]">
+                              {t("menu.tapWindow")}
                             </p>
                           </div>
                           <span
-                            className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getSlotStatusTone(slot)}`}
+                            className={`inline-flex w-fit max-w-full shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getSlotStatusTone(slot)}`}
                           >
                             {getCapacityLabel(slot)}
                           </span>
@@ -185,21 +192,24 @@ export default function EventDetailsSection({
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9a6a4d]">
-                        Step 2
+                        {t("menu.stepTwo")}
                       </p>
                       <p className="mt-1 text-[15px] font-semibold text-[#1d1713]">
-                        Fine-tune your exact time
+                        {t("menu.fineTuneTime")}
                       </p>
                       <p className="mt-1 text-[12px] leading-5 text-[#8a5a3a]">
-                        Pick any 15-minute time between {editableSlot.start} and {editableSlot.end}.
+                        {t("menu.timeBetween", {
+                          start: editableSlot.start,
+                          end: editableSlot.end,
+                        })}
                       </p>
                     </div>
                     <div className="rounded-[12px] border border-[#efd8ca] bg-white px-3 py-2 text-right">
                       <p className="text-[11px] uppercase tracking-[0.1em] text-[#a19084]">
-                        Current time
+                        {t("menu.currentTime")}
                       </p>
                       <p className="mt-1 text-[15px] font-semibold text-[#cf6e38]">
-                        {selectedTime ? formatTimeTo24Hour(selectedTime) : "Not selected"}
+                        {selectedTime ? formatTimeTo24Hour(selectedTime) : t("menu.notSelected")}
                       </p>
                     </div>
                   </div>
@@ -210,7 +220,7 @@ export default function EventDetailsSection({
                       selectedDate={formState.date}
                       minTimeValue={editableSlot.start}
                       maxTimeValue={editableSlot.end}
-                      placeholder="HH:MM"
+                      placeholder={t("timePicker.placeholder")}
                     />
                   </div>
                   <p className="mt-3 text-[12px] leading-5 text-[#8a5a3a]">
@@ -235,7 +245,7 @@ export default function EventDetailsSection({
 
       <div className="mt-3">
         <span className="type-subpara mb-1 block text-[#2d2d2d]">
-          Person Count
+          {t("nav.numberOfAttendees")}
         </span>
         <div className="inline-flex items-center border border-[#d9d1c7] bg-white">
           <button
@@ -257,7 +267,7 @@ export default function EventDetailsSection({
           </button>
         </div>
         <p className="mt-2 text-[12px] text-[#7e7469]">
-          Minimum {minimumPersonCount} guest{Number(minimumPersonCount) !== 1 ? "s" : ""}
+          {t("menu.minimumLabel", { count: minimumPersonCount })}
         </p>
       </div>
     </CheckoutSection>

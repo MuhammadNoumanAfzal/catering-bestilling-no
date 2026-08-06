@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiChevronDown, FiClock } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 const MINUTE_OPTIONS = ["00", "15", "30", "45"];
 
@@ -229,6 +230,7 @@ export default function PreferredTimePicker({
   minTimeValue = "",
   maxTimeValue = "",
 }) {
+  const { t } = useTranslation();
   const wrapperRef = useRef(null);
   const [inputValue, setInputValue] = useState(value || "");
   const normalizedSelectedDate = useMemo(
@@ -563,18 +565,18 @@ export default function PreferredTimePicker({
         <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-full min-w-[280px] max-w-[340px] rounded-[18px] border border-[#e7ddd3] bg-white p-3 shadow-[0_20px_45px_rgba(44,30,16,0.14)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <div className="text-[13px] font-semibold text-[#6f6258]">Select time</div>
-              <div className="text-[11px] text-[#a19084]">24-hour format</div>
+              <div className="text-[13px] font-semibold text-[#6f6258]">{t("timePicker.selectTime")}</div>
+              <div className="text-[11px] text-[#a19084]">{t("timePicker.format24Hour")}</div>
             </div>
             <div className="rounded-full bg-[#faf4ef] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
-              {displayValue ? formatTimeLabel(displayValue) : "No time"}
+              {displayValue ? formatTimeLabel(displayValue) : t("timePicker.noTime")}
             </div>
           </div>
 
           {quickTimeOptions.length ? (
             <div className="mb-3">
               <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#a19084]">
-                Quick pick
+                {t("timePicker.quickPick")}
               </div>
               <div className="flex flex-wrap gap-2">
                 {quickTimeOptions.map((option) => {
@@ -600,14 +602,14 @@ export default function PreferredTimePicker({
 
           <div className="flex items-start gap-2">
             <WheelColumn
-              label="Hour"
+              label={t("timePicker.hour")}
               options={hourOptions}
               selectedValue={draftHour}
               onSelect={setDraftHour}
               isDisabled={isHourDisabled}
             />
             <WheelColumn
-              label="Min"
+              label={t("timePicker.minute")}
               options={draftMinuteOptions}
               selectedValue={draftMinute}
               onSelect={setDraftMinute}
@@ -622,7 +624,7 @@ export default function PreferredTimePicker({
                   onClick={handleClear}
                   className="rounded-[10px] px-3 py-2 text-[13px] font-semibold text-[#c85e2f] transition hover:bg-[#fff4ee]"
                 >
-                  Clear
+                  {t("nav.clear")}
                 </button>
               ) : null}
               <button
@@ -630,7 +632,7 @@ export default function PreferredTimePicker({
                 onClick={handleCancel}
                 className="rounded-[10px] px-3 py-2 text-[13px] font-semibold text-[#6f6258] transition hover:bg-[#faf4ef]"
               >
-                Cancel
+                {t("alerts.cancel")}
               </button>
             </div>
             <button
@@ -639,7 +641,7 @@ export default function PreferredTimePicker({
               disabled={!canSave}
               className="rounded-[10px] border border-[#eadfd6] bg-white px-4 py-2 text-[13px] font-semibold text-[#1d1713] shadow-[0_2px_8px_rgba(44,30,16,0.06)] transition hover:border-[#cf6e38]/30 hover:bg-[#fff8f4] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Save
+              {t("settings.save")}
             </button>
           </div>
         </div>

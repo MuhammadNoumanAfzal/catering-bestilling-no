@@ -372,6 +372,8 @@ const en = {
     fineTuneTime: "Fine-tune your exact time",
     timeBetween:
       "Pick any 15-minute time between {{start}} and {{end}}.",
+    availabilityHint:
+      "Vendor available between {{start}} and {{end}} for this selection.",
     currentTime: "Current time",
     notSelected: "Not selected",
     noSlotsForDate:
@@ -481,6 +483,15 @@ const en = {
     clearFilter: "Clear filter",
     apply: "Apply",
     applied: "Applied",
+  },
+  timePicker: {
+    placeholder: "HH:MM",
+    selectTime: "Select time",
+    format24Hour: "24-hour format",
+    noTime: "No time",
+    quickPick: "Quick pick",
+    hour: "Hour",
+    minute: "Min",
   },
 };
 
