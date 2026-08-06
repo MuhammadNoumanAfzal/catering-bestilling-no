@@ -10,16 +10,18 @@ import {
 import NotificationSection from "../components/notification/NotificationSection";
 import NotificationDateFilter from "../components/notification/NotificationDateFilter";
 import NotificationTabs from "../components/notification/NotificationTabs";
+import { translateNotification } from "../components/notification/notificationI18n";
 import {
   groupNotificationsByDay,
   isNotificationWithinDateRange,
 } from "../components/notification/notificationUtils";
 
 function NotificationsErrorState({ message, onRetry, t }) {
+  const nt = (key, options) => translateNotification(t, key, options);
   return (
     <div className="rounded-[24px] border border-[#f1c8bb] bg-[#fff5f1] p-6 text-center shadow-[0_12px_24px_rgba(32,32,32,0.04)]">
       <h2 className="text-lg font-semibold text-[#3a2218]">
-        {t("vendorPanel.notifications.loadErrorTitle")}
+        {nt("loadErrorTitle")}
       </h2>
       <p className="mt-2 text-sm text-[#8a5642]">{message}</p>
       <button
@@ -27,14 +29,15 @@ function NotificationsErrorState({ message, onRetry, t }) {
         onClick={onRetry}
         className="mt-5 rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b94f26]"
       >
-        {t("vendorPanel.notifications.retry")}
+        {nt("retry")}
       </button>
     </div>
   );
 }
 
 export default function VendorNotificationsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const nt = (key, options) => translateNotification(t, i18n, key, options);
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [notifications, setNotifications] = useState([]);
@@ -93,7 +96,7 @@ export default function VendorNotificationsPage() {
           setNotifications([]);
           setError(
             loadError?.message ||
-              t("vendorPanel.notifications.loadErrorMessageFallback"),
+              nt("loadErrorMessageFallback"),
           );
         }
       } finally {
@@ -217,19 +220,19 @@ export default function VendorNotificationsPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.notifications.title")}</h1>
+        <h1 className="type-h2 text-[#191919]">{nt("title")}</h1>
         <p className="mt-2 type-para text-[#635b53]">
-          {t("vendorPanel.notifications.description")}
+          {nt("description")}
         </p>
       </section>
 
       {!isLoggedIn ? (
         <section className="rounded-[24px] border border-dashed border-[#ddd7d1] bg-white px-6 py-16 text-center shadow-[0_10px_24px_rgba(32,32,32,0.04)]">
           <h2 className="text-[24px] font-semibold text-[#242424]">
-            {t("vendorPanel.notifications.signInTitle")}
+            {nt("signInTitle")}
           </h2>
           <p className="mt-3 text-sm text-[#6d655f]">
-            {t("vendorPanel.notifications.signInMessage")}
+            {nt("signInMessage")}
           </p>
         </section>
       ) : (
@@ -249,8 +252,8 @@ export default function VendorNotificationsPage() {
                   className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#ead8cb] bg-white px-4 text-sm font-semibold text-[#7a6253] transition hover:border-[#cf6e38] hover:text-[#cf6e38] disabled:cursor-not-allowed disabled:opacity-55"
                 >
                   {isUpdatingReadState
-                    ? t("vendorPanel.notifications.updating")
-                    : t("vendorPanel.notifications.markAllRead")}
+                    ? nt("updating")
+                    : nt("markAllRead")}
                 </button>
                 <NotificationDateFilter
                   customDateRange={customDateRange}
@@ -289,10 +292,10 @@ export default function VendorNotificationsPage() {
             ) : (
               <div className="rounded-[22px] border border-dashed border-[#ddd4cb] bg-white px-6 py-16 text-center">
                 <h2 className="text-[22px] font-semibold text-[#242424]">
-                  {t("vendorPanel.notifications.noResultsTitle")}
+                  {nt("noResultsTitle")}
                 </h2>
                 <p className="mt-3 text-sm text-[#6d655f]">
-                  {t("vendorPanel.notifications.noResultsDescription")}
+                  {nt("noResultsDescription")}
                 </p>
               </div>
             )}
