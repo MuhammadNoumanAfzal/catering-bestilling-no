@@ -48,21 +48,36 @@ export function getNotificationDateFilterLabel(selectedRange, customDateRange, t
     const toLabel = formatDateForLabel(customDateRange.to);
 
     if (fromLabel && toLabel) {
-      return t("vendorPanel.notifications.date.customRange", {
+      return t("date.customRange", {
         from: fromLabel,
         to: toLabel,
       });
     }
 
-    return t("vendorPanel.notifications.date.customDate");
+    return t("date.customDate");
   }
 
-  return (
-    t(
-      NOTIFICATION_DATE_OPTIONS.find((option) => option.value === selectedRange)
-        ?.labelKey,
-    ) ?? t("vendorPanel.notifications.date.allTime")
-  );
+  if (selectedRange === "last-month") {
+    return t("date.lastMonth");
+  }
+
+  if (selectedRange === "last-3-months") {
+    return t("date.last3Months");
+  }
+
+  if (selectedRange === "last-6-months") {
+    return t("date.last6Months");
+  }
+
+  if (selectedRange === "this-year") {
+    return t("date.thisYear");
+  }
+
+  if (selectedRange === "custom-date") {
+    return t("date.customDate");
+  }
+
+  return t("date.allTime");
 }
 
 export function isNotificationWithinDateRange(

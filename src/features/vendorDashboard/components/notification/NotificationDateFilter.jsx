@@ -1,5 +1,6 @@
 import { FiChevronDown } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import { translateNotification } from "./notificationI18n";
 import {
   getNotificationDateFilterLabel,
   NOTIFICATION_DATE_OPTIONS,
@@ -15,7 +16,8 @@ export default function NotificationDateFilter({
   onToggle,
   selectedRange,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const nt = (key, options) => translateNotification(t, i18n, key, options);
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -24,7 +26,7 @@ export default function NotificationDateFilter({
         className="inline-flex w-full items-center justify-between gap-2 rounded-full border border-[#ead8cb] bg-[#fff7f3] px-4 py-2.5 text-sm font-semibold text-[#cf5c2f] transition hover:bg-[#fff0e8] sm:w-auto"
       >
         <span className="truncate">
-          {getNotificationDateFilterLabel(selectedRange, customDateRange, t)}
+          {getNotificationDateFilterLabel(selectedRange, customDateRange, nt)}
         </span>
         <FiChevronDown
           className={["text-[15px] transition", isOpen ? "rotate-180" : ""].join(" ")}
@@ -48,9 +50,9 @@ export default function NotificationDateFilter({
                     : "text-[#4d4d4d] hover:bg-[#faf7f3]",
                 ].join(" ")}
               >
-                <span>{t(option.labelKey)}</span>
+                <span>{nt(`date.${option.value === "all-time" ? "allTime" : option.value === "last-month" ? "lastMonth" : option.value === "last-3-months" ? "last3Months" : option.value === "last-6-months" ? "last6Months" : option.value === "this-year" ? "thisYear" : "customDate"}`)}</span>
                 {isSelected ? (
-                  <span className="text-[10px] font-semibold uppercase">{t("vendorPanel.notifications.date.active")}</span>
+                  <span className="text-[10px] font-semibold uppercase">{nt("date.active")}</span>
                 ) : null}
               </button>
             );
@@ -61,7 +63,7 @@ export default function NotificationDateFilter({
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
                   <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9a6d53]">
-                    {t("vendorPanel.notifications.date.from")}
+                    {nt("date.from")}
                   </span>
                   <input
                     type="date"
@@ -76,7 +78,7 @@ export default function NotificationDateFilter({
 
                 <label className="block">
                   <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9a6d53]">
-                    {t("vendorPanel.notifications.date.to")}
+                    {nt("date.to")}
                   </span>
                   <input
                     type="date"
@@ -96,7 +98,7 @@ export default function NotificationDateFilter({
                   onClick={onApplyCustomDate}
                   className="rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#bc602d]"
                 >
-                  {t("vendorPanel.notifications.date.apply")}
+                  {nt("date.apply")}
                 </button>
               </div>
             </div>
