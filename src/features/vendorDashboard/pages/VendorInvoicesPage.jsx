@@ -203,8 +203,10 @@ export default function VendorInvoicesPage() {
               defaultValue="all"
               isOpen={isStatusMenuOpen}
               label={
-                STATUS_OPTIONS.find((option) => option.value === selectedStatus)
-                  ?.label ?? "Status: All"
+                t(
+                  STATUS_OPTIONS.find((option) => option.value === selectedStatus)
+                    ?.labelKey ?? "vendorPanel.invoices.allStatus",
+                )
               }
               onToggle={() => {
                 setIsStatusMenuOpen((open) => !open);
@@ -254,6 +256,7 @@ export default function VendorInvoicesPage() {
               label={getInvoiceDateFilterLabel(
                 selectedDateRange,
                 customDateRange,
+                t,
               )}
               onToggle={() => {
                 setIsDateMenuOpen((open) => !open);

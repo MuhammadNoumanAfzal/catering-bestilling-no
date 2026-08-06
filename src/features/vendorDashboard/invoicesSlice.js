@@ -198,19 +198,43 @@ function mapInvoiceStatus(status) {
 
 function buildOverview(summary = {}) {
   return [
-    { label: "Total Invoices", value: summary.totalInvoices ?? 0 },
-    { label: "Paid Invoices", value: summary.paidInvoices ?? 0 },
-    { label: "Unpaid Invoices", value: summary.unpaidInvoices ?? 0 },
-    { label: "Overdue Invoices", value: summary.overdueInvoices ?? 0 },
+    {
+      labelKey: "vendorPanel.invoices.overview.totalInvoices",
+      value: summary.totalInvoices ?? 0,
+    },
+    {
+      labelKey: "vendorPanel.invoices.overview.paidInvoices",
+      value: summary.paidInvoices ?? 0,
+    },
+    {
+      labelKey: "vendorPanel.invoices.overview.unpaidInvoices",
+      value: summary.unpaidInvoices ?? 0,
+    },
+    {
+      labelKey: "vendorPanel.invoices.overview.overdueInvoices",
+      value: summary.overdueInvoices ?? 0,
+    },
   ];
 }
 
 function buildTotals(summary = {}) {
   return [
-    { label: "Total Spent", value: formatMoney(summary.totalSpent) },
-    { label: "This Month", value: formatMoney(summary.thisMonthSpent) },
-    { label: "Pending Amount", value: formatMoney(summary.pendingAmount) },
-    { label: "Overdue Amount", value: formatMoney(summary.overdueAmount) },
+    {
+      labelKey: "vendorPanel.invoices.overview.totalSpent",
+      value: formatMoney(summary.totalSpent),
+    },
+    {
+      labelKey: "vendorPanel.invoices.overview.thisMonth",
+      value: formatMoney(summary.thisMonthSpent),
+    },
+    {
+      labelKey: "vendorPanel.invoices.overview.pendingAmount",
+      value: formatMoney(summary.pendingAmount),
+    },
+    {
+      labelKey: "vendorPanel.invoices.overview.overdueAmount",
+      value: formatMoney(summary.overdueAmount),
+    },
   ];
 }
 
