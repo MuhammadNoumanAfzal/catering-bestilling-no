@@ -42,13 +42,13 @@ export default function CommonNavbarActions({
           >
             <FiBell className="text-[18px]" />
             {hasFreshNotification ? (
-              <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
+              <span className="absolute -right-1 -top-1 z-20 flex h-3.5 w-3.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#cf6e38] opacity-60" />
-                <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#cf6e38]" />
+                <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-[#cf6e38]" />
               </span>
             ) : null}
             {unreadNotificationCount > 0 ? (
-              <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
+              <span className="absolute right-1 top-1 z-10 flex h-4 min-w-4 items-center justify-center rounded-full border border-white bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white shadow-[0_4px_10px_rgba(200,95,51,0.28)]">
                 {unreadNotificationCount}
               </span>
             ) : null}
