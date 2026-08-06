@@ -1,6 +1,7 @@
 import SupportField from "./SupportField";
 import SupportUploadBox from "./SupportUploadBox";
 import { useTranslation } from "react-i18next";
+import { translateSupport } from "./supportI18n";
 
 export default function SupportTicketForm({
   attachmentError,
@@ -13,15 +14,16 @@ export default function SupportTicketForm({
   onSubmit,
   subjectOptions,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSupport(t, i18n, key, options);
   return (
     <section className="rounded-[18px] border border-[#d9cec4] bg-white shadow-[0_14px_32px_rgba(30,20,12,0.05)]">
       <div className="border-b border-[#eee4da] px-5 py-4 sm:px-6">
         <h2 className="text-lg font-semibold text-[#201b17]">
-          {t("vendorPanel.supportPage.submitTitle")}
+          {st("submitTitle")}
         </h2>
         <p className="mt-1 text-sm text-[#746b63]">
-          {t("vendorPanel.supportPage.submitDescription")}
+          {st("submitDescription")}
         </p>
       </div>
 
@@ -29,31 +31,35 @@ export default function SupportTicketForm({
         <div className="grid gap-4 md:grid-cols-2">
           <SupportField
             as="select"
-            label={t("vendorPanel.supportPage.subject")}
+            label={st("subject")}
             onChange={(event) => onFieldChange("subject", event.target.value)}
             value={formState.subject}
           >
-            <option value="">{t("vendorPanel.supportPage.selectIssueType")}</option>
+            <option value="">{st("selectIssueType")}</option>
             {subjectOptions.map((option) => (
               <option key={option.value} value={option.value}>
-                {t(option.labelKey)}
+                {st(
+                  `subjects.${option.value
+                    .replace(/-([a-z])/g, (_, char) => char.toUpperCase())
+                    .replace(/^(.)/, (char) => char.toLowerCase())}`,
+                )}
               </option>
             ))}
           </SupportField>
 
           <SupportField
-            label={t("vendorPanel.supportPage.relatedOrder")}
+            label={st("relatedOrder")}
             onChange={(event) => onFieldChange("orderId", event.target.value)}
-            placeholder={t("vendorPanel.supportPage.relatedOrderPlaceholder")}
+            placeholder={st("relatedOrderPlaceholder")}
             value={formState.orderId}
           />
         </div>
 
         <SupportField
           as="textarea"
-          label={t("vendorPanel.supportPage.descriptionLabel")}
+          label={st("descriptionLabel")}
           onChange={(event) => onFieldChange("description", event.target.value)}
-          placeholder={t("vendorPanel.supportPage.descriptionPlaceholder")}
+          placeholder={st("descriptionPlaceholder")}
           value={formState.description}
         >
           <div className="mt-1 text-right text-[11px] text-[#9b9188]">
@@ -71,7 +77,7 @@ export default function SupportTicketForm({
           <p className="text-xs text-[#c05445]">{attachmentError}</p>
         ) : fileName ? (
           <p className="text-xs text-[#8b8177]">
-            {t("vendorPanel.supportPage.attachmentReady")}
+            {st("attachmentReady")}
           </p>
         ) : null}
 
@@ -81,7 +87,7 @@ export default function SupportTicketForm({
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? t("vendorPanel.supportPage.submitting") : t("vendorPanel.supportPage.submit")}
+            {isSubmitting ? st("submitting") : st("submit")}
           </button>
         </div>
       </form>

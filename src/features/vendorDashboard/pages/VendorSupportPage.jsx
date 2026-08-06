@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import SupportTicketForm from "../components/support/SupportTicketForm";
+import { translateSupport } from "../components/support/supportI18n";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { createSupportTicket } from "../support/api";
 import {
@@ -39,7 +40,8 @@ const INITIAL_FORM_STATE = {
 };
 
 export default function VendorSupportPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSupport(t, i18n, key, options);
   const attachmentUploadAvailable = isMenuImageUploadConfigured();
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [selectedFileName, setSelectedFileName] = useState("");
@@ -57,6 +59,13 @@ export default function VendorSupportPage() {
   function getSubjectLabel(subjectValue) {
     return (
       t(SUBJECT_OPTIONS.find((option) => option.value === subjectValue)?.labelKey) ||
+      st(
+        `subjects.${
+          SUBJECT_OPTIONS.find((option) => option.value === subjectValue)?.value
+            ?.replace(/-([a-z])/g, (_, char) => char.toUpperCase())
+            ?.replace(/^(.)/, (char) => char.toLowerCase()) || ""
+        }`,
+      ) ||
       subjectValue
     );
   }
@@ -80,7 +89,7 @@ export default function VendorSupportPage() {
       });
 
       await showSuccessToast(
-        response.message || t("vendorPanel.supportPage.submittedSuccess"),
+        response.message || st("submittedSuccess"),
       );
 
       setFormState(INITIAL_FORM_STATE);
@@ -89,8 +98,8 @@ export default function VendorSupportPage() {
       setAttachmentError("");
     } catch (error) {
       await showAuthErrorAlert(
-        error?.message || t("vendorPanel.supportPage.submitFailedMessage"),
-        t("vendorPanel.supportPage.submitFailedTitle"),
+        error?.message || st("submitFailedMessage"),
+        st("submitFailedTitle"),
       );
     } finally {
       setIsSubmitting(false);
@@ -101,9 +110,9 @@ export default function VendorSupportPage() {
     <div className="space-y-6">
       <section className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="type-h2 text-[#191919]">{t("vendorPanel.supportPage.title")}</h1>
+          <h1 className="type-h2 text-[#191919]">{st("title")}</h1>
           <p className="mt-2 type-para text-[#635b53]">
-            {t("vendorPanel.supportPage.description")}
+            {st("description")}
           </p>
         </div>
 
@@ -111,7 +120,7 @@ export default function VendorSupportPage() {
           className="inline-flex h-[42px] items-center justify-center rounded-[10px] border border-[#dfd3c8] bg-white px-4 text-[14px] font-bold text-[#2a211b] no-underline transition hover:bg-[#faf6f2] hover:text-[#cf6e38]"
           to="/vendor-dashboard/support/responses"
         >
-          {t("vendorPanel.supportPage.viewResponses")}
+          {st("viewResponses")}
         </Link>
       </section>
 
@@ -130,7 +139,7 @@ export default function VendorSupportPage() {
             setSelectedFile(null);
             setSelectedFileName("");
             setAttachmentError(
-              t("vendorPanel.supportPage.uploadUnavailableError"),
+              st("uploadUnavailableError"),
             );
             return;
           }
@@ -144,14 +153,14 @@ export default function VendorSupportPage() {
           if (!ALLOWED_ATTACHMENT_TYPES.includes(nextFile.type)) {
             setSelectedFile(null);
             setSelectedFileName("");
-            setAttachmentError(t("vendorPanel.supportPage.invalidFileType"));
+            setAttachmentError(st("invalidFileType"));
             return;
           }
 
           if (nextFile.size > MAX_ATTACHMENT_SIZE_BYTES) {
             setSelectedFile(null);
             setSelectedFileName("");
-            setAttachmentError(t("vendorPanel.supportPage.invalidFileSize"));
+            setAttachmentError(st("invalidFileSize"));
             return;
           }
 
