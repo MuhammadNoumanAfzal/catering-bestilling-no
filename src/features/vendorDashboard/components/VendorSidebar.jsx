@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import { vendorNavigationItems } from "../data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
@@ -14,6 +15,7 @@ function getLinkClasses({ isActive }) {
 }
 
 export default function VendorSidebar() {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
 
   const handleLogout = async () => {
@@ -24,7 +26,7 @@ export default function VendorSidebar() {
     }
 
     await signOut();
-    await showSuccessToast("Logged out successfully");
+    await showSuccessToast(t("vendorPanel.loggedOutSuccess"));
   };
 
   return (
@@ -32,20 +34,20 @@ export default function VendorSidebar() {
       <div className="flex items-center justify-center rounded-[24px] border border-white/20 bg-white/8 px-4 py-3 lg:rounded-[28px] lg:px-5 lg:py-5">
         <img
           src="/home/logo2.png"
-          alt="Lunsjavtale"
+          alt={t("vendorPanel.logoAlt")}
           className="h-12 w-auto object-contain sm:h-14 lg:h-16"
         />
       </div>
 
       <div className="mt-3 rounded-[22px] border border-white/15 bg-white/10 px-4 py-3 lg:hidden">
-        <p className="text-sm font-semibold">{user?.name ?? "Vendor User"}</p>
+        <p className="text-sm font-semibold">{user?.name ?? t("vendorPanel.defaultUser")}</p>
         <p className="mt-1 text-xs text-white/75">
-          Manage your restaurants and operations
+          {t("vendorPanel.manageSubtitle")}
         </p>
       </div>
 
       <nav className="hide-scrollbar mt-4 flex flex-1 gap-2 overflow-x-auto pb-1 lg:mt-8 lg:flex-col lg:overflow-visible lg:pb-0">
-        {vendorNavigationItems.map(({ label, to, icon: Icon, end }) => (
+        {vendorNavigationItems.map(({ labelKey, to, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
@@ -55,7 +57,7 @@ export default function VendorSidebar() {
             }
           >
             <Icon className="text-[18px]" />
-            <span>{label}</span>
+            <span>{t(labelKey)}</span>
           </NavLink>
         ))}
       </nav>
@@ -63,9 +65,9 @@ export default function VendorSidebar() {
       <div className="mt-4 rounded-[22px] border border-white/18 bg-white/10 p-3 lg:mt-6 lg:rounded-[26px] lg:p-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:flex-col lg:items-stretch">
           <div className="hidden lg:block">
-            <p className="text-sm font-semibold">{user?.name ?? "Vendor User"}</p>
+            <p className="text-sm font-semibold">{user?.name ?? t("vendorPanel.defaultUser")}</p>
             <p className="mt-1 text-xs text-white/75">
-              Manage your restaurants and operations
+              {t("vendorPanel.manageSubtitle")}
             </p>
           </div>
 
@@ -75,7 +77,7 @@ export default function VendorSidebar() {
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-[#b44f26] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a4451f] sm:w-auto sm:min-w-[140px] lg:w-full"
           >
             <FiLogOut className="text-[16px]" />
-            <span>Logout</span>
+            <span>{t("nav.logout")}</span>
           </button>
         </div>
       </div>

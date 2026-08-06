@@ -1,4 +1,5 @@
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 export default function OrdersPagination({
   currentPage,
@@ -8,6 +9,7 @@ export default function OrdersPagination({
   totalItems,
   totalPages,
 }) {
+  const { t } = useTranslation();
   const paginationNumbers = Array.from(
     { length: totalPages },
     (_, index) => index + 1,
@@ -26,7 +28,11 @@ export default function OrdersPagination({
   return (
     <div className="mt-5 flex flex-col gap-3 border-t border-[#ece4dc] pt-4 text-sm text-[#666666] md:flex-row md:items-center md:justify-between">
       <p>
-        Showing {startIndex} - {endIndex} of {totalItems} Orders
+        {t("vendorPanel.orders.paginationSummary", {
+          start: startIndex,
+          end: endIndex,
+          total: totalItems,
+        })}
       </p>
 
       <div className="hide-scrollbar flex items-center gap-2 overflow-x-auto pb-1">

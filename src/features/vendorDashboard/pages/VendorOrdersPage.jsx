@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiSearch } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { ModifyOrderModal } from "../../order";
 import {
@@ -30,10 +31,11 @@ import {
 } from "../components/orders/orderUtils";
 
 function OrdersErrorState({ message, onRetry }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-[24px] border border-[#f1c8bb] bg-[#fff5f1] p-6 text-center shadow-[0_12px_24px_rgba(32,32,32,0.04)]">
       <h2 className="text-lg font-semibold text-[#3a2218]">
-        Unable to load orders
+        {t("vendorPanel.orders.loadErrorTitle")}
       </h2>
       <p className="mt-2 text-sm text-[#8a5642]">{message}</p>
       <button
@@ -41,13 +43,14 @@ function OrdersErrorState({ message, onRetry }) {
         onClick={onRetry}
         className="mt-5 rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b94f26]"
       >
-        Try again
+        {t("alerts.tryAgain")}
       </button>
     </div>
   );
 }
 
 export default function VendorOrdersPage() {
+  const { t } = useTranslation();
   const [activeView, setActiveView] = useState("active");
   const [selectedTabs, setSelectedTabs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -249,8 +252,8 @@ export default function VendorOrdersPage() {
 
     if (!orderId) {
       await showAuthErrorAlert(
-        "This order does not have a valid id for modification.",
-        "Modify order failed",
+        t("modifyOrder.invalidIdMessage"),
+        t("modifyOrder.failedTitle"),
       );
       return;
     }
@@ -273,7 +276,7 @@ export default function VendorOrdersPage() {
       const message =
         error instanceof Error
           ? error.message
-          : "Unable to modify this order right now.";
+          : t("modifyOrder.saveFailed");
       setModifyError(message);
     } finally {
       setIsModifySaving(false);
@@ -300,14 +303,14 @@ export default function VendorOrdersPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">Orders</h1>
+        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.nav.orders")}</h1>
         <p className="mt-2 type-para text-[#635b53]">
-          Track active orders and review order history from your account.
+          {t("vendorPanel.orders.description")}
         </p>
       </section>
 
       <section>
-        <h2 className="type-h3 font-extrabold text-[#121212]">Quick Status</h2>
+        <h2 className="type-h3 font-extrabold text-[#121212]">{t("vendorPanel.orders.quickStatus")}</h2>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
           {normalizedStatusSummary.map((item) => (
             <OrderStatusSummaryCard key={item.label} {...item} />
@@ -339,7 +342,7 @@ export default function VendorOrdersPage() {
                           : "border-[#e5dad0] bg-white text-[#3c352f] hover:bg-[#faf5f0]",
                       ].join(" ")}
                     >
-                      <span>{tab.label}</span>
+                      <span>{t(tab.labelKey)}</span>
                       <span
                         className={`rounded-full px-2.5 py-1 text-xs ${
                           isActive
@@ -379,7 +382,7 @@ export default function VendorOrdersPage() {
                           : "border-[#ddd4cb] bg-white text-[#1f1f1f] hover:bg-[#faf7f3]",
                       ].join(" ")}
                     >
-                      {tab.label}
+                      {t(tab.labelKey)}
                     </button>
                   );
                 })}
@@ -392,7 +395,7 @@ export default function VendorOrdersPage() {
                 <input
                   value={searchValue}
                   onChange={handleSearchChange}
-                  placeholder="Search Order ID, Vendor, Event..."
+                  placeholder={t("vendorPanel.orders.searchPlaceholder")}
                   className="type-subpara w-full bg-transparent text-[#242424] outline-none placeholder:text-[#aaaaaa]"
                 />
               </label>

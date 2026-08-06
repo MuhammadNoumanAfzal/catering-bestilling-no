@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function VendorSectionCard({
   title,
@@ -8,6 +9,7 @@ export default function VendorSectionCard({
   footerTo,
   onFooterClick,
 }) {
+  const { t } = useTranslation();
   const footerClasses =
     "flex w-full items-center justify-center gap-2 rounded-b-[20px] border-t border-[#f0f0f0] px-4 py-4 text-base font-bold text-[#201b17] hover:bg-[#faf9f6] transition duration-200";
 
@@ -22,7 +24,7 @@ export default function VendorSectionCard({
 
       {footerTo ? (
         <Link to={footerTo} className={footerClasses}>
-          <span>{footerLabel}</span>
+          <span>{footerLabel ?? t("vendorPanel.viewMore")}</span>
         </Link>
       ) : footerLabel ? (
         <button

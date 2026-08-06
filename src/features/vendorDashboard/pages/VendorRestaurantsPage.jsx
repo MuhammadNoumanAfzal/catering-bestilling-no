@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FiHeart, FiStar } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import { fetchSavedVendors, removeSavedVendor } from "../../vendor/api";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
@@ -58,6 +59,7 @@ function RestaurantsPageStatus({ title, message, actionLabel, onAction }) {
 }
 
 export default function VendorRestaurantsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [restaurants, setRestaurants] = useState([]);
@@ -94,7 +96,7 @@ export default function VendorRestaurantsPage() {
           setRestaurants([]);
           setError(
             loadError?.message ||
-              "Unable to load saved restaurants right now.",
+              t("vendorPanel.restaurants.loadErrorMessage"),
           );
         }
       } finally {
@@ -121,10 +123,12 @@ export default function VendorRestaurantsPage() {
       setRestaurants((current) =>
         current.filter((candidate) => candidate.id !== restaurant.id),
       );
-      await showSuccessToast(`${restaurant.name} removed from saved restaurants`);
+      await showSuccessToast(
+        t("vendorPanel.restaurants.removedSaved", { name: restaurant.name }),
+      );
     } catch (removeError) {
       await showAuthErrorAlert(
-        removeError?.message || "Unable to update saved restaurants right now.",
+        removeError?.message || t("vendorPanel.restaurants.updateSavedFailed"),
       );
     }
   };
@@ -141,23 +145,23 @@ export default function VendorRestaurantsPage() {
     <div className="space-y-6">
       <section>
         <div>
-          <h1 className="type-h2 text-[#191919]">Saved Restaurants</h1>
+          <h1 className="type-h2 text-[#191919]">{t("vendorPanel.restaurants.title")}</h1>
           <p className="mt-2 text-sm text-[#5f5f5f]">
-            View all your saved restaurants that you like to order again
+            {t("vendorPanel.restaurants.description")}
           </p>
         </div>
       </section>
 
       {!isLoggedIn ? (
         <RestaurantsPageStatus
-          title="Sign in to view saved restaurants"
-          message="Your saved restaurants are linked to your account and load from the API after sign in."
+          title={t("vendorPanel.restaurants.signInTitle")}
+          message={t("vendorPanel.restaurants.signInMessage")}
         />
       ) : error ? (
         <RestaurantsPageStatus
-          title="Unable to load saved restaurants"
+          title={t("vendorPanel.restaurants.loadErrorTitle")}
           message={error}
-          actionLabel="Try again"
+          actionLabel={t("alerts.tryAgain")}
           onAction={() => window.location.reload()}
         />
       ) : savedRestaurants.length > 0 ? (
@@ -183,7 +187,7 @@ export default function VendorRestaurantsPage() {
                 <button
                   type="button"
                   onClick={(event) => handleToggleSaved(event, restaurant)}
-                  aria-label={`Remove ${restaurant.name} from saved restaurants`}
+                  aria-label={t("vendorPanel.restaurants.removeSavedAria", { name: restaurant.name })}
                   className="absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/92 text-[#f15b4f] shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition hover:scale-105"
                 >
                   <FiHeart className="fill-current text-[15px]" />
@@ -206,7 +210,7 @@ export default function VendorRestaurantsPage() {
                   }}
                   className="mt-2 inline-flex cursor-pointer text-sm font-medium text-[#5d7dff] transition hover:text-[#355df3]"
                 >
-                  View Menu
+                  {t("vendor.viewMenu")}
                 </button>
               </div>
             </article>
@@ -214,8 +218,8 @@ export default function VendorRestaurantsPage() {
         </section>
       ) : (
         <RestaurantsPageStatus
-          title="No saved restaurants yet"
-          message="Save restaurants from their detail page or menu page to see them here."
+          title={t("vendorPanel.restaurants.emptyTitle")}
+          message={t("vendorPanel.restaurants.emptyMessage")}
         />
       )}
     </div>
