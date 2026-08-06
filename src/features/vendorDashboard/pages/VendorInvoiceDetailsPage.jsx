@@ -13,6 +13,10 @@ import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getInvoiceStatusClasses } from "../components/invoices/invoiceUtils";
 import {
+  translateInvoiceDetails,
+  translateInvoiceStatus,
+} from "../components/invoices/invoiceDetailsI18n";
+import {
   clearInvoiceDownloadState,
   clearSelectedInvoiceDetail,
   fetchInvoiceDetail,
@@ -44,12 +48,9 @@ function DetailSection({ title, children }) {
 }
 
 export default function VendorInvoiceDetailsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const invoiceDetailsT = (key, options = {}) =>
-    t(`vendorPanel.invoices.detailsPage.${key}`, {
-      ...options,
-      defaultValue: t(`modifyOrder.invoices.detailsPage.${key}`, options),
-    });
+    translateInvoiceDetails(t, i18n, key, options);
   const { invoiceId } = useParams();
   const decodedInvoiceId = invoiceId ? decodeURIComponent(invoiceId) : "";
   const dispatch = useDispatch();
@@ -105,6 +106,44 @@ export default function VendorInvoiceDetailsPage() {
   }
 
   const invoice = selectedInvoiceDetail;
+  const localizedOrderLabel = invoice.order.eventName
+    ? invoiceDetailsT("orderLabel", {
+        orderNumber: invoice.order.eventName,
+      })
+    : invoiceDetailsT("untitledOrder");
+  const localizedStatus = translateInvoiceStatus(
+    t,
+    invoice.statusKey,
+    invoice.status,
+  );
+  const invoiceHeading = invoiceDetailsT("orderForVendor", {
+    event: localizedOrderLabel,
+    vendor: invoice.vendor.name || invoiceDetailsT("vendorFallback"),
+  });
+  const paymentTypeLabel =
+    invoice.paymentType || invoiceDetailsT("notSpecified");
+  const transactionReferenceLabel =
+    invoice.transactionReference || invoiceDetailsT("notAvailable");
+  const eventNameLabel = localizedOrderLabel;
+  const eventMetaLabel = [
+    invoice.order.eventDate,
+    invoiceDetailsT("guests", { count: invoice.order.personCount }),
+  ]
+    .filter(Boolean)
+    .join(" | ");
+  const deliveryAddressLabel =
+    invoice.order.deliveryAddressStr || invoiceDetailsT("notProvided");
+  const billingContactLabel =
+    invoice.vendor.companyName ||
+    invoice.vendor.name ||
+    invoiceDetailsT("vendorFallback");
+  const billingAddressLabel =
+    [
+      invoice.billingAddress.address,
+      invoice.billingAddress.country,
+    ]
+      .filter(Boolean)
+      .join(", ") || invoiceDetailsT("notProvided");
 
   return (
     <div className="space-y-6">
@@ -156,13 +195,13 @@ export default function VendorInvoiceDetailsPage() {
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getInvoiceStatusClasses(invoice.status)}`}
               >
-                {invoice.status}
+                {localizedStatus}
               </span>
               <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-[#1f1f1f] sm:text-[28px]">
                 {invoice.invoiceNumber}
               </h2>
               <p className="mt-2 text-[15px] text-[#685e56]">
-                {invoice.order.eventName} for {invoice.vendor.name}
+                {invoiceHeading}
               </p>
             </div>
           </div>
@@ -178,8 +217,11 @@ export default function VendorInvoiceDetailsPage() {
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-          <DetailRow label={invoiceDetailsT("vendor")} value={invoice.vendor.name} />
-          <DetailRow label={invoiceDetailsT("event")} value={invoice.order.eventName} />
+          <DetailRow
+            label={invoiceDetailsT("vendor")}
+            value={invoice.vendor.name || invoiceDetailsT("vendorFallback")}
+          />
+          <DetailRow label={invoiceDetailsT("event")} value={eventNameLabel} />
           <DetailRow label={invoiceDetailsT("issuedOn")} value={invoice.issuedOn} />
           <DetailRow label={invoiceDetailsT("dueOn")} value={invoice.dueOn} />
         </div>
@@ -245,10 +287,13 @@ export default function VendorInvoiceDetailsPage() {
           <DetailSection title={invoiceDetailsT("invoiceMeta")}>
             <div className="grid grid-cols-2 gap-3">
               <DetailRow label={invoiceDetailsT("paidOn")} value={invoice.paidOn || invoiceDetailsT("notPaidYet")} />
-              <DetailRow label={invoiceDetailsT("paymentType")} value={invoice.paymentType} />
+              <DetailRow
+                label={invoiceDetailsT("paymentType")}
+                value={paymentTypeLabel}
+              />
               <DetailRow
                 label={invoiceDetailsT("transactionReference")}
-                value={invoice.transactionReference}
+                value={transactionReferenceLabel}
               />
               <DetailRow label={invoiceDetailsT("paidAmount")} value={invoice.paidAmount} />
               <DetailRow label={invoiceDetailsT("dueAmount")} value={invoice.dueAmount} />
@@ -261,11 +306,9 @@ export default function VendorInvoiceDetailsPage() {
                 <FiCalendar className="mt-0.5 text-[#cf6e38]" />
                 <div>
                   <p className="font-semibold text-[#1f1f1f]">
-                    {invoice.order.eventName}
+                    {eventNameLabel}
                   </p>
-                  <p className="mt-1">
-                    {invoice.order.eventDate} | {invoiceDetailsT("guests", { count: invoice.order.personCount })}
-                  </p>
+                  {eventMetaLabel ? <p className="mt-1">{eventMetaLabel}</p> : null}
                 </div>
               </div>
 
@@ -273,7 +316,7 @@ export default function VendorInvoiceDetailsPage() {
                 <FiMapPin className="mt-0.5 text-[#cf6e38]" />
                 <div>
                   <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("deliveryInfo")}</p>
-                  <p className="mt-1">{invoice.order.deliveryAddressStr}</p>
+                  <p className="mt-1">{deliveryAddressLabel}</p>
                 </div>
               </div>
 
@@ -281,9 +324,7 @@ export default function VendorInvoiceDetailsPage() {
                 <FiUser className="mt-0.5 text-[#cf6e38]" />
                 <div>
                   <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("billingContact")}</p>
-                  <p className="mt-1">
-                    {invoice.vendor.companyName || invoice.vendor.name}
-                  </p>
+                  <p className="mt-1">{billingContactLabel}</p>
                   <p>{invoice.billingAddress.phone || invoiceDetailsT("noPhoneAdded")}</p>
                 </div>
               </div>
@@ -292,14 +333,7 @@ export default function VendorInvoiceDetailsPage() {
                 <FiCreditCard className="mt-0.5 text-[#cf6e38]" />
                 <div>
                   <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("billingAddress")}</p>
-                  <p className="mt-1">
-                    {[
-                      invoice.billingAddress.address,
-                      invoice.billingAddress.country,
-                    ]
-                      .filter(Boolean)
-                      .join(", ") || invoiceDetailsT("notProvided")}
-                  </p>
+                  <p className="mt-1">{billingAddressLabel}</p>
                 </div>
               </div>
 
