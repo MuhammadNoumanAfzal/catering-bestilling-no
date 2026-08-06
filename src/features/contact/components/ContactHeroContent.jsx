@@ -1,28 +1,28 @@
 import { Link } from "react-router-dom";
 import { FiArrowRight, FiHeadphones } from "react-icons/fi";
-
-const heroStats = [
-  { label: "Average reply", value: "1 day" },
-  { label: "Coverage", value: "Office + private" },
-  { label: "Support hours", value: "08:00-18:00" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function ContactHeroContent() {
+  const { t } = useTranslation();
+  const heroStats = [
+    { label: t("contact.avgReply"), value: t("contact.avgReplyValue") },
+    { label: t("contact.coverage"), value: t("contact.coverageValue") },
+    { label: t("contact.supportHours"), value: t("contact.supportHoursValue") },
+  ];
+
   return (
     <div className="relative">
       <div className="inline-flex items-center gap-2 rounded-full border border-[#ecd9cb] bg-white/85 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#b56237] shadow-[0_10px_26px_rgba(94,54,24,0.08)] backdrop-blur">
         <FiHeadphones className="text-[15px]" />
-        Contact & Event Support
+        {t("contact.supportBadge")}
       </div>
 
       <h1 className="mt-6 max-w-2xl font-serif text-[42px] leading-[1.02] text-[#1f1a16] sm:text-[56px] lg:text-[68px]">
-        Planning lunch for ten or catering for two hundred?
+        {t("contact.heroTitle")}
       </h1>
 
       <p className="mt-5 max-w-xl text-[17px] leading-8 text-[#5d554f] sm:text-[18px]">
-        Reach a team that understands food logistics, vendor coordination, and
-        polished event delivery. We help turn vague requests into clear plans
-        quickly.
+        {t("contact.heroDescription")}
       </p>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -30,14 +30,14 @@ export default function ContactHeroContent() {
           href="mailto:dev@gocatering.com"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[#c86135] px-6 py-3 text-[15px] font-semibold text-white shadow-[0_18px_34px_rgba(200,97,53,0.24)] transition hover:bg-[#b5542b]"
         >
-          Email support
+          {t("contact.emailSupport")}
           <FiArrowRight className="text-[16px]" />
         </a>
         <Link
           to="/browse/food-type"
           className="inline-flex items-center justify-center gap-2 rounded-full border border-[#dccbbd] bg-white/90 px-6 py-3 text-[15px] font-semibold text-[#2a2520] transition hover:border-[#c86135] hover:text-[#c86135]"
         >
-          Explore menus
+          {t("contact.exploreMenus")}
         </Link>
       </div>
 

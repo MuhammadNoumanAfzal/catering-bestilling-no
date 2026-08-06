@@ -10,25 +10,17 @@ import {
   FiX,
 } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import NotificationPopover from "../../../components/shared/navbar/NotificationPopover";
 import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCartSummary";
 import useUserNotifications from "../../../components/shared/navbar/useUserNotifications";
 import { vendorNavigationItems } from "../../vendorDashboard/data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
-
-const homeProfileMenuItems = [
-  { label: "Home", to: "/", icon: FiHome },
-  { label: "Settings", to: "/vendor-dashboard/settings", icon: FiSettings },
-  { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
-  ...vendorNavigationItems.filter(
-    (item) =>
-      item.to !== "/vendor-dashboard" &&
-      item.to !== "/vendor-dashboard/settings",
-  ),
-];
+import LanguageSwitcher from "../../../components/shared/LanguageSwitcher";
 
 export default function HomeNavbar() {
+  const { t } = useTranslation();
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -90,6 +82,17 @@ export default function HomeNavbar() {
     await showSuccessToast("Logged out successfully");
   };
 
+  const homeProfileMenuItems = [
+    { label: t("nav.home"), to: "/", icon: FiHome },
+    { label: t("nav.settings"), to: "/settings", icon: FiSettings },
+    { label: t("nav.dashboard"), to: "/vendor-dashboard", icon: FiGrid },
+    ...vendorNavigationItems.filter(
+      (item) =>
+        item.to !== "/vendor-dashboard" &&
+        item.to !== "/vendor-dashboard/settings",
+    ),
+  ];
+
   return (
     <header className="relative z-50 w-full">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-10">
@@ -102,6 +105,8 @@ export default function HomeNavbar() {
         </Link>
 
         <nav className="hidden items-center gap-5 md:flex lg:gap-6">
+          <LanguageSwitcher className="mr-1" />
+
           {isLoggedIn ? (
             <>
               <div className="relative" ref={desktopNotificationRef}>
@@ -123,7 +128,7 @@ export default function HomeNavbar() {
                       ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
                       : ""
                   }`}
-                  aria-label="Notifications"
+                  aria-label={t("nav.notifications")}
                   aria-expanded={isNotificationOpen}
                 >
                   <FiBell />
@@ -156,7 +161,7 @@ export default function HomeNavbar() {
               <Link
                 to="/checkout/corporate"
                 className={actionButtonClassName}
-                aria-label="Go to checkout cart"
+                aria-label={t("nav.goToCheckoutCart")}
               >
                 <FiShoppingCart />
                 {cartItemCount > 0 ? (
@@ -174,7 +179,7 @@ export default function HomeNavbar() {
                     setIsNotificationOpen(false);
                   }}
                   className="flex cursor-pointer items-center gap-3 rounded-full border border-[#eadfd7] bg-white px-2 py-1.5 pr-4 shadow-[0_8px_20px_rgba(35,22,12,0.08)] transition hover:border-[#d9c7ba]"
-                  aria-label="Open profile menu"
+                  aria-label={t("nav.openProfileMenu")}
                   aria-expanded={isProfileMenuOpen}
                 >
                   <div className="flex h-8 w-10 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
@@ -215,7 +220,7 @@ export default function HomeNavbar() {
                         className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                       >
                         <FiUser className="text-[17px]" />
-                        <span>Logout</span>
+                        <span>{t("nav.logout")}</span>
                       </button>
                     </div>
                   </div>
@@ -228,7 +233,7 @@ export default function HomeNavbar() {
               state={{ from: location }}
               className="type-h6 cursor-pointer rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:opacity-90"
             >
-              Sign in
+              {t("nav.signIn")}
             </Link>
           )}
 
@@ -236,14 +241,14 @@ export default function HomeNavbar() {
             to="/contact"
             className="type-h5 cursor-pointer rounded-full px-2 py-1 text-[#3d3d3d] transition hover:text-[#c85f33]"
           >
-            Contact us
+            {t("nav.contactUs")}
           </Link>
         </nav>
 
         <button
           onClick={() => setOpen((prev) => !prev)}
           className="flex h-12 w-12 cursor-pointer items-center justify-center md:hidden"
-          aria-label={open ? "Close menu" : "Open menu"}
+          aria-label={open ? t("nav.closeMenu") : t("nav.openMenu")}
           aria-expanded={open}
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfd7] bg-white text-[22px] text-[#2f2f2f] shadow-[0_6px_16px_rgba(35,22,12,0.08)] transition duration-300 hover:scale-105 hover:border-[#d9c7ba] hover:text-[#c85f33]">
@@ -261,12 +266,14 @@ export default function HomeNavbar() {
       >
         <div className="mx-4 rounded-2xl border border-gray-100 bg-white px-4 py-4 shadow-lg">
           <nav className="flex flex-col gap-3">
+            <LanguageSwitcher className="justify-between" />
+
             <Link
               to="/contact"
               onClick={closeMenu}
               className="cursor-pointer text-sm font-medium text-gray-700 transition hover:text-black"
             >
-              Contact us
+              {t("nav.contactUs")}
             </Link>
 
             <Link
@@ -282,7 +289,7 @@ export default function HomeNavbar() {
                   </span>
                 ) : null}
               </span>
-              Cart
+              {t("nav.cart")}
             </Link>
 
             {isLoggedIn ? (
@@ -334,7 +341,7 @@ export default function HomeNavbar() {
                       </span>
                     ) : null}
                   </span>
-                  Notifications
+                  {t("nav.notifications")}
                 </button>
 
                 {isNotificationOpen ? (
@@ -360,7 +367,7 @@ export default function HomeNavbar() {
                     <FiUser />
                   </span>
                   <span className="text-sm font-medium text-[#2f2f2f]">
-                    Logout
+                    {t("nav.logout")}
                   </span>
                 </button>
               </>
@@ -371,7 +378,7 @@ export default function HomeNavbar() {
                 onClick={closeMenu}
                 className="mt-1 w-full cursor-pointer rounded-full bg-[#c85f33] px-5 py-2.5 text-center text-sm font-medium text-white transition hover:opacity-90"
               >
-                Sign in
+                {t("nav.signIn")}
               </Link>
             )}
           </nav>

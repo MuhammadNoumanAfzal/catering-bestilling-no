@@ -1,4 +1,5 @@
 import { formatCurrency } from "../utils/formatters";
+import { useTranslation } from "react-i18next";
 
 function AddOnCard({
   option,
@@ -7,6 +8,7 @@ function AddOnCard({
   onIncrease,
   canAdd = true,
 }) {
+  const { t } = useTranslation();
   return (
     <article className="w-[188px] shrink-0 overflow-hidden rounded-[22px] border border-[#ddd3cb] bg-white shadow-[0_12px_28px_rgba(39,24,13,0.06)] sm:w-[210px] lg:w-[228px]">
       <img
@@ -53,7 +55,7 @@ function AddOnCard({
                 : "cursor-not-allowed border-[#e7ddd4] bg-[#f7f2ed] text-[#a39286]"
             }`}
           >
-            {canAdd ? "Add" : "Add main dish first"}
+            {canAdd ? t("menu.add") : t("menu.addMainDishFirst")}
           </button>
         )}
       </div>
@@ -69,20 +71,21 @@ export default function MenuAddOnsSection({
   onScroll,
   onUpdateOptionalQuantity,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="border-t border-[#ece4dc] bg-[linear-gradient(180deg,#fffdfa_0%,#fff6ef_100%)] px-4 py-4 sm:px-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
-            Customize your order
+            {t("menu.addOnsEyebrow")}
           </p>
-          <h2 className="mt-2 text-[24px] font-semibold text-[#1c1713]">Add-ons</h2>
+          <h2 className="mt-2 text-[24px] font-semibold text-[#1c1713]">{t("menu.addOnsTitle")}</h2>
           <p className="mt-1 text-[14px] leading-6 text-[#6b5d53]">
-            Add extras or side items to tailor the menu for your team.
+            {t("menu.addOnsIntro")}
           </p>
           {!hasMainDishInCart ? (
             <p className="mt-2 text-[13px] leading-5 text-[#9a5f3d]">
-              Select any add-ons you want, then add the main dish to cart. Add-ons cannot be ordered alone.
+              {t("menu.addOnsLocked")}
             </p>
           ) : null}
         </div>

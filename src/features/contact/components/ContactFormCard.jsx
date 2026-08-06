@@ -1,4 +1,5 @@
 import { FiClock, FiMessageSquare, FiSend } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 function ContactFieldLabel({ children }) {
   return (
@@ -34,6 +35,8 @@ export default function ContactFormCard({
   topics = [],
   updateField,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative">
       <div className="absolute -right-10 top-10 -z-10 h-40 w-40 rounded-full bg-[#f7d6bf]/55 blur-3xl" />
@@ -41,10 +44,10 @@ export default function ContactFormCard({
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#b77754]">
-              Priority desk
+              {t("contact.priorityDesk")}
             </p>
             <h2 className="mt-2 text-[30px] font-semibold leading-tight text-[#201b17]">
-              Tell us what you need and we will route it fast
+              {t("contact.formTitle")}
             </h2>
           </div>
           <div className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[#fff1e9] text-[#c86135] sm:inline-flex">
@@ -55,7 +58,7 @@ export default function ContactFormCard({
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <ContactFieldLabel>Full name</ContactFieldLabel>
+              <ContactFieldLabel>{t("contact.fullName")}</ContactFieldLabel>
               <ContactInput
                 type="text"
                 value={formState.name}
@@ -68,7 +71,7 @@ export default function ContactFormCard({
             </label>
 
             <label className="block">
-              <ContactFieldLabel>Email address</ContactFieldLabel>
+              <ContactFieldLabel>{t("contact.emailAddress")}</ContactFieldLabel>
               <ContactInput
                 type="email"
                 value={formState.email}
@@ -83,7 +86,7 @@ export default function ContactFormCard({
 
           <div className="grid gap-4 sm:grid-cols-[1fr_220px]">
             <label className="block">
-              <ContactFieldLabel>Company or organization</ContactFieldLabel>
+              <ContactFieldLabel>{t("contact.company")}</ContactFieldLabel>
               <ContactInput
                 type="text"
                 value={formState.company}
@@ -95,7 +98,7 @@ export default function ContactFormCard({
             </label>
 
             <label className="block">
-              <ContactFieldLabel>Phone</ContactFieldLabel>
+              <ContactFieldLabel>{t("contact.phone")}</ContactFieldLabel>
               <ContactInput
                 type="tel"
                 value={formState.phone}
@@ -108,7 +111,7 @@ export default function ContactFormCard({
           </div>
 
           <label className="block">
-            <ContactFieldLabel>What can we help with?</ContactFieldLabel>
+            <ContactFieldLabel>{t("contact.helpTopic")}</ContactFieldLabel>
             <select
               value={formState.topic}
               onChange={(event) => updateField("topic", event.target.value)}
@@ -128,11 +131,11 @@ export default function ContactFormCard({
           </label>
 
           <label className="block">
-            <ContactFieldLabel>Message</ContactFieldLabel>
+            <ContactFieldLabel>{t("contact.message")}</ContactFieldLabel>
             <textarea
               value={formState.message}
               onChange={(event) => updateField("message", event.target.value)}
-              placeholder="Tell us your event date, headcount, preferred cuisine, delivery location, or any issue you need help with."
+              placeholder={t("contact.messagePlaceholder")}
               disabled={isSubmitting}
               className="min-h-[150px] w-full rounded-[20px] border border-[#dfd1c4] bg-white px-4 py-3 text-[15px] leading-7 text-[#2a2520] outline-none transition placeholder:text-[#aa9b8e] focus:border-[#c86135] disabled:cursor-not-allowed disabled:bg-[#f8f3ee]"
               required
@@ -143,14 +146,14 @@ export default function ContactFormCard({
           <div className="flex flex-col gap-3 border-t border-[#eee2d8] pt-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="flex items-center gap-2 text-sm text-[#6a625b]">
               <FiClock className="text-[#c86135]" />
-              We usually respond within one business day.
+              {t("contact.responseTime")}
             </p>
             <button
               type="submit"
               disabled={isSubmitting}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-[#201b17] px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-[#342b24] disabled:cursor-not-allowed disabled:bg-[#7b736c]"
             >
-              {isSubmitting ? "Sending..." : "Send message"}
+              {isSubmitting ? t("contact.sending") : t("contact.sendMessage")}
               <FiSend className="text-[16px]" />
             </button>
           </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import BrowseMenuSection from "../../browse/components/BrowseMenuSection";
 import BrowseTabs from "../../browse/components/BrowseTabs";
 import BrowseCategoryStrip from "../../../components/shared/BrowseCategoryStrip";
@@ -14,6 +15,7 @@ export default function FoodBrowsePreviewSection({
   activeCategoryLabel,
   onSeeAllClick,
 }) {
+  const { t } = useTranslation();
   const [showMorePanel, setShowMorePanel] = useState(false);
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
   const shouldShowPreviewMenu = Boolean(activeCategoryLabel || hasAppliedFilters);
@@ -45,7 +47,11 @@ export default function FoodBrowsePreviewSection({
       {shouldShowPreviewMenu ? (
         <BrowseMenuSection
           sectionId="home-browse-results"
-          title={activeCategoryLabel ? `${activeCategoryLabel} Menu` : "Menu"}
+          title={
+            activeCategoryLabel
+              ? t("home.menuTitleWithCategory", { category: activeCategoryLabel })
+              : t("home.menuTitle")
+          }
           items={previewItems}
           totalItems={totalItems}
           activeCategoryLabel={activeCategoryLabel}

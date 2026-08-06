@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { showNoVendorsAlert } from "../../../utils/alerts";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
@@ -80,6 +81,7 @@ function removeDuplicateVendors(vendors, excludedVendorIds = new Set()) {
 }
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const {
     attendeeCount,
@@ -118,7 +120,15 @@ export default function HomePage() {
   const normalizedPostalCode = normalizePostalCode(postalCode);
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const normalizedCategoryFilter = normalizeCategorySelection(selectedCategory);
-  const appliedSearchLabel = buildSearchSummaryLabel(appliedSearchFilters);
+  const appliedSearchLabel = useMemo(() => {
+    if (appliedSearchFilters.postCode) {
+      return t("home.postalCodeSummary", {
+        postCode: appliedSearchFilters.postCode,
+      });
+    }
+
+    return buildSearchSummaryLabel(appliedSearchFilters);
+  }, [appliedSearchFilters, t]);
   const appliedSearchFiltersKey = JSON.stringify(appliedSearchFilters);
   const activeHomeLocationFilter = buildLocationFilter({
     postalCode: normalizedPostalCode,
@@ -231,9 +241,9 @@ export default function HomePage() {
 
     return [
       ...foodTypeCategories.slice(0, 8),
-      { name: "More", value: "__more__" },
+      { name: t("home.more"), value: "__more__" },
     ];
-  }, [foodTypeCategories]);
+  }, [foodTypeCategories, t]);
 
   const previewMoreOptions = useMemo(
     () => (foodTypeCategories.length > 8 ? foodTypeCategories.slice(8) : []),
@@ -246,7 +256,7 @@ export default function HomePage() {
 
     if (hasPostalCodeInput && !isValidPostalCode(nextPostalCode)) {
       setSearchValidationMessage(
-        "Postal code must be 4 or 5 digits before you search.",
+        t("home.postalCodeValidation"),
       );
       return;
     }
@@ -440,8 +450,13 @@ export default function HomePage() {
               <VendorShowcaseSection
                 title={
                   activeCategoryLabel
-                    ? `${activeCategoryLabel} Vendors Serving ${appliedSearchLabel}`
-                    : `Vendors Serving ${appliedSearchLabel}`
+                    ? t("home.categoryVendorsServing", {
+                        category: activeCategoryLabel,
+                        location: appliedSearchLabel,
+                      })
+                    : t("home.vendorsServing", {
+                        location: appliedSearchLabel,
+                      })
                 }
                 vendors={filteredSearchedVendors}
                 limit={null}
@@ -449,14 +464,18 @@ export default function HomePage() {
             ) : null}
             {curatedPopularSearchVendors.length > 0 ? (
               <VendorShowcaseSection
-                title={`More Popular Vendors Near ${appliedSearchLabel}`}
+                title={t("home.morePopularNear", {
+                  location: appliedSearchLabel,
+                })}
                 vendors={curatedPopularSearchVendors}
                 onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
               />
             ) : null}
             {curatedFeaturedSearchVendors.length > 0 ? (
               <VendorShowcaseSection
-                title={`Featured Vendors Near ${appliedSearchLabel}`}
+                title={t("home.featuredNear", {
+                  location: appliedSearchLabel,
+                })}
                 vendors={curatedFeaturedSearchVendors}
                 onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
               />
@@ -466,14 +485,20 @@ export default function HomePage() {
           <>
             {filteredPopularVendors.length > 0 ? (
               <VendorShowcaseSection
-                title={buildHomeSectionTitle("Popular Vendors", activeCategoryLabel)}
+                title={buildHomeSectionTitle(
+                  t("home.popularVendors"),
+                  activeCategoryLabel,
+                )}
                 vendors={filteredPopularVendors}
                 onSeeAllClick={() => navigate(`/vendors/popular${menuQuery}`)}
               />
             ) : null}
             {filteredFeaturedVendors.length > 0 ? (
               <VendorShowcaseSection
-                title={buildHomeSectionTitle("Featured Vendors", activeCategoryLabel)}
+                title={buildHomeSectionTitle(
+                  t("home.featuredVendors"),
+                  activeCategoryLabel,
+                )}
                 vendors={filteredFeaturedVendors}
                 onSeeAllClick={() => navigate(`/vendors/featured${menuQuery}`)}
               />
@@ -484,10 +509,15 @@ export default function HomePage() {
           <ProductShowcaseSection
             title={
               activeCategoryLabel
-                ? `${activeCategoryLabel} Products`
+                ? t("home.products", { category: activeCategoryLabel })
                 : hasAppliedLocationSearch
-                  ? `Popular Products Near ${appliedSearchLabel}`
-                  : buildHomeSectionTitle("Popular Products", activeCategoryLabel)
+                  ? t("home.popularProductsNear", {
+                      location: appliedSearchLabel,
+                    })
+                  : buildHomeSectionTitle(
+                      t("home.popularProducts"),
+                      activeCategoryLabel,
+                    )
             }
             products={filteredPopularProducts}
             onSeeAllClick={() => navigate(`/products/popular${menuQuery}`)}

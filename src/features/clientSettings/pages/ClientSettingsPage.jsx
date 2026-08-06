@@ -1,10 +1,13 @@
 import { Navigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import SettingsActions from "../../vendorDashboard/components/settings/SettingsActions";
+import ClientLanguageSettingsSection from "../components/ClientLanguageSettingsSection";
 import ClientNotificationSettingsSection from "../components/ClientNotificationSettingsSection";
 import { useClientSettingsPage } from "../hooks/useClientSettingsPage";
 
 export default function ClientSettingsPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
   const {
@@ -15,6 +18,7 @@ export default function ClientSettingsPage() {
     handleReset,
     handleSave,
     updateField,
+    handleLanguageChange,
   } = useClientSettingsPage();
 
   if (!isLoggedIn) {
@@ -34,18 +38,20 @@ export default function ClientSettingsPage() {
       <div className="mx-auto max-w-4xl rounded-[28px] border border-[#eadfd5] bg-white p-5 shadow-[0_18px_40px_rgba(55,34,19,0.06)] sm:p-6 lg:p-8">
         <div className="border-b border-[#ece4dc] pb-5">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
-            Account
+            {t("settings.accountBadge")}
           </p>
           <h1 className="mt-2 text-[28px] font-semibold text-[#1c1713]">
-            Settings
+            {t("settings.title")}
           </h1>
           <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
-            Manage whether Catering bestilling.no contacts you by email, text
-            message, or push notification.
+            {t("settings.description")}
           </p>
         </div>
 
         <div className="mt-6 space-y-6">
+          <ClientLanguageSettingsSection
+            onChangeLanguage={handleLanguageChange}
+          />
           <ClientNotificationSettingsSection
             formState={formState}
             updateField={updateField}
@@ -55,6 +61,10 @@ export default function ClientSettingsPage() {
             isSaving={isSaving}
             onReset={handleReset}
             onSave={handleSave}
+            resetLabel={t("settings.reset")}
+            saveHeading={t("settings.saveHeading")}
+            saveLabel={t("settings.save")}
+            savingLabel={t("settings.saving")}
           />
         </div>
       </div>

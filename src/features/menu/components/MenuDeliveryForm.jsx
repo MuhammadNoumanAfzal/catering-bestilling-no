@@ -1,4 +1,5 @@
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
+import { useTranslation } from "react-i18next";
 import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 import { formatTimeTo24Hour } from "../../../components/shared/navbar/navbarDateUtils";
 
@@ -34,6 +35,7 @@ export default function MenuDeliveryForm({
   onVendorNoteChange,
   onAddToCart,
 }) {
+  const { t } = useTranslation();
   const hasSlots = deliverySlots.length > 0;
   const selectedTime = orderSummary.deliveryTime || "";
   const firstAvailableSlot = deliverySlots.find((slot) => !slot.isFullyBooked) || null;
@@ -58,14 +60,14 @@ export default function MenuDeliveryForm({
 
   function getCapacityLabel(slot) {
     if (slot.isFullyBooked) {
-      return "Fully booked";
+      return t("menu.fullyBooked");
     }
 
     if (slot.remainingCapacity >= 9999) {
-      return "Available";
+      return t("menu.available");
     }
 
-    return `${slot.remainingCapacity} spot${slot.remainingCapacity !== 1 ? "s" : ""} left`;
+    return t("menu.spotsLeft", { count: slot.remainingCapacity });
   }
 
   const selectedSlot = getMatchingSlot(selectedTime);
@@ -89,13 +91,13 @@ export default function MenuDeliveryForm({
     <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eadfd5] bg-white shadow-[0_18px_40px_rgba(55,34,19,0.05)]">
       <div className="border-b border-[#efe4da] bg-[linear-gradient(135deg,#fffdfb_0%,#fff5ed_100%)] px-4 py-4 sm:px-5">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
-          Booking setup
+          {t("menu.bookingSetup")}
         </p>
         <h2 className="mt-2 text-[22px] font-semibold text-[#1c1713]">
-          Delivery Date & Time
+          {t("menu.deliveryDateTime")}
         </h2>
         <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
-          Choose your delivery day, lock in an available service window, and set the guest count before adding this menu to the cart.
+          {t("menu.bookingIntro")}
         </p>
       </div>
 
@@ -103,7 +105,7 @@ export default function MenuDeliveryForm({
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-[176px_minmax(0,1fr)]">
         <label className="block min-w-0">
-          <span className="text-[13px] font-medium text-[#3f342b]">Date</span>
+          <span className="text-[13px] font-medium text-[#3f342b]">{t("menu.date")}</span>
           <div className="mt-1">
             <input
               type="date"
@@ -116,20 +118,20 @@ export default function MenuDeliveryForm({
         </label>
 
         <label className="block min-w-0">
-          <span className="text-[13px] font-medium text-[#3f342b]">Time</span>
+          <span className="text-[13px] font-medium text-[#3f342b]">{t("menu.time")}</span>
           <div className="mt-1">
             {!orderSummary.deliveryDate ? (
               <p className="min-w-0 rounded-[14px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-3 text-[13px] text-[#9b8f84]">
-                Select a date first
+                {t("menu.selectDateFirst")}
               </p>
             ) : isLoadingSlots ? (
               <div className="flex min-w-0 items-center gap-2 rounded-[14px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-3">
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
-                <span className="text-[13px] text-[#9b8f84]">Checking available delivery slots...</span>
+                <span className="text-[13px] text-[#9b8f84]">{t("menu.checkingSlots")}</span>
               </div>
             ) : slotAccessRequiresAuth ? (
               <p className="rounded-[14px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-3 text-[13px] text-[#8a5a3a]">
-                {slotAccessMessage || "Sign in to view live delivery availability for the selected date."}
+                {slotAccessMessage || t("menu.signInForSlots")}
               </p>
             ) : hasSlots ? (
               <div className="flex flex-col gap-3">
@@ -137,15 +139,15 @@ export default function MenuDeliveryForm({
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9a6a4d]">
-                        Step 1
+                        {t("menu.stepOne")}
                       </p>
                       <p className="mt-1 text-[14px] font-semibold text-[#1d1713]">
-                        Choose a delivery window
+                        {t("menu.chooseWindow")}
                       </p>
                     </div>
                     {selectedSlot ? (
                       <span className="rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
-                        Selected: {selectedSlot.label}
+                        {t("menu.selectedWindow", { label: selectedSlot.label })}
                       </span>
                     ) : null}
                   </div>
@@ -174,7 +176,7 @@ export default function MenuDeliveryForm({
                                 {slot.label}
                               </p>
                               <p className="mt-1 text-[12px] text-[#8a7b70]">
-                                Tap to use this delivery window
+                                {t("menu.tapWindow")}
                               </p>
                             </div>
                             <span
@@ -196,21 +198,24 @@ export default function MenuDeliveryForm({
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9a6a4d]">
-                          Step 2
+                          {t("menu.stepTwo")}
                         </p>
                         <p className="mt-1 text-[15px] font-semibold text-[#1d1713]">
-                          Fine-tune your exact time
+                          {t("menu.fineTuneTime")}
                         </p>
                         <p className="mt-1 text-[12px] leading-5 text-[#8a5a3a]">
-                          Pick any 15-minute time between {editableSlot.start} and {editableSlot.end}.
+                          {t("menu.timeBetween", {
+                            start: editableSlot.start,
+                            end: editableSlot.end,
+                          })}
                         </p>
                       </div>
                       <div className="rounded-[14px] border border-[#efd8ca] bg-white px-3 py-2 text-right shadow-[0_8px_16px_rgba(55,34,19,0.04)]">
                         <p className="text-[11px] uppercase tracking-[0.1em] text-[#a19084]">
-                          Current time
+                          {t("menu.currentTime")}
                         </p>
                         <p className="mt-1 text-[15px] font-semibold text-[#cf6e38]">
-                          {selectedTime ? formatTimeTo24Hour(selectedTime) : "Not selected"}
+                          {selectedTime ? formatTimeTo24Hour(selectedTime) : t("menu.notSelected")}
                         </p>
                       </div>
                     </div>
@@ -232,14 +237,14 @@ export default function MenuDeliveryForm({
               </div>
             ) : hasDeliverySchedule ? (
               <p className="rounded-[14px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-3 text-[13px] text-[#8a5a3a]">
-                No delivery slots are available for the selected date. Please choose another day.
+                {t("menu.noSlotsForDate")}
               </p>
             ) : (
               <PreferredTimePicker
                 value={orderSummary.deliveryTime}
                 onChange={onDeliveryTimeChange}
                 selectedDate={orderSummary.deliveryDate}
-                placeholder="Select preferred time"
+                placeholder={t("nav.selectPreferredTime")}
               />
             )}
           </div>
@@ -248,14 +253,14 @@ export default function MenuDeliveryForm({
 
       <div className="mt-6 rounded-[22px] border border-[#efe4da] bg-[#fffdfa] p-4 sm:p-5">
         <h3 className="text-[18px] font-semibold text-[#1c1713]">
-          Event Details
+          {t("menu.eventDetails")}
         </h3>
         <p className="mt-2 text-[14px] leading-6 text-[#6b5d53]">
-          Set the expected number of guests for this order.
+          {t("menu.guestCountIntro")}
         </p>
 
         <div className="mt-3 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <span className="text-[15px] text-[#1d1713]">Persons:</span>
+          <span className="text-[15px] text-[#1d1713]">{t("menu.personsLabel")}</span>
           <select
             value={orderSummary.personCount}
             onChange={(event) => onPersonCountChange(Number(event.target.value))}
@@ -271,21 +276,21 @@ export default function MenuDeliveryForm({
             ))}
           </select>
           <span className="text-[13px] text-[#7e7469]">
-            Minimum {minimumPersons}
+            {t("menu.minimumLabel", { count: minimumPersons })}
           </span>
         </div>
 
       </div>
 
       <div className="mt-6 border-t border-[#ece4dc] pt-5">
-        <p className="text-[16px] font-semibold text-[#1d1713]">Add Note for Vendor</p>
+        <p className="text-[16px] font-semibold text-[#1d1713]">{t("menu.addVendorNote")}</p>
         <p className="mt-1 text-[13px] leading-5 text-[#7e7469]">
-          Share access notes, setup instructions, or anything the kitchen should know before delivery.
+          {t("menu.addVendorNoteDesc")}
         </p>
         <textarea
           value={vendorNote}
           onChange={(event) => onVendorNoteChange(event.target.value)}
-          placeholder="Add Note..."
+          placeholder={t("menu.addNotePlaceholder")}
           className="mt-3 h-28 w-full rounded-[16px] border border-[#d7cdc4] bg-[#fffdfa] px-4 py-3 text-[14px] text-[#3f342b] outline-none transition focus:border-[#cf6e38]"
         />
       </div>
@@ -300,7 +305,7 @@ export default function MenuDeliveryForm({
               : "cursor-not-allowed bg-[#d7c5b9] shadow-none"
           }`}
         >
-          Add to Cart
+          {t("menu.addToCart")}
         </button>
       </div>
     </div>

@@ -3,6 +3,7 @@ import {
   FiArrowRight,
   FiChevronDown,
 } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import {
   getMonthDays,
   getTodayStart,
@@ -22,11 +23,15 @@ export default function DeliveryDatePopover({
   onMonthChange,
   onTimeSelect,
 }) {
+  const { t, i18n } = useTranslation();
   const calendarDays = getMonthDays(calendarMonth);
-  const displayedMonth = calendarMonth.toLocaleDateString("en-US", {
+  const displayedMonth = calendarMonth.toLocaleDateString(
+    i18n.language === "no" ? "nb-NO" : "en-US",
+    {
     month: "long",
     year: "numeric",
-  });
+    },
+  );
   const today = getTodayStart();
   const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const calendarMonthStart = new Date(
@@ -42,7 +47,7 @@ export default function DeliveryDatePopover({
 
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <p className="text-[15px] font-semibold ">Delivery date</p>
+          <p className="text-[15px] font-semibold ">{t("nav.deliveryDate")}</p>
         </div>
         {draftDate || draftTime ? (
           <button
@@ -50,7 +55,7 @@ export default function DeliveryDatePopover({
             onClick={onClear}
             className="text-[13px] font-semibold text-[#c85f33] transition hover:text-[#a94b24]"
           >
-            Clear
+            {t("nav.clear")}
           </button>
         ) : null}
       </div>
@@ -75,7 +80,7 @@ export default function DeliveryDatePopover({
               }}
               disabled={previousMonthDisabled}
               className="inline-flex h-8 w-8 items-center justify-center rounded-full text-black transition hover:bg-[#f4efe9] disabled:cursor-not-allowed disabled:text-[#d2c8be] disabled:hover:bg-transparent"
-              aria-label="Previous month"
+              aria-label={t("nav.previousMonth")}
             >
               <FiArrowLeft className="text-[14px]" />
             </button>
@@ -83,7 +88,7 @@ export default function DeliveryDatePopover({
               type="button"
               onClick={() => onMonthChange(1)}
               className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-black transition hover:bg-[#f4efe9]"
-              aria-label="Next month"
+              aria-label={t("nav.nextMonth")}
             >
               <FiArrowRight className="text-[14px]" />
             </button>
@@ -133,10 +138,9 @@ export default function DeliveryDatePopover({
       <div className="mt-4">
         <div className="mb-2 flex items-start justify-between gap-3">
           <div>
-            <p className="type-h4 font-semibold ">Delivery time</p>
+            <p className="type-h4 font-semibold ">{t("nav.deliveryTime")}</p>
             <p className="type-subpara mt-3 max-w-[250px] leading-5 text-[#7e7469]">
-              Choose the exact time you prefer. We may arrive up to 15 minutes
-              earlier to ensure smooth delivery and setup.
+              {t("nav.deliveryTimeHint")}
             </p>
           </div>
         </div>
@@ -146,7 +150,7 @@ export default function DeliveryDatePopover({
             value={draftTime}
             onChange={onTimeSelect}
             selectedDate={draftDate}
-            placeholder="Select preferred time"
+            placeholder={t("nav.selectPreferredTime")}
           />
         </div>
       </div>
@@ -156,7 +160,7 @@ export default function DeliveryDatePopover({
         onClick={onApply}
         className="mt-4 w-full cursor-pointer rounded-[10px] bg-[#c85f33] px-4 py-3 text-[13px] font-semibold text-white transition hover:bg-[#b6542c]"
       >
-        Update results
+        {t("nav.updateResults")}
       </button>
     </div>
   );

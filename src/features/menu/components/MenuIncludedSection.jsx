@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function InfoRow({ label, value }) {
   if (!value) {
@@ -16,6 +17,7 @@ function InfoRow({ label, value }) {
 }
 
 function IncludedMenuRow({ allergens, description, image, label }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -36,8 +38,8 @@ function IncludedMenuRow({ allergens, description, image, label }) {
           </span>
           {isOpen ? (
             <div className="mt-1">
-              <InfoRow label="Description" value={description} />
-              <InfoRow label="Allergens" value={allergens} />
+              <InfoRow label={t("menu.descriptionLabel")} value={description} />
+              <InfoRow label={t("menu.allergensLabel")} value={allergens} />
             </div>
           ) : null}
         </div>
@@ -52,6 +54,7 @@ function IncludedMenuRow({ allergens, description, image, label }) {
 }
 
 function IncludedMenuDetailsModal({ includedMenuItems, isOpen, onClose }) {
+  const { t } = useTranslation();
   if (!isOpen) {
     return null;
   }
@@ -63,10 +66,10 @@ function IncludedMenuDetailsModal({ includedMenuItems, isOpen, onClose }) {
           <div className="flex items-start justify-between gap-4 border-b border-[#ece4dc] px-5 py-4">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#cf6e38]">
-                Full Menu Details
+                {t("menu.fullMenuDetails")}
               </p>
               <h3 className="mt-2 text-[24px] font-semibold leading-8 text-[#1c1713]">
-                What&apos;s included in this menu
+                {t("menu.whatsIncludedTitle")}
               </h3>
             </div>
 
@@ -106,7 +109,7 @@ function IncludedMenuDetailsModal({ includedMenuItems, isOpen, onClose }) {
 
                       {includedItem.allergens ? (
                         <p className="mt-3 text-[13px] leading-5 text-[#6f655d]">
-                          <span className="font-semibold text-[#3b3029]">Allergens:</span>{" "}
+                          <span className="font-semibold text-[#3b3029]">{t("menu.allergensLabel")}:</span>{" "}
                           {includedItem.allergens}
                         </p>
                       ) : null}
@@ -126,6 +129,7 @@ export default function MenuIncludedSection({
   menuItem,
   includedMenuItems,
 }) {
+  const { t } = useTranslation();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   if (!includedMenuItems || includedMenuItems.length === 0) {
@@ -137,13 +141,13 @@ export default function MenuIncludedSection({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
-            Included in this order
+            {t("menu.includedInOrder")}
           </p>
           <h2 className="mt-2 text-[22px] font-semibold text-[#1c1713]">
-            What&apos;s included in this menu
+            {t("menu.whatsIncludedTitle")}
           </h2>
           <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
-            Expand any row to preview item details and allergens before you place the order.
+            {t("menu.includedIntro")}
           </p>
         </div>
         <button
@@ -151,13 +155,13 @@ export default function MenuIncludedSection({
           onClick={() => setIsDetailsModalOpen(true)}
           className="inline-flex cursor-pointer items-center justify-center rounded-full border border-[#e1d4c8] bg-[#fff8f2] px-4 py-2 text-[14px] font-semibold text-[#2b221d] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
         >
-          View full menu
+          {t("menu.viewFullMenu")}
         </button>
       </div>
 
       <div className="mt-5 rounded-[22px] border border-[#efe4da] bg-[#fffdfa] p-3 sm:p-4">
         <h3 className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#8d7768]">
-          Quick preview
+          {t("menu.quickPreview")}
         </h3>
         <div className="mt-3 border-t border-[#ece4dc] pt-2">
           {includedMenuItems.map((includedItem) => (
@@ -175,22 +179,22 @@ export default function MenuIncludedSection({
       <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="rounded-[20px] border border-[#efe4da] bg-[linear-gradient(180deg,#fffdfb_0%,#fff6ee_100%)] p-4">
           <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#8d7768]">
-            Ordering note
+            {t("menu.orderingNote")}
           </p>
           <p className="mt-2 text-[14px] leading-7 text-[#4d433c]">
-            The final mix may vary slightly by vendor availability, but this section shows the expected structure and serving components for the selected menu.
+            {t("menu.orderingNoteText")}
           </p>
         </div>
 
         <div className="rounded-[20px] border border-[#eddccf] bg-[#fff4ea] p-4">
           <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#9e6b4f]">
-            Minimum order
+            {t("menu.minimumOrder")}
           </p>
           <p className="mt-2 text-[24px] font-semibold tracking-[-0.04em] text-[#1c1713]">
-            {menuItem.serves} persons
+            {t("menu.persons", { count: menuItem.serves })}
           </p>
           <p className="mt-2 text-[14px] leading-6 text-[#5e5046]">
-            This menu is configured for group ordering and cannot be booked below the minimum guest count.
+            {t("menu.minimumOrderText")}
           </p>
         </div>
       </div>

@@ -6,6 +6,7 @@ import {
   FiTruck,
 } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
+import { useTranslation } from "react-i18next";
 
 const DAY_LABELS = {
   0: "Sun",
@@ -92,6 +93,8 @@ function MetricCard({ icon, label, value, subvalue }) {
 }
 
 function TimingPanel({ entries }) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-[28px] border border-[#e8ddd3] bg-[linear-gradient(135deg,#fffaf6_0%,#fff4eb_100%)] p-4 shadow-[0_18px_36px_rgba(55,34,19,0.05)] sm:p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -102,15 +105,15 @@ function TimingPanel({ entries }) {
             </span>
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9b7a66]">
-                Timing
+                {t("menu.timing")}
               </p>
               <p className="mt-1 text-[24px] font-semibold tracking-[-0.04em] text-[#17120f] sm:text-[28px]">
-                Delivery schedule
+                {t("menu.deliverySchedule")}
               </p>
             </div>
           </div>
           <p className="mt-3 text-[13px] leading-6 text-[#66584d] sm:text-[14px]">
-            Delivery windows are shown below so customers can quickly understand when this vendor is available.
+            {t("menu.deliveryScheduleDesc")}
           </p>
         </div>
 
@@ -130,7 +133,7 @@ function TimingPanel({ entries }) {
             </div>
           ) : (
             <div className="rounded-[20px] border border-dashed border-[#e1d4c7] bg-white/80 px-4 py-5 text-[14px] font-medium text-[#77685e]">
-              Delivery schedule not available.
+              {t("menu.deliveryScheduleUnavailable")}
             </div>
           )}
         </div>
@@ -140,6 +143,7 @@ function TimingPanel({ entries }) {
 }
 
 export default function MenuOverviewSection({ vendor, menuItem }) {
+  const { t } = useTranslation();
   const priceLabel = menuItem.modal?.priceLabel ?? "per person";
   const unitPrice = Number(
     menuItem.modal?.unitPrice ?? menuItem.modal?.pricePerPerson ?? menuItem.price ?? 0,
@@ -162,7 +166,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
                 {cuisineBadge}
               </span>
               <span className="rounded-full border border-[#ead9cd] bg-white/90 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#79675c]">
-                Menu details
+                {t("menu.menuDetails")}
               </span>
             </div>
 
@@ -182,7 +186,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
 
           <div className="w-full max-w-[320px] rounded-[24px] border border-[#f0ddd1] bg-white p-4 shadow-[0_18px_32px_rgba(39,24,13,0.07)]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b48062]">
-              Starting from
+              {t("menu.startingFrom")}
             </p>
             <div className="mt-2 flex items-end gap-2">
               <p className="text-[32px] font-semibold leading-none tracking-[-0.05em] text-[#17120f]">
@@ -195,18 +199,18 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
             <div className="mt-3 grid gap-3">
               <div className="rounded-[16px] bg-[#faf4ee] px-4 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48370]">
-                  Minimum order
+                  {t("menu.minimumOrder")}
                 </p>
                 <p className="mt-1 text-[16px] font-semibold text-[#221b17]">
-                  {minimumPersons} persons
+                  {t("menu.persons", { count: minimumPersons })}
                 </p>
               </div>
               <div className="rounded-[16px] bg-[#faf4ee] px-4 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48370]">
-                  Delivery style
+                  {t("menu.deliveryStyle")}
                 </p>
                 <p className="mt-1 text-[16px] font-semibold text-[#221b17]">
-                  Ready for office or event service
+                  {t("menu.deliveryStyleValue")}
                 </p>
               </div>
             </div>
@@ -217,21 +221,21 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
       <div className="mt-6 grid gap-3.5 md:grid-cols-3">
         <MetricCard
           icon={<FiStar className="fill-[#f4b400] text-[#f4b400]" />}
-          label="Rating"
+          label={t("menu.rating")}
           value={`${vendor.rating} / 5`}
-          subvalue={vendor.reviewCount ? `${vendor.reviewCount} reviews` : ""}
+          subvalue={vendor.reviewCount ? t("vendor.reviewsCount", { count: vendor.reviewCount }) : ""}
         />
         <MetricCard
           icon={<FiMapPin />}
-          label="Location"
-          value={vendor.city || vendor.addressLine || "Not available"}
+          label={t("menu.location")}
+          value={vendor.city || vendor.addressLine || t("menu.notAvailable")}
           subvalue={vendor.addressLine || ""}
         />
         <MetricCard
           icon={<FiTruck />}
-          label="Delivery"
-          value={vendor.deliveryFee ? vendor.deliveryFee.replace(" fee", "").trim() : "Not available"}
-          subvalue="Visible before checkout"
+          label={t("menu.delivery")}
+          value={vendor.deliveryFee ? vendor.deliveryFee.replace(" fee", "").trim() : t("menu.notAvailable")}
+          subvalue={t("menu.visibleBeforeCheckout")}
         />
       </div>
 
@@ -243,14 +247,14 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#f8f1eb] px-3.5 py-2 text-[13px] font-semibold text-[#2b221d]">
             <FiPackage className="text-[#cf6e38]" />
-            Prepared menu with configurable add-ons
+            {t("menu.preparedMenu")}
           </span>
           <span className="inline-flex rounded-full border border-[#e7dacf] px-3.5 py-2 text-[13px] font-medium text-[#6c5d52]">
-            Vendor: {vendor.name}
+            {t("menu.vendorPrefix", { name: vendor.name })}
           </span>
         </div>
         <p className="mt-4 max-w-3xl text-[14px] leading-7 text-[#4e443c] sm:text-[15px] sm:leading-8">
-          Review what is included, choose your delivery slot, then add notes or extras before sending this item to your cart.
+          {t("menu.overviewNote")}
         </p>
       </div>
     </>

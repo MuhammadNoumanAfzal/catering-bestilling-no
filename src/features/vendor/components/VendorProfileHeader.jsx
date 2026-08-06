@@ -1,4 +1,5 @@
 import { FiBookmark, FiMapPin, FiShare2, FiStar } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 export default function VendorProfileHeader({
   vendor,
@@ -9,6 +10,8 @@ export default function VendorProfileHeader({
   onSaveToggle,
   onShare,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-[20px] border border-[#e7dfd6] bg-white p-4 shadow-[0_12px_30px_rgba(31,19,8,0.06)] sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -32,7 +35,9 @@ export default function VendorProfileHeader({
                     : "bg-[#fff1eb] text-[#cf6e38]"
                 }`}
               >
-                {isAvailable ? "Open for selected time" : "Closed / Not Available"}
+                {isAvailable
+                  ? t("vendor.openForSelectedTime")
+                  : t("vendor.closedOrUnavailable")}
               </span>
               <span className="inline-flex rounded-full bg-[#f4efe9] px-3 py-1 text-[12px] font-medium text-[#5f544a]">
                 {vendor.cuisine}
@@ -57,7 +62,7 @@ export default function VendorProfileHeader({
                 onClick={onReviewsClick}
                 className="cursor-pointer transition hover:text-[#cf6e38]"
               >
-                ({vendor.reviewCount} reviews)
+                {t("vendor.reviewsCount", { count: vendor.reviewCount })}
               </button>
             </div>
 
@@ -79,7 +84,7 @@ export default function VendorProfileHeader({
             className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium transition hover:border-[#cf6e38] hover:text-[#cf6e38] sm:flex-none"
           >
             <FiShare2 className="text-[12px]" />
-            Share
+            {t("vendor.share")}
           </button>
           <button
             type="button"
@@ -92,7 +97,7 @@ export default function VendorProfileHeader({
             }`}
           >
             <FiBookmark className={`text-[12px] ${isSaved ? "fill-current" : ""}`} />
-            {isSaved ? "Saved" : "Save"}
+            {isSaved ? t("vendor.saved") : t("vendor.save")}
           </button>
         </div>
       </div>

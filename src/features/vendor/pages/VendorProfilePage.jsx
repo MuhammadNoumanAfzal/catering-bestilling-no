@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Navigate,
   useLocation,
@@ -32,11 +33,13 @@ import { useVendorProfile } from "../hooks/useVendorProfile";
 import { useSavedVendorStatus } from "../hooks/useSavedVendorStatus";
 
 function VendorPageStatus({ message, onRetry }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6] px-4">
       <div className="w-full max-w-lg rounded-[24px] border border-[#eadfd2] bg-white p-6 text-center shadow-[0_18px_40px_rgba(31,19,8,0.08)]">
         <p className="text-[24px] font-semibold text-[#171512]">
-          Unable to load vendor page
+          {t("vendor.unableToLoadPage")}
         </p>
         <p className="mt-3 text-[15px] leading-6 text-[#6c6259]">
           {message}
@@ -47,7 +50,7 @@ function VendorPageStatus({ message, onRetry }) {
             onClick={onRetry}
             className="mt-5 rounded-full bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
           >
-            Try again
+            {t("vendor.tryAgain")}
           </button>
         ) : null}
       </div>
@@ -56,6 +59,7 @@ function VendorPageStatus({ message, onRetry }) {
 }
 
 export default function VendorProfilePage() {
+  const { t } = useTranslation();
   const CATEGORY_BAR_TOP_OFFSET = 78;
   const { vendorSlug } = useParams();
   const navigate = useNavigate();
@@ -239,7 +243,7 @@ export default function VendorProfilePage() {
   if (error || !vendor) {
     return (
       <VendorPageStatus
-        message={error || "This vendor could not be found."}
+        message={error || t("vendor.notFound")}
         onRetry={() => window.location.reload()}
       />
     );
@@ -271,13 +275,13 @@ export default function VendorProfilePage() {
       const nextSavedState = await toggleSavedState();
       showSuccessToast(
         nextSavedState
-          ? `${vendor.name} saved successfully`
-          : `${vendor.name} removed from saved restaurants`,
+          ? t("vendor.savedSuccess", { name: vendor.name })
+          : t("vendor.removedSaved", { name: vendor.name }),
       );
     } catch (saveError) {
       await showAuthErrorAlert(
-        saveError.message || "Unable to update saved vendor right now.",
-        "Save vendor failed",
+        saveError.message || t("vendor.updateSavedFailed"),
+        t("vendor.saveFailed"),
       );
     }
   };
@@ -289,20 +293,20 @@ export default function VendorProfilePage() {
         : `/vendor/${vendor.slug}`;
     const sharePayload = {
       title: vendor.name,
-      text: `Check out ${vendor.name} on Lunsjavtale.`,
+      text: t("vendor.shareText", { name: vendor.name }),
       url: shareUrl,
     };
 
     try {
       if (navigator.share) {
         await navigator.share(sharePayload);
-        await showSuccessToast(`${vendor.name} shared successfully`);
+        await showSuccessToast(t("vendor.sharedSuccess", { name: vendor.name }));
         return;
       }
 
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
-        await showSuccessToast("Restaurant link copied to clipboard");
+        await showSuccessToast(t("vendor.linkCopied"));
         return;
       }
     } catch (error) {
@@ -311,7 +315,7 @@ export default function VendorProfilePage() {
       }
     }
 
-    showSuccessToast("Sharing is not supported on this device");
+    showSuccessToast(t("vendor.sharingUnsupported"));
   };
 
   const handleCategoryChange = (category) => {
@@ -337,7 +341,7 @@ export default function VendorProfilePage() {
           <div className="min-w-0">
             <div className="p-4 sm:p-5">
               <BackLinkButton to="/">
-                Back to search
+                {t("vendor.backToSearch")}
               </BackLinkButton>
 
               <div className="mt-3">
@@ -370,7 +374,7 @@ export default function VendorProfilePage() {
 
               <div className="mt-5">
                 <p className="type-h3 font-semibold text-[#1a1a1a]">
-                  Catering Menu
+                  {t("vendor.cateringMenu")}
                 </p>
               </div>
 

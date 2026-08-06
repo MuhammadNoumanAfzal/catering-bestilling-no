@@ -1,4 +1,5 @@
 import { FiArrowRight, FiMapPin, FiSearch } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import HomeNavbar from "./HomeNavbar";
 
 export default function HeroSection({
@@ -11,6 +12,8 @@ export default function HeroSection({
   onSearch,
   searchValidationMessage,
 }) {
+  const { t } = useTranslation();
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       onSearch?.();
@@ -31,13 +34,13 @@ export default function HeroSection({
         <div className="grid min-h-[calc(100vh-88px)] max-w-7xl  mx-auto items-center gap-12 px-5 py-10 md:px-6 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-14">
           <div className="md:max-w-2xl">
             <h1 className=" text-[40px] md:text-[70px] font-extrabold text-black">
-              Order Lunch For
+              {t("home.heroTitleLineOne")}
               <br />
-              Work or Home
+              {t("home.heroTitleLineTwo")}
             </h1>
 
             <p className="type-h5 mt-5 max-w-xl text-gray-700">
-              Fresh meals from local vendors delivered on time.
+              {t("home.heroSubtitle")}
             </p>
 
             <div className="mt-8 max-w-2xl">
@@ -51,7 +54,7 @@ export default function HeroSection({
                       onDeliveryAddressChange?.(event.target.value)
                     }
                     onKeyDown={handleKeyDown}
-                    placeholder="Enter your delivery address"
+                    placeholder={t("home.deliveryAddressPlaceholder")}
                     className="type-para ml-3 w-full bg-transparent text-gray-700 outline-none placeholder:text-gray-400"
                   />
                 </div>
@@ -66,7 +69,7 @@ export default function HeroSection({
                     )
                   }
                   onKeyDown={handleKeyDown}
-                  placeholder="Add Postal Code"
+                  placeholder={t("home.postalCodePlaceholder")}
                   className="type-para h-12 rounded-xl border border-gray-300 bg-white px-4 text-gray-700 outline-none placeholder:text-gray-400 transition focus-within:border-[#e98c65] sm:w-[180px]"
                 />
               </div>
@@ -77,7 +80,7 @@ export default function HeroSection({
                 className="type-h6 mt-3 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#c85f33] px-6 text-white transition hover:bg-[#b9542b]"
               >
                 <FiSearch className="text-base" />
-                Search
+                {t("home.search")}
               </button>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                 <button
@@ -90,10 +93,10 @@ export default function HeroSection({
                   </span>
                   <span className="flex flex-col items-start leading-none">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#c46a35]">
-                      Explore
+                      {t("home.explore")}
                     </span>
                     <span className="text-[15px] font-semibold text-[#241815]">
-                      Browse All Vendors
+                      {t("home.browseAllVendors")}
                     </span>
                   </span>
                   <FiArrowRight className="ml-1 text-base text-[#c46a35] transition duration-200 group-hover:translate-x-1" />
@@ -106,7 +109,7 @@ export default function HeroSection({
                       {searchValidationMessage}
                     </span>
                   ) : (
-                    "Enter a 4 or 5 digit postal code to search in your area."
+                    t("home.postalCodeHint")
                   )}
                 </p>
               ) : null}
