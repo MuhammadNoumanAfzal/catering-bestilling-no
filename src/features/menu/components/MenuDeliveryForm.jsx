@@ -152,7 +152,7 @@ export default function MenuDeliveryForm({
                     ) : null}
                   </div>
 
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="mt-3 grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
                     {deliverySlots.map((slot) => {
                       const isSelected = isTimeInSlot(selectedTime, slot);
 
@@ -170,17 +170,17 @@ export default function MenuDeliveryForm({
                                 : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/45 hover:bg-[#fdf8f4]"
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-3">
-                            <div>
-                              <p className="text-[15px] font-semibold">
+                          <div className="flex min-w-0 flex-col gap-3">
+                            <div className="min-w-0">
+                              <p className="text-[15px] font-semibold leading-6 break-words">
                                 {slot.label}
                               </p>
-                              <p className="mt-1 text-[12px] text-[#8a7b70]">
+                              <p className="mt-1 text-[12px] leading-5 text-[#8a7b70]">
                                 {t("menu.tapWindow")}
                               </p>
                             </div>
                             <span
-                              className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                              className={`inline-flex w-fit max-w-full shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                                 getSlotStatusTone(slot)
                               }`}
                             >
