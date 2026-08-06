@@ -1,6 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { FiStar } from "react-icons/fi";
 import FilterDropdown from "./FilterDropdown";
 import MultiSelectIndicator from "./MultiSelectIndicator";
+import {
+  FILTER_DEFAULTS,
+  translateBrowseOptionLabel,
+} from "./browseFilterConfig";
 
 export default function BrowseFilterOptionsDropdown({
   chipKey,
@@ -23,6 +28,7 @@ export default function BrowseFilterOptionsDropdown({
   pricingOptions,
   mobileAlign,
 }) {
+  const { t } = useTranslation();
   const toggleSingleSelect = (selectedValue, nextValue, resetValue, setter) => {
     setter(selectedValue === nextValue ? resetValue : nextValue);
   };
@@ -41,7 +47,7 @@ export default function BrowseFilterOptionsDropdown({
         minWidthClassName="min-w-[190px]"
         mobileAlign={mobileAlign}
         onClear={() => {
-          setSelectedSort("Sort by");
+          setSelectedSort(FILTER_DEFAULTS.sort);
           closeDropdown();
         }}
       >
@@ -53,13 +59,13 @@ export default function BrowseFilterOptionsDropdown({
               toggleSingleSelect(
                 selectedSort,
                 option,
-                "Sort by",
+                FILTER_DEFAULTS.sort,
                 setSelectedSort,
               );
             }}
             className="type-para block w-full rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
           >
-            {option}
+            {translateBrowseOptionLabel(t, option)}
           </button>
         ))}
       </FilterDropdown>
@@ -72,7 +78,7 @@ export default function BrowseFilterOptionsDropdown({
         minWidthClassName="min-w-[190px]"
         mobileAlign={mobileAlign}
         onClear={() => {
-          setSelectedRating("Ratings");
+          setSelectedRating(FILTER_DEFAULTS.rating);
           closeDropdown();
         }}
       >
@@ -84,7 +90,7 @@ export default function BrowseFilterOptionsDropdown({
               toggleSingleSelect(
                 selectedRating,
                 option,
-                "Ratings",
+                FILTER_DEFAULTS.rating,
                 setSelectedRating,
               );
             }}
@@ -94,7 +100,7 @@ export default function BrowseFilterOptionsDropdown({
               <span className="text-black">{5 - index}</span>
               <FiStar className="text-[11px] fill-[#d5aa22]" />
             </span>
-            <span>{option.replace(/^\d+\s*/, "")}</span>
+            <span>{translateBrowseOptionLabel(t, option).replace(/^\d+\s*/, "")}</span>
           </button>
         ))}
       </FilterDropdown>
@@ -119,13 +125,13 @@ export default function BrowseFilterOptionsDropdown({
               key={option}
               type="button"
               onClick={() => toggleMultiSelect(setSelectedDietary, option)}
-              className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
-            >
-              <MultiSelectIndicator isSelected={isSelected} />
-              <span>{option}</span>
-            </button>
-          );
-        })}
+            className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
+          >
+            <MultiSelectIndicator isSelected={isSelected} />
+            <span>{translateBrowseOptionLabel(t, option)}</span>
+          </button>
+        );
+      })}
       </FilterDropdown>
     );
   }
@@ -148,13 +154,13 @@ export default function BrowseFilterOptionsDropdown({
               key={option}
               type="button"
               onClick={() => toggleMultiSelect(setSelectedOffers, option)}
-              className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
-            >
-              <MultiSelectIndicator isSelected={isSelected} />
-              <span>{option}</span>
-            </button>
-          );
-        })}
+            className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
+          >
+            <MultiSelectIndicator isSelected={isSelected} />
+            <span>{translateBrowseOptionLabel(t, option)}</span>
+          </button>
+        );
+      })}
       </FilterDropdown>
     );
   }
@@ -165,7 +171,7 @@ export default function BrowseFilterOptionsDropdown({
         minWidthClassName="min-w-[190px]"
         mobileAlign={mobileAlign}
         onClear={() => {
-          setSelectedPricing("Pricing");
+          setSelectedPricing(FILTER_DEFAULTS.pricing);
           closeDropdown();
         }}
       >
@@ -177,13 +183,13 @@ export default function BrowseFilterOptionsDropdown({
               toggleSingleSelect(
                 selectedPricing,
                 option,
-                "Pricing",
+                FILTER_DEFAULTS.pricing,
                 setSelectedPricing,
               );
             }}
             className="type-para block w-full rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"
           >
-            {option}
+            {translateBrowseOptionLabel(t, option)}
           </button>
         ))}
       </FilterDropdown>

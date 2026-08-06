@@ -1,3 +1,5 @@
+import { FILTER_DEFAULTS } from "../../../components/shared/browseFilters/browseFilterConfig";
+
 function extractFirstNumber(value) {
   const numericMatch = `${value ?? ""}`.match(/(\d+(\.\d+)?)/);
   return numericMatch ? Number(numericMatch[1]) : 0;
@@ -21,7 +23,7 @@ function extractPriceValue(priceLabel) {
 }
 
 export function matchesRatingFilter(rating, selectedRating) {
-  if (!selectedRating || selectedRating === "Ratings") {
+  if (!selectedRating || selectedRating === FILTER_DEFAULTS.rating) {
     return true;
   }
 
@@ -48,7 +50,7 @@ export function matchesOfferFilter(item, selectedOffers) {
 }
 
 export function matchesPricingFilter(item, selectedPricing) {
-  if (!selectedPricing || selectedPricing === "Pricing") {
+  if (!selectedPricing || selectedPricing === FILTER_DEFAULTS.pricing) {
     return true;
   }
 
@@ -80,7 +82,7 @@ export function matchesOtherFilters(item, otherFilters) {
     }
   }
 
-  if (otherFilters.orderMinimum !== "Any price") {
+  if (otherFilters.orderMinimum !== FILTER_DEFAULTS.orderMinimum) {
     const minimumOrderValue = item.minimumOrderValue ?? extractFirstNumber(item.price);
 
     if (otherFilters.orderMinimum === "Under NOK 250" && minimumOrderValue >= 250) {
@@ -99,7 +101,7 @@ export function matchesOtherFilters(item, otherFilters) {
     }
   }
 
-  if (otherFilters.distance !== "Any distance") {
+  if (otherFilters.distance !== FILTER_DEFAULTS.distance) {
     const maxDistance = extractFirstNumber(otherFilters.distance);
     const itemDistance = item.distanceKm ?? Number.POSITIVE_INFINITY;
 
@@ -112,7 +114,7 @@ export function matchesOtherFilters(item, otherFilters) {
 }
 
 export function sortCatalogItems(items, selectedSort) {
-  if (!selectedSort || selectedSort === "Sort by" || selectedSort === "Recommended") {
+  if (!selectedSort || selectedSort === FILTER_DEFAULTS.sort || selectedSort === "Recommended") {
     return [...items].sort((left, right) => {
       const rightScore = right.popularityScore ?? right.rating ?? 0;
       const leftScore = left.popularityScore ?? left.rating ?? 0;

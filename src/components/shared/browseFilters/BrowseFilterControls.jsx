@@ -1,5 +1,5 @@
 import { browseFilterChips } from "../../../features/browse/data/browseData";
-import { DROPDOWN_CHIP_KEYS } from "./browseFilterConfig";
+import { DROPDOWN_CHIP_KEYS, FILTER_DEFAULTS } from "./browseFilterConfig";
 import BrowseFilterChipButton from "./BrowseFilterChipButton";
 import BrowseFilterOptionsDropdown from "./BrowseFilterOptionsDropdown";
 
@@ -32,11 +32,11 @@ export default function BrowseFilterControls({
         const chipIndex = browseFilterChips.findIndex((item) => item.key === chip.key);
         const isActive =
           activeFilters.includes(chip.key) ||
-          (chip.key === "sort" && selectedSort !== "Sort by") ||
-          (chip.key === "rating" && selectedRating !== "Ratings") ||
+          (chip.key === "sort" && selectedSort !== FILTER_DEFAULTS.sort) ||
+          (chip.key === "rating" && selectedRating !== FILTER_DEFAULTS.rating) ||
           (chip.key === "dietary" && selectedDietary.length > 0) ||
           (chip.key === "offer" && selectedOffers.length > 0) ||
-          (chip.key === "pricing" && selectedPricing !== "Pricing") ||
+          (chip.key === "pricing" && selectedPricing !== FILTER_DEFAULTS.pricing) ||
           (chip.key === "other" && otherFilterCount > 0);
 
         return (

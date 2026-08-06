@@ -1,4 +1,5 @@
 import VendorCard from "./VendorCard";
+import { useTranslation } from "react-i18next";
 
 export default function VendorShowcaseSection({
   title,
@@ -8,6 +9,7 @@ export default function VendorShowcaseSection({
   onSeeAllClick,
   limit = 3,
 }) {
+  const { t } = useTranslation();
   const visibleVendors = typeof limit === "number" ? vendors.slice(0, limit) : vendors;
 
   return (
@@ -25,7 +27,7 @@ export default function VendorShowcaseSection({
                 onClick={onSeeAllClick}
                 className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#d9d1c7] px-5 py-2 text-sm font-medium text-[#191919] transition hover:border-[#c46a35] hover:text-[#c46a35]"
               >
-                {seeAllLabel}
+                {seeAllLabel || t("browse.seeAll")}
               </button>
             ) : null}
           </div>
@@ -39,7 +41,7 @@ export default function VendorShowcaseSection({
           </div>
         ) : (
           <div className="rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
-            {emptyMessage ?? "No vendors are available for this location yet."}
+            {emptyMessage ?? t("browse.noVendorsGeneric")}
           </div>
         )}
       </div>

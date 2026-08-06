@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
+import { FILTER_DEFAULTS } from "../../../components/shared/browseFilters/browseFilterConfig";
 import { getBrowseFallbackIcon } from "../data/browseData";
 import {
   browseProductsByFoodType,
@@ -63,6 +64,9 @@ function mapSortToApiValue(selectedSort) {
     case "Newest":
       return "newest";
     default:
+      if (selectedSort === FILTER_DEFAULTS.sort) {
+        return null;
+      }
       return null;
   }
 }

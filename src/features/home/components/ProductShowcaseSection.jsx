@@ -1,5 +1,6 @@
 import { FiStar } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 export function ProductItem({
@@ -57,6 +58,7 @@ export default function ProductShowcaseSection({
   seeAllLabel = "See all",
   onSeeAllClick,
 }) {
+  const { t } = useTranslation();
   return (
     <section className="bg-white px-8 py-6 sm:px-10 lg:px-20">
       <div className="mx-auto w-full max-w-7xl">
@@ -72,7 +74,7 @@ export default function ProductShowcaseSection({
                 onClick={onSeeAllClick}
                 className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#d9d1c7] px-5 py-2 text-sm font-medium text-[#191919] transition hover:border-[#c46a35] hover:text-[#c46a35]"
               >
-                {seeAllLabel}
+                {seeAllLabel || t("browse.seeAll")}
               </button>
             ) : null}
           </div>
@@ -86,7 +88,7 @@ export default function ProductShowcaseSection({
           </div>
         ) : (
           <div className="rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
-            {emptyMessage ?? "No products are available right now."}
+            {emptyMessage ?? t("browse.noProductsGeneric")}
           </div>
         )}
       </div>
