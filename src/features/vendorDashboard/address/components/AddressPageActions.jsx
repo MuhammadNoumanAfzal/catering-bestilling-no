@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { translateAddress } from "../addressI18n";
 
 export default function AddressPageActions({
   isDirty = false,
@@ -6,7 +7,8 @@ export default function AddressPageActions({
   onReset,
   onSave,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const at = (key, options) => translateAddress(t, i18n, key, options);
   return (
     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
       <button
@@ -14,7 +16,7 @@ export default function AddressPageActions({
         onClick={onReset}
         className="type-h6 w-full cursor-pointer rounded-full border border-[#cfc6bd] bg-white px-5 py-2.5 text-[#1f1f1f] transition hover:bg-[#f8f4ef] sm:w-auto"
       >
-        {t("vendorPanel.addressPage.reset")}
+        {at("reset")}
       </button>
       <button
         type="button"
@@ -22,7 +24,7 @@ export default function AddressPageActions({
         disabled={!isDirty || isSaving}
         className="type-h6 w-full rounded-full bg-[#cf5c2f] px-5 py-2.5 text-white transition hover:bg-[#b95127] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
-        {isSaving ? t("vendorPanel.addressPage.saving") : t("vendorPanel.addressPage.save")}
+        {isSaving ? at("saving") : at("save")}
       </button>
     </div>
   );

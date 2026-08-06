@@ -1,10 +1,12 @@
 import AddressBookSection from "../address/components/AddressBookSection";
 import AddressPageActions from "../address/components/AddressPageActions";
+import { translateAddress } from "../address/addressI18n";
 import { useVendorAddressPage } from "../address/hooks/useVendorAddressPage";
 import { useTranslation } from "react-i18next";
 
 export default function VendorAddressPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const at = (key, options) => translateAddress(t, i18n, key, options);
   const {
     activeDeliveryId,
     activeInvoiceId,
@@ -36,8 +38,8 @@ export default function VendorAddressPage() {
     <div className="space-y-6">
       <AddressBookSection
         type="delivery"
-        title={t("vendorPanel.addressPage.deliveryTitle")}
-        description={t("vendorPanel.addressPage.deliveryDescription")}
+        title={at("deliveryTitle")}
+        description={at("deliveryDescription")}
         addresses={deliveryAddresses}
         activeId={activeDeliveryId}
         onSelect={setActiveDeliveryId}
@@ -51,8 +53,8 @@ export default function VendorAddressPage() {
 
       <AddressBookSection
         type="invoice"
-        title={t("vendorPanel.addressPage.invoiceTitle")}
-        description={t("vendorPanel.addressPage.invoiceDescription")}
+        title={at("invoiceTitle")}
+        description={at("invoiceDescription")}
         addresses={invoiceAddresses}
         activeId={activeInvoiceId}
         onSelect={setActiveInvoiceId}
@@ -62,7 +64,7 @@ export default function VendorAddressPage() {
         onChangeField={(addressId, key, value) =>
           handleChangeField("invoice", addressId, key, value)
         }
-        extraActionLabel={t("vendorPanel.addressPage.copyFromDelivery")}
+        extraActionLabel={at("copyFromDelivery")}
         onExtraAction={handleCopyDeliveryToInvoice}
         isExtraActionDisabled={deliveryAddresses.length === 0}
       />

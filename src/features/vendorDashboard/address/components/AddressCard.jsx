@@ -1,5 +1,6 @@
 import { FiMapPin, FiStar, FiTrash2 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import { translateAddress } from "../addressI18n";
 
 export default function AddressCard({
   address,
@@ -7,7 +8,8 @@ export default function AddressCard({
   onDelete,
   onSelect,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const at = (key, options) => translateAddress(t, i18n, key, options);
   return (
     <div
       className={[
@@ -28,12 +30,12 @@ export default function AddressCard({
           </span>
           <div className="min-w-0">
             <p className="text-[15px] font-semibold text-[#1f1f1f]">
-              {address.label || t("vendorPanel.addressPage.untitledAddress")}
+              {address.label || at("untitledAddress")}
             </p>
             <p className="mt-1 text-[13px] leading-5 text-[#6a625b]">
               {[address.addressLine1, address.city, address.postalCode]
                 .filter(Boolean)
-                .join(", ") || t("vendorPanel.addressPage.noAddressAdded")}
+                .join(", ") || at("noAddressAdded")}
             </p>
           </div>
         </button>
@@ -42,15 +44,15 @@ export default function AddressCard({
           {address.isDefault ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-[#cf6e38] px-2.5 py-1 text-[11px] font-semibold text-white">
               <FiStar className="text-[11px]" />
-              {t("vendorPanel.addressPage.default")}
+              {at("default")}
             </span>
           ) : null}
           <button
             type="button"
             onClick={onDelete}
             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#e7d9ce] bg-white text-[#9b8170] transition hover:border-[#d76c4a] hover:text-[#d76c4a]"
-            aria-label={t("vendorPanel.addressPage.deleteAria", {
-              label: address.label || t("vendorPanel.addressPage.removeFallbackName"),
+            aria-label={at("deleteAria", {
+              label: address.label || at("removeFallbackName"),
             })}
           >
             <FiTrash2 className="text-[14px]" />
