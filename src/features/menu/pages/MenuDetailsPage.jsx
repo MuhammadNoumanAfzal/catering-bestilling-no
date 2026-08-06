@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   filterDeliverySlotsForDate,
@@ -43,6 +44,7 @@ import {
 } from "../../order/utils/orderFlowValidation";
 
 export default function MenuDetailsPage() {
+  const { t } = useTranslation();
   const { vendorSlug, itemId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -177,7 +179,7 @@ export default function MenuDetailsPage() {
 
     if (!isLoggedIn) {
       const authMessage =
-        "Sign in to view live delivery availability for the selected date.";
+        t("menu.signInForSlots");
       const promptKey = `${vendorId}:${date}`;
 
       setDeliverySlots([]);
@@ -495,14 +497,14 @@ export default function MenuDetailsPage() {
   const updateOptionalQuantity = (groupTitle, optionLabel, delta) => {
     if (delta > 0 && !hasMainDishInCart) {
       showAuthErrorAlert(
-        "Please add the main dish to cart first. Add-ons cannot be ordered on their own.",
-        "Add main dish first",
+        t("menu.unavailableAddonBody"),
+        t("menu.unavailableAddonTitle"),
       );
       return;
     }
 
     if (delta > 0) {
-      showSuccessToast(`${optionLabel} add-on added to cart`);
+      showSuccessToast(t("menu.addonAdded", { name: optionLabel }));
     }
 
     setSelectedOptional((current) => {
@@ -538,15 +540,15 @@ export default function MenuDetailsPage() {
       !vendorAvailableForSelection
     ) {
       await showAuthErrorAlert(
-        "This caterer is unavailable at your selected delivery time. Please choose another date or time.",
-        "Unavailable for selected time",
+        t("menu.unavailableForSelectedTime"),
+        t("menu.unavailableForSelectedTimeTitle"),
       );
       return;
     }
 
     if (!isMenuAvailableForSelection) {
       await showAuthErrorAlert(
-        menuAvailabilityError || "This menu is unavailable for the selected date.",
+        menuAvailabilityError || t("menu.unavailableForSelectedDate"),
         "Menu unavailable",
       );
       return;
@@ -567,7 +569,7 @@ export default function MenuDetailsPage() {
 
     const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
     const totalServes = menuItem.serves * quantityCount;
-    const itemName = menuItem.modal?.heading ?? menuItem.title ?? "Item";
+      const itemName = menuItem.modal?.heading ?? menuItem.title ?? t("menu.item");
     const linePrice =
       baseItemPrice > 0
         ? baseItemPrice * quantityCount
@@ -636,10 +638,10 @@ export default function MenuDetailsPage() {
       selectedOptions,
       specialInstructions: normalizedVendorNote,
       details: [
-        `Serves ${menuItem.serves}`,
+        t("menu.serves", { count: menuItem.serves }),
         selectedQuantity,
         selectedRequired,
-        normalizedVendorNote ? `Note: ${normalizedVendorNote}` : null,
+        normalizedVendorNote ? t("menu.note", { note: normalizedVendorNote }) : null,
       ].filter(Boolean),
     };
 
@@ -654,7 +656,7 @@ export default function MenuDetailsPage() {
       items: [summaryItem, ...syncedAddOnItems, ...current.items],
     }));
 
-    showSuccessToast(`${itemName} added to cart`);
+    showSuccessToast(t("menu.addedToCart", { name: itemName }));
   };
 
   const handleDeliveryDateChange = (deliveryDate) => {
@@ -692,13 +694,13 @@ export default function MenuDetailsPage() {
       const nextSavedState = await toggleSavedState();
       showSuccessToast(
         nextSavedState
-          ? `${vendor.name} saved successfully`
-          : `${vendor.name} removed from saved restaurants`,
+          ? t("menu.savedSuccess", { name: vendor.name })
+          : t("menu.removedSaved", { name: vendor.name }),
       );
     } catch (saveError) {
       await showAuthErrorAlert(
-        saveError.message || "Unable to update saved vendor right now.",
-        "Save vendor failed",
+        saveError.message || t("menu.saveFailedMessage"),
+        t("menu.saveFailed"),
       );
     }
   };
@@ -770,13 +772,13 @@ export default function MenuDetailsPage() {
             <div className="p-4 sm:p-5 lg:sticky lg:top-[92px] lg:p-6">
               <div className="mb-4 rounded-[24px] border border-[#eadfd5] bg-white/90 p-4 shadow-[0_14px_34px_rgba(55,34,19,0.05)]">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
-                  Order summary
+                  {t("menu.orderSummary")}
                 </p>
                 <h2 className="mt-2 text-[22px] font-semibold text-[#1c1713]">
-                  Review before checkout
+                  {t("menu.reviewBeforeCheckout")}
                 </h2>
                 <p className="mt-2 text-[14px] leading-6 text-[#6b5d53]">
-                  Your selected item, quantities, tip, and delivery details will stay visible here while you configure the order.
+                  {t("menu.summaryDescription")}
                 </p>
               </div>
 
@@ -857,7 +859,7 @@ export default function MenuDetailsPage() {
         <button
           type="button"
           onClick={handleScrollToTop}
-          aria-label="Scroll to top"
+          aria-label={t("menu.scrollToTop")}
           className="fixed bottom-6 right-6 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#cf6e38]/20 bg-[#cf6e38] text-white shadow-[0_18px_36px_rgba(207,110,56,0.28)] transition hover:bg-[#bb602d]"
         >
           <FiArrowUp className="text-[20px]" />

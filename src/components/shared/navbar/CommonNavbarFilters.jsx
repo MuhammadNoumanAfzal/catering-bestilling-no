@@ -5,6 +5,7 @@ import {
   FiSearch,
   FiX,
 } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import DeliveryDatePopover from "./DeliveryDatePopover";
 import EventDetailsPopover from "./EventDetailsPopover";
 
@@ -39,6 +40,8 @@ export default function CommonNavbarFilters({
   setSearchValue,
   toggleDropdown,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex min-w-0 items-center gap-3 xl:gap-6">
       <div className="relative min-w-0">
@@ -59,7 +62,7 @@ export default function CommonNavbarFilters({
                   onSearchSubmit?.();
                 }
               }}
-              placeholder="Enter location"
+              placeholder={t("nav.enterLocation")}
               className="w-[112px] bg-transparent text-[15px] text-[#434343] outline-none placeholder:text-[#a7a099] xl:w-[150px] xl:text-[16px]"
             />
           </label>
@@ -69,7 +72,7 @@ export default function CommonNavbarFilters({
               type="button"
               onClick={onLocationClear}
               className="mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#a7a099] transition hover:bg-[#f5eee7] hover:text-[#CF3A00]"
-              aria-label="Clear location"
+              aria-label={t("nav.clearLocation")}
             >
               <FiX className="text-[11px]" />
             </button>
@@ -115,7 +118,7 @@ export default function CommonNavbarFilters({
                 onClearDelivery?.();
               }}
               className="mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#a7a099] transition hover:bg-[#f5eee7] hover:text-[#CF3A00]"
-              aria-label="Clear delivery filter"
+              aria-label={t("nav.clearDeliveryFilter")}
             >
               <FiX className="text-[11px]" />
             </button>
@@ -152,7 +155,7 @@ export default function CommonNavbarFilters({
                 onClearEvent?.();
               }}
               className="ml-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#a7a099] transition hover:bg-[#f5eee7] hover:text-[#CF3A00]"
-              aria-label="Clear event filter"
+              aria-label={t("nav.clearEventFilter")}
             >
               <FiX className="text-[11px]" />
             </button>
@@ -197,7 +200,7 @@ export default function CommonNavbarFilters({
               onSearchSubmit?.();
             }
           }}
-          placeholder="Search restaurant..."
+          placeholder={t("nav.searchRestaurants")}
           className="text-[10px] w-full bg-transparent text-[#5c5c5c] outline-none placeholder:text-[#b8b1a9]"
         />
 
@@ -206,7 +209,7 @@ export default function CommonNavbarFilters({
             type="button"
             onClick={() => setSearchValue("")}
             className="inline-flex h-5 w-5 shrink-0 items-center justify-center text-[#a7a099]"
-            aria-label="Clear search"
+            aria-label={t("nav.clearSearch")}
           >
             <FiX className="text-[11px]" />
           </button>
@@ -216,7 +219,7 @@ export default function CommonNavbarFilters({
           type="button"
           onClick={onSearchSubmit}
           className="ml-1 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#c85f33] text-white"
-          aria-label="Search"
+          aria-label={t("nav.searchAction")}
         >
           <FiSearch className="text-[16px]" />
         </button>

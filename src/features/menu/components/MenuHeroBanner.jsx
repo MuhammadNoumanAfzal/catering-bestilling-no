@@ -1,4 +1,5 @@
 import { FiHeart } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import BackLinkButton from "../../../components/shared/BackLinkButton";
 
 export default function MenuHeroBanner({
@@ -8,6 +9,8 @@ export default function MenuHeroBanner({
   isSaved,
   onSaveToggle,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative overflow-hidden rounded-t-[30px]">
       <img
@@ -20,7 +23,7 @@ export default function MenuHeroBanner({
         to={`/vendor/${vendorSlug}`}
         className="absolute left-4 top-4 bg-white/95"
       >
-        Back
+        {t("menu.back")}
       </BackLinkButton>
 
       <button
@@ -34,7 +37,7 @@ export default function MenuHeroBanner({
         }`}
       >
         <FiHeart className={isSaved ? "fill-current" : ""} />
-        {isSaved ? "Saved" : "Save"}
+        {isSaved ? t("menu.saved") : t("menu.save")}
       </button>
     </div>
   );

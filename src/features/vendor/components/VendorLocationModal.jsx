@@ -6,6 +6,7 @@ import {
   FiTruck,
   FiX,
 } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 const DAY_LABELS = {
   su: "Sun",
@@ -121,10 +122,12 @@ function InfoPill({ children, tone = "neutral" }) {
 }
 
 function DeliveryScheduleSection({ schedule }) {
+  const { t } = useTranslation();
+
   if (!schedule.length) {
     return (
       <div className="rounded-[18px] border border-dashed border-[#e4d6ca] bg-[#fffaf6] px-4 py-4 text-[14px] font-medium text-[#7a6c60]">
-        Delivery schedule not set.
+        {t("vendor.deliveryScheduleNotSet")}
       </div>
     );
   }
@@ -155,7 +158,7 @@ function DeliveryScheduleSection({ schedule }) {
             </div>
           ) : (
             <p className="text-[13px] font-medium text-[#8b7b70]">
-              Schedule enabled for this day
+              {t("vendor.scheduleEnabledForDay")}
             </p>
           )}
         </div>
@@ -165,10 +168,12 @@ function DeliveryScheduleSection({ schedule }) {
 }
 
 function OpeningHoursSection({ rows }) {
+  const { t } = useTranslation();
+
   if (!rows.length) {
     return (
       <div className="rounded-[18px] border border-dashed border-[#e4d6ca] bg-[#fffaf6] px-4 py-4 text-[14px] font-medium text-[#7a6c60]">
-        Takeout hours are not available.
+        {t("vendor.takeoutUnavailable")}
       </div>
     );
   }
@@ -188,6 +193,8 @@ function OpeningHoursSection({ rows }) {
 }
 
 export default function VendorLocationModal({ vendor, onClose }) {
+  const { t } = useTranslation();
+
   if (!vendor) {
     return null;
   }
@@ -197,7 +204,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
   const pickupInstructions = `${vendor.pickupInstructions || ""}`.trim();
   const deliveryFeeText = `${vendor.deliveryFee || ""}`.trim();
   const freeDeliveryText = vendor.freeDeliveryOver
-    ? `Free delivery over ${vendor.freeDeliveryOver}`
+    ? t("vendor.freeDeliveryOver", { amount: vendor.freeDeliveryOver })
     : "";
   const takeoutRows = splitScheduleRows(vendor.availability?.takeout?.label);
   const deliverySchedule = buildDeliverySchedule(vendor);
@@ -221,13 +228,13 @@ export default function VendorLocationModal({ vendor, onClose }) {
           <div className="relative flex items-start justify-between gap-4 border-b border-[#f0e3d8] px-5 py-4 sm:px-6">
             <div className="min-w-0">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#cf6e38]">
-                Restaurant Details & Availability
+                {t("vendor.detailsAvailability")}
               </p>
               <h2 className="mt-2 text-[28px] font-semibold tracking-[-0.05em] text-[#18120f] sm:text-[34px]">
                 {vendor.name}
               </h2>
               <p className="mt-1.5 max-w-2xl text-[13px] leading-6 text-[#6f675f] sm:text-[14px]">
-                Delivery timings, pickup details, and service coverage for this restaurant.
+                {t("vendor.detailsDescription")}
               </p>
             </div>
 
@@ -235,7 +242,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
               type="button"
               onClick={onClose}
               className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#eadfd2] bg-white text-[#1f1f1f] shadow-[0_10px_20px_rgba(32,22,12,0.08)] transition hover:border-[#cf6e38] hover:bg-[#fff4ec] hover:text-[#cf6e38]"
-              aria-label="Close location popup"
+              aria-label={t("vendor.closeLocationPopup")}
             >
               <FiX className="text-[19px]" />
             </button>
@@ -246,8 +253,8 @@ export default function VendorLocationModal({ vendor, onClose }) {
               <div className="space-y-4">
                 <SectionCard
                   icon={<FiMapPin />}
-                  title="Pickup & Address"
-                  eyebrow="Location"
+                  title={t("vendor.pickupAddress")}
+                  eyebrow={t("vendor.location")}
                 >
                   <div className="space-y-3">
                     <div className="rounded-[18px] bg-[#fff7f1] px-4 py-3.5">
@@ -264,7 +271,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
                     {pickupInstructions ? (
                       <div className="rounded-[18px] border border-[#f1e2d6] bg-white px-4 py-3.5">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b08567]">
-                          Pickup Instructions
+                          {t("vendor.pickupInstructions")}
                         </p>
                         <p className="mt-2 whitespace-pre-line text-[13px] leading-7 text-[#64584e]">
                           {pickupInstructions}
@@ -285,8 +292,8 @@ export default function VendorLocationModal({ vendor, onClose }) {
 
                 <SectionCard
                   icon={<FiCalendar />}
-                  title="Opening Hours"
-                  eyebrow="Takeout"
+                  title={t("vendor.openingHours")}
+                  eyebrow={t("vendor.takeout")}
                 >
                   <OpeningHoursSection rows={takeoutRows} />
                 </SectionCard>
@@ -295,8 +302,8 @@ export default function VendorLocationModal({ vendor, onClose }) {
               <div className="space-y-4">
                 <SectionCard
                   icon={<FiTruck />}
-                  title="Delivery & Fees"
-                  eyebrow="Service Window"
+                  title={t("vendor.deliveryFees")}
+                  eyebrow={t("vendor.serviceWindow")}
                 >
                   <div className="space-y-3.5">
                     <DeliveryScheduleSection schedule={deliverySchedule} />
@@ -304,7 +311,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
                     <div className="flex flex-wrap gap-2">
                       {deliveryFeeText ? (
                         <InfoPill tone="brand">
-                          Fee:
+                          {t("vendor.fee")}
                           <span className="ml-1 font-semibold text-[#1f1a16]">
                             {deliveryFeeText}
                           </span>
@@ -319,8 +326,8 @@ export default function VendorLocationModal({ vendor, onClose }) {
 
                 <SectionCard
                   icon={<FiClock />}
-                  title="Service Areas"
-                  eyebrow="Coverage"
+                  title={t("vendor.serviceAreas")}
+                  eyebrow={t("vendor.coverage")}
                 >
                   {displayAreas.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
@@ -345,7 +352,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
                     </div>
                   ) : (
                     <div className="rounded-[18px] border border-dashed border-[#e4d6ca] bg-[#fffaf6] px-4 py-4 text-[14px] font-medium text-[#7a6c60]">
-                      No service areas have been added yet.
+                      {t("vendor.noServiceAreas")}
                     </div>
                   )}
                 </SectionCard>

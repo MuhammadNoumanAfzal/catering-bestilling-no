@@ -1,7 +1,10 @@
 import { FiStar, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function VendorSuggestionCard({ vendor }) {
+  const { t } = useTranslation();
+
   return (
     <Link
       to={`/vendor/${vendor.slug}`}
@@ -22,7 +25,7 @@ function VendorSuggestionCard({ vendor }) {
           <span>({vendor.reviewCount})</span>
         </div>
         <span className="mt-1 inline-block text-[13px] font-medium text-[#4f7cff]">
-          View Menu
+          {t("vendor.viewMenu")}
         </span>
       </div>
     </Link>
@@ -34,6 +37,8 @@ export default function VendorAvailabilityPopup({
   availableRestaurants = [],
   onClose,
 }) {
+  const { t } = useTranslation();
+
   if (!availability) {
     return null;
   }
@@ -47,24 +52,24 @@ export default function VendorAvailabilityPopup({
           type="button"
           onClick={onClose}
           className="absolute right-3 top-3 cursor-pointer rounded-full p-1 text-[#1f1f1f] transition hover:bg-white/60"
-          aria-label="Close availability popup"
+          aria-label={t("vendor.closeAvailabilityPopup")}
         >
           <FiX className="text-[18px]" />
         </button>
 
         <p className="pr-8 text-[18px] font-semibold text-[#1f1f1f] sm:text-[20px]">
-          This caterer is closed at your selected time.
+          {t("vendor.catererClosed")}
         </p>
 
         <div className="mt-4 rounded-[12px] bg-[#f4f1ed] px-4 py-5 text-center">
           <p className="text-[12px] font-semibold text-[#1f1f1f]">
-            Delivery Hours
+            {t("vendor.deliveryHours")}
           </p>
           <p className="mt-1 text-[12px] text-[#5f5852]">
             {availability.delivery.label}
           </p>
           <p className="mt-4 text-[12px] font-semibold text-[#1f1f1f]">
-            Takeout Hours
+            {t("vendor.takeoutHours")}
           </p>
           <p className="mt-1 text-[12px] text-[#5f5852]">
             {availability.takeout.label}
@@ -74,7 +79,7 @@ export default function VendorAvailabilityPopup({
         {availableRestaurants.length > 0 ? (
           <>
             <p className="mt-4 text-[13px] text-[#3f3a35]">
-              One of these restaurants may be available to cater your event.
+              {t("vendor.availableSuggestion")}
             </p>
 
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -89,14 +94,14 @@ export default function VendorAvailabilityPopup({
                   to={`/vendor/${primaryRestaurant.slug}`}
                   className="inline-flex cursor-pointer items-center justify-center rounded-[8px] bg-[#cf6e38] px-4 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
                 >
-                  View available restaurant
+                  {t("vendor.viewAvailableRestaurant")}
                 </Link>
               </div>
             ) : null}
           </>
         ) : (
           <p className="mt-4 text-[13px] text-[#3f3a35]">
-            No other restaurants are available for this delivery time right now.
+            {t("vendor.noAlternatives")}
           </p>
         )}
       </div>

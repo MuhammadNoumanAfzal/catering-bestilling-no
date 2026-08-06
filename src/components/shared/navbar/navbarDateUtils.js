@@ -70,17 +70,21 @@ export function formatTimeTo24Hour(time) {
   return `${String(hours).padStart(2, "0")}:${rawMinutes}`;
 }
 
-export function formatNavbarDate(date, time) {
+export function formatNavbarDate(date, time, labels = {}) {
+  const anyTimeLabel = labels.anyTime || "Any time";
+  const anyDayLabel = labels.anyDay || "Any day";
+  const locale = labels.locale || "en-US";
+
   if (!date && !time) {
-    return "Any time";
+    return anyTimeLabel;
   }
 
   const dateLabel = date
-    ? date.toLocaleDateString("en-US", {
+    ? date.toLocaleDateString(locale, {
         month: "short",
         day: "numeric",
       })
-    : "Any day";
+    : anyDayLabel;
 
   return time ? `${dateLabel}, ${formatTimeTo24Hour(time)}` : dateLabel;
 }

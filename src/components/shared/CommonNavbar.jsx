@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiGrid, FiHome, FiSettings } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import CommonNavbarActions from "./navbar/CommonNavbarActions";
 import CommonNavbarFilters from "./navbar/CommonNavbarFilters";
 import { formatNavbarDate, isPastDate } from "./navbar/navbarDateUtils";
@@ -10,19 +11,7 @@ import { useAuth } from "../../features/auth";
 import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardConfig";
 import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 import { confirmLogout, showSuccessToast } from "../../utils/alerts";
-
-const commonProfileMenuItems = [
-  { label: "Home", to: "/", icon: FiHome },
-  { label: "Settings", to: "/vendor-dashboard/settings", icon: FiSettings },
-  { label: "Dashboard", to: "/vendor-dashboard", icon: FiGrid },
-  ...vendorNavigationItems.filter(
-    (item) =>
-      item.to !== "/vendor-dashboard" &&
-      item.to !== "/vendor-dashboard/settings",
-  ),
-];
-
-const guestMenuItems = [{ label: "Home", to: "/", icon: FiHome }];
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const DEFAULT_SEARCH_ROUTE = "/vendors/all";
 const DEFAULT_FILTER_ROUTE = "/";
@@ -95,15 +84,19 @@ function resolveNavbarFilterRoute(pathname) {
 }
 
 function formatEventLabel(attendeeCount, eventName) {
+  return "";
+}
+
+function buildEventLabel(attendeeCount, eventName, t) {
   if (eventName) {
     return eventName;
   }
 
   if (attendeeCount > 0) {
-    return `${attendeeCount} attendees`;
+    return t("nav.attendees", { count: attendeeCount });
   }
 
-  return "Event details";
+  return t("nav.eventDetails");
 }
 
 function normalizeAttendeeCount(value) {
@@ -128,6 +121,7 @@ export default function CommonNavbar({
   hideLogo = false,
   className = "",
 }) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn, user, signOut } = useAuth();
@@ -228,10 +222,25 @@ export default function CommonNavbar({
     };
   }, []);
 
-  const deliveryLabel = formatNavbarDate(deliveryDate, deliveryTime);
-  const eventLabel = formatEventLabel(attendeeCount, eventName);
+  const deliveryLabel = formatNavbarDate(deliveryDate, deliveryTime, {
+    anyTime: t("nav.anyTime"),
+    anyDay: t("nav.anyDay"),
+    locale: i18n.language === "no" ? "nb-NO" : "en-US",
+  });
+  const eventLabel = buildEventLabel(attendeeCount, eventName, t);
   const hasDeliverySelection = Boolean(deliveryDate || deliveryTime);
   const hasEventSelection = Boolean(attendeeCount > 0 || eventName.trim());
+  const commonProfileMenuItems = [
+    { label: t("nav.home"), to: "/", icon: FiHome },
+    { label: t("nav.settings"), to: "/settings", icon: FiSettings },
+    { label: t("nav.dashboard"), to: "/vendor-dashboard", icon: FiGrid },
+    ...vendorNavigationItems.filter(
+      (item) =>
+        item.to !== "/vendor-dashboard" &&
+        item.to !== "/vendor-dashboard/settings",
+    ),
+  ];
+  const guestMenuItems = [{ label: t("nav.home"), to: "/", icon: FiHome }];
   const actionMenuItems = isLoggedIn ? commonProfileMenuItems : guestMenuItems;
 
   const applyDeliverySelection = () => {
@@ -446,6 +455,7 @@ export default function CommonNavbar({
           unreadNotificationCount={unreadNotificationCount}
           user={user}
         />
+        <LanguageSwitcher className="hidden xl:inline-flex" />
       </div>
     </header>
   );

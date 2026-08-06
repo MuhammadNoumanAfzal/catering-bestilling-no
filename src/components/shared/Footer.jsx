@@ -1,17 +1,9 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FiArrowUpRight, FiMail, FiPhone } from "react-icons/fi";
 import { MdFacebook } from "react-icons/md";
 import { PiInstagramLogoFill } from "react-icons/pi";
 import { RiWhatsappFill } from "react-icons/ri";
-
-const footerLinks = [
-  { label: "Menus", to: "/browse/food-type" },
-  { label: "Occasions", to: "/browse/occasion" },
-  { label: "Vendors", to: "/vendors/featured" },
-  { label: "Contact", to: "/contact" },
-  { label: "Terms", to: "/terms-and-conditions" },
-  { label: "Privacy", to: "/privacy-policy" },
-];
 
 const socialLinks = [
   { label: "Facebook", href: "https://www.facebook.com/", icon: MdFacebook },
@@ -24,6 +16,16 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const { t } = useTranslation();
+  const footerLinks = [
+    { label: t("footer.menus"), to: "/browse/food-type" },
+    { label: t("footer.occasions"), to: "/browse/occasion" },
+    { label: t("footer.vendors"), to: "/vendors/featured" },
+    { label: t("nav.contact"), to: "/contact" },
+    { label: t("footer.terms"), to: "/terms-and-conditions" },
+    { label: t("footer.privacy"), to: "/privacy-policy" },
+  ];
+
   return (
     <footer className="relative overflow-hidden bg-[#a94d2b] text-white">
       <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,236,224,0.65),transparent)]" />
@@ -45,10 +47,10 @@ export default function Footer() {
 
               <div className="lg:min-w-0">
                 <p className="text-[18px] font-semibold tracking-[-0.03em] text-white">
-                  Modern catering, minus the friction.
+                  {t("footer.headline")}
                 </p>
                 <p className="mt-1 text-[13px] leading-6 text-[#ffe9db]">
-                  Discover local food partners for office lunches, meetings, and private events.
+                  {t("footer.description")}
                 </p>
               </div>
             </div>
@@ -108,7 +110,7 @@ export default function Footer() {
             </div>
 
             <div className="mt-4 flex flex-col gap-1 text-[12px] text-[#ffd9c7] sm:flex-row sm:items-center sm:justify-between">
-              <p>© 2026 Cateringbestilling</p>
+              <p>{t("footer.copyright")}</p>
             </div>
           </div>
         </div>

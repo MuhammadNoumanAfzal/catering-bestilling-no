@@ -3,7 +3,12 @@ import {
   showAuthErrorAlert,
   showSuccessToast,
 } from "../../../utils/alerts";
-import { readSavedSettings, writeSavedSettings } from "../../../utils/customerProfileStorage";
+import i18n from "../../../i18n";
+import { writeSavedLanguage } from "../../../i18n/languagePreferences";
+import {
+  readSavedSettings,
+  writeSavedSettings,
+} from "../../../utils/customerProfileStorage";
 import { clientSettingsInitialState } from "../constants/clientSettingsForm";
 import {
   fetchClientSettingsProfile,
@@ -49,8 +54,8 @@ export function useClientSettingsPage() {
       } catch (error) {
         if (isMounted) {
           await showAuthErrorAlert(
-            error?.message || "Unable to load your notification settings.",
-            "Settings load failed",
+            error?.message || i18n.t("settings.loadErrorMessage"),
+            i18n.t("settings.loadErrorTitle"),
           );
         }
       } finally {
@@ -79,6 +84,12 @@ export function useClientSettingsPage() {
     }));
   };
 
+  const handleLanguageChange = async (language) => {
+    await i18n.changeLanguage(language);
+    writeSavedLanguage(language);
+    await showSuccessToast(i18n.t("settings.languageSaved"));
+  };
+
   const handleReset = () => {
     setFormState(savedFormState);
   };
@@ -94,8 +105,8 @@ export function useClientSettingsPage() {
       await showSuccessToast(result.message);
     } catch (error) {
       await showAuthErrorAlert(
-        error?.message || "Unable to save your notification settings.",
-        "Settings update failed",
+        error?.message || i18n.t("settings.updateErrorMessage"),
+        i18n.t("settings.updateErrorTitle"),
       );
     } finally {
       setIsSaving(false);
@@ -109,6 +120,7 @@ export function useClientSettingsPage() {
     isSaving,
     handleReset,
     handleSave,
+    handleLanguageChange,
     updateField,
   };
 }

@@ -3,17 +3,21 @@ export default function SettingsActions({
   isSaving = false,
   onReset,
   onSave,
+  resetLabel = "Reset",
+  saveHeading = "Save changes",
+  saveLabel = "Save changes",
+  savingLabel = "Saving...",
 }) {
   return (
     <section className="space-y-3">
-      <h2 className="type-h4 text-[#191919]">Save changes</h2>
+      <h2 className="type-h4 text-[#191919]">{saveHeading}</h2>
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:justify-end">
         <button
           type="button"
           onClick={onReset}
           className="type-h6 w-full cursor-pointer rounded-[8px] border border-[#d8cec5] bg-white px-4 py-2.5 text-[#2b2622] transition hover:bg-[#faf7f3] sm:w-auto"
         >
-          Reset
+          {resetLabel}
         </button>
         <button
           type="button"
@@ -21,7 +25,7 @@ export default function SettingsActions({
           disabled={!isDirty || isSaving}
           className="type-h6 w-full rounded-[8px] bg-[#cf6e38] px-5 py-2.5 text-white transition hover:bg-[#ba5f2e] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
-          {isSaving ? "Saving..." : "Save changes"}
+          {isSaving ? savingLabel : saveLabel}
         </button>
       </div>
     </section>
