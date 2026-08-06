@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { confirmRemoveItem, showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
+import { translateAddress } from "../addressI18n";
 import { createEmptyAddressEntry } from "../constants/addressBook";
 import { deleteAddress, fetchAddressBook, saveAddressBook } from "../api";
 
@@ -63,7 +64,8 @@ function isAddressEmpty(address) {
 }
 
 export function useVendorAddressPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const at = (key, options) => translateAddress(t, i18n, key, options);
   const [deliveryAddresses, setDeliveryAddresses] = useState([]);
   const [invoiceAddresses, setInvoiceAddresses] = useState([]);
   const [activeDeliveryId, setActiveDeliveryId] = useState("");
@@ -104,8 +106,8 @@ export function useVendorAddressPage() {
         await showAuthErrorAlert(
           error instanceof Error
             ? error.message
-            : t("vendorPanel.addressPage.loadFailedMessage"),
-          t("vendorPanel.addressPage.loadFailedTitle"),
+            : at("loadFailedMessage"),
+          at("loadFailedTitle"),
         );
       } finally {
         if (isMounted) {
@@ -178,8 +180,8 @@ export function useVendorAddressPage() {
 
     if (!sourceAddress) {
       await showAuthErrorAlert(
-        t("vendorPanel.addressPage.copyMissingMessage"),
-        t("vendorPanel.addressPage.copyMissingTitle"),
+        at("copyMissingMessage"),
+        at("copyMissingTitle"),
       );
       return;
     }
@@ -224,7 +226,7 @@ export function useVendorAddressPage() {
     const normalizedNextAddresses = ensureAddressGroup(nextAddresses, "invoice");
     setInvoiceAddresses(normalizedNextAddresses);
     setActiveInvoiceId(nextActiveId);
-    await showSuccessToast(t("vendorPanel.addressPage.copiedSuccess"));
+    await showSuccessToast(at("copiedSuccess"));
   }
 
   function handleReset() {
@@ -244,7 +246,7 @@ export function useVendorAddressPage() {
     }
 
     const result = await confirmRemoveItem(
-      addressToDelete.label || t("vendorPanel.addressPage.removeFallbackName"),
+      addressToDelete.label || at("removeFallbackName"),
     );
 
     if (!result.isConfirmed) {
@@ -275,13 +277,13 @@ export function useVendorAddressPage() {
         setActiveInvoiceId(getDefaultActiveId(normalizedAddresses));
       }
 
-      await showSuccessToast(t("vendorPanel.addressPage.removedSuccess"));
+      await showSuccessToast(at("removedSuccess"));
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : t("vendorPanel.addressPage.deleteFailedMessage"),
-        t("vendorPanel.addressPage.deleteFailedTitle"),
+          : at("deleteFailedMessage"),
+        at("deleteFailedTitle"),
       );
     }
   }
@@ -302,13 +304,13 @@ export function useVendorAddressPage() {
       setActiveDeliveryId(getDefaultActiveId(nextSnapshot.delivery));
       setActiveInvoiceId(getDefaultActiveId(nextSnapshot.invoice));
       setSavedSnapshot(nextSnapshot);
-      await showSuccessToast(t("vendorPanel.addressPage.savedSuccess"));
+      await showSuccessToast(at("savedSuccess"));
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : t("vendorPanel.addressPage.saveFailedMessage"),
-        t("vendorPanel.addressPage.saveFailedTitle"),
+          : at("saveFailedMessage"),
+        at("saveFailedTitle"),
       );
     } finally {
       setIsSaving(false);
