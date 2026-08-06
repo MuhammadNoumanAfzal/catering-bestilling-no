@@ -86,11 +86,16 @@ export default function HomeNavbar() {
     { label: t("nav.home"), to: "/", icon: FiHome },
     { label: t("nav.settings"), to: "/settings", icon: FiSettings },
     { label: t("nav.dashboard"), to: "/vendor-dashboard", icon: FiGrid },
-    ...vendorNavigationItems.filter(
-      (item) =>
-        item.to !== "/vendor-dashboard" &&
-        item.to !== "/vendor-dashboard/settings",
-    ),
+    ...vendorNavigationItems
+      .filter(
+        (item) =>
+          item.to !== "/vendor-dashboard" &&
+          item.to !== "/vendor-dashboard/settings",
+      )
+      .map((item) => ({
+        ...item,
+        label: t(item.labelKey),
+      })),
   ];
 
   return (

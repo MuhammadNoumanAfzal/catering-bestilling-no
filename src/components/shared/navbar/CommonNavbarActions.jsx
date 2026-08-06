@@ -113,7 +113,7 @@ export default function CommonNavbarActions({
                       className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                     >
                       <Icon className="text-[17px]" />
-                      <span>{item.label}</span>
+                      <span>{item.label ?? (item.labelKey ? t(item.labelKey) : "")}</span>
                     </Link>
                   );
                 })}
