@@ -73,7 +73,10 @@ export default function MenuDeliveryForm({
   const selectedSlot = getMatchingSlot(selectedTime);
   const editableSlot = selectedSlot || firstAvailableSlot;
   const availabilityHint = editableSlot
-    ? `Vendor available between ${editableSlot.start} and ${editableSlot.end} for this selection.`
+    ? t("menu.availabilityHint", {
+      start: editableSlot.start,
+      end: editableSlot.end,
+    })
     : "";
 
   function handleExactTimeChange(nextTime) {
@@ -152,7 +155,7 @@ export default function MenuDeliveryForm({
                     ) : null}
                   </div>
 
-                  <div className="mt-3 grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
+                  <div className="mt-3 grid gap-3 xl:grid-cols-2 2xl:grid-cols-3">
                     {deliverySlots.map((slot) => {
                       const isSelected = isTimeInSlot(selectedTime, slot);
 
@@ -170,7 +173,7 @@ export default function MenuDeliveryForm({
                                 : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/45 hover:bg-[#fdf8f4]"
                           }`}
                         >
-                          <div className="flex min-w-0 flex-col gap-3">
+                          <div className="flex min-w-0 flex-col items-start gap-3">
                             <div className="min-w-0">
                               <p className="text-[15px] font-semibold leading-6 break-words">
                                 {slot.label}
@@ -226,7 +229,7 @@ export default function MenuDeliveryForm({
                         selectedDate={orderSummary.deliveryDate}
                         minTimeValue={editableSlot.start}
                         maxTimeValue={editableSlot.end}
-                        placeholder="HH:MM"
+                        placeholder={t("timePicker.placeholder")}
                       />
                     </div>
                     <p className="mt-3 text-[12px] leading-5 text-[#8a5a3a]">

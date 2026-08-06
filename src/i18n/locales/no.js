@@ -377,6 +377,8 @@ const no = {
     fineTuneTime: "Finjuster n\u00f8yaktig tidspunkt",
     timeBetween:
       "Velg et 15-minutters tidspunkt mellom {{start}} og {{end}}.",
+    availabilityHint:
+      "Leverandøren er tilgjengelig mellom {{start}} og {{end}} for dette valget.",
     currentTime: "Gjeldende tid",
     notSelected: "Ikke valgt",
     noSlotsForDate:
@@ -486,6 +488,15 @@ const no = {
     clearFilter: "Fjern filter",
     apply: "Bruk",
     applied: "Brukt",
+  },
+  timePicker: {
+    placeholder: "TT:MM",
+    selectTime: "Velg tid",
+    format24Hour: "24-timers format",
+    noTime: "Ingen tid",
+    quickPick: "Hurtigvalg",
+    hour: "Time",
+    minute: "Min",
   },
 };
 
