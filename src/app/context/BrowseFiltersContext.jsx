@@ -1,5 +1,8 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { createDefaultOtherFilters } from "../../components/shared/browseFilters/browseFilterConfig";
+import {
+  createDefaultOtherFilters,
+  FILTER_DEFAULTS,
+} from "../../components/shared/browseFilters/browseFilterConfig";
 
 const BrowseFiltersContext = createContext(null);
 
@@ -11,19 +14,19 @@ export function BrowseFiltersProvider({ children }) {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(null);
   const [deliveryTime, setDeliveryTime] = useState("");
-  const [selectedSort, setSelectedSort] = useState("Sort by");
-  const [selectedRating, setSelectedRating] = useState("Ratings");
+  const [selectedSort, setSelectedSort] = useState(FILTER_DEFAULTS.sort);
+  const [selectedRating, setSelectedRating] = useState(FILTER_DEFAULTS.rating);
   const [selectedDietary, setSelectedDietary] = useState([]);
   const [selectedOffers, setSelectedOffers] = useState([]);
-  const [selectedPricing, setSelectedPricing] = useState("Pricing");
+  const [selectedPricing, setSelectedPricing] = useState(FILTER_DEFAULTS.pricing);
   const [otherFilters, setOtherFilters] = useState(createDefaultOtherFilters);
 
   const clearBrowseFilters = () => {
-    setSelectedSort("Sort by");
-    setSelectedRating("Ratings");
+    setSelectedSort(FILTER_DEFAULTS.sort);
+    setSelectedRating(FILTER_DEFAULTS.rating);
     setSelectedDietary([]);
     setSelectedOffers([]);
-    setSelectedPricing("Pricing");
+    setSelectedPricing(FILTER_DEFAULTS.pricing);
     setOtherFilters(createDefaultOtherFilters());
   };
 

@@ -1,5 +1,6 @@
+import { useTranslation } from "react-i18next";
 import { FiChevronDown, FiStar } from "react-icons/fi";
-import { DROPDOWN_CHIP_KEYS, FILTER_LABELS } from "./browseFilterConfig";
+import { DROPDOWN_CHIP_KEYS, translateBrowseChipLabel } from "./browseFilterConfig";
 
 export default function BrowseFilterChipButton({
   chip,
@@ -8,6 +9,7 @@ export default function BrowseFilterChipButton({
   styles,
   children,
 }) {
+  const { t } = useTranslation();
   const isDropdownChip = DROPDOWN_CHIP_KEYS.has(chip.key);
 
   return (
@@ -27,7 +29,7 @@ export default function BrowseFilterChipButton({
           ) : null}
         </span>
 
-        <span className="truncate">{FILTER_LABELS[chip.key] ?? chip.label}</span>
+        <span className="truncate">{translateBrowseChipLabel(t, chip.key)}</span>
 
         {isDropdownChip ? (
           <FiChevronDown className="shrink-0 text-[16px]" />

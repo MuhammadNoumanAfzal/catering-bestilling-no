@@ -1,9 +1,12 @@
+import { useTranslation } from "react-i18next";
+
 export default function FilterDropdown({
   minWidthClassName,
   children,
   onClear,
   mobileAlign = "left",
 }) {
+  const { t } = useTranslation();
   const mobilePositionClassName =
     mobileAlign === "right" ? "right-0 left-auto" : "left-0 right-auto";
 
@@ -27,7 +30,7 @@ export default function FilterDropdown({
           onClick={onClear}
           className="type-para cursor-pointer rounded-[6px] border border-[#bcbcbc] px-2 py-1 text-black"
         >
-          Clear filter
+          {t("browse.clearFilter")}
         </button>
       </div>
     </div>

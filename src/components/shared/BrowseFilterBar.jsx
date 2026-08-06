@@ -10,7 +10,9 @@ import {
 import BrowseFilterControls from "./browseFilters/BrowseFilterControls";
 import {
   DROPDOWN_CHIP_KEYS,
+  FILTER_DEFAULTS,
   FILTER_BAR_VARIANTS,
+  translateBrowseOptionLabel,
 } from "./browseFilters/browseFilterConfig";
 import OtherFiltersModal from "./browseFilters/OtherFiltersModal";
 import SelectedFilterChipsRow from "./browseFilters/SelectedFilterChipsRow";
@@ -50,8 +52,8 @@ export default function BrowseFilterBar({
         otherFilters.newlyAdded,
         otherFilters.smallBusiness,
         otherFilters.budgetPerPerson,
-        otherFilters.orderMinimum !== "Any price",
-        otherFilters.distance !== "Any distance",
+        otherFilters.orderMinimum !== FILTER_DEFAULTS.orderMinimum,
+        otherFilters.distance !== FILTER_DEFAULTS.distance,
       ].filter(Boolean).length,
     [otherFilters],
   );
@@ -59,19 +61,19 @@ export default function BrowseFilterBar({
   const selectedFilterChips = useMemo(() => {
     const chips = [];
 
-    if (selectedSort !== "Sort by") {
+    if (selectedSort !== FILTER_DEFAULTS.sort) {
       chips.push({
         id: `sort-${selectedSort}`,
-        label: selectedSort,
-        onRemove: () => setSelectedSort("Sort by"),
+        label: translateBrowseOptionLabel(t, selectedSort),
+        onRemove: () => setSelectedSort(FILTER_DEFAULTS.sort),
       });
     }
 
-    if (selectedRating !== "Ratings") {
+    if (selectedRating !== FILTER_DEFAULTS.rating) {
       chips.push({
         id: `rating-${selectedRating}`,
-        label: selectedRating,
-        onRemove: () => setSelectedRating("Ratings"),
+        label: translateBrowseOptionLabel(t, selectedRating),
+        onRemove: () => setSelectedRating(FILTER_DEFAULTS.rating),
         tone: "highlight",
       });
     }
@@ -79,7 +81,7 @@ export default function BrowseFilterBar({
     selectedDietary.forEach((option) => {
       chips.push({
         id: `dietary-${option}`,
-        label: option,
+        label: translateBrowseOptionLabel(t, option),
         onRemove: () =>
           setSelectedDietary((current) => current.filter((item) => item !== option)),
       });
@@ -88,24 +90,24 @@ export default function BrowseFilterBar({
     selectedOffers.forEach((option) => {
       chips.push({
         id: `offer-${option}`,
-        label: option,
+        label: translateBrowseOptionLabel(t, option),
         onRemove: () =>
           setSelectedOffers((current) => current.filter((item) => item !== option)),
       });
     });
 
-    if (selectedPricing !== "Pricing") {
+    if (selectedPricing !== FILTER_DEFAULTS.pricing) {
       chips.push({
         id: `pricing-${selectedPricing}`,
-        label: selectedPricing,
-        onRemove: () => setSelectedPricing("Pricing"),
+        label: translateBrowseOptionLabel(t, selectedPricing),
+        onRemove: () => setSelectedPricing(FILTER_DEFAULTS.pricing),
       });
     }
 
     if (otherFilters.individualPackaging) {
       chips.push({
         id: "other-individualPackaging",
-        label: "Individual packaging",
+        label: t("browse.otherFilters.individualPackaging"),
         onRemove: () =>
           setOtherFilters((current) => ({
             ...current,
@@ -117,7 +119,7 @@ export default function BrowseFilterBar({
     if (otherFilters.newlyAdded) {
       chips.push({
         id: "other-newlyAdded",
-        label: "New",
+        label: t("browse.otherFilters.new"),
         onRemove: () =>
           setOtherFilters((current) => ({
             ...current,
@@ -129,7 +131,7 @@ export default function BrowseFilterBar({
     if (otherFilters.smallBusiness) {
       chips.push({
         id: "other-smallBusiness",
-        label: "Small business",
+        label: t("browse.otherFilters.smallBusiness"),
         onRemove: () =>
           setOtherFilters((current) => ({
             ...current,
@@ -141,7 +143,7 @@ export default function BrowseFilterBar({
     if (otherFilters.budgetPerPerson) {
       chips.push({
         id: "other-budgetPerPerson",
-        label: `Budget ${otherFilters.budgetPerPerson}`,
+        label: `${t("browse.otherFilters.budget")} ${otherFilters.budgetPerPerson}`,
         onRemove: () =>
           setOtherFilters((current) => ({
             ...current,
@@ -150,26 +152,26 @@ export default function BrowseFilterBar({
       });
     }
 
-    if (otherFilters.orderMinimum !== "Any price") {
+    if (otherFilters.orderMinimum !== FILTER_DEFAULTS.orderMinimum) {
       chips.push({
         id: `other-orderMinimum-${otherFilters.orderMinimum}`,
-        label: otherFilters.orderMinimum,
+        label: translateBrowseOptionLabel(t, otherFilters.orderMinimum),
         onRemove: () =>
           setOtherFilters((current) => ({
             ...current,
-            orderMinimum: "Any price",
+            orderMinimum: FILTER_DEFAULTS.orderMinimum,
           })),
       });
     }
 
-    if (otherFilters.distance !== "Any distance") {
+    if (otherFilters.distance !== FILTER_DEFAULTS.distance) {
       chips.push({
         id: `other-distance-${otherFilters.distance}`,
-        label: otherFilters.distance,
+        label: translateBrowseOptionLabel(t, otherFilters.distance),
         onRemove: () =>
           setOtherFilters((current) => ({
             ...current,
-            distance: "Any distance",
+            distance: FILTER_DEFAULTS.distance,
           })),
       });
     }
@@ -182,6 +184,7 @@ export default function BrowseFilterBar({
     selectedPricing,
     selectedRating,
     selectedSort,
+    t,
   ]);
 
   const clearAllFilters = () => {

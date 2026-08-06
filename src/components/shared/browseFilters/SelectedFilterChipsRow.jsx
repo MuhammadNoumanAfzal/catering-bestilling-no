@@ -1,6 +1,8 @@
+import { useTranslation } from "react-i18next";
 import SelectedFilterChip from "./SelectedFilterChip";
 
 export default function SelectedFilterChipsRow({ chips, onClearAll }) {
+  const { t } = useTranslation();
   if (chips.length === 0) {
     return null;
   }
@@ -21,7 +23,7 @@ export default function SelectedFilterChipsRow({ chips, onClearAll }) {
         onClick={onClearAll}
         className="type-subpara inline-flex h-9 items-center rounded-full border border-[#c9c4be] bg-white px-4 text-[#1f1f1f] transition hover:bg-[#f7f2ec]"
       >
-        Clear all filters
+        {t("browse.clearAllFilters")}
       </button>
     </div>
   );
