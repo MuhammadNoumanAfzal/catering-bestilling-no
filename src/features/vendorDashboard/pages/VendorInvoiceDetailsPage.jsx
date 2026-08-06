@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FiArrowLeft,
   FiCalendar,
@@ -43,6 +44,12 @@ function DetailSection({ title, children }) {
 }
 
 export default function VendorInvoiceDetailsPage() {
+  const { t } = useTranslation();
+  const invoiceDetailsT = (key, options = {}) =>
+    t(`vendorPanel.invoices.detailsPage.${key}`, {
+      ...options,
+      defaultValue: t(`modifyOrder.invoices.detailsPage.${key}`, options),
+    });
   const { invoiceId } = useParams();
   const decodedInvoiceId = invoiceId ? decodeURIComponent(invoiceId) : "";
   const dispatch = useDispatch();
@@ -76,8 +83,8 @@ export default function VendorInvoiceDetailsPage() {
   if (selectedInvoiceDetailStatus === "failed") {
     return (
       <section className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center">
-        <h2 className="text-lg font-semibold text-red-700">
-          Unable to load invoice
+          <h2 className="text-lg font-semibold text-red-700">
+          {invoiceDetailsT("loadErrorTitle")}
         </h2>
         <p className="mt-2 text-sm text-red-600">
           {selectedInvoiceDetailError}
@@ -87,7 +94,7 @@ export default function VendorInvoiceDetailsPage() {
           onClick={() => dispatch(fetchInvoiceDetail(decodedInvoiceId))}
           className="mt-5 rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d]"
         >
-          Try again
+          {invoiceDetailsT("retry")}
         </button>
       </section>
     );
@@ -108,11 +115,11 @@ export default function VendorInvoiceDetailsPage() {
             className="inline-flex items-center gap-2 text-sm font-semibold text-[#cf6e38] transition hover:text-[#b85e2a]"
           >
             <FiArrowLeft className="text-[15px]" />
-            Back to invoices
+            {invoiceDetailsT("back")}
           </Link>
-          <h1 className="mt-3 type-h2 text-[#191919]">Invoice Details</h1>
+          <h1 className="mt-3 type-h2 text-[#191919]">{invoiceDetailsT("title")}</h1>
           <p className="mt-2 type-para text-[#635b53]">
-            Review the invoice information and export a PDF when needed.
+            {invoiceDetailsT("description")}
           </p>
         </div>
 
@@ -132,7 +139,9 @@ export default function VendorInvoiceDetailsPage() {
           className="inline-flex items-center justify-center gap-2 rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-70"
         >
           <FiDownload className="text-[15px]" />
-          {downloadStatus === "loading" ? "Preparing PDF..." : "Export PDF"}
+          {downloadStatus === "loading"
+            ? invoiceDetailsT("preparingPdf")
+            : invoiceDetailsT("exportPdf")}
         </button>
       </div>
 
@@ -160,7 +169,7 @@ export default function VendorInvoiceDetailsPage() {
 
           <div className="rounded-[18px] border border-[#f0ddd1] bg-[#fff7f2] px-4 py-4 text-left sm:min-w-[220px] sm:text-right">
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#aa775a]">
-              Invoice Amount
+              {invoiceDetailsT("summaryTitle")}
             </p>
             <p className="mt-2 text-[24px] font-semibold text-[#cf6e38] sm:text-[28px]">
               {invoice.totalAmount}
@@ -169,21 +178,21 @@ export default function VendorInvoiceDetailsPage() {
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-          <DetailRow label="Vendor" value={invoice.vendor.name} />
-          <DetailRow label="Event" value={invoice.order.eventName} />
-          <DetailRow label="Issued On" value={invoice.issuedOn} />
-          <DetailRow label="Due On" value={invoice.dueOn} />
+          <DetailRow label={invoiceDetailsT("vendor")} value={invoice.vendor.name} />
+          <DetailRow label={invoiceDetailsT("event")} value={invoice.order.eventName} />
+          <DetailRow label={invoiceDetailsT("issuedOn")} value={invoice.issuedOn} />
+          <DetailRow label={invoiceDetailsT("dueOn")} value={invoice.dueOn} />
         </div>
 
         <div className="mt-6 border-t border-[#ece4dc] pt-6">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.1em] text-[#9c897d]">
-            Amount Breakdown
+            {invoiceDetailsT("amountBreakdown")}
           </h3>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-            <DetailRow label="Subtotal" value={invoice.subtotal} />
-            <DetailRow label="Delivery Fee" value={invoice.deliveryFee} />
-            <DetailRow label="Tax" value={invoice.taxAmount} />
-            <DetailRow label="Tip" value={invoice.tipAmount} />
+            <DetailRow label={invoiceDetailsT("subtotal")} value={invoice.subtotal} />
+            <DetailRow label={invoiceDetailsT("deliveryFee")} value={invoice.deliveryFee} />
+            <DetailRow label={invoiceDetailsT("tax")} value={invoice.taxAmount} />
+            <DetailRow label={invoiceDetailsT("tip")} value={invoice.tipAmount} />
           </div>
         </div>
       </section>
@@ -195,7 +204,7 @@ export default function VendorInvoiceDetailsPage() {
       ) : null}
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-        <DetailSection title="Line Items">
+        <DetailSection title={invoiceDetailsT("lineItems")}>
           {invoice.lineItems.length > 0 ? (
             <div className="space-y-3">
               {invoice.lineItems.map((item) => (
@@ -228,25 +237,25 @@ export default function VendorInvoiceDetailsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-[#706760]">No line items available.</p>
+            <p className="text-sm text-[#706760]">{invoiceDetailsT("noLineItems")}</p>
           )}
         </DetailSection>
 
         <div className="space-y-6">
-          <DetailSection title="Invoice Meta">
+          <DetailSection title={invoiceDetailsT("invoiceMeta")}>
             <div className="grid grid-cols-2 gap-3">
-              <DetailRow label="Paid On" value={invoice.paidOn || "Not paid yet"} />
-              <DetailRow label="Payment Type" value={invoice.paymentType} />
+              <DetailRow label={invoiceDetailsT("paidOn")} value={invoice.paidOn || invoiceDetailsT("notPaidYet")} />
+              <DetailRow label={invoiceDetailsT("paymentType")} value={invoice.paymentType} />
               <DetailRow
-                label="Transaction Reference"
+                label={invoiceDetailsT("transactionReference")}
                 value={invoice.transactionReference}
               />
-              <DetailRow label="Paid Amount" value={invoice.paidAmount} />
-              <DetailRow label="Due Amount" value={invoice.dueAmount} />
+              <DetailRow label={invoiceDetailsT("paidAmount")} value={invoice.paidAmount} />
+              <DetailRow label={invoiceDetailsT("dueAmount")} value={invoice.dueAmount} />
             </div>
           </DetailSection>
 
-          <DetailSection title="Event & Billing">
+          <DetailSection title={invoiceDetailsT("eventAndBilling")}>
             <div className="space-y-4 text-sm text-[#4b463f]">
               <div className="flex items-start gap-3">
                 <FiCalendar className="mt-0.5 text-[#cf6e38]" />
@@ -255,7 +264,7 @@ export default function VendorInvoiceDetailsPage() {
                     {invoice.order.eventName}
                   </p>
                   <p className="mt-1">
-                    {invoice.order.eventDate} | {invoice.order.personCount} guests
+                    {invoice.order.eventDate} | {invoiceDetailsT("guests", { count: invoice.order.personCount })}
                   </p>
                 </div>
               </div>
@@ -263,7 +272,7 @@ export default function VendorInvoiceDetailsPage() {
               <div className="flex items-start gap-3">
                 <FiMapPin className="mt-0.5 text-[#cf6e38]" />
                 <div>
-                  <p className="font-semibold text-[#1f1f1f]">Delivery Info</p>
+                  <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("deliveryInfo")}</p>
                   <p className="mt-1">{invoice.order.deliveryAddressStr}</p>
                 </div>
               </div>
@@ -271,32 +280,32 @@ export default function VendorInvoiceDetailsPage() {
               <div className="flex items-start gap-3">
                 <FiUser className="mt-0.5 text-[#cf6e38]" />
                 <div>
-                  <p className="font-semibold text-[#1f1f1f]">Billing Contact</p>
+                  <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("billingContact")}</p>
                   <p className="mt-1">
                     {invoice.vendor.companyName || invoice.vendor.name}
                   </p>
-                  <p>{invoice.billingAddress.phone || "No phone added"}</p>
+                  <p>{invoice.billingAddress.phone || invoiceDetailsT("noPhoneAdded")}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <FiCreditCard className="mt-0.5 text-[#cf6e38]" />
                 <div>
-                  <p className="font-semibold text-[#1f1f1f]">Billing Address</p>
+                  <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("billingAddress")}</p>
                   <p className="mt-1">
                     {[
                       invoice.billingAddress.address,
                       invoice.billingAddress.country,
                     ]
                       .filter(Boolean)
-                      .join(", ") || "Not provided"}
+                      .join(", ") || invoiceDetailsT("notProvided")}
                   </p>
                 </div>
               </div>
 
               {invoice.note ? (
                 <div className="rounded-[18px] border border-[#f1e3d6] bg-[#fff8f3] px-4 py-3">
-                  <p className="font-semibold text-[#1f1f1f]">Note</p>
+                  <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("note")}</p>
                   <p className="mt-1 text-sm text-[#6d645c]">{invoice.note}</p>
                 </div>
               ) : null}
