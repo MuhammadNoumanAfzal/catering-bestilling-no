@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import SupportTicketForm from "../components/support/SupportTicketForm";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
@@ -17,18 +18,18 @@ const ALLOWED_ATTACHMENT_TYPES = [
 const MAX_ATTACHMENT_SIZE_BYTES = 2 * 1024 * 1024;
 
 const SUBJECT_OPTIONS = [
-  { label: "Order not received", value: "order-not-received" },
-  { label: "Delivery delayed", value: "delivery-delayed" },
-  { label: "Wrong items received", value: "wrong-items-received" },
-  { label: "Missing items", value: "missing-items" },
-  { label: "Payment issue", value: "payment-issue" },
-  { label: "Refund request", value: "refund-request" },
-  { label: "Canceled order request", value: "canceled-order-request" },
-  { label: "Cannot contact vendor", value: "cannot-contact-vendor" },
-  { label: "Food quality issue", value: "food-quality-issue" },
-  { label: "Account issue", value: "account-issue" },
-  { label: "General inquiry", value: "general-inquiry" },
-  { label: "Other", value: "other" },
+  { labelKey: "vendorPanel.supportPage.subjects.orderNotReceived", value: "order-not-received" },
+  { labelKey: "vendorPanel.supportPage.subjects.deliveryDelayed", value: "delivery-delayed" },
+  { labelKey: "vendorPanel.supportPage.subjects.wrongItemsReceived", value: "wrong-items-received" },
+  { labelKey: "vendorPanel.supportPage.subjects.missingItems", value: "missing-items" },
+  { labelKey: "vendorPanel.supportPage.subjects.paymentIssue", value: "payment-issue" },
+  { labelKey: "vendorPanel.supportPage.subjects.refundRequest", value: "refund-request" },
+  { labelKey: "vendorPanel.supportPage.subjects.canceledOrderRequest", value: "canceled-order-request" },
+  { labelKey: "vendorPanel.supportPage.subjects.cannotContactVendor", value: "cannot-contact-vendor" },
+  { labelKey: "vendorPanel.supportPage.subjects.foodQualityIssue", value: "food-quality-issue" },
+  { labelKey: "vendorPanel.supportPage.subjects.accountIssue", value: "account-issue" },
+  { labelKey: "vendorPanel.supportPage.subjects.generalInquiry", value: "general-inquiry" },
+  { labelKey: "vendorPanel.supportPage.subjects.other", value: "other" },
 ];
 
 const INITIAL_FORM_STATE = {
@@ -38,6 +39,7 @@ const INITIAL_FORM_STATE = {
 };
 
 export default function VendorSupportPage() {
+  const { t } = useTranslation();
   const attachmentUploadAvailable = isMenuImageUploadConfigured();
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [selectedFileName, setSelectedFileName] = useState("");
@@ -54,7 +56,7 @@ export default function VendorSupportPage() {
 
   function getSubjectLabel(subjectValue) {
     return (
-      SUBJECT_OPTIONS.find((option) => option.value === subjectValue)?.label ||
+      t(SUBJECT_OPTIONS.find((option) => option.value === subjectValue)?.labelKey) ||
       subjectValue
     );
   }
@@ -78,7 +80,7 @@ export default function VendorSupportPage() {
       });
 
       await showSuccessToast(
-        response.message || "Support ticket submitted successfully",
+        response.message || t("vendorPanel.supportPage.submittedSuccess"),
       );
 
       setFormState(INITIAL_FORM_STATE);
@@ -87,8 +89,8 @@ export default function VendorSupportPage() {
       setAttachmentError("");
     } catch (error) {
       await showAuthErrorAlert(
-        error?.message || "Unable to submit support ticket right now.",
-        "Support ticket failed",
+        error?.message || t("vendorPanel.supportPage.submitFailedMessage"),
+        t("vendorPanel.supportPage.submitFailedTitle"),
       );
     } finally {
       setIsSubmitting(false);
@@ -99,9 +101,9 @@ export default function VendorSupportPage() {
     <div className="space-y-6">
       <section className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="type-h2 text-[#191919]">Support Center</h1>
+          <h1 className="type-h2 text-[#191919]">{t("vendorPanel.supportPage.title")}</h1>
           <p className="mt-2 type-para text-[#635b53]">
-            We&apos;re here to help. Find answers or get in touch with our team.
+            {t("vendorPanel.supportPage.description")}
           </p>
         </div>
 
@@ -109,7 +111,7 @@ export default function VendorSupportPage() {
           className="inline-flex h-[42px] items-center justify-center rounded-[10px] border border-[#dfd3c8] bg-white px-4 text-[14px] font-bold text-[#2a211b] no-underline transition hover:bg-[#faf6f2] hover:text-[#cf6e38]"
           to="/vendor-dashboard/support/responses"
         >
-          View Responses
+          {t("vendorPanel.supportPage.viewResponses")}
         </Link>
       </section>
 
@@ -128,7 +130,7 @@ export default function VendorSupportPage() {
             setSelectedFile(null);
             setSelectedFileName("");
             setAttachmentError(
-              "Attachments are temporarily unavailable right now. You can still submit your ticket without an image.",
+              t("vendorPanel.supportPage.uploadUnavailableError"),
             );
             return;
           }
@@ -142,14 +144,14 @@ export default function VendorSupportPage() {
           if (!ALLOWED_ATTACHMENT_TYPES.includes(nextFile.type)) {
             setSelectedFile(null);
             setSelectedFileName("");
-            setAttachmentError("Please upload a PNG, JPG, JPEG, or WEBP image.");
+            setAttachmentError(t("vendorPanel.supportPage.invalidFileType"));
             return;
           }
 
           if (nextFile.size > MAX_ATTACHMENT_SIZE_BYTES) {
             setSelectedFile(null);
             setSelectedFileName("");
-            setAttachmentError("Please upload an image under 2MB.");
+            setAttachmentError(t("vendorPanel.supportPage.invalidFileSize"));
             return;
           }
 

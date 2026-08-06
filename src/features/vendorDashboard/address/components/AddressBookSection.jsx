@@ -1,4 +1,5 @@
 import { FiPlus } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import AddressCard from "./AddressCard";
 import AddressField from "./AddressField";
 import AddressTextarea from "./AddressTextarea";
@@ -18,9 +19,13 @@ export default function AddressBookSection({
   onExtraAction = null,
   isExtraActionDisabled = false,
 }) {
+  const { t } = useTranslation();
   const activeAddress =
     addresses.find((address) => address.id === activeId) ?? addresses[0];
-  const typeLabel = type === "delivery" ? "delivery" : "invoice";
+  const typeLabel =
+    type === "delivery"
+      ? t("vendorPanel.addressPage.addDelivery")
+      : t("vendorPanel.addressPage.addInvoice");
 
   if (!activeAddress) {
     return null;
@@ -40,7 +45,7 @@ export default function AddressBookSection({
           className="inline-flex items-center justify-center gap-1 self-start whitespace-nowrap rounded-full border border-[#efcdb7] bg-[#fff5ee] px-2.5 py-1.5 text-[12px] font-semibold leading-none text-[#c86434] transition hover:bg-[#fff0e6] sm:self-auto"
         >
           <FiPlus className="text-[15px]" />
-          Add {typeLabel} address
+          {typeLabel}
         </button>
 
         {onExtraAction ? (
@@ -75,10 +80,16 @@ export default function AddressBookSection({
         <div className="flex flex-col gap-3 border-b border-[#ece2d9] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[16px] font-semibold text-[#1f1f1f]">
-              Edit {activeAddress.label || `${typeLabel} address`}
+              {t("vendorPanel.addressPage.editAddress", {
+                label:
+                  activeAddress.label ||
+                  (type === "delivery"
+                    ? t("vendorPanel.addressPage.editFallbackDelivery")
+                    : t("vendorPanel.addressPage.editFallbackInvoice")),
+              })}
             </p>
             <p className="mt-1 text-[13px] text-[#7b7269]">
-              Save multiple addresses and choose which one should autofill first.
+              {t("vendorPanel.addressPage.editDescription")}
             </p>
           </div>
 
@@ -87,98 +98,100 @@ export default function AddressBookSection({
             onClick={() => onSetDefault(activeAddress.id)}
             className="rounded-full border border-[#dfd5cb] bg-white px-4 py-2 text-sm font-semibold text-[#3a352f] transition hover:bg-[#faf6f2]"
           >
-            {activeAddress.isDefault ? "Default address" : "Set as default"}
+            {activeAddress.isDefault
+              ? t("vendorPanel.addressPage.defaultAddress")
+              : t("vendorPanel.addressPage.setAsDefault")}
           </button>
         </div>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <AddressField
-            label="Location name"
+            label={t("vendorPanel.addressPage.locationName")}
             value={activeAddress.label}
             onChange={(event) =>
               onChangeField(activeAddress.id, "label", event.target.value)
             }
-            placeholder="Main office"
+            placeholder={t("vendorPanel.addressPage.mainOffice")}
             className="sm:col-span-2 lg:col-span-6"
           />
 
           <AddressField
-            label="Street address"
+            label={t("vendorPanel.addressPage.streetAddress")}
             value={activeAddress.addressLine1}
             onChange={(event) =>
               onChangeField(activeAddress.id, "addressLine1", event.target.value)
             }
-            placeholder="123 Main St."
+            placeholder={t("vendorPanel.addressPage.streetPlaceholder")}
             className="sm:col-span-1 lg:col-span-3"
           />
 
           <AddressField
-            label="Unit/Floor"
+            label={t("vendorPanel.addressPage.unitFloor")}
             value={activeAddress.addressLine2}
             onChange={(event) =>
               onChangeField(activeAddress.id, "addressLine2", event.target.value)
             }
-            placeholder="Floor 2"
+            placeholder={t("vendorPanel.addressPage.floorPlaceholder")}
             className="sm:col-span-1 lg:col-span-3"
           />
 
           <AddressField
-            label="City"
+            label={t("vendorPanel.addressPage.city")}
             value={activeAddress.city}
             onChange={(event) =>
               onChangeField(activeAddress.id, "city", event.target.value)
             }
-            placeholder="Bergen"
+            placeholder={t("vendorPanel.addressPage.cityPlaceholder")}
             className="lg:col-span-2"
           />
 
           <AddressField
-            label="State"
+            label={t("vendorPanel.addressPage.state")}
             value={activeAddress.state}
             onChange={(event) =>
               onChangeField(activeAddress.id, "state", event.target.value)
             }
-            placeholder="Vestland"
+            placeholder={t("vendorPanel.addressPage.statePlaceholder")}
             className="lg:col-span-2"
           />
 
           <AddressField
-            label="Postal code"
+            label={t("vendorPanel.addressPage.postalCode")}
             value={activeAddress.postalCode}
             onChange={(event) =>
               onChangeField(activeAddress.id, "postalCode", event.target.value)
             }
-            placeholder="5003"
+            placeholder={t("vendorPanel.addressPage.postalCodePlaceholder")}
             className="lg:col-span-2"
           />
 
           <AddressField
-            label="Phone number"
+            label={t("vendorPanel.addressPage.phoneNumber")}
             value={activeAddress.phoneNumber}
             onChange={(event) =>
               onChangeField(activeAddress.id, "phoneNumber", event.target.value)
             }
-            placeholder="+47 123 45 678"
+            placeholder={t("vendorPanel.addressPage.phonePlaceholder")}
             className="sm:col-span-1 lg:col-span-3"
           />
 
           <AddressField
-            label="Receiving name"
+            label={t("vendorPanel.addressPage.receivingName")}
             value={activeAddress.contactName}
             onChange={(event) =>
               onChangeField(activeAddress.id, "contactName", event.target.value)
             }
-            placeholder="Reception"
+            placeholder={t("vendorPanel.addressPage.receivingPlaceholder")}
             className="sm:col-span-1 lg:col-span-3"
           />
 
           <AddressTextarea
-            label="Instructions"
+            label={t("vendorPanel.addressPage.instructions")}
             value={activeAddress.instructions}
             onChange={(event) =>
               onChangeField(activeAddress.id, "instructions", event.target.value)
             }
-            placeholder="Buzz 124 and take the elevator to the 13th floor"
+            placeholder={t("vendorPanel.addressPage.instructionsPlaceholder")}
             className="sm:col-span-2 lg:col-span-4"
           />
         </div>

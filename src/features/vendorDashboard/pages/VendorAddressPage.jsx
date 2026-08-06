@@ -1,8 +1,10 @@
 import AddressBookSection from "../address/components/AddressBookSection";
 import AddressPageActions from "../address/components/AddressPageActions";
 import { useVendorAddressPage } from "../address/hooks/useVendorAddressPage";
+import { useTranslation } from "react-i18next";
 
 export default function VendorAddressPage() {
+  const { t } = useTranslation();
   const {
     activeDeliveryId,
     activeInvoiceId,
@@ -34,8 +36,8 @@ export default function VendorAddressPage() {
     <div className="space-y-6">
       <AddressBookSection
         type="delivery"
-        title="Delivery Addresses"
-        description="Save multiple delivery locations and choose which one should autofill first during checkout."
+        title={t("vendorPanel.addressPage.deliveryTitle")}
+        description={t("vendorPanel.addressPage.deliveryDescription")}
         addresses={deliveryAddresses}
         activeId={activeDeliveryId}
         onSelect={setActiveDeliveryId}
@@ -49,8 +51,8 @@ export default function VendorAddressPage() {
 
       <AddressBookSection
         type="invoice"
-        title="Invoice Addresses"
-        description="Keep separate billing locations ready so the checkout form can pull the right invoice address automatically."
+        title={t("vendorPanel.addressPage.invoiceTitle")}
+        description={t("vendorPanel.addressPage.invoiceDescription")}
         addresses={invoiceAddresses}
         activeId={activeInvoiceId}
         onSelect={setActiveInvoiceId}
@@ -60,7 +62,7 @@ export default function VendorAddressPage() {
         onChangeField={(addressId, key, value) =>
           handleChangeField("invoice", addressId, key, value)
         }
-        extraActionLabel="Copy from delivery"
+        extraActionLabel={t("vendorPanel.addressPage.copyFromDelivery")}
         onExtraAction={handleCopyDeliveryToInvoice}
         isExtraActionDisabled={deliveryAddresses.length === 0}
       />

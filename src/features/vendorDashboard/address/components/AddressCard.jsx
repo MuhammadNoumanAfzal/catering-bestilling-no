@@ -1,4 +1,5 @@
 import { FiMapPin, FiStar, FiTrash2 } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 export default function AddressCard({
   address,
@@ -6,6 +7,7 @@ export default function AddressCard({
   onDelete,
   onSelect,
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className={[
@@ -26,12 +28,12 @@ export default function AddressCard({
           </span>
           <div className="min-w-0">
             <p className="text-[15px] font-semibold text-[#1f1f1f]">
-              {address.label || "Untitled address"}
+              {address.label || t("vendorPanel.addressPage.untitledAddress")}
             </p>
             <p className="mt-1 text-[13px] leading-5 text-[#6a625b]">
               {[address.addressLine1, address.city, address.postalCode]
                 .filter(Boolean)
-                .join(", ") || "No address added yet"}
+                .join(", ") || t("vendorPanel.addressPage.noAddressAdded")}
             </p>
           </div>
         </button>
@@ -40,14 +42,16 @@ export default function AddressCard({
           {address.isDefault ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-[#cf6e38] px-2.5 py-1 text-[11px] font-semibold text-white">
               <FiStar className="text-[11px]" />
-              Default
+              {t("vendorPanel.addressPage.default")}
             </span>
           ) : null}
           <button
             type="button"
             onClick={onDelete}
             className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#e7d9ce] bg-white text-[#9b8170] transition hover:border-[#d76c4a] hover:text-[#d76c4a]"
-            aria-label={`Delete ${address.label || "address"}`}
+            aria-label={t("vendorPanel.addressPage.deleteAria", {
+              label: address.label || t("vendorPanel.addressPage.removeFallbackName"),
+            })}
           >
             <FiTrash2 className="text-[14px]" />
           </button>

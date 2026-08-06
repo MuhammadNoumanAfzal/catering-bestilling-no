@@ -1,6 +1,8 @@
 import { NOTIFICATION_TABS } from "./notificationUtils";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationTabs({ activeTab, onChange, counts }) {
+  const { t } = useTranslation();
   return (
     <div className="hide-scrollbar overflow-x-auto">
       <div className="flex min-w-max items-center gap-2 rounded-full border border-[#eadfd5] bg-[#fcfaf8] p-1">
@@ -19,7 +21,7 @@ export default function NotificationTabs({ activeTab, onChange, counts }) {
                   : "text-[#5b534c] hover:bg-white",
               ].join(" ")}
             >
-              <span>{tab.label}</span>
+              <span>{t(tab.labelKey)}</span>
               <span
                 className={[
                   "rounded-full px-2 py-0.5 text-xs",

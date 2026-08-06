@@ -1,4 +1,5 @@
 import { FiArrowRight, FiStar, FiX } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { getOrderStatusClasses } from "./orderUtils";
 
 function getOrderDetailItems(order) {
@@ -96,6 +97,7 @@ export default function OrderDetailsModal({
   isLoading = false,
   error = "",
 }) {
+  const { t } = useTranslation();
   if (!isOpen || !order) {
     return null;
   }
@@ -113,7 +115,7 @@ export default function OrderDetailsModal({
           type="button"
           onClick={onClose}
           className="absolute right-5 top-5 z-10 cursor-pointer rounded-full border border-white/70 bg-white/90 p-2.5 text-[#1f1f1f] shadow-[0_8px_24px_rgba(0,0,0,0.10)] transition hover:bg-white"
-          aria-label="Close order details"
+          aria-label={t("vendorPanel.orderDetails.closeAria")}
         >
           <FiX className="text-[18px]" />
         </button>
@@ -121,9 +123,9 @@ export default function OrderDetailsModal({
         <div className="hide-scrollbar max-h-[92vh] overflow-y-auto">
           <div className="relative border-b border-[#efe6de] px-6 py-6 text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-[#c67a4d]">
-              Order Overview
+              {t("vendorPanel.orderDetails.overview")}
             </p>
-            <h2 className="mt-2 type-h2 text-[#1f1f1f]">Order details</h2>
+            <h2 className="mt-2 type-h2 text-[#1f1f1f]">{t("vendorPanel.orderDetails.title")}</h2>
           </div>
 
           <div className="px-6 pt-5">
@@ -141,7 +143,7 @@ export default function OrderDetailsModal({
               <div className="rounded-[22px] border border-[#efe5db] bg-[#fcf8f4] p-6 text-center">
                 <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
                 <p className="mt-4 text-sm text-[#6f665d]">
-                  Loading order details...
+                  {t("vendorPanel.orderDetails.loading")}
                 </p>
               </div>
             ) : null}
@@ -149,7 +151,7 @@ export default function OrderDetailsModal({
             {error && !isLoading ? (
               <div className="rounded-[22px] border border-[#f1c8bb] bg-[#fff5f1] p-5 text-center">
                 <p className="text-sm font-semibold text-[#7a3f2e]">
-                  Unable to load full order details
+                  {t("vendorPanel.orderDetails.loadErrorTitle")}
                 </p>
                 <p className="mt-2 text-sm text-[#8a5642]">{error}</p>
               </div>
@@ -165,15 +167,15 @@ export default function OrderDetailsModal({
                 {order.isModified ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-3 py-1 text-xs font-semibold text-[#cf6e38] shadow-[inset_0_-1px_0_rgba(255,255,255,0.35)]">
                     <FiStar className="fill-current text-[12px]" />
-                    Change Requested
+                    {t("vendorPanel.orderDetails.changeRequested")}
                   </span>
                 ) : null}
                 <p>
-                  Vendor:{" "}
+                  {t("vendorPanel.orderDetails.vendor")}:{" "}
                   <span className="font-semibold text-[#1f1f1f]">{order.vendor}</span>
                 </p>
                 <p>
-                  Order ID:{" "}
+                  {t("vendorPanel.orderDetails.orderId")}:{" "}
                   <span className="font-semibold text-[#1f1f1f]">{order.id}</span>
                 </p>
               </div>
@@ -181,19 +183,19 @@ export default function OrderDetailsModal({
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-[18px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Event
+                    {t("vendorPanel.orderDetails.event")}
                   </p>
                   <p className="mt-1 type-h4 text-[#1f1f1f]">{order.eventName}</p>
                 </div>
                 <div className="rounded-[18px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Guests
+                    {t("vendorPanel.orderDetails.guests")}
                   </p>
                   <p className="mt-1 type-h4 text-[#1f1f1f]">{order.person}</p>
                 </div>
                 <div className="rounded-[18px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Total
+                    {t("vendorPanel.orderDetails.total")}
                   </p>
                   <p className="mt-1 type-h4 text-[#1f1f1f]">{order.total}</p>
                 </div>
@@ -202,9 +204,9 @@ export default function OrderDetailsModal({
 
             <section>
               <div className="flex items-center justify-between gap-3">
-                <h3 className="type-h3 text-[#1f1f1f]">Items</h3>
+                <h3 className="type-h3 text-[#1f1f1f]">{t("vendorPanel.orderDetails.items")}</h3>
                 <span className="rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
-                  {items.length} item{items.length > 1 ? "s" : ""}
+                  {t("vendorPanel.orderDetails.itemCount", { count: items.length })}
                 </span>
               </div>
               <div className="mt-4 space-y-4">
@@ -228,26 +230,26 @@ export default function OrderDetailsModal({
 
                         <div className="mt-4 space-y-3 text-sm leading-6 text-[#72695f]">
                           <ItemDetailGroup
-                            label="Description"
+                            label={t("vendorPanel.orderDetails.description")}
                             items={detailGroups.description}
                             accent="soft"
                           />
                           <ItemDetailGroup
-                            label="Vendor note"
+                            label={t("vendorPanel.orderDetails.vendorNote")}
                             items={detailGroups.notes}
                             accent="highlight"
                           />
                           <ItemDetailGroup
-                            label="Selected options"
+                            label={t("vendorPanel.orderDetails.selectedOptions")}
                             items={detailGroups.options}
                           />
                           <ItemDetailGroup
-                            label="Add-ons"
+                            label={t("vendorPanel.orderDetails.addOns")}
                             items={detailGroups.addOns}
                             accent="highlight"
                           />
                           <ItemDetailGroup
-                            label="Included items"
+                            label={t("vendorPanel.orderDetails.includedItems")}
                             items={detailGroups.included}
                           />
                         </div>
@@ -256,7 +258,7 @@ export default function OrderDetailsModal({
                   })
                 ) : (
                   <div className="rounded-[22px] border border-dashed border-[#ddd4cb] bg-white p-6 text-center text-sm text-[#776d64]">
-                    Item details are not available in the current API response.
+                    {t("vendorPanel.orderDetails.noItems")}
                   </div>
                 )}
               </div>
@@ -266,14 +268,14 @@ export default function OrderDetailsModal({
               <section className="rounded-[24px] border border-[#efe5db] bg-[linear-gradient(180deg,#fff9f5_0%,#ffffff_100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h3 className="type-h3 text-[#1f1f1f]">Modified Items</h3>
+                    <h3 className="type-h3 text-[#1f1f1f]">{t("vendorPanel.orderDetails.modifiedItems")}</h3>
                     <p className="mt-1 text-sm text-[#746b63]">
-                      These are pending vendor-requested changes. The original order stays active until you approve and apply them.
+                      {t("vendorPanel.orderDetails.modifiedDescription")}
                     </p>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
                     <FiStar className="fill-current text-[12px]" />
-                    {modifiedItems.length} change{modifiedItems.length > 1 ? "s" : ""}
+                    {t("vendorPanel.orderDetails.changeCount", { count: modifiedItems.length })}
                   </span>
                 </div>
 
@@ -309,7 +311,7 @@ export default function OrderDetailsModal({
                           <div className="flex items-center justify-between gap-3 text-sm">
                             <div className="min-w-0">
                               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a08d7d]">
-                                Previous
+                                {t("vendorPanel.orderDetails.previous")}
                               </p>
                               <p className="mt-1 text-[#5f554c]">{item.previousValue}</p>
                             </div>
@@ -318,7 +320,7 @@ export default function OrderDetailsModal({
 
                             <div className="min-w-0 text-right">
                               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a08d7d]">
-                                Updated
+                                {t("vendorPanel.orderDetails.updated")}
                               </p>
                               <p className="mt-1 font-semibold text-[#1f1f1f]">
                                 {item.newValue}
@@ -334,64 +336,64 @@ export default function OrderDetailsModal({
             ) : null}
 
             <section className="rounded-[24px] border border-[#efe5db] bg-[linear-gradient(180deg,#fffaf6_0%,#fff 100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
-              <h3 className="type-h3 text-[#1f1f1f]">Order information</h3>
+              <h3 className="type-h3 text-[#1f1f1f]">{t("vendorPanel.orderDetails.orderInformation")}</h3>
               <div className="mt-4 grid gap-4 text-sm text-[#5d554d] sm:grid-cols-2">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Invoice number
+                    {t("vendorPanel.orderDetails.invoiceNumber")}
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
-                    {meta.invoiceId || "Not available"}
+                    {meta.invoiceId || t("vendorPanel.orderDetails.notAvailable")}
                   </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Order placed on
+                    {t("vendorPanel.orderDetails.orderPlacedOn")}
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
-                    {meta.orderedDate || "Not available"}
+                    {meta.orderedDate || t("vendorPanel.orderDetails.notAvailable")}
                   </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Event date
+                    {t("vendorPanel.orderDetails.eventDate")}
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
-                    {meta.eventDate || "Not available"}
+                    {meta.eventDate || t("vendorPanel.orderDetails.notAvailable")}
                   </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Event time
+                    {t("vendorPanel.orderDetails.eventTime")}
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
-                    {meta.eventTime || "Not available"}
+                    {meta.eventTime || t("vendorPanel.orderDetails.notAvailable")}
                   </p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Guest count
+                    {t("vendorPanel.orderDetails.guestCount")}
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">{order.person}</p>
                 </div>
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Delivery Fee
+                    {t("vendorPanel.orderDetails.deliveryFee")}
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">{order.deliveryFee || "NOK 0.00"}</p>
                 </div>
                 <div className="sm:col-span-2">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                    Delivery address
+                    {t("vendorPanel.orderDetails.deliveryAddress")}
                   </p>
                   <p className="mt-1 font-semibold text-[#1f1f1f]">
-                    {meta.location || "Not available"}
+                    {meta.location || t("vendorPanel.orderDetails.notAvailable")}
                   </p>
                 </div>
                 {order.orderNotes ? (
                   <div className="sm:col-span-2">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                      Order notes
+                      {t("vendorPanel.orderDetails.orderNotes")}
                     </p>
                     <p className="mt-1 rounded-[16px] bg-white px-4 py-3 font-medium text-[#1f1f1f] shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
                       {order.orderNotes}
@@ -405,10 +407,10 @@ export default function OrderDetailsModal({
           <div className="sticky bottom-0 flex items-center justify-between border-t border-[#ece4dc] bg-white/95 px-6 py-4 backdrop-blur-sm">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9a8572]">
-                Grand Total
+                {t("vendorPanel.orderDetails.grandTotal")}
               </p>
               <p className="mt-1 type-subpara text-[#6e645a]">
-                Includes the full order amount
+                {t("vendorPanel.orderDetails.grandTotalHint")}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -419,7 +421,9 @@ export default function OrderDetailsModal({
                   disabled={isLoading || order.canModify === false}
                   className="rounded-full border border-[#d9cec4] bg-white px-4 py-2 text-sm font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {order.canModify === false ? "Modification closed" : "Modify order"}
+                  {order.canModify === false
+                    ? t("vendorPanel.orderDetails.modificationClosed")
+                    : t("vendorPanel.orderDetails.modifyOrder")}
                 </button>
               ) : null}
               <p className="type-h2 text-[#1f1f1f]">{order.total}</p>

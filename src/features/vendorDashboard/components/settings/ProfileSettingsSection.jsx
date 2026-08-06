@@ -1,27 +1,29 @@
 import SettingsField from "./SettingsField";
 import SettingsSection from "./SettingsSection";
+import { useTranslation } from "react-i18next";
 
 export default function ProfileSettingsSection({ formState, updateField }) {
+  const { t } = useTranslation();
   return (
-    <SettingsSection id="profile" title="Profile">
+    <SettingsSection id="profile" title={t("vendorPanel.settingsPage.profile")}>
       <div className="grid gap-4 md:grid-cols-2">
         <SettingsField
           id="firstName"
-          label="First name *"
+          label={t("vendorPanel.settingsPage.firstName")}
           value={formState.firstName}
           onChange={(event) => updateField("firstName", event.target.value)}
           placeholder=""
         />
         <SettingsField
           id="lastName"
-          label="Last name *"
+          label={t("vendorPanel.settingsPage.lastName")}
           value={formState.lastName}
           onChange={(event) => updateField("lastName", event.target.value)}
           placeholder=""
         />
         <SettingsField
           id="primaryEmail"
-          label="Primary email *"
+          label={t("vendorPanel.settingsPage.primaryEmail")}
           value={formState.primaryEmail}
           onChange={(event) => updateField("primaryEmail", event.target.value)}
           placeholder=""
@@ -30,7 +32,7 @@ export default function ProfileSettingsSection({ formState, updateField }) {
         />
         <SettingsField
           id="secondaryEmail"
-          label="Secondary email"
+          label={t("vendorPanel.settingsPage.secondaryEmail")}
           value={formState.secondaryEmail}
           onChange={(event) => updateField("secondaryEmail", event.target.value)}
           placeholder=""
@@ -38,21 +40,21 @@ export default function ProfileSettingsSection({ formState, updateField }) {
         />
         <SettingsField
           id="mobilePhone"
-          label="Mobile phone *"
+          label={t("vendorPanel.settingsPage.mobilePhone")}
           value={formState.mobilePhone}
           onChange={(event) => updateField("mobilePhone", event.target.value)}
           placeholder=""
         />
         <SettingsField
           id="workPhone"
-          label="Work phone"
+          label={t("vendorPanel.settingsPage.workPhone")}
           value={formState.workPhone}
           onChange={(event) => updateField("workPhone", event.target.value)}
           placeholder=""
         />
         <SettingsField
           id="postCode"
-          label="Postal Code"
+          label={t("vendorPanel.settingsPage.postalCode")}
           value={formState.postCode}
           onChange={(event) => updateField("postCode", event.target.value)}
           placeholder=""
@@ -60,21 +62,21 @@ export default function ProfileSettingsSection({ formState, updateField }) {
         />
         <SettingsField
           id="company"
-          label="Company"
+          label={t("vendorPanel.settingsPage.company")}
           value={formState.company}
           onChange={(event) => updateField("company", event.target.value)}
           placeholder=""
         />
         <SettingsField
           id="jobTitle"
-          label="Job title"
+          label={t("vendorPanel.settingsPage.jobTitle")}
           value={formState.jobTitle}
           onChange={(event) => updateField("jobTitle", event.target.value)}
           placeholder=""
         />
         <SettingsField
           id="industry"
-          label="Industry or usage"
+          label={t("vendorPanel.settingsPage.industry")}
           value={formState.industry}
           onChange={(event) => updateField("industry", event.target.value)}
           placeholder=""

@@ -5,6 +5,7 @@ import {
   FiGift,
   FiPackage,
 } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 const ICON_BY_TYPE = {
   "order-update": FiPackage,
@@ -16,6 +17,7 @@ const ICON_BY_TYPE = {
 };
 
 export default function NotificationListItem({ notification, onOpen }) {
+  const { t } = useTranslation();
   const Icon = ICON_BY_TYPE[notification.type] ?? FiBell;
 
   return (
@@ -60,14 +62,14 @@ export default function NotificationListItem({ notification, onOpen }) {
         </span>
         {onOpen ? (
           <span className="rounded-full bg-[#fff2eb] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
-            Open
+            {t("vendorPanel.notifications.open")}
           </span>
         ) : null}
         {notification.category === "unread" ? (
           <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#cf5c2f]" />
         ) : (
           <span className="rounded-full bg-[#f3eee8] px-2.5 py-1 text-[11px] font-semibold text-[#80766d]">
-            Viewed
+            {t("vendorPanel.notifications.viewed")}
           </span>
         )}
       </div>

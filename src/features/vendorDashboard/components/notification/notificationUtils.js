@@ -1,16 +1,16 @@
 export const NOTIFICATION_TABS = [
-  { label: "All", value: "all" },
-  { label: "Unread", value: "unread" },
-  { label: "Read", value: "read" },
+  { labelKey: "vendorPanel.notifications.tabs.all", value: "all" },
+  { labelKey: "vendorPanel.notifications.tabs.unread", value: "unread" },
+  { labelKey: "vendorPanel.notifications.tabs.read", value: "read" },
 ];
 
 export const NOTIFICATION_DATE_OPTIONS = [
-  { label: "All Time", value: "all-time" },
-  { label: "Last Month", value: "last-month" },
-  { label: "Last 3 Months", value: "last-3-months" },
-  { label: "Last 6 Months", value: "last-6-months" },
-  { label: "This Year", value: "this-year" },
-  { label: "Custom Date", value: "custom-date" },
+  { labelKey: "vendorPanel.notifications.date.allTime", value: "all-time" },
+  { labelKey: "vendorPanel.notifications.date.lastMonth", value: "last-month" },
+  { labelKey: "vendorPanel.notifications.date.last3Months", value: "last-3-months" },
+  { labelKey: "vendorPanel.notifications.date.last6Months", value: "last-6-months" },
+  { labelKey: "vendorPanel.notifications.date.thisYear", value: "this-year" },
+  { labelKey: "vendorPanel.notifications.date.customDate", value: "custom-date" },
 ];
 
 export function groupNotificationsByDay(notifications) {
@@ -42,21 +42,26 @@ function formatDateForLabel(value) {
   return `${day}-${month}-${year}`;
 }
 
-export function getNotificationDateFilterLabel(selectedRange, customDateRange) {
+export function getNotificationDateFilterLabel(selectedRange, customDateRange, t) {
   if (selectedRange === "custom-date") {
     const fromLabel = formatDateForLabel(customDateRange.from);
     const toLabel = formatDateForLabel(customDateRange.to);
 
     if (fromLabel && toLabel) {
-      return `From: ${fromLabel} To: ${toLabel}`;
+      return t("vendorPanel.notifications.date.customRange", {
+        from: fromLabel,
+        to: toLabel,
+      });
     }
 
-    return "Custom Date";
+    return t("vendorPanel.notifications.date.customDate");
   }
 
   return (
-    NOTIFICATION_DATE_OPTIONS.find((option) => option.value === selectedRange)
-      ?.label ?? "All Time"
+    t(
+      NOTIFICATION_DATE_OPTIONS.find((option) => option.value === selectedRange)
+        ?.labelKey,
+    ) ?? t("vendorPanel.notifications.date.allTime")
   );
 }
 

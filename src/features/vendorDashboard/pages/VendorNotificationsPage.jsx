@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth";
 import {
@@ -14,11 +15,11 @@ import {
   isNotificationWithinDateRange,
 } from "../components/notification/notificationUtils";
 
-function NotificationsErrorState({ message, onRetry }) {
+function NotificationsErrorState({ message, onRetry, t }) {
   return (
     <div className="rounded-[24px] border border-[#f1c8bb] bg-[#fff5f1] p-6 text-center shadow-[0_12px_24px_rgba(32,32,32,0.04)]">
       <h2 className="text-lg font-semibold text-[#3a2218]">
-        Unable to load notifications
+        {t("vendorPanel.notifications.loadErrorTitle")}
       </h2>
       <p className="mt-2 text-sm text-[#8a5642]">{message}</p>
       <button
@@ -26,13 +27,14 @@ function NotificationsErrorState({ message, onRetry }) {
         onClick={onRetry}
         className="mt-5 rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b94f26]"
       >
-        Try again
+        {t("vendorPanel.notifications.retry")}
       </button>
     </div>
   );
 }
 
 export default function VendorNotificationsPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [notifications, setNotifications] = useState([]);
@@ -91,7 +93,7 @@ export default function VendorNotificationsPage() {
           setNotifications([]);
           setError(
             loadError?.message ||
-              "Unable to load notifications right now.",
+              t("vendorPanel.notifications.loadErrorMessageFallback"),
           );
         }
       } finally {
@@ -207,6 +209,7 @@ export default function VendorNotificationsPage() {
       <NotificationsErrorState
         message={error}
         onRetry={() => window.location.reload()}
+        t={t}
       />
     );
   }
@@ -214,20 +217,19 @@ export default function VendorNotificationsPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">Notifications</h1>
+        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.notifications.title")}</h1>
         <p className="mt-2 type-para text-[#635b53]">
-          Review order updates, status changes, and account alerts in one place.
+          {t("vendorPanel.notifications.description")}
         </p>
       </section>
 
       {!isLoggedIn ? (
         <section className="rounded-[24px] border border-dashed border-[#ddd7d1] bg-white px-6 py-16 text-center shadow-[0_10px_24px_rgba(32,32,32,0.04)]">
           <h2 className="text-[24px] font-semibold text-[#242424]">
-            Sign in to view notifications
+            {t("vendorPanel.notifications.signInTitle")}
           </h2>
           <p className="mt-3 text-sm text-[#6d655f]">
-            Notifications are tied to your account and load from the API after
-            sign in.
+            {t("vendorPanel.notifications.signInMessage")}
           </p>
         </section>
       ) : (
@@ -246,7 +248,9 @@ export default function VendorNotificationsPage() {
                   disabled={isUpdatingReadState || counts.unread === 0}
                   className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#ead8cb] bg-white px-4 text-sm font-semibold text-[#7a6253] transition hover:border-[#cf6e38] hover:text-[#cf6e38] disabled:cursor-not-allowed disabled:opacity-55"
                 >
-                  {isUpdatingReadState ? "Updating..." : "Mark all as read"}
+                  {isUpdatingReadState
+                    ? t("vendorPanel.notifications.updating")
+                    : t("vendorPanel.notifications.markAllRead")}
                 </button>
                 <NotificationDateFilter
                   customDateRange={customDateRange}
@@ -285,10 +289,10 @@ export default function VendorNotificationsPage() {
             ) : (
               <div className="rounded-[22px] border border-dashed border-[#ddd4cb] bg-white px-6 py-16 text-center">
                 <h2 className="text-[22px] font-semibold text-[#242424]">
-                  No notifications found
+                  {t("vendorPanel.notifications.noResultsTitle")}
                 </h2>
                 <p className="mt-3 text-sm text-[#6d655f]">
-                  Try a different tab or date range to see more activity.
+                  {t("vendorPanel.notifications.noResultsDescription")}
                 </p>
               </div>
             )}

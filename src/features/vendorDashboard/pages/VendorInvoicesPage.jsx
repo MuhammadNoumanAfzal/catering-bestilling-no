@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FiDownload, FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import InvoiceFilterMenu from "../components/invoices/InvoiceFilterMenu";
 import InvoiceOverviewCard from "../components/invoices/InvoiceOverviewCard";
 import InvoicePagination from "../components/invoices/InvoicePagination";
@@ -40,6 +41,7 @@ function buildInvoiceCsv(invoices) {
 }
 
 export default function VendorInvoicesPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { records, overview, totals, totalCount, isLoading, error } =
@@ -147,8 +149,8 @@ export default function VendorInvoicesPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2">Invoice</h1>
-        <p className="mt-2 type-para">Track all invoice and payment records.</p>
+        <h1 className="type-h2">{t("vendorPanel.invoices.title")}</h1>
+        <p className="mt-2 type-para">{t("vendorPanel.invoices.description")}</p>
       </section>
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
@@ -162,18 +164,18 @@ export default function VendorInvoicesPage() {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#c46a35]">
-                Finance Snapshot
+                {t("vendorPanel.invoices.financeSnapshot")}
               </p>
               <h2 className="mt-2 text-[22px] font-semibold text-[#1f1914]">
-                Invoice activity at a glance
+                {t("vendorPanel.invoices.activityTitle")}
               </h2>
               <p className="mt-1 text-sm leading-6 text-[#75685f]">
-                Review totals, export records, and narrow down invoices faster.
+                {t("vendorPanel.invoices.activityDescription")}
               </p>
             </div>
 
             <div className="rounded-full border border-[#f0dfd3] bg-white/85 px-4 py-2 text-sm font-semibold text-[#8b796d]">
-              {filteredRecords.length} invoice{filteredRecords.length === 1 ? "" : "s"} visible
+              {t("vendorPanel.invoices.visibleCount", { count: filteredRecords.length })}
             </div>
           </div>
         </div>
@@ -191,7 +193,7 @@ export default function VendorInvoicesPage() {
             <input
               value={searchValue}
               onChange={(event) => setSearchValue(event.target.value)}
-              placeholder="Search invoice, vendor, event..."
+              placeholder={t("vendorPanel.invoices.searchPlaceholder")}
               className="w-full bg-transparent text-sm text-[#242424] outline-none placeholder:text-[#aaaaaa]"
             />
           </label>
@@ -243,7 +245,7 @@ export default function VendorInvoicesPage() {
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#e3d8ce] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] shadow-[0_6px_16px_rgba(32,22,16,0.04)] transition hover:bg-[#faf7f3] sm:w-auto"
             >
               <FiDownload className="text-[15px]" />
-              <span>Export</span>
+              <span>{t("vendorPanel.invoices.export")}</span>
             </button>
 
             <InvoiceFilterMenu
@@ -293,7 +295,7 @@ export default function VendorInvoicesPage() {
                       >
                         <span>{option.label}</span>
                         {isSelected ? (
-                          <span className="text-xs font-semibold">Active</span>
+                          <span className="text-xs font-semibold">{t("vendorPanel.invoices.active")}</span>
                         ) : null}
                       </button>
                     );
@@ -304,7 +306,7 @@ export default function VendorInvoicesPage() {
                       <div className="grid gap-3">
                         <label className="block">
                           <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.08em] text-[#9a6d53]">
-                            From
+                            {t("vendorPanel.invoices.from")}
                           </span>
                           <input
                             type="date"
@@ -322,7 +324,7 @@ export default function VendorInvoicesPage() {
 
                         <label className="block">
                           <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.08em] text-[#9a6d53]">
-                            To
+                            {t("vendorPanel.invoices.to")}
                           </span>
                           <input
                             type="date"
@@ -345,7 +347,7 @@ export default function VendorInvoicesPage() {
                           onClick={() => setIsDateMenuOpen(false)}
                           className="rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#bc602d]"
                         >
-                          Apply
+                          {t("vendorPanel.invoices.apply")}
                         </button>
                       </div>
                     </div>
