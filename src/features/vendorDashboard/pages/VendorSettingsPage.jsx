@@ -1,5 +1,6 @@
 import AccountSafetySection from "../components/settings/AccountSafetySection";
 import { useTranslation } from "react-i18next";
+import { translateSettings } from "../components/settings/settingsI18n";
 import NotificationSettingsSection from "../components/settings/NotificationSettingsSection";
 import PasswordSettingsSection from "../components/settings/PasswordSettingsSection";
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
@@ -7,7 +8,8 @@ import SettingsActions from "../components/settings/SettingsActions";
 import { useVendorSettingsPage } from "../settings/hooks/useVendorSettingsPage";
 
 export default function VendorSettingsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const st = (key, options) => translateSettings(t, i18n, key, options);
   const {
     formState,
     handleReset,
@@ -30,7 +32,7 @@ export default function VendorSettingsPage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.settingsPage.title")}</h1>
+        <h1 className="type-h2 text-[#191919]">{st("title")}</h1>
       </section>
 
       <div className="space-y-6">
