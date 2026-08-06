@@ -1,13 +1,13 @@
 export const ORDER_VIEW_TABS = [
-  { label: "Active Orders", value: "active" },
-  { label: "Recent Orders", value: "recent" },
+  { labelKey: "vendorPanel.orders.activeOrders", value: "active" },
+  { labelKey: "vendorPanel.orders.recentOrders", value: "recent" },
 ];
 
 export const ORDER_TABS = [
-  { label: "All Orders", value: "all" },
-  { label: "Completed", value: "completed" },
-  { label: "Drafts", value: "draft" },
-  { label: "Scheduled", value: "scheduled" },
+  { labelKey: "vendorPanel.orders.allOrders", value: "all" },
+  { labelKey: "vendorPanel.orders.completed", value: "completed" },
+  { labelKey: "vendorPanel.orders.drafts", value: "draft" },
+  { labelKey: "vendorPanel.orders.scheduled", value: "scheduled" },
 ];
 
 export const ORDER_DATE_OPTIONS = [

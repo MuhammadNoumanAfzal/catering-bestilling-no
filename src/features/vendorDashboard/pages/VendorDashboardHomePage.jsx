@@ -8,6 +8,7 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import VendorSectionCard from "../components/VendorSectionCard";
 import { fetchDashboardData } from "../dashboardSlice";
@@ -86,10 +87,11 @@ function VendorStatCard({ label, value, icon: Icon }) {
 }
 
 function DashboardErrorState({ message, onRetry }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-[24px] border border-[#f1c8bb] bg-[#fff5f1] p-6 text-center shadow-[0_12px_24px_rgba(32,32,32,0.04)]">
       <h2 className="text-lg font-semibold text-[#3a2218]">
-        Unable to load dashboard
+        {t("vendorPanel.dashboard.loadErrorTitle")}
       </h2>
       <p className="mt-2 text-sm text-[#8a5642]">{message}</p>
       <button
@@ -97,13 +99,14 @@ function DashboardErrorState({ message, onRetry }) {
         onClick={onRetry}
         className="mt-5 rounded-full bg-[#cf5c2f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b94f26]"
       >
-        Try again
+        {t("alerts.tryAgain")}
       </button>
     </div>
   );
 }
 
 export default function VendorDashboardHomePage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { user } = useAuth();
   const {
@@ -121,12 +124,12 @@ export default function VendorDashboardHomePage() {
 
   const stats = [
     {
-      label: "Total Orders",
+      label: t("vendorPanel.dashboard.totalOrders"),
       value: totalOrders,
       icon: FiTruck,
     },
     {
-      label: "Pending Invoice",
+      label: t("vendorPanel.dashboard.pendingInvoice"),
       value: pendingInvoices,
       icon: FiFileText,
     },
@@ -134,21 +137,21 @@ export default function VendorDashboardHomePage() {
 
   const localSettingsLinks = [
     {
-      label: "Edit Profile",
+      label: t("vendorPanel.settingsLinks.editProfile"),
       to: "/vendor-dashboard/settings#profile",
     },
     {
-      label: "Password",
+      label: t("vendorPanel.settingsLinks.password"),
       to: "/vendor-dashboard/settings#password",
     },
     {
-      label: "Notification",
+      label: t("vendorPanel.settingsLinks.notification"),
       to: "/vendor-dashboard/settings#notifications",
     },
   ];
 
   const userDisplayName =
-    user?.firstName?.trim() || user?.name?.trim() || "there";
+    user?.firstName?.trim() || user?.name?.trim() || t("vendorPanel.fallbackGreetingName");
   const normalizedOrders = Array.isArray(recentOrders) ? recentOrders : [];
   const normalizedInvoices = Array.isArray(recentInvoices) ? recentInvoices : [];
 
@@ -172,9 +175,9 @@ export default function VendorDashboardHomePage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">Dashboard</h1>
+        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.nav.dashboard")}</h1>
         <p className="mt-2 type-para text-[#5f5a54]">
-          Welcome back, {userDisplayName}! Heres an overview of your activity.
+          {t("vendorPanel.dashboard.welcomeBack", { name: userDisplayName })}
         </p>
       </section>
 
@@ -188,7 +191,7 @@ export default function VendorDashboardHomePage() {
         {/* Left Column: Recent Orders & Settings */}
         <div className="space-y-6">
           <VendorSectionCard
-            title="Recent Orders"
+            title={t("vendorPanel.dashboard.recentOrders")}
             icon={FiList}
             footerTo="/vendor-dashboard/orders"
           >
@@ -212,14 +215,14 @@ export default function VendorDashboardHomePage() {
                 ))
               ) : (
                 <div className="py-6 text-center text-sm text-[#7e776f]">
-                  No recent orders found.
+                  {t("vendorPanel.dashboard.noRecentOrders")}
                 </div>
               )}
             </div>
           </VendorSectionCard>
 
           <VendorSectionCard
-            title="Settings"
+            title={t("nav.settings")}
             icon={FiSettings}
             footerLabel={null}
           >
@@ -241,7 +244,7 @@ export default function VendorDashboardHomePage() {
         {/* Right Column: Invoices */}
         <div>
           <VendorSectionCard
-            title="Invoices"
+            title={t("vendorPanel.nav.invoices")}
             icon={FiFileText}
             footerTo="/vendor-dashboard/invoices"
           >
@@ -270,7 +273,7 @@ export default function VendorDashboardHomePage() {
                 ))
               ) : (
                 <div className="py-6 text-center text-sm text-[#7e776f]">
-                  No recent invoices found.
+                  {t("vendorPanel.dashboard.noRecentInvoices")}
                 </div>
               )}
             </div>

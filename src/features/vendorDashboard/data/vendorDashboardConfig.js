@@ -12,43 +12,43 @@ import {
 
 export const vendorNavigationItems = [
   {
-    label: "Dashboard",
+    labelKey: "vendorPanel.nav.dashboard",
     to: "/vendor-dashboard",
     end: true,
     icon: FiGrid,
   },
   {
-    label: "Orders",
+    labelKey: "vendorPanel.nav.orders",
     to: "/vendor-dashboard/orders",
     icon: FiShoppingBag,
   },
   {
-    label: "Restaurants",
+    labelKey: "vendorPanel.nav.restaurants",
     to: "/vendor-dashboard/restaurants",
     icon: FiPackage,
   },
   {
-    label: "Invoice",
+    labelKey: "vendorPanel.nav.invoices",
     to: "/vendor-dashboard/invoices",
     icon: FiCreditCard,
   },
   {
-    label: "Notifications",
+    labelKey: "vendorPanel.nav.notifications",
     to: "/vendor-dashboard/notifications",
     icon: FiHelpCircle,
   },
   {
-    label: "Support",
+    labelKey: "vendorPanel.nav.support",
     to: "/vendor-dashboard/support",
     icon: FiHelpCircle,
   },
   {
-    label: "Address",
+    labelKey: "vendorPanel.nav.address",
     to: "/vendor-dashboard/address",
     icon: FiMapPin,
   },
   {
-    label: "Setting",
+    labelKey: "vendorPanel.nav.settings",
     to: "/vendor-dashboard/settings",
     icon: FiSettings,
   },
@@ -56,12 +56,12 @@ export const vendorNavigationItems = [
 
 export const vendorSettingsLinks = [
   {
-    label: "Edit Profile",
+    labelKey: "vendorPanel.settingsLinks.editProfile",
     icon: FiEdit3,
     to: "/vendor-dashboard/settings#profile",
   },
   {
-    label: "Notification",
+    labelKey: "vendorPanel.settingsLinks.notification",
     icon: FiShield,
     to: "/vendor-dashboard/settings#notifications",
   },
