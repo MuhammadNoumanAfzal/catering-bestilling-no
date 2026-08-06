@@ -1,5 +1,6 @@
 import { FiShoppingBag } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import OrderItemCard from "./OrderItemCard";
 import PriceDetailsCard from "./PriceDetailsCard";
 import TipSelector from "./TipSelector";
@@ -14,6 +15,7 @@ export default function VendorSummaryCard({
   onTipChange,
   onRemoveItem,
 }) {
+  const { t } = useTranslation();
   const personCount = cart.orderSummary.personCount;
   const items = sortSummaryItems(cart.orderSummary.items).map((item) => ({
     ...item,
@@ -35,7 +37,7 @@ export default function VendorSummaryCard({
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="type-h4 font-semibold uppercase tracking-[0.16em] text-[#b77a57]">
-              Vendor
+              {t("checkout.vendor")}
             </p>
             <p className="mt-1 type-h4 font-semibold leading-tight text-[#2c2c2c]">
               {cart.vendor.name}
@@ -51,9 +53,9 @@ export default function VendorSummaryCard({
       <div className="mt-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="type-h5 font-semibold text-[#2c2c2c]">Order items</p>
+            <p className="type-h5 font-semibold text-[#2c2c2c]">{t("checkout.orderItems")}</p>
             <p className="mt-1 text-[12px] text-[#8b8580]">
-              Review everything before placing the order
+              {t("checkout.reviewBeforePlace")}
             </p>
           </div>
 
@@ -61,7 +63,7 @@ export default function VendorSummaryCard({
             to={`/vendor/${cart.vendor.slug}`}
             className="cursor-pointer text-[14px] font-semibold text-[#cf6e38]"
           >
-            Edit Cart
+            {t("checkout.editCart")}
           </Link>
         </div>
 

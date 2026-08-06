@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createInitialModifyOrderFormState,
   MODIFY_ORDER_PLACEHOLDERS,
 } from "../constants/modifyOrderForm";
 
-function formatDisplayDate(value) {
+function formatDisplayDate(value, language) {
   if (!value) {
     return "";
   }
@@ -15,7 +16,7 @@ function formatDisplayDate(value) {
     return value;
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(language === "no" ? "nb-NO" : "en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -30,7 +31,7 @@ function getTodayDateValue() {
   return `${year}-${month}-${day}`;
 }
 
-function validateModifyForm(formState) {
+function validateModifyForm(formState, t) {
   const address = `${formState.address ?? ""}`.trim();
   const city = `${formState.city ?? ""}`.trim();
   const postalCode = `${formState.postalCode ?? ""}`.trim();
@@ -40,31 +41,31 @@ function validateModifyForm(formState) {
   const today = getTodayDateValue();
 
   if (!date) {
-    return "Please select a date.";
+    return t("modifyOrder.errors.selectDate");
   }
 
   if (date < today) {
-    return "Please select today or a future date.";
+    return t("modifyOrder.errors.futureDate");
   }
 
   if (!time) {
-    return "Please select a time.";
+    return t("modifyOrder.errors.selectTime");
   }
 
   if (!address) {
-    return "Please enter the delivery address.";
+    return t("modifyOrder.errors.enterAddress");
   }
 
   if (!city) {
-    return "Please enter the city.";
+    return t("modifyOrder.errors.enterCity");
   }
 
   if (!postalCode) {
-    return "Please enter the postal code.";
+    return t("modifyOrder.errors.enterPostalCode");
   }
 
   if (personCount < 1) {
-    return "Person count must be at least 1.";
+    return t("modifyOrder.errors.personCount");
   }
 
   return "";
@@ -78,6 +79,7 @@ export default function ModifyOrderModal({
   onCancel,
   onSave,
 }) {
+  const { t, i18n } = useTranslation();
   const [formState, setFormState] = useState(() =>
     createInitialModifyOrderFormState(initialValue),
   );
@@ -89,8 +91,8 @@ export default function ModifyOrderModal({
   }, [initialValue]);
 
   const formattedDate = useMemo(
-    () => formatDisplayDate(formState.date),
-    [formState.date],
+    () => formatDisplayDate(formState.date, i18n.language),
+    [formState.date, i18n.language],
   );
 
   const updateField = (key, value) => {
@@ -102,7 +104,7 @@ export default function ModifyOrderModal({
   };
 
   const handleSubmit = () => {
-    const nextValidationError = validateModifyForm(formState);
+    const nextValidationError = validateModifyForm(formState, t);
 
     if (nextValidationError) {
       setValidationError(nextValidationError);
@@ -125,9 +127,9 @@ export default function ModifyOrderModal({
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1a1410]/50 px-3 py-3 backdrop-blur-[2px] sm:px-4 sm:py-4">
       <div className="flex max-h-[calc(100vh-24px)] w-full max-w-[620px] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_24px_80px_rgba(20,15,10,0.22)] sm:max-h-[calc(100vh-32px)]">
         <div className="border-b border-[#eee4da] px-5 py-3 sm:px-6">
-          <h2 className="type-h3 text-[#17120f]">Request Change</h2>
+          <h2 className="type-h3 text-[#17120f]">{t("modifyOrder.title")}</h2>
           <p className="mt-0.5 text-[12px] text-[#7a7067]">
-            Let the vendor know you need to adjust this order.
+            {t("modifyOrder.subtitle")}
           </p>
         </div>
 
@@ -142,7 +144,7 @@ export default function ModifyOrderModal({
             <div className="rounded-[14px] border border-[#efe4da] bg-[#fcf8f4] px-4 py-6 text-center">
               <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
               <p className="mt-3 text-sm text-[#6f665d]">
-                Loading current order details...
+                {t("modifyOrder.loading")}
               </p>
             </div>
           ) : null}
@@ -150,7 +152,7 @@ export default function ModifyOrderModal({
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
-                Date
+                {t("orderConfirmed.date")}
               </span>
               <input
                 type="date"
@@ -162,14 +164,14 @@ export default function ModifyOrderModal({
               />
               {formattedDate ? (
                 <p className="mt-1 text-[11px] text-[#8b8177]">
-                  Selected date: {formattedDate}
+                  {t("modifyOrder.selectedDate", { date: formattedDate })}
                 </p>
               ) : null}
             </label>
 
             <label className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
-                Time
+                {t("menu.time")}
               </span>
               <input
                 type="time"
@@ -183,7 +185,7 @@ export default function ModifyOrderModal({
 
           <label className="block">
             <span className="type-subpara mb-2 block text-[#2d2d2d]">
-              Address
+              {t("checkout.address")}
             </span>
             <input
               value={formState.address}
@@ -197,7 +199,7 @@ export default function ModifyOrderModal({
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block min-w-0">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
-                Person Count
+                {t("orderConfirmed.personCount")}
               </span>
               <div className="inline-flex h-10 w-full items-center overflow-hidden rounded-[10px] border border-[#dad1c8] bg-white">
                 <button
@@ -231,7 +233,7 @@ export default function ModifyOrderModal({
 
             <label className="block min-w-0">
               <span className="type-subpara mb-2 block break-words text-[#2d2d2d]">
-                Apartment/Floor(Optional)
+                {t("checkout.apartmentFloorOptional")}
               </span>
               <input
                 value={formState.addressLine2}
@@ -248,7 +250,7 @@ export default function ModifyOrderModal({
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
-                City
+                {t("checkout.city")}
               </span>
               <input
                 value={formState.city}
@@ -261,7 +263,7 @@ export default function ModifyOrderModal({
 
             <label className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
-                Postal Code
+                {t("checkout.postalCode")}
               </span>
               <input
                 value={formState.postalCode}
@@ -277,7 +279,7 @@ export default function ModifyOrderModal({
 
           <label className="block">
             <span className="type-subpara mb-2 block text-[#2d2d2d]">
-              Additional Details
+              {t("modifyOrder.additionalDetails")}
             </span>
             <textarea
               value={formState.additionalDetails}
@@ -298,7 +300,7 @@ export default function ModifyOrderModal({
             disabled={isSaving}
             className="w-full rounded-[10px] border border-[#d9cec4] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#2b2622] transition hover:bg-[#faf7f3] sm:w-auto"
           >
-            Cancel
+            {t("alerts.cancel")}
           </button>
           <button
             type="button"
@@ -306,7 +308,7 @@ export default function ModifyOrderModal({
             disabled={isLoading || isSaving}
             className="w-full rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] sm:w-auto"
           >
-            {isSaving ? "Sending..." : "Send Request"}
+            {isSaving ? t("modifyOrder.sending") : t("modifyOrder.sendRequest")}
           </button>
         </div>
       </div>

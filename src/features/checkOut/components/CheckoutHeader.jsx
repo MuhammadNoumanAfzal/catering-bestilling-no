@@ -1,7 +1,9 @@
 import { FiArrowLeft } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function CheckoutHeader() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -12,7 +14,7 @@ export default function CheckoutHeader() {
             type="button"
             onClick={() => navigate(-1)}
             className="inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-[#ddd6cd] text-[#2b2b2b] transition hover:border-[#c85f33] hover:text-[#c85f33]"
-            aria-label="Go back"
+            aria-label={t("checkout.goBack")}
           >
             <FiArrowLeft className="text-[18px]" />
           </button>
@@ -27,7 +29,7 @@ export default function CheckoutHeader() {
         </div>
 
         <p className="type-h4 hidden text-[#2b2b2b] sm:block">
-          Checkout
+          {t("checkout.title")}
         </p>
       </div>
     </header>

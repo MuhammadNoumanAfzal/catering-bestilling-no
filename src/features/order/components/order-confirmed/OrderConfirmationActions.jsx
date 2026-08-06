@@ -1,5 +1,6 @@
 import { FiArrowRight, FiEdit3, FiGrid, FiHome } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function OrderConfirmationActions({
   canModify,
@@ -7,6 +8,7 @@ export default function OrderConfirmationActions({
   modifyDisabled = false,
   onModify,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
       <Link
@@ -14,14 +16,14 @@ export default function OrderConfirmationActions({
         className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#cf6e38] px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-[#bb602d]"
       >
         <FiHome className="text-[16px]" />
-        Back to Home
+        {t("orderConfirmed.backToHome")}
       </Link>
 
       <Link
         to="/browse/food-type"
         className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-[#d9cec3] bg-white px-6 py-3 text-[15px] font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
       >
-        Browse Menus
+        {t("orderConfirmed.browseMenus")}
         <FiArrowRight className="text-[16px]" />
       </Link>
 
@@ -29,7 +31,7 @@ export default function OrderConfirmationActions({
         to="/vendor-dashboard"
         className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-[#d9cec3] bg-white px-6 py-3 text-[15px] font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
       >
-        Browse Dashboard
+        {t("orderConfirmed.browseDashboard")}
         <FiGrid className="text-[16px]" />
       </Link>
 

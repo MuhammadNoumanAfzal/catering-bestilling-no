@@ -1,12 +1,14 @@
 import CheckoutSection from "./CheckoutSection";
 import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
+import { useTranslation } from "react-i18next";
 
 export default function AdditionalInfoSection({ value, onChange }) {
+  const { t } = useTranslation();
   return (
-    <CheckoutSection title="Additional Info">
+    <CheckoutSection title={t("checkout.additionalInfo")}>
       <label className="block">
         <span className="type-para mb-1 block text-[#2d2d2d]">
-          Order notes / Allergens &amp; Dietary Requirements
+          {t("checkout.additionalInfoLabel")}
         </span>
         <textarea
           value={value}

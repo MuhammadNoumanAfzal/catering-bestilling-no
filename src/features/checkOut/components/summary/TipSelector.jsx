@@ -1,10 +1,12 @@
 import { TIP_OPTIONS } from "./checkoutSummaryUtils";
+import { useTranslation } from "react-i18next";
 
 export default function TipSelector({
   selectedTipRate,
   customTipAmount,
   onSelect,
 }) {
+  const { t } = useTranslation();
   function handleOptionClick(optionValue) {
     if (selectedTipRate === optionValue) {
       onSelect(null, optionValue === "other" ? "" : undefined);
@@ -17,7 +19,7 @@ export default function TipSelector({
   return (
     <div className="mt-4">
       <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#9a8f83]">
-        Add a tip
+        {t("checkout.addTip")}
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
@@ -40,7 +42,7 @@ export default function TipSelector({
       {selectedTipRate === "other" && (
         <div className="mt-3 max-w-[220px]">
           <label className="block text-[12px] font-medium text-[#8b8580]">
-            Enter custom tip amount (NOK)
+            {t("checkout.customTipAmount")}
           </label>
           <div className="relative mt-1.5 rounded-[6px] shadow-sm">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

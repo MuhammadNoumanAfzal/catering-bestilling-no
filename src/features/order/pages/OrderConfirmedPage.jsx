@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ModifyOrderModal,
   OrderConfirmationActions,
@@ -9,6 +10,7 @@ import {
 import { useOrderConfirmedPage } from "../hooks/useOrderConfirmedPage";
 
 export default function OrderConfirmedPage() {
+  const { t } = useTranslation();
   const {
     handleApproveVendorAdjustment,
     handleModifySave,
@@ -36,8 +38,8 @@ export default function OrderConfirmedPage() {
   const hasPendingVendorAdjustment =
     `${pendingVendorAdjustment?.status ?? ""}`.trim().toUpperCase() === "PENDING";
   const modifyButtonLabel = hasPendingModificationRequest
-    ? "Request pending"
-    : "Modify Order";
+    ? t("orderConfirmed.requestPending")
+    : t("orderConfirmed.modifyOrder");
   const modifyDisabled = hasPendingModificationRequest || hasPendingVendorAdjustment;
 
   return (
@@ -48,7 +50,7 @@ export default function OrderConfirmedPage() {
             <Link to="/" className="inline-flex cursor-pointer">
               <img
                 src="/home/logo.png"
-                alt="Lunsjavtale"
+                alt={t("orderConfirmed.logoAlt")}
                 className="h-16 w-auto object-contain"
               />
             </Link>
@@ -66,39 +68,39 @@ export default function OrderConfirmedPage() {
 
             {hasPendingModificationRequest ? (
               <div className="mx-auto mt-4 max-w-2xl rounded-[16px] border border-[#f5d6c3] bg-[#fff7f1] px-4 py-3 text-left text-[14px] text-[#8a5a3a]">
-                Your change request has been sent to the vendor. The original order stays active until they approve or reject it.
+                {t("orderConfirmed.changeRequestSent")}
               </div>
             ) : null}
 
             {hasPendingVendorAdjustment ? (
               <div className="mx-auto mt-4 max-w-2xl rounded-[18px] border border-[#f2d8cb] bg-[#fff8f3] px-4 py-4 text-left">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-                  Vendor adjustment pending
+                  {t("orderConfirmed.vendorAdjustmentPending")}
                 </p>
                 <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
-                  Your vendor proposed changes to this order. Review them below and accept or reject.
+                  {t("orderConfirmed.vendorAdjustmentDescription")}
                 </p>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-                      Proposed date
+                      {t("orderConfirmed.proposedDate")}
                     </p>
                     <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
-                      {pendingVendorAdjustment.proposedEventDate || orderPreview.date || "No change"}
+                      {pendingVendorAdjustment.proposedEventDate || orderPreview.date || t("orderConfirmed.noChange")}
                     </p>
                   </div>
                   <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-                      Proposed time
+                      {t("orderConfirmed.proposedTime")}
                     </p>
                     <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
-                      {pendingVendorAdjustment.proposedDeliveryWindowStart || orderPreview.time || "No change"}
+                      {pendingVendorAdjustment.proposedDeliveryWindowStart || orderPreview.time || t("orderConfirmed.noChange")}
                     </p>
                   </div>
                   <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-                      Proposed guests
+                      {t("orderConfirmed.proposedGuests")}
                     </p>
                     <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
                       {pendingVendorAdjustment.proposedGuestCount || orderPreview.personCount}
@@ -106,12 +108,12 @@ export default function OrderConfirmedPage() {
                   </div>
                   <div className="rounded-[14px] border border-[#efe4da] bg-white p-3">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-                      Proposed total
+                      {t("orderConfirmed.proposedTotal")}
                     </p>
                     <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
                       {pendingVendorAdjustment.newTotal != null
                         ? `NOK ${pendingVendorAdjustment.newTotal}`
-                        : "Will be recalculated"}
+                        : t("orderConfirmed.willBeRecalculated")}
                     </p>
                   </div>
                 </div>
@@ -119,7 +121,7 @@ export default function OrderConfirmedPage() {
                 {pendingVendorAdjustment.vendorNote ? (
                   <div className="mt-3 rounded-[14px] border border-[#efe4da] bg-white p-3">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-                      Vendor note
+                      {t("orderConfirmed.vendorNote")}
                     </p>
                     <p className="mt-2 text-[14px] font-semibold leading-6 text-[#201b17]">
                       {pendingVendorAdjustment.vendorNote}
@@ -138,7 +140,7 @@ export default function OrderConfirmedPage() {
                         : "cursor-pointer bg-[#cf6e38] hover:bg-[#bb602d]"
                     }`}
                   >
-                    {isResolvingVendorAdjustment ? "Updating..." : "Accept vendor changes"}
+                    {isResolvingVendorAdjustment ? t("orderConfirmed.updating") : t("orderConfirmed.acceptVendorChanges")}
                   </button>
                   <button
                     type="button"
@@ -150,7 +152,7 @@ export default function OrderConfirmedPage() {
                         : "cursor-pointer border-[#d9cec3] bg-white text-[#2b2622] hover:border-[#cf6e38] hover:text-[#cf6e38]"
                     }`}
                   >
-                    Reject vendor changes
+                    {t("orderConfirmed.rejectVendorChanges")}
                   </button>
                 </div>
               </div>

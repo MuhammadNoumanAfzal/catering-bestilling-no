@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 export default function CheckoutAddressControls({
   title,
   selectedAddressId,
@@ -6,6 +8,7 @@ export default function CheckoutAddressControls({
   isEditing,
   onToggleEditing,
 }) {
+  const { t } = useTranslation();
   const hasSavedAddresses = Array.isArray(savedAddresses) && savedAddresses.length > 0;
 
   return (
@@ -19,7 +22,7 @@ export default function CheckoutAddressControls({
           >
             {savedAddresses.map((address) => (
               <option key={address.id} value={address.id}>
-                {address.label || "Saved address"}
+                {address.label || t("checkout.savedAddress")}
               </option>
             ))}
           </select>
@@ -30,13 +33,13 @@ export default function CheckoutAddressControls({
           onClick={onToggleEditing}
           className="rounded-full border border-[#efcdb7] bg-[#fff5ee] px-3.5 py-2 text-sm font-semibold text-[#c86434] transition hover:bg-[#fff0e6]"
         >
-          {isEditing ? "Hide editor" : title}
+          {isEditing ? t("checkout.hideEditor") : title}
         </button>
       </div>
       <p className="text-[12px] text-[#8b8177]">
         {hasSavedAddresses
-          ? "Auto-filled from saved addresses, but you can still customize it here."
-          : "No saved address found yet. Please add your address below."}
+          ? t("checkout.savedAddressHint")
+          : t("checkout.noSavedAddressHint")}
       </p>
     </div>
   );
