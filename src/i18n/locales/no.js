@@ -398,6 +398,95 @@ const no = {
     add: "Legg til",
     addMainDishFirst: "Legg til hovedrett f\u00f8rst",
   },
+  alerts: {
+    okay: "OK",
+    continue: "Fortsett",
+    tryAgain: "Pr\u00f8v igjen",
+    somethingWentWrong: "Noe gikk galt",
+    requestSubmittedTitle: "Foresp\u00f8rsel sendt",
+    requestSubmittedText:
+      "Foresp\u00f8rselen din ble sendt. Teamet v\u00e5rt vil gjennomg\u00e5 den og kontakte deg snart.",
+    removeItemTitle: "Fjerne vare?",
+    removeNamedItemText: 'Fjerne "{{itemName}}" fra handlekurven?',
+    removeGenericItemText: "Fjerne denne varen fra handlekurven?",
+    removeConfirm: "Ja, fjern den",
+    keepIt: "Behold den",
+    placeOrderTitle: "Legg inn bestilling n\u00e5?",
+    placeOrderText:
+      "Vi sender cateringbestillingen din og t\u00f8mmer den n\u00e5v\u00e6rende handlekurven.",
+    placeOrderConfirm: "Legg inn bestilling",
+    notYet: "Ikke enn\u00e5",
+    logoutTitle: "Logge ut n\u00e5?",
+    logoutText: "Du blir logget ut av den n\u00e5v\u00e6rende \u00f8kten.",
+    logoutConfirm: "Logg ut",
+    staySignedIn: "Forbli innlogget",
+    orderPlacedTitle: "Bestilling lagt inn",
+    orderPlacedText: "Cateringbestillingen din ble sendt.",
+    signInRequiredTitle: "Innlogging kreves",
+    signInRequiredText:
+      "Logg inn eller opprett en konto f\u00f8r du legger inn en bestilling.",
+    signIn: "Logg inn",
+    createAccount: "Opprett konto",
+    notNow: "Ikke n\u00e5",
+    noVendorsTitle: "Ingen leverand\u00f8rer funnet",
+    noVendorsText:
+      "Beklager! Ingen leverand\u00f8rer er tilgjengelige for det oppgitte postnummeret.",
+    noVendorsTextWithLocation:
+      "Beklager! Ingen leverand\u00f8rer er tilgjengelige for {{locationLabel}}.",
+    noProductsTitle: "Ingen produkter funnet",
+    noProductsText:
+      "Det finnes for tiden ingen populære produkter tilgjengelig for dette stedet.",
+    thisMenu: "Denne menyen",
+    availableOn: "Tilgjengelig p\u00e5 {{availableDaysLabel}}",
+    chooseAnotherDate: "Velg en annen dato",
+    menuUnavailableTitle: "Meny utilgjengelig",
+    vendorClosedTitle: "Leverand\u00f8ren er stengt p\u00e5 valgt dato",
+    thisVendor: "Denne leverand\u00f8ren",
+    selectedDateUnavailable: "Valgt dato er utilgjengelig",
+    closedReason: "Stengt p\u00e5 grunn av: {{closureReason}}",
+    vendorNotAcceptingRange:
+      "Denne leverand\u00f8ren tar ikke imot bestillinger for {{rangeLabel}}.",
+    vendorNotAcceptingSelectedDate:
+      "Denne leverand\u00f8ren tar ikke imot bestillinger p\u00e5 valgt dato.",
+    deactivateTitle: "Deaktivere konto?",
+    deactivateText:
+      "Du blir logget ut og kan aktivere kontoen igjen senere ved \u00e5 logge inn.",
+    deactivateConfirm: "Deaktiver konto",
+    keepAccountActive: "Behold kontoen aktiv",
+    deleteTitle: "Slette konto permanent?",
+    deleteIntro:
+      "Denne handlingen anonymiserer kundekontoen din permanent og fjerner lagrede kontodata.",
+    deleteWarning: "Dette kan ikke angres.",
+    deleteConfirm: "Slett permanent",
+    cancel: "Avbryt",
+    rejectAdjustmentTitle: "Avvise leverand\u00f8rendring?",
+    rejectAdjustmentText:
+      "Fortell leverand\u00f8ren hvorfor du ikke kan godta disse endringene.",
+    rejectionPlaceholder: "Skriv avvisningsgrunn",
+    rejectionReasonLabel: "Avvisningsgrunn",
+    rejectAdjustmentConfirm: "Avvis endring",
+    rejectionReasonRequired: "En avvisningsgrunn er p\u00e5krevd.",
+  },
+  browse: {
+    loadingTitle: "Laster menyen, vennligst vent...",
+    loadingDescription:
+      "Vi laster de best passende menyalternativene for valgt kategori og filtre.",
+    loadErrorTitle: "Kunne ikke laste bla-siden",
+    updatingResults: "Oppdaterer menyresultater...",
+    menuTitle: "Meny",
+    previous: "Forrige",
+    next: "Neste",
+    itemsCount: "{{count}} varer",
+    seeAll: "Se alle",
+    noMenuFound: "Ingen meny funnet",
+    noMenuForCategory:
+      "Det finnes ingen tilgjengelige menyvarer for {{categoryLabel}} akkurat n\u00e5. Pr\u00f8v en annen kategori for \u00e5 se flere alternativer.",
+    noMenuGeneric:
+      "Det finnes ingen tilgjengelige menyvarer akkurat n\u00e5. Pr\u00f8v en annen kategori for \u00e5 se flere alternativer.",
+    clearFilter: "Fjern filter",
+    apply: "Bruk",
+    applied: "Brukt",
+  },
 };
 
 export default no;

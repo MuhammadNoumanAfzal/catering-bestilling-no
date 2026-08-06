@@ -1,10 +1,11 @@
 import Swal from "sweetalert2";
+import i18n from "../i18n";
 
 const BRAND_ORANGE = "#cf6e38";
 const POPUP_BACKGROUND = "#fffaf6";
 const TEXT_COLOR = "#201b17";
 
-function withBaseOptions(options) {
+export function withBaseOptions(options) {
   return {
     background: POPUP_BACKGROUND,
     color: TEXT_COLOR,
@@ -32,20 +33,23 @@ export function showContactRequestSubmittedAlert() {
   return Swal.fire(
     withBaseOptions({
       icon: "success",
-      title: "Request submitted",
-      text: "Your request has been submitted successfully. Our team will review it and contact you soon.",
-      confirmButtonText: "Okay",
+      title: i18n.t("alerts.requestSubmittedTitle"),
+      text: i18n.t("alerts.requestSubmittedText"),
+      confirmButtonText: i18n.t("alerts.okay"),
     }),
   );
 }
 
-export function showAuthErrorAlert(message, title = "Something went wrong") {
+export function showAuthErrorAlert(
+  message,
+  title = i18n.t("alerts.somethingWentWrong"),
+) {
   return Swal.fire(
     withBaseOptions({
       icon: "error",
       title,
       text: message,
-      confirmButtonText: "Try again",
+      confirmButtonText: i18n.t("alerts.tryAgain"),
     }),
   );
 }
@@ -54,13 +58,13 @@ export function confirmRemoveItem(itemName) {
   return Swal.fire(
     withBaseOptions({
       icon: "warning",
-      title: "Remove item?",
+      title: i18n.t("alerts.removeItemTitle"),
       text: itemName
-        ? `Remove "${itemName}" from your cart?`
-        : "Remove this item from your cart?",
+        ? i18n.t("alerts.removeNamedItemText", { itemName })
+        : i18n.t("alerts.removeGenericItemText"),
       showCancelButton: true,
-      confirmButtonText: "Yes, remove it",
-      cancelButtonText: "Keep it",
+      confirmButtonText: i18n.t("alerts.removeConfirm"),
+      cancelButtonText: i18n.t("alerts.keepIt"),
       cancelButtonColor: "#d7cec6",
     }),
   );
@@ -70,11 +74,11 @@ export function confirmPlaceOrder() {
   return Swal.fire(
     withBaseOptions({
       icon: "question",
-      title: "Place order now?",
-      text: "We will submit your catering order and clear your current cart.",
+      title: i18n.t("alerts.placeOrderTitle"),
+      text: i18n.t("alerts.placeOrderText"),
       showCancelButton: true,
-      confirmButtonText: "Place order",
-      cancelButtonText: "Not yet",
+      confirmButtonText: i18n.t("alerts.placeOrderConfirm"),
+      cancelButtonText: i18n.t("alerts.notYet"),
       cancelButtonColor: "#d7cec6",
     }),
   );
@@ -84,11 +88,11 @@ export function confirmLogout() {
   return Swal.fire(
     withBaseOptions({
       icon: "question",
-      title: "Log out now?",
-      text: "You will be signed out of your current session.",
+      title: i18n.t("alerts.logoutTitle"),
+      text: i18n.t("alerts.logoutText"),
       showCancelButton: true,
-      confirmButtonText: "Log out",
-      cancelButtonText: "Stay signed in",
+      confirmButtonText: i18n.t("alerts.logoutConfirm"),
+      cancelButtonText: i18n.t("alerts.staySignedIn"),
       cancelButtonColor: "#d7cec6",
     }),
   );
@@ -98,16 +102,16 @@ export function showOrderPlacedSuccess() {
   return Swal.fire(
     withBaseOptions({
       icon: "success",
-      title: "Order placed",
-      text: "Your catering order was submitted successfully.",
-      confirmButtonText: "Continue",
+      title: i18n.t("alerts.orderPlacedTitle"),
+      text: i18n.t("alerts.orderPlacedText"),
+      confirmButtonText: i18n.t("alerts.continue"),
     }),
   );
 }
 
 export function promptSignInRequired({
-  title = "Sign in required",
-  text = "Please sign in or create an account before placing an order.",
+  title = i18n.t("alerts.signInRequiredTitle"),
+  text = i18n.t("alerts.signInRequiredText"),
 } = {}) {
   return Swal.fire(
     withBaseOptions({
@@ -116,9 +120,9 @@ export function promptSignInRequired({
       text,
       showCancelButton: true,
       showDenyButton: true,
-      confirmButtonText: "Sign in",
-      denyButtonText: "Create account",
-      cancelButtonText: "Not now",
+      confirmButtonText: i18n.t("alerts.signIn"),
+      denyButtonText: i18n.t("alerts.createAccount"),
+      cancelButtonText: i18n.t("alerts.notNow"),
       cancelButtonColor: "#d7cec6",
       denyButtonColor: "#f0b79e",
     }),
@@ -129,9 +133,11 @@ export function showNoVendorsAlert(locationLabel) {
   return Swal.fire(
     withBaseOptions({
       icon: "info",
-      title: "No Vendors Found",
-      text: "Sorry! No vendors are available for the entered postal code.",
-      confirmButtonText: "Okay",
+      title: i18n.t("alerts.noVendorsTitle"),
+      text: locationLabel
+        ? i18n.t("alerts.noVendorsTextWithLocation", { locationLabel })
+        : i18n.t("alerts.noVendorsText"),
+      confirmButtonText: i18n.t("alerts.okay"),
     }),
   );
 }
@@ -140,9 +146,9 @@ export function showNoProductsAlert() {
   return Swal.fire(
     withBaseOptions({
       icon: "info",
-      title: "No Products Found",
-      text: "There are currently no popular products available for this location.",
-      confirmButtonText: "Okay",
+      title: i18n.t("alerts.noProductsTitle"),
+      text: i18n.t("alerts.noProductsText"),
+      confirmButtonText: i18n.t("alerts.okay"),
     }),
   );
 }
@@ -152,16 +158,16 @@ export function showMenuUnavailableAlert({
   message,
   availableDaysLabel = "",
 }) {
-  const safeTitle = menuTitle || "This menu";
+  const safeTitle = menuTitle || i18n.t("alerts.thisMenu");
   const subtitle = availableDaysLabel
-    ? `Available on ${availableDaysLabel}`
-    : "Please choose another date";
+    ? i18n.t("alerts.availableOn", { availableDaysLabel })
+    : i18n.t("alerts.chooseAnotherDate");
 
   return Swal.fire(
     withBaseOptions({
       icon: "warning",
-      title: "Menu unavailable",
-      confirmButtonText: "Choose another date",
+      title: i18n.t("alerts.menuUnavailableTitle"),
+      confirmButtonText: i18n.t("alerts.chooseAnotherDate"),
       html: `
         <div style="text-align:left;padding-top:6px">
           <div style="margin-bottom:12px;border:1px solid #f1ddcf;background:#fff4ec;border-radius:16px;padding:14px 16px">
@@ -188,11 +194,14 @@ function formatClosureDate(dateValue) {
     return dateValue || "";
   }
 
-  return parsedDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  return parsedDate.toLocaleDateString(
+    i18n.language === "no" ? "nb-NO" : "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    },
+  );
 }
 
 export function showVendorClosureAlert({
@@ -205,8 +214,7 @@ export function showVendorClosureAlert({
   const dateLabel = formatClosureDate(selectedDate);
   const startLabel = formatClosureDate(closureStartDate);
   const endLabel = formatClosureDate(closureEndDate);
-  const isSingleDayClosure =
-    Boolean(startLabel) && startLabel === endLabel;
+  const isSingleDayClosure = Boolean(startLabel) && startLabel === endLabel;
   const rangeLabel = isSingleDayClosure
     ? startLabel
     : [startLabel, endLabel].filter(Boolean).join(" - ");
@@ -214,28 +222,28 @@ export function showVendorClosureAlert({
   return Swal.fire(
     withBaseOptions({
       icon: "warning",
-      title: "Vendor closed on selected date",
-      confirmButtonText: "Choose another date",
+      title: i18n.t("alerts.vendorClosedTitle"),
+      confirmButtonText: i18n.t("alerts.chooseAnotherDate"),
       html: `
         <div style="text-align:left;padding-top:6px">
           <div style="margin-bottom:12px;border:1px solid #f1ddcf;background:#fff4ec;border-radius:16px;padding:14px 16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cf6e38;margin-bottom:6px">
-              ${vendorName || "This vendor"}
+              ${vendorName || i18n.t("alerts.thisVendor")}
             </div>
             <div style="font-size:20px;font-weight:800;color:#201b17;line-height:1.25">
-              ${dateLabel || "Selected date unavailable"}
+              ${dateLabel || i18n.t("alerts.selectedDateUnavailable")}
             </div>
           </div>
           <div style="font-size:15px;line-height:1.6;color:#5b4d42">
             ${
               closureReason
-                ? `Closed reason: ${closureReason}<br /><br />`
+                ? `${i18n.t("alerts.closedReason", { closureReason })}<br /><br />`
                 : ""
             }
             ${
               rangeLabel
-                ? `This vendor is not accepting orders for ${rangeLabel}.`
-                : "This vendor is not accepting orders on the selected date."
+                ? i18n.t("alerts.vendorNotAcceptingRange", { rangeLabel })
+                : i18n.t("alerts.vendorNotAcceptingSelectedDate")
             }
           </div>
         </div>

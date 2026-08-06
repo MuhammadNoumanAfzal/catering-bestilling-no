@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   dietaryOptions,
   offerOptions,
@@ -21,6 +22,7 @@ export default function BrowseFilterBar({
   onApply,
   resultsAnchorId,
 }) {
+  const { t } = useTranslation();
   const [activeFilters, setActiveFilters] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [showAppliedState, setShowAppliedState] = useState(false);
@@ -285,7 +287,7 @@ export default function BrowseFilterBar({
               showAppliedState ? "bg-[#2f8f57] hover:bg-[#2a7f4d]" : ""
             }`}
           >
-            {showAppliedState ? "Applied" : "Apply"}
+            {showAppliedState ? t("browse.applied") : t("browse.apply")}
           </button>
         </div>
 

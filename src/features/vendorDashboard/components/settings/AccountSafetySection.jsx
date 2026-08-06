@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuth } from "../../../auth";
 import {
   showAuthErrorAlert,
   showSuccessToast,
+  withBaseOptions,
 } from "../../../../utils/alerts";
 import SettingsField from "./SettingsField";
 import SettingsSection from "./SettingsSection";
@@ -64,6 +66,7 @@ function ActionCard({
 }
 
 export default function AccountSafetySection({ email = "" }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
   const [deactivatePassword, setDeactivatePassword] = useState("");
@@ -92,19 +95,17 @@ export default function AccountSafetySection({ email = "" }) {
       return;
     }
 
-    const confirmation = await Swal.fire({
-      title: "Deactivate account?",
-      text: "You will be signed out and can reactivate later by signing in again.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Deactivate account",
-      cancelButtonText: "Keep account active",
-      confirmButtonColor: "#cf6e38",
-      cancelButtonColor: "#d7cec6",
-      background: "#fffaf6",
-      color: "#201b17",
-      reverseButtons: true,
-    });
+    const confirmation = await Swal.fire(
+      withBaseOptions({
+        title: t("alerts.deactivateTitle"),
+        text: t("alerts.deactivateText"),
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: t("alerts.deactivateConfirm"),
+        cancelButtonText: t("alerts.keepAccountActive"),
+        cancelButtonColor: "#d7cec6",
+      }),
+    );
 
     if (!confirmation.isConfirmed) {
       return;
@@ -154,24 +155,23 @@ export default function AccountSafetySection({ email = "" }) {
       return;
     }
 
-    const confirmation = await Swal.fire({
-      title: "Delete account permanently?",
-      html: `
-        <div style="text-align:left;line-height:1.6;color:#5c4c43">
-          <p style="margin:0 0 10px 0">This action permanently anonymizes your customer account and removes saved account data.</p>
-          <p style="margin:0;font-weight:700;color:#b64d43">This cannot be undone.</p>
-        </div>
-      `,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Delete permanently",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#c94d43",
-      cancelButtonColor: "#d7cec6",
-      background: "#fffaf6",
-      color: "#201b17",
-      reverseButtons: true,
-    });
+    const confirmation = await Swal.fire(
+      withBaseOptions({
+        title: t("alerts.deleteTitle"),
+        html: `
+          <div style="text-align:left;line-height:1.6;color:#5c4c43">
+            <p style="margin:0 0 10px 0">${t("alerts.deleteIntro")}</p>
+            <p style="margin:0;font-weight:700;color:#b64d43">${t("alerts.deleteWarning")}</p>
+          </div>
+        `,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: t("alerts.deleteConfirm"),
+        cancelButtonText: t("alerts.cancel"),
+        confirmButtonColor: "#c94d43",
+        cancelButtonColor: "#d7cec6",
+      }),
+    );
 
     if (!confirmation.isConfirmed) {
       return;

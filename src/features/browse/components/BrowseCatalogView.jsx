@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import BrowseTabs from "./BrowseTabs";
@@ -27,6 +28,8 @@ import {
 const ITEMS_PER_PAGE = 6;
 
 function BrowsePageLoader() {
+  const { t } = useTranslation();
+
   return (
     <section className="w-full px-6 py-12 md:px-20">
       <div className="mx-auto flex min-h-[48vh] w-full max-w-7xl items-center justify-center">
@@ -41,11 +44,10 @@ function BrowsePageLoader() {
           </div>
         </div>
           <h2 className="mt-8 text-2xl font-semibold text-[#201b17]">
-            Loading the menu, please wait...
+            {t("browse.loadingTitle")}
           </h2>
           <p className="mt-3 max-w-md text-sm leading-6 text-[#73665c]">
-            We&apos;re loading the best matching menu options for your selected
-            category and filters.
+            {t("browse.loadingDescription")}
           </p>
           <div className="mt-8 flex items-center gap-3">
             <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#cf6e38] [animation-delay:-0.3s]" />
@@ -68,6 +70,7 @@ export default function BrowseCatalogView({
   moreOptions,
   totalItems,
 }) {
+  const { t } = useTranslation();
   const {
     attendeeCount,
     deliveryDate,
@@ -210,6 +213,7 @@ export default function BrowseCatalogView({
       <section className="w-full px-6 py-12 md:px-20">
         <div className="mx-auto w-full max-w-7xl rounded-[28px] border border-red-200 bg-red-50 px-6 py-8 text-center">
           <h3 className="type-h3 text-red-700">Unable to load browse page</h3>
+          <h3 className="type-h3 text-red-700">{t("browse.loadErrorTitle")}</h3>
           <p className="mt-3 text-sm text-red-600">{error}</p>
         </div>
       </section>
@@ -233,14 +237,14 @@ export default function BrowseCatalogView({
         {isRefreshing ? (
           <div className="mt-4 flex items-center gap-3 rounded-full border border-[#eadfd7] bg-[#fffaf6] px-4 py-2 text-sm text-[#7a6d61]">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#cf6e38] border-t-transparent" />
-            Updating menu results...
+            {t("browse.updatingResults")}
           </div>
         ) : null}
       </div>
 
       <BrowseMenuSection
         sectionId="browse-results"
-        title="Menu"
+        title={t("browse.menuTitle")}
         items={paginatedItems}
         totalItems={filteredMenuItems.length}
         activeCategoryLabel={activeCategoryLabel}
@@ -258,7 +262,7 @@ export default function BrowseCatalogView({
                 : "cursor-pointer border-[#d7cec3] text-[#2b2b2b] hover:border-[#c85f33] hover:text-[#c85f33]"
             }`}
           >
-            Previous
+            {t("browse.previous")}
           </button>
 
           {Array.from({ length: totalPages }, (_, index) => index + 1).map(
@@ -290,7 +294,7 @@ export default function BrowseCatalogView({
                 : "cursor-pointer border-[#d7cec3] text-[#2b2b2b] hover:border-[#c85f33] hover:text-[#c85f33]"
             }`}
           >
-            Next
+            {t("browse.next")}
           </button>
         </div>
       ) : null}
