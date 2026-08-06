@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { changePassword } from "../../../auth/api";
@@ -43,6 +44,7 @@ function hasPasswordValues(formState) {
 }
 
 export function useVendorSettingsPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const [savedFormState, setSavedFormState] = useState(() => ({
     ...vendorSettingsInitialState,
@@ -104,7 +106,7 @@ export function useVendorSettingsPage() {
           ...getPasswordFields(),
         });
         setLoadWarning(
-          "Live settings could not be loaded. Showing your last saved local values.",
+          t("vendorPanel.settingsPage.loadWarning"),
         );
       } finally {
         if (isMounted) {
@@ -178,15 +180,15 @@ export function useVendorSettingsPage() {
           !newPassword ||
           !confirmNewPassword
         ) {
-          throw new Error("Please complete all password fields.");
+          throw new Error(t("vendorPanel.settingsPage.incompletePasswordFields"));
         }
 
         if (oldPassword !== confirmOldPassword) {
-          throw new Error("Old password confirmation does not match.");
+          throw new Error(t("vendorPanel.settingsPage.oldPasswordMismatch"));
         }
 
         if (newPassword !== confirmNewPassword) {
-          throw new Error("New password confirmation does not match.");
+          throw new Error(t("vendorPanel.settingsPage.newPasswordMismatch"));
         }
 
         const passwordResult = await changePassword({
@@ -200,7 +202,7 @@ export function useVendorSettingsPage() {
           ...getPasswordFields(),
         }));
         successMessages.push(
-          passwordResult.message || "Password changed successfully.",
+          passwordResult.message || t("vendorPanel.settingsPage.passwordChangedSuccess"),
         );
       }
 
@@ -211,8 +213,8 @@ export function useVendorSettingsPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to update your settings right now.",
-        "Settings update failed",
+          : t("vendorPanel.settingsPage.updateFailedMessage"),
+        t("vendorPanel.settingsPage.updateFailedTitle"),
       );
     } finally {
       setIsSaving(false);

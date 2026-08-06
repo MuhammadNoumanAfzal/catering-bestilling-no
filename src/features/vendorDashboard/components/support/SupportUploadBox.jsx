@@ -1,10 +1,12 @@
 import { FiUploadCloud } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 export default function SupportUploadBox({ disabled = false, fileName, onChange }) {
+  const { t } = useTranslation();
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-semibold text-[#2d2d2d]">
-        Attachments (Optional)
+        {t("vendorPanel.supportPage.attachments")}
       </span>
 
       <div
@@ -38,12 +40,12 @@ export default function SupportUploadBox({ disabled = false, fileName, onChange 
           </span>
 
           <span className="mt-3 text-sm font-semibold text-[#1f1f1f]">
-            {disabled ? "Attachment unavailable" : "Click or drag to upload"}
+            {disabled ? t("vendorPanel.supportPage.attachmentUnavailable") : t("vendorPanel.supportPage.clickOrDrag")}
           </span>
           <span className="mt-1 text-xs text-[#8b8177]">
             {disabled
-              ? "You can still submit your ticket without an attachment."
-              : "PNG, JPG, JPEG or WEBP image max 2MB"}
+              ? t("vendorPanel.supportPage.attachmentDisabledHint")
+              : t("vendorPanel.supportPage.attachmentHint")}
           </span>
           {fileName && !disabled ? (
             <span className="mt-3 rounded-full bg-[#f8f2ec] px-3 py-1 text-xs font-semibold text-[#8a5d3b]">

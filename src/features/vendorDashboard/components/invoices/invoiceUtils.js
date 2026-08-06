@@ -1,16 +1,16 @@
 export const STATUS_OPTIONS = [
-  { label: "Status: All", value: "all" },
-  { label: "Paid", value: "paid" },
-  { label: "Pending", value: "pending" },
-  { label: "Overdue", value: "overdue" },
+  { labelKey: "vendorPanel.invoices.allStatus", value: "all" },
+  { labelKey: "vendorPanel.invoices.paid", value: "paid" },
+  { labelKey: "vendorPanel.invoices.pending", value: "pending" },
+  { labelKey: "vendorPanel.invoices.overdue", value: "overdue" },
 ];
 
 export const DATE_OPTIONS = [
-  { label: "Last 7 days", value: "7" },
-  { label: "Last 30 days", value: "30" },
-  { label: "This year", value: "year" },
-  { label: "All time", value: "all" },
-  { label: "Custom Date", value: "custom-date" },
+  { labelKey: "vendorPanel.invoices.last7Days", value: "7" },
+  { labelKey: "vendorPanel.invoices.last30Days", value: "30" },
+  { labelKey: "vendorPanel.invoices.thisYear", value: "year" },
+  { labelKey: "vendorPanel.invoices.allTime", value: "all" },
+  { labelKey: "vendorPanel.invoices.customDate", value: "custom-date" },
 ];
 
 export const PAGE_SIZE = 8;
@@ -24,18 +24,21 @@ export function formatFilterDate(dateValue) {
   return `${day}-${month}-${year}`;
 }
 
-export function getInvoiceDateFilterLabel(selectedRange, customDateRange) {
+export function getInvoiceDateFilterLabel(selectedRange, customDateRange, t) {
   if (
     selectedRange === "custom-date" &&
     customDateRange.from &&
     customDateRange.to
   ) {
-    return `From: ${formatFilterDate(customDateRange.from)} To: ${formatFilterDate(customDateRange.to)}`;
+    return t("vendorPanel.invoices.customDateRange", {
+      from: formatFilterDate(customDateRange.from),
+      to: formatFilterDate(customDateRange.to),
+    });
   }
 
   return (
-    DATE_OPTIONS.find((option) => option.value === selectedRange)?.label ??
-    "Last 7 days"
+    t(DATE_OPTIONS.find((option) => option.value === selectedRange)?.labelKey) ??
+    t("vendorPanel.invoices.fallbackDateFilter")
   );
 }
 

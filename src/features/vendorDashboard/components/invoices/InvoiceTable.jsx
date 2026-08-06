@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { getInvoiceStatusClasses } from "./invoiceUtils";
 
 export default function InvoiceTable({ invoices, onOpenDetails }) {
+  const { t } = useTranslation();
   const [openMenuKey, setOpenMenuKey] = useState(null);
   const menuRef = useRef(null);
 
@@ -26,14 +28,14 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
         <table className="w-full border-separate border-spacing-y-2">
           <thead>
             <tr className="type-subpara text-left uppercase tracking-[0.04em] text-[#7e776f]">
-              <th className="px-3 py-2">Invoice</th>
-              <th className="px-3 py-2">Vendor</th>
-              <th className="px-3 py-2">Event</th>
-              <th className="px-3 py-2">Issued</th>
-              <th className="px-3 py-2">Due On</th>
-              <th className="px-3 py-2">Amount</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2 text-center">Actions</th>
+              <th className="px-3 py-2">{t("vendorPanel.invoices.table.invoice")}</th>
+              <th className="px-3 py-2">{t("vendorPanel.invoices.table.vendor")}</th>
+              <th className="px-3 py-2">{t("vendorPanel.invoices.table.event")}</th>
+              <th className="px-3 py-2">{t("vendorPanel.invoices.table.issued")}</th>
+              <th className="px-3 py-2">{t("vendorPanel.invoices.table.dueOn")}</th>
+              <th className="px-3 py-2">{t("vendorPanel.invoices.table.amount")}</th>
+              <th className="px-3 py-2">{t("vendorPanel.invoices.table.status")}</th>
+              <th className="px-3 py-2 text-center">{t("vendorPanel.invoices.table.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +76,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                         )
                       }
                       className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#e5ddd5] bg-white text-[#5f5750] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
-                      aria-label={`Open actions for ${invoice.invoiceNumberShort}`}
+                      aria-label={t("vendorPanel.invoices.table.openActions", { invoice: invoice.invoiceNumberShort })}
                     >
                       <FiMoreHorizontal className="text-[16px]" />
                     </button>
@@ -89,7 +91,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                           }}
                           className="w-full cursor-pointer rounded-[10px] px-3 py-2 text-left text-sm font-medium text-[#2a2a2a] transition hover:bg-[#f8f4ef]"
                         >
-                          Details
+                          {t("vendorPanel.invoices.table.details")}
                         </button>
                       </div>
                     ) : null}
@@ -110,7 +112,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9a8f84]">
-                  Invoice
+                  {t("vendorPanel.invoices.table.invoice")}
                 </p>
                 <p className="mt-1 text-base font-semibold text-[#232323]">
                   {invoice.invoiceNumberShort}
@@ -122,7 +124,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                 type="button"
                 onClick={() => onOpenDetails(invoice)}
                 className="inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#e5ddd5] bg-white text-[#5f5750] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
-                aria-label={`Open actions for ${invoice.invoiceNumberShort}`}
+                aria-label={t("vendorPanel.invoices.table.openActions", { invoice: invoice.invoiceNumberShort })}
               >
                 <FiMoreHorizontal className="text-[16px]" />
               </button>
@@ -131,7 +133,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
-                  Event
+                  {t("vendorPanel.invoices.table.event")}
                 </p>
                 <p className="mt-1 text-sm font-medium text-[#242424]">
                   {invoice.event}
@@ -139,7 +141,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
               </div>
               <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
-                  Issued
+                  {t("vendorPanel.invoices.table.issued")}
                 </p>
                 <p className="mt-1 text-sm font-medium text-[#242424]">
                   {invoice.issuedOn}
@@ -147,7 +149,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
               </div>
               <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
-                  Due On
+                  {t("vendorPanel.invoices.table.dueOn")}
                 </p>
                 <p className="mt-1 text-sm font-medium text-[#242424]">
                   {invoice.dueOn}
@@ -155,7 +157,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
               </div>
               <div className="rounded-[16px] bg-white px-3 py-2.5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#998d82]">
-                  Amount
+                  {t("vendorPanel.invoices.table.amount")}
                 </p>
                 <p className="mt-1 text-sm font-semibold text-[#242424]">
                   {invoice.amount}
@@ -175,7 +177,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                 onClick={() => onOpenDetails(invoice)}
                 className="text-sm font-semibold text-[#cf6e38]"
               >
-                View details
+                {t("vendorPanel.invoices.table.viewDetails")}
               </button>
             </div>
           </article>
@@ -186,10 +188,10 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
         <div className="rounded-[24px] border border-dashed border-[#e2d6cb] bg-[linear-gradient(180deg,#fffdfa_0%,#fff7f2_100%)] px-4 py-12 text-center">
           <div className="mx-auto max-w-[280px]">
             <p className="text-[15px] font-semibold text-[#3e342d]">
-              No invoices matched your current filter.
+              {t("vendorPanel.invoices.table.emptyTitle")}
             </p>
             <p className="mt-2 text-sm leading-6 text-[#7b6f66]">
-              Try changing the status, date range, or search term to explore more invoice records.
+              {t("vendorPanel.invoices.table.emptyDescription")}
             </p>
           </div>
         </div>

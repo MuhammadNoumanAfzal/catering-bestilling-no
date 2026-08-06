@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { confirmRemoveItem, showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { createEmptyAddressEntry } from "../constants/addressBook";
 import { deleteAddress, fetchAddressBook, saveAddressBook } from "../api";
@@ -62,6 +63,7 @@ function isAddressEmpty(address) {
 }
 
 export function useVendorAddressPage() {
+  const { t } = useTranslation();
   const [deliveryAddresses, setDeliveryAddresses] = useState([]);
   const [invoiceAddresses, setInvoiceAddresses] = useState([]);
   const [activeDeliveryId, setActiveDeliveryId] = useState("");
@@ -102,8 +104,8 @@ export function useVendorAddressPage() {
         await showAuthErrorAlert(
           error instanceof Error
             ? error.message
-            : "Unable to load your addresses right now.",
-          "Address book unavailable",
+            : t("vendorPanel.addressPage.loadFailedMessage"),
+          t("vendorPanel.addressPage.loadFailedTitle"),
         );
       } finally {
         if (isMounted) {
@@ -176,8 +178,8 @@ export function useVendorAddressPage() {
 
     if (!sourceAddress) {
       await showAuthErrorAlert(
-        "Please create or select a delivery address first.",
-        "No delivery address selected",
+        t("vendorPanel.addressPage.copyMissingMessage"),
+        t("vendorPanel.addressPage.copyMissingTitle"),
       );
       return;
     }
@@ -222,7 +224,7 @@ export function useVendorAddressPage() {
     const normalizedNextAddresses = ensureAddressGroup(nextAddresses, "invoice");
     setInvoiceAddresses(normalizedNextAddresses);
     setActiveInvoiceId(nextActiveId);
-    await showSuccessToast("Delivery address copied to invoice addresses");
+    await showSuccessToast(t("vendorPanel.addressPage.copiedSuccess"));
   }
 
   function handleReset() {
@@ -241,7 +243,9 @@ export function useVendorAddressPage() {
       return;
     }
 
-    const result = await confirmRemoveItem(addressToDelete.label || "address");
+    const result = await confirmRemoveItem(
+      addressToDelete.label || t("vendorPanel.addressPage.removeFallbackName"),
+    );
 
     if (!result.isConfirmed) {
       return;
@@ -271,13 +275,13 @@ export function useVendorAddressPage() {
         setActiveInvoiceId(getDefaultActiveId(normalizedAddresses));
       }
 
-      await showSuccessToast("Address removed successfully");
+      await showSuccessToast(t("vendorPanel.addressPage.removedSuccess"));
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to delete this address right now.",
-        "Address delete failed",
+          : t("vendorPanel.addressPage.deleteFailedMessage"),
+        t("vendorPanel.addressPage.deleteFailedTitle"),
       );
     }
   }
@@ -298,13 +302,13 @@ export function useVendorAddressPage() {
       setActiveDeliveryId(getDefaultActiveId(nextSnapshot.delivery));
       setActiveInvoiceId(getDefaultActiveId(nextSnapshot.invoice));
       setSavedSnapshot(nextSnapshot);
-      await showSuccessToast("Addresses updated successfully");
+      await showSuccessToast(t("vendorPanel.addressPage.savedSuccess"));
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to update your addresses right now.",
-        "Address update failed",
+          : t("vendorPanel.addressPage.saveFailedMessage"),
+        t("vendorPanel.addressPage.saveFailedTitle"),
       );
     } finally {
       setIsSaving(false);

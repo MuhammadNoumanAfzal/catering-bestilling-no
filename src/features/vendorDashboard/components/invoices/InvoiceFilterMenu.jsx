@@ -1,4 +1,5 @@
 import { FiChevronDown } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 export default function InvoiceFilterMenu({
   defaultValue,
@@ -11,6 +12,7 @@ export default function InvoiceFilterMenu({
   menuRef,
   renderContent,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="relative w-full sm:w-auto" ref={menuRef}>
       <button
@@ -19,7 +21,9 @@ export default function InvoiceFilterMenu({
         className="inline-flex w-full cursor-pointer items-center justify-between gap-2 rounded-full border border-[#ddd5cd] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] transition hover:bg-[#faf7f3] sm:w-auto sm:justify-start"
       >
         <span>
-          {options.find((option) => option.value === selectedValue)?.label ?? label}
+          {options.find((option) => option.value === selectedValue)?.labelKey
+            ? t(options.find((option) => option.value === selectedValue)?.labelKey)
+            : label}
         </span>
         <FiChevronDown
           className={["text-[15px] transition", isOpen ? "rotate-180" : ""].join(" ")}
@@ -51,8 +55,8 @@ export default function InvoiceFilterMenu({
                         : "text-[#2f2f2f] hover:bg-[#faf7f3]",
                     ].join(" ")}
                   >
-                    <span>{option.label}</span>
-                    {isSelected ? <span className="text-xs font-semibold">Active</span> : null}
+                    <span>{option.labelKey ? t(option.labelKey) : option.label}</span>
+                    {isSelected ? <span className="text-xs font-semibold">{t("vendorPanel.invoices.active")}</span> : null}
                   </button>
                 );
               })}
