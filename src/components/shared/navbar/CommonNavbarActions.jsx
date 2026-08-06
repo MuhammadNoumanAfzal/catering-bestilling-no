@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { FiBell, FiMenu, FiShoppingCart, FiUser } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import NotificationPopover from "./NotificationPopover";
 
 export default function CommonNavbarActions({
@@ -22,6 +23,7 @@ export default function CommonNavbarActions({
   menuItems,
 }) {
   const location = useLocation();
+  const { t } = useTranslation();
 
   return (
     <div className="ml-auto" ref={actionMenuRef}>
@@ -35,7 +37,7 @@ export default function CommonNavbarActions({
                 ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
                 : "border-[#e6ddd5]"
             }`}
-            aria-label="Notifications"
+            aria-label={t("nav.notifications")}
             aria-expanded={isNotificationOpen}
           >
             <FiBell className="text-[18px]" />
@@ -64,7 +66,7 @@ export default function CommonNavbarActions({
           type="button"
           onClick={onCheckoutClick}
           className="relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33]"
-          aria-label="Go to checkout cart"
+          aria-label={t("nav.goToCheckoutCart")}
         >
           <FiShoppingCart className="text-[18px]" />
           {cartItemCount > 0 ? (
@@ -79,7 +81,7 @@ export default function CommonNavbarActions({
             type="button"
             onClick={onToggleActionMenu}
             className="flex cursor-pointer items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm transition hover:border-[#d9c7ba]"
-            aria-label="Open navigation menu"
+            aria-label={t("nav.openMenu")}
             aria-expanded={isActionMenuOpen}
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
@@ -124,7 +126,7 @@ export default function CommonNavbarActions({
                   className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                 >
                   <FiMenu className="text-[17px]" />
-                  <span>Contact us</span>
+                  <span>{t("nav.contactUs")}</span>
                 </Link>
 
                 {isLoggedIn ? (
@@ -134,7 +136,7 @@ export default function CommonNavbarActions({
                     className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                   >
                     <FiUser className="text-[17px]" />
-                    <span>Logout</span>
+                    <span>{t("nav.logout")}</span>
                   </button>
                 ) : (
                   <Link
@@ -143,7 +145,7 @@ export default function CommonNavbarActions({
                     onClick={onCloseActionMenu}
                     className="mt-2 flex cursor-pointer items-center justify-center rounded-full bg-[#c85f33] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#b6542c]"
                   >
-                    Sign in
+                    {t("nav.signIn")}
                   </Link>
                 )}
               </div>

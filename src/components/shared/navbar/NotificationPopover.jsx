@@ -1,28 +1,30 @@
+import { useTranslation } from "react-i18next";
+
 const TYPE_STYLES = {
   "order-update": {
     badge: "from-[#fff2e9] to-[#ffe2cf] text-[#c96532] border-[#f3c4a7]",
     dot: "bg-[#de6f3a]",
-    label: "Order update",
+    labelKey: "nav.notificationTypes.orderUpdate",
   },
   payment: {
     badge: "from-[#ecfff4] to-[#d9f7e7] text-[#1f8a52] border-[#b9e9cd]",
     dot: "bg-[#1f8a52]",
-    label: "Payment",
+    labelKey: "nav.notificationTypes.payment",
   },
   review: {
     badge: "from-[#fff8e8] to-[#ffeab8] text-[#b7791f] border-[#f3d38a]",
     dot: "bg-[#d38a17]",
-    label: "Review",
+    labelKey: "nav.notificationTypes.review",
   },
   delivery: {
     badge: "from-[#eef7ff] to-[#deefff] text-[#2d6fa3] border-[#bfdcff]",
     dot: "bg-[#2d6fa3]",
-    label: "Delivery",
+    labelKey: "nav.notificationTypes.delivery",
   },
   menu: {
     badge: "from-[#f6f1ff] to-[#ece1ff] text-[#7a56c2] border-[#dac7ff]",
     dot: "bg-[#7a56c2]",
-    label: "Menu",
+    labelKey: "nav.notificationTypes.menu",
   },
 };
 
@@ -35,6 +37,7 @@ export default function NotificationPopover({
   className = "",
   onNotificationClick,
 }) {
+  const { t } = useTranslation();
   const unreadCount = notifications.filter((item) => item.unread).length;
 
   return (
@@ -44,10 +47,10 @@ export default function NotificationPopover({
       <div className="flex items-center justify-between border-b border-[#f0e7df] px-5 py-4">
         <div>
           <p className="text-base font-semibold tracking-[-0.01em] text-[#1f1f1f]">
-            Notifications
+            {t("nav.notifications")}
           </p>
           <p className="mt-1 text-xs text-[#8d837a]">
-            {unreadCount} unread update{unreadCount === 1 ? "" : "s"}
+            {t("nav.notificationSummary", { count: unreadCount })}
           </p>
         </div>
       </div>
@@ -56,10 +59,10 @@ export default function NotificationPopover({
         {notifications.length === 0 ? (
           <div className="rounded-[20px] border border-dashed border-[#eadfd6] bg-white/80 px-4 py-10 text-center">
             <p className="text-sm font-medium text-[#3a332d]">
-              No notifications yet
+              {t("nav.notificationsEmptyTitle")}
             </p>
             <p className="mt-1 text-xs leading-5 text-[#8d837a]">
-              New order and status updates will appear here.
+              {t("nav.notificationsEmptyText")}
             </p>
           </div>
         ) : null}
@@ -95,7 +98,7 @@ export default function NotificationPopover({
                     <span
                       className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] bg-gradient-to-r ${style.badge}`}
                     >
-                      {style.label}
+                      {t(style.labelKey)}
                     </span>
                     <span className="text-[11px] font-medium text-[#9a9189]">
                       {notification.timeLabel}
