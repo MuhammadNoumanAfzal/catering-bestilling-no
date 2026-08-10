@@ -1225,6 +1225,10 @@ const en = {
     },
   },
   browse: {
+    tabs: {
+      foodType: "Browse by Food Type",
+      occasion: "Browse by Occasion",
+    },
     filters: {
       sort: "Sort by",
       rating: "Ratings",

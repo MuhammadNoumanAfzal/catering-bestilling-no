@@ -1283,6 +1283,10 @@ const no = {
     },
   },
   browse: {
+    tabs: {
+      foodType: "Bla etter mattype",
+      occasion: "Bla etter anledning",
+    },
     filters: {
       sort: "Sorter etter",
       rating: "Vurderinger",
