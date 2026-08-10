@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { loginUser } from "../../api";
@@ -30,6 +31,7 @@ function resolvePostSignInDestination(state) {
 }
 
 export default function SignInPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { setAuthSession } = useAuth();
@@ -60,13 +62,15 @@ export default function SignInPage() {
       });
 
       await showSuccessToast(
-        `Welcome back, ${result.user.firstName || result.user.email}`,
+        t("auth.signIn.success", {
+          name: result.user.firstName || result.user.email,
+        }),
       );
       navigate(resolvePostSignInDestination(location.state), { replace: true });
     } catch (error) {
       await showAuthErrorAlert(
-        error instanceof Error ? error.message : "Unable to sign in right now.",
-        "Sign in failed",
+        error instanceof Error ? error.message : t("auth.signIn.errorMessage"),
+        t("auth.signIn.errorTitle"),
       );
     } finally {
       setIsSubmitting(false);
@@ -75,14 +79,14 @@ export default function SignInPage() {
 
   return (
     <AuthCard
-      badge="Sign In"
-      title="Welcome back"
-      subtitle="Sign in to continue managing your catering account."
+      badge={t("auth.signIn.badge")}
+      title={t("auth.signIn.title")}
+      subtitle={t("auth.signIn.subtitle")}
       backTo="/"
       footer={
         <AuthPageFooter
-          prompt="Don&apos;t have an account?"
-          actionLabel="Create one"
+          prompt={t("auth.signIn.footerPrompt")}
+          actionLabel={t("auth.signIn.footerAction")}
           actionTo="/signup"
           actionState={location.state}
           secondaryHref={VENDOR_REGISTER_URL}
@@ -91,30 +95,30 @@ export default function SignInPage() {
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         <AuthInput
-          label="Email"
+          label={t("auth.common.email")}
           name="email"
           type="email"
-          placeholder="nouman@example.com"
+          placeholder={t("auth.common.emailPlaceholder")}
           value={formData.email}
           onChange={handleChange}
           required
         />
         <AuthInput
-          label="Password"
+          label={t("auth.common.password")}
           name="password"
           type="password"
-          placeholder="********"
+          placeholder={t("auth.common.passwordPlaceholder")}
           value={formData.password}
           onChange={handleChange}
           required
         />
         <div className="flex items-center justify-between">
-          <p className="text-[13px] text-[#8a7f76]">Use your registered account</p>
+          <p className="text-[13px] text-[#8a7f76]">{t("auth.signIn.helper")}</p>
           <Link
             to="/forgot-password"
             className="text-[14px] font-semibold text-[#c85f33]"
           >
-            Forgot password?
+            {t("auth.signIn.forgotPassword")}
           </Link>
         </div>
         <AuthButton
@@ -122,7 +126,7 @@ export default function SignInPage() {
           disabled={isSubmitting}
           className="inline-flex items-center justify-center gap-2"
         >
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          {isSubmitting ? t("auth.signIn.submitting") : t("auth.signIn.submit")}
           <FiArrowRight className="text-[16px]" />
         </AuthButton>
       </form>

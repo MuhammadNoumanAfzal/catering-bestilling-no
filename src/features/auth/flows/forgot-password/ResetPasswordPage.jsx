@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { resetPassword } from "../../api";
@@ -6,6 +7,7 @@ import { AuthButton, AuthCard, AuthInput } from "../../components";
 import { RESET_PASSWORD_INITIAL_FORM_STATE } from "../../constants/authForms";
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [formState, setFormState] = useState(RESET_PASSWORD_INITIAL_FORM_STATE);
@@ -34,7 +36,9 @@ export default function ResetPasswordPage() {
         password2: formState.password2,
       });
 
-      await showSuccessToast(result.message || "Password reset successfully");
+      await showSuccessToast(
+        result.message || t("auth.resetPassword.success"),
+      );
       navigate("/signin", {
         replace: true,
         state: {
@@ -45,8 +49,8 @@ export default function ResetPasswordPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to reset your password right now.",
-        "Reset failed",
+          : t("auth.resetPassword.errorMessage"),
+        t("auth.resetPassword.errorTitle"),
       );
     } finally {
       setIsSubmitting(false);
@@ -55,37 +59,39 @@ export default function ResetPasswordPage() {
 
   return (
     <AuthCard
-      title="New password"
-      subtitle="Choose a strong password for your account."
+      title={t("auth.resetPassword.title")}
+      subtitle={t("auth.resetPassword.subtitle")}
       backTo="/forgot-password/verify"
       backState={{ email }}
       footer={
         <Link to="/signin" className="type-para font-semibold text-[#c85f33]">
-          Back to sign in
+          {t("auth.common.backToSignIn")}
         </Link>
       }
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         <AuthInput
-          label="New password"
+          label={t("auth.resetPassword.newPassword")}
           name="password1"
           type="password"
-          placeholder="********"
+          placeholder={t("auth.common.passwordPlaceholder")}
           value={formState.password1}
           onChange={handleChange}
           required
         />
         <AuthInput
-          label="Confirm password"
+          label={t("auth.resetPassword.confirmPassword")}
           name="password2"
           type="password"
-          placeholder="********"
+          placeholder={t("auth.common.passwordPlaceholder")}
           value={formState.password2}
           onChange={handleChange}
           required
         />
         <AuthButton type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Resetting password..." : "Reset password"}
+          {isSubmitting
+            ? t("auth.resetPassword.submitting")
+            : t("auth.resetPassword.submit")}
         </AuthButton>
       </form>
     </AuthCard>

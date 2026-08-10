@@ -1,6 +1,8 @@
 import { Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function AuthLayout() {
+  const { t } = useTranslation();
   return (
     <main className="min-h-screen overflow-hidden bg-[linear-gradient(180deg,#fff8f2_0%,#f8f0e9_54%,#f4ece4_100%)] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="relative mx-auto max-w-7xl">
@@ -15,24 +17,23 @@ export default function AuthLayout() {
 
             <div className="relative z-10 max-w-md">
               <div className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#ffe8d6]">
-                Lunsjavtale Access
+                {t("auth.layout.badge")}
               </div>
               <h1 className="mt-7 font-serif text-[44px] leading-[0.98] text-white">
-                Simple access for orders, vendors, and team lunches.
+                {t("auth.layout.title")}
               </h1>
               <p className="mt-5 text-[16px] leading-7 text-white/76">
-                A cleaner place to sign in, create an account, and get back to
-                your catering flow.
+                {t("auth.layout.description")}
               </p>
               <div className="mt-8 grid gap-3">
                 <div className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] text-white/82 backdrop-blur-sm">
-                  Fast planning
+                  {t("auth.layout.featureOne")}
                 </div>
                 <div className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] text-white/82 backdrop-blur-sm">
-                  Warm brand feel
+                  {t("auth.layout.featureTwo")}
                 </div>
                 <div className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-3 text-[14px] text-white/82 backdrop-blur-sm">
-                  Cleaner account flow
+                  {t("auth.layout.featureThree")}
                 </div>
               </div>
             </div>
