@@ -11,12 +11,12 @@ export const ORDER_TABS = [
 ];
 
 export const ORDER_DATE_OPTIONS = [
-  { label: "All Time", value: "all-time" },
-  { label: "Last Month", value: "last-month" },
-  { label: "Last 3 Months", value: "last-3-months" },
-  { label: "Last 6 Months", value: "last-6-months" },
-  { label: "This Year", value: "this-year" },
-  { label: "Custom Date", value: "custom-date" },
+  { labelKey: "vendorPanel.notifications.date.allTime", value: "all-time" },
+  { labelKey: "vendorPanel.notifications.date.lastMonth", value: "last-month" },
+  { labelKey: "vendorPanel.notifications.date.last3Months", value: "last-3-months" },
+  { labelKey: "vendorPanel.notifications.date.last6Months", value: "last-6-months" },
+  { labelKey: "vendorPanel.notifications.date.thisYear", value: "this-year" },
+  { labelKey: "vendorPanel.notifications.date.customDate", value: "custom-date" },
 ];
 
 export const PAGE_SIZE = 8;
@@ -193,19 +193,28 @@ export function getDateFilterLabel(
   selectedRange,
   referenceDate,
   customDateRange = {},
+  t,
 ) {
   if (selectedRange === "custom-date") {
     if (customDateRange.from && customDateRange.to) {
-      return `From: ${formatInputDate(customDateRange.from)} To: ${formatInputDate(customDateRange.to)}`;
+      return t("vendorPanel.notifications.date.customRange", {
+        from: formatInputDate(customDateRange.from),
+        to: formatInputDate(customDateRange.to),
+      });
     }
 
     const fromDate = new Date(referenceDate);
     fromDate.setDate(referenceDate.getDate() - 28);
-    return `From: ${formatDateChip(fromDate)} To: ${formatDateChip(referenceDate)}`;
+    return t("vendorPanel.notifications.date.customRange", {
+      from: formatDateChip(fromDate),
+      to: formatDateChip(referenceDate),
+    });
   }
 
   return (
-    ORDER_DATE_OPTIONS.find((option) => option.value === selectedRange)?.label ??
-    "All Time"
+    t(
+      ORDER_DATE_OPTIONS.find((option) => option.value === selectedRange)
+        ?.labelKey ?? "vendorPanel.notifications.date.allTime",
+    )
   );
 }
