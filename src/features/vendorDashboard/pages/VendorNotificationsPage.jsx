@@ -10,6 +10,7 @@ import {
 import NotificationSection from "../components/notification/NotificationSection";
 import NotificationDateFilter from "../components/notification/NotificationDateFilter";
 import NotificationTabs from "../components/notification/NotificationTabs";
+import { localizeNotification } from "../components/notification/notificationContent";
 import { translateNotification } from "../components/notification/notificationI18n";
 import {
   groupNotificationsByDay,
@@ -88,7 +89,11 @@ export default function VendorNotificationsPage() {
 
         if (isMounted) {
           setNotifications(
-            Array.isArray(response?.notifications) ? response.notifications : [],
+            Array.isArray(response?.notifications)
+              ? response.notifications.map((notification) =>
+                  localizeNotification(notification, t, i18n),
+                )
+              : [],
           );
         }
       } catch (loadError) {
@@ -111,7 +116,7 @@ export default function VendorNotificationsPage() {
     return () => {
       isMounted = false;
     };
-  }, [isLoggedIn]);
+  }, [i18n, isLoggedIn, t]);
 
   const counts = useMemo(
     () => ({

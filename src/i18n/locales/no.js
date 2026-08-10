@@ -95,6 +95,26 @@ const no = {
     products: "{{category}}-produkter",
     popularProductsNear: "Popul\u00e6re produkter n\u00e6r {{location}}",
     popularProducts: "Popul\u00e6re produkter",
+    howItWorks: {
+      title: "Slik fungerer det",
+      steps: {
+        location: {
+          title: "Velg sted",
+          description:
+            "Skriv inn leveringsadressen eller postnummeret ditt for å se hvilke menyer som er tilgjengelige i området ditt for levering til kontor eller hjem.",
+        },
+        food: {
+          title: "Velg mat",
+          description:
+            "Utforsk menyutvalget vårt. Velg mellom fleksible bedriftslunsjer eller smakfulle cateringpakker til private arrangementer.",
+        },
+        delivery: {
+          title: "Få levert",
+          description:
+            "Len deg tilbake og slapp av. Teamet vårt leverer ferske, kokketilberedte måltider direkte til døren din, akkurat når du trenger dem.",
+        },
+      },
+    },
   },
   settings: {
     accountBadge: "Konto",
@@ -814,6 +834,23 @@ const no = {
       itemCount_other: "{{count}} varer",
       open: "Åpne",
       viewed: "Sett",
+      messages: {
+        defaultTitle: "Varsel",
+        orderPlacedTitle: "Bestilling lagt inn",
+        orderPlacedBody: "Bestillingen din (ID: {{orderId}}) har blitt lagt inn.",
+        orderStatusUpdateTitle: "Oppdatering av bestillingsstatus",
+        orderStatusUpdatedBody:
+          "Statusen for bestillingen din (ID: {{orderId}}) er oppdatert til {{status}}.",
+      },
+      statuses: {
+        ready: "Klar",
+        preparing: "Forberedes",
+        confirmed: "Bekreftet",
+        pending: "Venter",
+        completed: "Fullført",
+        cancelled: "Kansellert",
+        canceled: "Kansellert",
+      },
     },
     supportPage: {
       title: "Supportsenter",
