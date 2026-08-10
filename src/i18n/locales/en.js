@@ -91,6 +91,26 @@ const en = {
     products: "{{category}} Products",
     popularProductsNear: "Popular Products Near {{location}}",
     popularProducts: "Popular Products",
+    howItWorks: {
+      title: "How It Works",
+      steps: {
+        location: {
+          title: "Choose Location",
+          description:
+            "Enter your delivery address or postal code to see which menus are available in your area for office or home delivery.",
+        },
+        food: {
+          title: "Select Food",
+          description:
+            "Browse our varied menu options. Pick from flexible corporate lunch plans or delicious catering packages for your private events.",
+        },
+        delivery: {
+          title: "Get Delivered",
+          description:
+            "Sit back and relax. Our team delivers fresh, chef-prepared meals directly to your door, exactly when you need them.",
+        },
+      },
+    },
   },
   settings: {
     accountBadge: "Account",
@@ -908,6 +928,23 @@ const en = {
       itemCount_other: "{{count}} items",
       open: "Open",
       viewed: "Viewed",
+      messages: {
+        defaultTitle: "Notification",
+        orderPlacedTitle: "Order placed",
+        orderPlacedBody: "Your order (ID: {{orderId}}) has been placed successfully.",
+        orderStatusUpdateTitle: "Order status update",
+        orderStatusUpdatedBody:
+          "Your order (ID: {{orderId}}) status has been updated to {{status}}.",
+      },
+      statuses: {
+        ready: "Ready",
+        preparing: "Preparing",
+        confirmed: "Confirmed",
+        pending: "Pending",
+        completed: "Completed",
+        cancelled: "Cancelled",
+        canceled: "Canceled",
+      },
     },
     supportPage: {
       title: "Support Center",

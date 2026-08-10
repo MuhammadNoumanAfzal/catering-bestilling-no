@@ -1,26 +1,25 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
   const steps = [
     {
       id: "/home/1.webp",
-      title: "Choose Location",
-      description:
-        "Enter your delivery address or postal code to see which menus are available in your area for office or home delivery.",
+      titleKey: "home.howItWorks.steps.location.title",
+      descriptionKey: "home.howItWorks.steps.location.description",
       icon: "/home/Vector.webp",
     },
     {
       id: "/home/2.webp",
-      title: "Select Food",
-      description:
-        "Browse our varied menu options. Pick from flexible corporate lunch plans or delicious catering packages for your private events.",
+      titleKey: "home.howItWorks.steps.food.title",
+      descriptionKey: "home.howItWorks.steps.food.description",
       icon: "/home/Vector-1.webp",
     },
     {
       id: "/home/3.webp",
-      title: "Get Delivered",
-      description:
-        "Sit back and relax. Our team delivers fresh, chef-prepared meals directly to your door, exactly when you need them.",
+      titleKey: "home.howItWorks.steps.delivery.title",
+      descriptionKey: "home.howItWorks.steps.delivery.description",
       icon: "/home/Vector-2.webp",
     },
   ];
@@ -30,7 +29,7 @@ const HowItWorks = () => {
       <div className="max-w-7xl mx-auto">
         {/* Title */}
         <h2 className="type-h2  text-center mb-10 tracking-tight text-gray-900">
-          HOW IT WORKS
+          {t("home.howItWorks.title")}
         </h2>
 
         {/* Main Background Container */}
@@ -61,13 +60,17 @@ const HowItWorks = () => {
                 {/* White Content Card */}
                 <div className="bg-white rounded-2xl p-6 shadow-xl flex flex-col items-center text-center w-full z-10 min-h-[220px] transition-transform hover:scale-105 duration-300">
                   <div className="mb-3 text-gray-900">
-                    <img src={step.icon} alt={step.title} className="w-8 h-8" />
+                    <img
+                      src={step.icon}
+                      alt={t(step.titleKey)}
+                      className="w-8 h-8"
+                    />
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-gray-800 tracking-tight">
-                    {step.title}
+                    {t(step.titleKey)}
                   </h3>
                   <p className="type-para leading-relaxed text-gray-600">
-                    {step.description}
+                    {t(step.descriptionKey)}
                   </p>
                 </div>
               </div>
