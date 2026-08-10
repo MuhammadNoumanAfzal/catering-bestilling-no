@@ -1,8 +1,9 @@
 import {
+  FiBell,
   FiCreditCard,
   FiEdit3,
   FiGrid,
-  FiHelpCircle,
+  FiHeadphones,
   FiMapPin,
   FiPackage,
   FiSettings,
@@ -35,12 +36,12 @@ export const vendorNavigationItems = [
   {
     labelKey: "vendorPanel.nav.notifications",
     to: "/vendor-dashboard/notifications",
-    icon: FiHelpCircle,
+    icon: FiBell,
   },
   {
     labelKey: "vendorPanel.nav.support",
     to: "/vendor-dashboard/support",
-    icon: FiHelpCircle,
+    icon: FiHeadphones,
   },
   {
     labelKey: "vendorPanel.nav.address",

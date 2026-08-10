@@ -767,7 +767,7 @@ const en = {
       invoices: "Invoices",
       notifications: "Notifications",
       support: "Support",
-      address: "Address",
+      address: "Addresses",
       settings: "Settings",
     },
     settingsLinks: {

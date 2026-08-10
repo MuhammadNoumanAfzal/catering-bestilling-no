@@ -1,5 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { FiBell, FiMenu, FiShoppingCart, FiUser } from "react-icons/fi";
+import {
+  FiBell,
+  FiHelpCircle,
+  FiLogOut,
+  FiMenu,
+  FiShoppingCart,
+  FiUser,
+} from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import NotificationPopover from "./NotificationPopover";
 
@@ -125,7 +132,7 @@ export default function CommonNavbarActions({
                   onClick={onCloseActionMenu}
                   className="flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                 >
-                  <FiMenu className="text-[17px]" />
+                  <FiHelpCircle className="text-[17px]" />
                   <span>{t("nav.contactUs")}</span>
                 </Link>
 
@@ -135,7 +142,7 @@ export default function CommonNavbarActions({
                     onClick={onSignOut}
                     className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold text-[#2f2f2f] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
                   >
-                    <FiUser className="text-[17px]" />
+                    <FiLogOut className="text-[17px]" />
                     <span>{t("nav.logout")}</span>
                   </button>
                 ) : (
