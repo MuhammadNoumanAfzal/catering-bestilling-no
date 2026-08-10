@@ -1137,13 +1137,13 @@ const no = {
     fallbackGreetingName: "der",
     viewMore: "Se mer",
     nav: {
-      dashboard: "Dashboard",
+      dashboard: "Oversikt",
       orders: "Bestillinger",
       restaurants: "Restauranter",
       invoices: "Fakturaer",
       notifications: "Varsler",
-      support: "Support",
-      address: "Adresse",
+      support: "Kundestøtte",
+      address: "Adresser",
       settings: "Innstillinger",
     },
     settingsLinks: {
