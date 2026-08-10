@@ -67,6 +67,12 @@ const en = {
       "Discover local food partners for office lunches, meetings, and private events.",
     copyright: "\u00a9 2026 Cateringbestilling",
   },
+  browse: {
+    tabs: {
+      foodType: "Browse by Food Type",
+      occasion: "Browse by Occasion",
+    },
+  },
   home: {
     heroTitleLineOne: "Order Lunch For",
     heroTitleLineTwo: "Work or Home",

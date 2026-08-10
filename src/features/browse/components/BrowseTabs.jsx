@@ -1,10 +1,12 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { browseTabs } from "../data/browseData";
 
 export default function BrowseTabs({
   gapless = false,
   showCenterDivider = false,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto w-full max-w-[440px] rounded-[18px] border border-[#decdbd] bg-[linear-gradient(180deg,#fbf6ef_0%,#efe2d3_100%)] p-1.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_10px_24px_rgba(102,54,26,0.08)] md:max-w-[450px] md:rounded-[24px]">
       <div
@@ -33,7 +35,7 @@ export default function BrowseTabs({
             }
           >
             <span className="text-[12px] font-semibold leading-[1.15] sm:text-[13px] md:text-[16px]">
-              {tab.label}
+              {t(tab.labelKey)}
             </span>
           </NavLink>
         ))}

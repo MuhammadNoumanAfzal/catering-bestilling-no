@@ -22,8 +22,16 @@ import {
 } from "lucide-react";
 
 export const browseTabs = [
-  { id: "food-type", label: "Browse by Food Type", href: "/browse/food-type" },
-  { id: "occasion", label: "Browse by Occasion", href: "/browse/occasion" },
+  {
+    id: "food-type",
+    labelKey: "browse.tabs.foodType",
+    href: "/browse/food-type",
+  },
+  {
+    id: "occasion",
+    labelKey: "browse.tabs.occasion",
+    href: "/browse/occasion",
+  },
 ];
 
 export const foodTypeCategories = [
