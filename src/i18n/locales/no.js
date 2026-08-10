@@ -67,6 +67,12 @@ const no = {
       "Oppdag lokale matpartnere for kontorlunsjer, m\u00f8ter og private arrangementer.",
     copyright: "\u00a9 2026 Cateringbestilling",
   },
+  browse: {
+    tabs: {
+      foodType: "Bla etter mattype",
+      occasion: "Bla etter anledning",
+    },
+  },
   home: {
     heroTitleLineOne: "Bestill lunsj for",
     heroTitleLineTwo: "jobb eller hjem",
