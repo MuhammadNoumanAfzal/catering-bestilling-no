@@ -1,4 +1,5 @@
 import { FiChevronDown, FiClock } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { getDateFilterLabel, ORDER_DATE_OPTIONS } from "./orderUtils";
 
 export default function OrderDateFilter({
@@ -13,6 +14,7 @@ export default function OrderDateFilter({
   referenceDate,
   selectedRange,
 }) {
+  const { t } = useTranslation();
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -22,7 +24,7 @@ export default function OrderDateFilter({
       >
         <FiClock className="text-[14px]" />
         <span className="type-subpara font-semibold">
-          {getDateFilterLabel(selectedRange, referenceDate, customDateRange)}
+          {getDateFilterLabel(selectedRange, referenceDate, customDateRange, t)}
         </span>
         <FiChevronDown
           className={["text-[15px] transition", isOpen ? "rotate-180" : ""].join(" ")}
@@ -50,9 +52,11 @@ export default function OrderDateFilter({
                     : "text-[#4d4d4d] hover:bg-[#faf7f3]",
                 ].join(" ")}
               >
-                <span>{option.label}</span>
+                <span>{t(option.labelKey)}</span>
                 {isSelected ? (
-                  <span className="text-[10px] font-semibold uppercase">Active</span>
+                  <span className="text-[10px] font-semibold uppercase">
+                    {t("vendorPanel.notifications.date.active")}
+                  </span>
                 ) : null}
               </button>
             );
@@ -62,17 +66,17 @@ export default function OrderDateFilter({
             <div className="mt-2 rounded-[18px] border border-[#f0ded2] bg-[linear-gradient(180deg,#fff7f2_0%,#fffaf7_100%)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
               <div className="mb-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#c06c42]">
-                  Custom Range
+                  {t("vendorPanel.notifications.date.customDate")}
                 </p>
                 <p className="mt-1 text-[12px] leading-5 text-[#8b7667]">
-                  Choose a start and end date to filter the orders list.
+                  {t("vendorPanel.notifications.emptyDescription")}
                 </p>
               </div>
 
               <div className="grid gap-3">
                 <label className="block">
                   <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a6d53]">
-                    From
+                    {t("vendorPanel.notifications.date.from")}
                   </span>
                   <input
                     type="date"
@@ -87,7 +91,7 @@ export default function OrderDateFilter({
 
                 <label className="block">
                   <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a6d53]">
-                    To
+                    {t("vendorPanel.notifications.date.to")}
                   </span>
                   <input
                     type="date"
@@ -107,7 +111,7 @@ export default function OrderDateFilter({
                   onClick={onApplyCustomDate}
                   className="inline-flex cursor-pointer items-center justify-center rounded-full bg-[#cf6e38] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(207,110,56,0.24)] transition hover:bg-[#bc602d]"
                 >
-                  Apply
+                  {t("vendorPanel.notifications.date.apply")}
                 </button>
               </div>
             </div>

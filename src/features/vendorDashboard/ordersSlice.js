@@ -357,12 +357,21 @@ export const fetchClientOrders = createAsyncThunk(
       ).length;
       const statusSummary = [
         {
-          label: "Total Orders",
+          labelKey: "vendorPanel.dashboard.totalOrders",
           value: response.clientOrders?.totalCount ?? orders.length,
         },
-        { label: "Completed", value: completedCount },
-        { label: "Scheduled", value: scheduledCount },
-        { label: "Drafts", value: draftsCount },
+        {
+          labelKey: "vendorPanel.orders.completed",
+          value: completedCount,
+        },
+        {
+          labelKey: "vendorPanel.orders.scheduled",
+          value: scheduledCount,
+        },
+        {
+          labelKey: "vendorPanel.orders.drafts",
+          value: draftsCount,
+        },
       ];
 
       return { orders, statusSummary };
@@ -503,10 +512,10 @@ export const fetchClientOrderDetail = createAsyncThunk(
 const initialState = {
   orders: [],
   statusSummary: [
-    { label: "Total Orders", value: 0 },
-    { label: "Completed", value: 0 },
-    { label: "Scheduled", value: 0 },
-    { label: "Drafts", value: 0 },
+    { labelKey: "vendorPanel.dashboard.totalOrders", value: 0 },
+    { labelKey: "vendorPanel.orders.completed", value: 0 },
+    { labelKey: "vendorPanel.orders.scheduled", value: 0 },
+    { labelKey: "vendorPanel.orders.drafts", value: 0 },
   ],
   isLoading: false,
   error: null,
