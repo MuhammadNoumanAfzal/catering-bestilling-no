@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { verifyResetCode } from "../../api";
@@ -6,6 +7,7 @@ import { AuthButton, AuthCard, OtpInput } from "../../components";
 import { PASSWORD_RESET_OTP_LENGTH } from "../../constants/authForms";
 
 export default function ForgotPasswordOtpPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [otpCode, setOtpCode] = useState("");
@@ -26,7 +28,9 @@ export default function ForgotPasswordOtpPage() {
         pin: otpCode,
       });
 
-      await showSuccessToast(result.message || "Code verified successfully");
+      await showSuccessToast(
+        result.message || t("auth.verifyCode.success"),
+      );
       navigate("/reset-password", {
         state: {
           email,
@@ -37,8 +41,8 @@ export default function ForgotPasswordOtpPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to verify the reset code right now.",
-        "Verification failed",
+          : t("auth.verifyCode.errorMessage"),
+        t("auth.verifyCode.errorTitle"),
       );
     } finally {
       setIsSubmitting(false);
@@ -47,19 +51,21 @@ export default function ForgotPasswordOtpPage() {
 
   return (
     <AuthCard
-      title="Forgot password"
-      subtitle={`Enter the ${PASSWORD_RESET_OTP_LENGTH}-digit code sent to your email.`}
+      title={t("auth.verifyCode.title")}
+      subtitle={t("auth.verifyCode.subtitle", {
+        count: PASSWORD_RESET_OTP_LENGTH,
+      })}
       backTo="/forgot-password"
       backState={{ email }}
       footer={
         <p className="type-para text-[#7c746d]">
-          Didn&apos;t get the code?{" "}
+          {t("auth.verifyCode.footerPrompt")}{" "}
           <Link
             to="/forgot-password"
             state={{ email }}
             className="type-para font-semibold text-[#c85f33]"
           >
-            Resend
+            {t("auth.verifyCode.footerAction")}
           </Link>
         </p>
       }
@@ -74,7 +80,7 @@ export default function ForgotPasswordOtpPage() {
           type="submit"
           disabled={isSubmitting || otpCode.length !== PASSWORD_RESET_OTP_LENGTH}
         >
-          {isSubmitting ? "Verifying..." : "Verify"}
+          {isSubmitting ? t("auth.verifyCode.submitting") : t("auth.verifyCode.submit")}
         </AuthButton>
       </form>
     </AuthCard>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { registerUser } from "../../api";
@@ -18,6 +19,7 @@ const VENDOR_REGISTER_URL =
   "https://catering-bestilling-no-vendor-panel.vercel.app/";
 
 export default function SignUpPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [formState, setFormState] = useState(SIGN_UP_INITIAL_FORM_STATE);
@@ -38,7 +40,9 @@ export default function SignUpPage() {
         role: AUTH_ROLE,
       });
 
-      await showSuccessToast(result.message || "Account created successfully");
+      await showSuccessToast(
+        result.message || t("auth.signUp.success"),
+      );
       setFormState(SIGN_UP_INITIAL_FORM_STATE);
       navigate("/signin", {
         replace: true,
@@ -51,8 +55,8 @@ export default function SignUpPage() {
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
-          : "Unable to create your account right now.",
-        "Sign up failed",
+          : t("auth.signUp.errorMessage"),
+        t("auth.signUp.errorTitle"),
       );
     } finally {
       setIsSubmitting(false);
@@ -61,14 +65,14 @@ export default function SignUpPage() {
 
   return (
     <AuthCard
-      badge="Create Account"
-      title="Create your account"
-      subtitle="Join quickly and start ordering with a cleaner, simpler flow."
+      badge={t("auth.signUp.badge")}
+      title={t("auth.signUp.title")}
+      subtitle={t("auth.signUp.subtitle")}
       backTo="/"
       footer={
         <AuthPageFooter
-          prompt="Already have an account?"
-          actionLabel="Sign in"
+          prompt={t("auth.signUp.footerPrompt")}
+          actionLabel={t("auth.signUp.footerAction")}
           actionTo="/signin"
           actionState={location.state}
           secondaryHref={VENDOR_REGISTER_URL}
@@ -78,17 +82,17 @@ export default function SignUpPage() {
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid gap-4 sm:grid-cols-2">
           <AuthInput
-            label="First name"
+            label={t("auth.signUp.firstName")}
             name="firstName"
-            placeholder="Enter first name"
+            placeholder={t("auth.signUp.firstNamePlaceholder")}
             value={formState.firstName}
             onChange={handleChange}
             required
           />
           <AuthInput
-            label="Last name"
+            label={t("auth.signUp.lastName")}
             name="lastName"
-            placeholder="Enter last name"
+            placeholder={t("auth.signUp.lastNamePlaceholder")}
             value={formState.lastName}
             onChange={handleChange}
             required
@@ -97,19 +101,19 @@ export default function SignUpPage() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <AuthInput
-            label="Email"
+            label={t("auth.common.email")}
             name="email"
             type="email"
-            placeholder="nouman@example.com"
+            placeholder={t("auth.common.emailPlaceholder")}
             value={formState.email}
             onChange={handleChange}
             required
           />
           <AuthInput
-            label="Password"
+            label={t("auth.common.password")}
             name="password"
             type="password"
-            placeholder="********"
+            placeholder={t("auth.common.passwordPlaceholder")}
             value={formState.password}
             onChange={handleChange}
             required
@@ -117,20 +121,20 @@ export default function SignUpPage() {
         </div>
 
         <AuthInput
-          label="Phone"
+          label={t("auth.signUp.phone")}
           name="phone"
           type="tel"
-          placeholder="Enter phone number"
+          placeholder={t("auth.signUp.phonePlaceholder")}
           value={formState.phone}
           onChange={handleChange}
           required
         />
 
         <AuthInput
-          label="Post code"
+          label={t("auth.signUp.postCode")}
           name="postCode"
           type="text"
-          placeholder="Enter post code"
+          placeholder={t("auth.signUp.postCodePlaceholder")}
           value={formState.postCode}
           onChange={handleChange}
           required
@@ -141,23 +145,23 @@ export default function SignUpPage() {
           disabled={isSubmitting}
           className="inline-flex items-center justify-center gap-2"
         >
-          {isSubmitting ? "Creating account..." : "Create account"}
+          {isSubmitting ? t("auth.signUp.submitting") : t("auth.signUp.submit")}
           <FiArrowRight className="text-[16px]" />
         </AuthButton>
 
         <p className="text-[12px] leading-5 text-[#867d75]">
-          By creating an account, you agree to our{" "}
+          {t("auth.signUp.agreementPrefix")}{" "}
           <Link
             to="/terms-and-conditions"
             className="font-semibold text-[#c85f33]"
           >
-            Terms &amp; Conditions
+            {t("auth.signUp.terms")}
           </Link>{" "}
-          and{" "}
+          {t("auth.signUp.agreementJoiner")}{" "}
           <Link to="/privacy-policy" className="font-semibold text-[#c85f33]">
-            Privacy Policy
+            {t("auth.signUp.privacy")}
           </Link>
-          .
+          {t("auth.signUp.agreementSuffix")}
         </p>
       </form>
     </AuthCard>
