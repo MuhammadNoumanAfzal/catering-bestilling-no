@@ -100,12 +100,12 @@ export default function HomeNavbar() {
 
   return (
     <header className="relative z-50 w-full">
-      <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-10">
+      <div className="flex items-center justify-between px-4 py-2 sm:px-6 md:px-10">
         <Link to="/" className="flex shrink-0 items-center">
           <img
             src="/home/logo (2).png"
             alt="Lunsjavtale"
-            className="h-12 w-auto object-contain sm:h-14 md:h-24"
+            className="h-10 w-auto object-contain sm:h-12 md:h-34"
           />
         </Link>
 
