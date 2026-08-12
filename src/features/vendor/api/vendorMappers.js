@@ -155,6 +155,62 @@ function isCustomerVisibleMenuProduct(product) {
   return `${product?.menuStatus ?? "active"}`.toLowerCase() === "active";
 }
 
+function hasPublicActiveMenuProducts(vendor) {
+  const categories = Array.isArray(vendor?.menuCategories) ? vendor.menuCategories : [];
+
+  return categories.some((category) =>
+    Array.isArray(category?.vendorProducts) &&
+    category.vendorProducts.some(
+      (product) =>
+        isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product),
+    ),
+  );
+}
+
+function isExplicitlyVisibleVendorStatus(vendor) {
+  const status = `${vendor?.status ?? ""}`.trim().toUpperCase();
+
+  if (status) {
+    if (["ACTIVE", "APPROVED", "PUBLISHED"].includes(status)) {
+      return true;
+    }
+
+    if (
+      [
+        "PENDING",
+        "PENDING_APPROVAL",
+        "REVIEWING",
+        "REJECTED",
+        "SUSPENDED",
+        "DEACTIVATED",
+        "INACTIVE",
+      ].includes(status)
+    ) {
+      return false;
+    }
+  }
+
+  if (typeof vendor?.isActive === "boolean") {
+    return vendor.isActive;
+  }
+
+  return null;
+}
+
+function isPublicVendorVisible(vendor) {
+  const statusVisibility = isExplicitlyVisibleVendorStatus(vendor);
+
+  if (statusVisibility === false) {
+    return false;
+  }
+
+  if (!hasPublicActiveMenuProducts(vendor)) {
+    return false;
+  }
+
+  return true;
+}
+
 function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const price = parseFloat(product.priceWithTax || 0);
   const serves = product.minimumGuests || 1;
@@ -220,6 +276,10 @@ export function adaptApiProductToMenuItem(product, subcategory = "Menu Item") {
 
 export function adaptApiVendorToProfile(apiVendor) {
   if (!apiVendor) {
+    return null;
+  }
+
+  if (!isPublicVendorVisible(apiVendor)) {
     return null;
   }
 

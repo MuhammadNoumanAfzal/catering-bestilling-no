@@ -73,7 +73,67 @@ function isCustomerVisibleMenuProduct(node) {
   return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
 }
 
+function hasPublicActiveMenuProducts(node) {
+  const categories = Array.isArray(node?.menuCategories) ? node.menuCategories : [];
+
+  return categories.some((category) =>
+    Array.isArray(category?.vendorProducts) &&
+    category.vendorProducts.some(
+      (product) =>
+        isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product),
+    ),
+  );
+}
+
+function isExplicitlyVisibleVendorStatus(node) {
+  const status = `${node?.status ?? ""}`.trim().toUpperCase();
+
+  if (status) {
+    if (["ACTIVE", "APPROVED", "PUBLISHED"].includes(status)) {
+      return true;
+    }
+
+    if (
+      [
+        "PENDING",
+        "PENDING_APPROVAL",
+        "REVIEWING",
+        "REJECTED",
+        "SUSPENDED",
+        "DEACTIVATED",
+        "INACTIVE",
+      ].includes(status)
+    ) {
+      return false;
+    }
+  }
+
+  if (typeof node?.isActive === "boolean") {
+    return node.isActive;
+  }
+
+  return null;
+}
+
+function isPublicVendorVisible(node) {
+  const statusVisibility = isExplicitlyVisibleVendorStatus(node);
+
+  if (statusVisibility === false) {
+    return false;
+  }
+
+  if (!hasPublicActiveMenuProducts(node)) {
+    return false;
+  }
+
+  return true;
+}
+
 function mapVendorNode(node) {
+  if (!isPublicVendorVisible(node)) {
+    return null;
+  }
+
   const name = node?.name || "Vendor";
   const fee = node?.deliverySettings?.baseDeliveryFee ?? 0;
   const freeDeliveryOver = node?.deliverySettings?.freeDeliveryOver ?? "";
@@ -151,6 +211,11 @@ function mapVendorNode(node) {
 export function mapProductNode(node) {
   const name = node?.name || "Product";
   const vendor = node?.vendor ? mapVendorNode(node.vendor) : null;
+
+  if (!vendor) {
+    return null;
+  }
+
   const basePrice = Number.parseFloat(node?.priceWithTax || 0);
   const guestCount = Math.max(1, Number(node?.minimumGuests ?? 1));
   const displayPrice =
@@ -185,21 +250,22 @@ export function mapHomeResponse(response) {
   return {
     allVendors: (response?.allVendors?.edges || []).map((edge) =>
       mapVendorNode(edge.node),
-    ),
+    ).filter(Boolean),
     searchedVendors: (response?.searchVendors?.edges || []).map((edge) =>
       mapVendorNode(edge.node),
-    ),
+    ).filter(Boolean),
     featuredVendors: (response?.featured?.edges || []).map((edge) =>
       mapVendorNode(edge.node),
-    ),
+    ).filter(Boolean),
     popularVendors: (response?.popularVendors?.edges || []).map(
       (edge) => mapVendorNode(edge.node),
-    ),
+    ).filter(Boolean),
     popularProducts: (response?.popularProducts?.edges || [])
       .filter(
         (edge) =>
           isPrimaryMenuProduct(edge?.node) && isCustomerVisibleMenuProduct(edge?.node),
       )
-      .map((edge) => mapProductNode(edge.node)),
+      .map((edge) => mapProductNode(edge.node))
+      .filter(Boolean),
   };
 }

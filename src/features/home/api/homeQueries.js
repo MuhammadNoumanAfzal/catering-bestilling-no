@@ -5,6 +5,8 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          status
+          isActive
           postCode
           rating
           discountPercentage
@@ -37,6 +39,14 @@ export const FETCH_HOME_DATA_QUERY = `
             name
             postCode
             isActive
+          }
+          menuCategories {
+            id
+            vendorProducts {
+              id
+              menuStatus
+              productType
+            }
           }
           deliverySettings {
             baseDeliveryFee
@@ -60,6 +70,8 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          status
+          isActive
           postCode
           rating
           discountPercentage
@@ -92,6 +104,14 @@ export const FETCH_HOME_DATA_QUERY = `
             name
             postCode
             isActive
+          }
+          menuCategories {
+            id
+            vendorProducts {
+              id
+              menuStatus
+              productType
+            }
           }
           deliverySettings {
             baseDeliveryFee
@@ -116,6 +136,8 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          status
+          isActive
           postCode
           rating
           discountPercentage
@@ -148,6 +170,14 @@ export const FETCH_HOME_DATA_QUERY = `
             name
             postCode
             isActive
+          }
+          menuCategories {
+            id
+            vendorProducts {
+              id
+              menuStatus
+              productType
+            }
           }
           deliverySettings {
             baseDeliveryFee
@@ -172,6 +202,8 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          status
+          isActive
           postCode
           rating
           discountPercentage
@@ -204,6 +236,14 @@ export const FETCH_HOME_DATA_QUERY = `
             name
             postCode
             isActive
+          }
+          menuCategories {
+            id
+            vendorProducts {
+              id
+              menuStatus
+              productType
+            }
           }
           deliverySettings {
             baseDeliveryFee
@@ -251,6 +291,8 @@ export const FETCH_HOME_DATA_QUERY = `
           vendor {
             id
             name
+            status
+            isActive
             postCode
             rating
             reviewsCount
@@ -282,6 +324,14 @@ export const FETCH_HOME_DATA_QUERY = `
               name
               postCode
               isActive
+            }
+            menuCategories {
+              id
+              vendorProducts {
+                id
+                menuStatus
+                productType
+              }
             }
             deliverySettings {
               baseDeliveryFee
