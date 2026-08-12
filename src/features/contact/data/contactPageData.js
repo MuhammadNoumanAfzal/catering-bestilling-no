@@ -9,7 +9,7 @@ export const contactCards = [
     title: "General support",
     value: "dev@gocatering.com",
     description:
-      "Help with bookings, delivery details, account questions, and order updates.",
+      "Help with catering bookings, delivery details, account questions, and order updates.",
     icon: FiMail,
     accent: "from-[#fff1e7] to-[#fffaf5]",
   },
@@ -17,7 +17,7 @@ export const contactCards = [
     title: "Call our team",
     value: "+47 22 40 88 10",
     description:
-      "Best for urgent catering changes, delivery coordination, and vendor timing.",
+      "Best for urgent event changes, delivery coordination, and kitchen timing questions.",
     icon: FiPhoneCall,
     accent: "from-[#fff6ec] to-[#fffdf8]",
   },
@@ -25,7 +25,7 @@ export const contactCards = [
     title: "Visit the kitchen desk",
     value: "Bryggen 14, Bergen",
     description:
-      "Meet the team for partnership conversations, menu tastings, and event planning.",
+      "Meet the team for partnership conversations, menu tastings, and full event planning support.",
     icon: FiMapPin,
     accent: "from-[#fff3ed] to-[#fffaf7]",
   },
@@ -34,15 +34,15 @@ export const contactCards = [
 export const responseSteps = [
   {
     title: "Tell us what you need",
-    text: "Share your event size, delivery date, and what kind of help you want from us.",
+    text: "Share your guest count, delivery date, event type, and what kind of support you need.",
   },
   {
     title: "We match the right team",
-    text: "Orders go to support, large events go to planning, and vendor issues go to operations.",
+    text: "Order questions go to support, large events go to planning, and vendor issues go to operations.",
   },
   {
     title: "You get a clear next step",
-    text: "Expect a practical reply with timing, availability, and what happens next.",
+    text: "Expect a practical reply with menu direction, timing, availability, and next steps.",
   },
 ];
 
@@ -55,7 +55,7 @@ export const faqItems = [
   {
     question: "Can you help with large office catering?",
     answer:
-      "Yes. We support recurring lunches, internal events, launches, and one-off large team gatherings.",
+      "Yes. We support office lunches, launches, weddings, private parties, and one-off large group events.",
   },
   {
     question: "Do you work with vendors too?",
@@ -66,7 +66,7 @@ export const faqItems = [
 
 export const contactFormTopics = [
   "Event planning",
-  "Corporate lunch program",
+  "Office catering",
   "Order support",
   "Vendor partnership",
   "General question",

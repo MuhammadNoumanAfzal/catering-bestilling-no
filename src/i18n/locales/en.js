@@ -84,22 +84,22 @@ const en = {
       passwordPlaceholder: "********",
     },
     footer: {
-      imCaterer: "I'm a Caterer",
+      imCaterer: "I'm a Catering Partner",
     },
     layout: {
-      badge: "Lunsjavtale Access",
-      title: "Simple access for orders, vendors, and team lunches.",
+      badge: "GoCatering Access",
+      title: "Simple access for events, catering orders, and vendor coordination.",
       description:
-        "A cleaner place to sign in, create an account, and get back to your catering flow.",
-      featureOne: "Fast planning",
-      featureTwo: "Warm brand feel",
-      featureThree: "Cleaner account flow",
+        "Sign in, create an account, and get back to planning office catering, private events, and large group orders with confidence.",
+      featureOne: "Event-ready ordering",
+      featureTwo: "Trusted catering partners",
+      featureThree: "Smoother booking flow",
     },
     signIn: {
       badge: "Sign In",
       title: "Welcome back",
-      subtitle: "Sign in to continue managing your catering account.",
-      helper: "Use your registered account",
+      subtitle: "Sign in to continue managing your catering orders, events, and bookings.",
+      helper: "Use your registered catering account",
       forgotPassword: "Forgot password?",
       submit: "Sign in",
       submitting: "Signing in...",
@@ -112,7 +112,7 @@ const en = {
     signUp: {
       badge: "Create Account",
       title: "Create your account",
-      subtitle: "Join quickly and start ordering with a cleaner, simpler flow.",
+      subtitle: "Create an account to explore menus, book caterers, and manage event orders in one place.",
       firstName: "First name",
       firstNamePlaceholder: "Enter first name",
       lastName: "Last name",
@@ -136,7 +136,7 @@ const en = {
     },
     forgotPassword: {
       title: "Forgot password",
-      subtitle: "Enter your email and we'll send you a verification code.",
+      subtitle: "Enter your email and we'll send you a verification code to recover your catering account.",
       submit: "Send code",
       submitting: "Sending code...",
       success: "Verification code sent",
@@ -145,7 +145,7 @@ const en = {
     },
     verifyCode: {
       title: "Forgot password",
-      subtitle: "Enter the {{count}}-digit code sent to your email.",
+      subtitle: "Enter the {{count}}-digit code sent to your email to continue resetting your account.",
       footerPrompt: "Didn't get the code?",
       footerAction: "Resend",
       submit: "Verify",
@@ -156,7 +156,7 @@ const en = {
     },
     resetPassword: {
       title: "New password",
-      subtitle: "Choose a strong password for your account.",
+      subtitle: "Choose a strong password for your catering account.",
       newPassword: "New password",
       confirmPassword: "Confirm password",
       submit: "Reset password",
@@ -302,9 +302,9 @@ const en = {
   },
   contact: {
     supportBadge: "Contact & Event Support",
-    heroTitle: "Planning lunch for ten or catering for two hundred?",
+    heroTitle: "Planning a board lunch, wedding buffet, or large catered event?",
     heroDescription:
-      "Reach a team that understands food logistics, vendor coordination, and polished event delivery. We help turn vague requests into clear plans quickly.",
+      "Reach a team that understands event catering, delivery logistics, menu coordination, and vendor support. We help turn ideas into a clear catering plan quickly.",
     emailSupport: "Email support",
     exploreMenus: "Explore menus",
     avgReply: "Average reply",
@@ -314,7 +314,7 @@ const en = {
     supportHours: "Support hours",
     supportHoursValue: "08:00-18:00",
     priorityDesk: "Priority desk",
-    formTitle: "Tell us what you need and we will route it fast",
+    formTitle: "Tell us what you need and we will route it to the right catering team fast",
     fullName: "Full name",
     emailAddress: "Email address",
     company: "Company or organization",
@@ -322,43 +322,43 @@ const en = {
     helpTopic: "What can we help with?",
     message: "Message",
     messagePlaceholder:
-      "Tell us your event date, headcount, preferred cuisine, delivery location, or any issue you need help with.",
+      "Tell us your event date, guest count, preferred cuisine, delivery location, or the issue you need help with.",
     responseTime: "We usually respond within one business day.",
     sending: "Sending...",
     sendMessage: "Send message",
     howItWorks: "How It Works",
-    processTitle: "A smoother support flow for busy teams and event planners",
+    processTitle: "A smoother support flow for event planners, office teams, and catering clients",
     faqLabel: "FAQ",
     faqTitle: "Quick answers before you send",
     generalSupport: "General support",
     generalSupportDesc:
-      "Help with bookings, delivery details, account questions, and order updates.",
+      "Help with catering bookings, delivery details, account questions, and order updates.",
     callTeam: "Call our team",
     callTeamDesc:
-      "Best for urgent catering changes, delivery coordination, and vendor timing.",
+      "Best for urgent event changes, delivery coordination, and kitchen timing questions.",
     kitchenDesk: "Visit the kitchen desk",
     kitchenDeskDesc:
-      "Meet the team for partnership conversations, menu tastings, and event planning.",
+      "Meet the team for partnership conversations, menu tastings, and full event planning support.",
     stepOneTitle: "Tell us what you need",
     stepOneText:
-      "Share your event size, delivery date, and what kind of help you want from us.",
+      "Share your guest count, delivery date, event type, and what kind of support you need.",
     stepTwoTitle: "We match the right team",
     stepTwoText:
-      "Orders go to support, large events go to planning, and vendor issues go to operations.",
+      "Order questions go to support, large events go to planning, and vendor issues go to operations.",
     stepThreeTitle: "You get a clear next step",
     stepThreeText:
-      "Expect a practical reply with timing, availability, and what happens next.",
+      "Expect a practical reply with menu direction, timing, availability, and next steps.",
     faqOneQ: "How fast do you reply?",
     faqOneA:
       "Most contact requests are answered within one business day, and urgent order issues are prioritized faster.",
     faqTwoQ: "Can you help with large office catering?",
     faqTwoA:
-      "Yes. We support recurring lunches, internal events, launches, and one-off large team gatherings.",
+      "Yes. We support office lunches, launches, weddings, private parties, and one-off large group events.",
     faqThreeQ: "Do you work with vendors too?",
     faqThreeA:
       "Yes. Restaurants and catering partners can contact us for onboarding, menu setup, and operations support.",
     topicEventPlanning: "Event planning",
-    topicCorporateLunch: "Corporate lunch program",
+    topicCorporateLunch: "Office catering",
     topicOrderSupport: "Order support",
     topicVendorPartnership: "Vendor partnership",
     topicGeneralQuestion: "General question",
