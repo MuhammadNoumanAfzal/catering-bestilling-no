@@ -109,7 +109,7 @@ export default function HeroSection({
 
             <div className="flex items-center justify-center lg:justify-end">
               <img
-                src="/home/hero2.png"
+                src="/home/image.png"
                 alt="Catering hero"
                 loading="eager"
                 fetchPriority="high"
