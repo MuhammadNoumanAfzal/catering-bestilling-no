@@ -167,9 +167,10 @@ const en = {
     },
   },
   home: {
-    heroTitleLineOne: "Order Lunch For",
-    heroTitleLineTwo: "Work or Home",
-    heroSubtitle: "Fresh meals from local vendors delivered on time.",
+    heroTitleLineOne: "Book Catering For",
+    heroTitleLineTwo: "Events That Matter",
+    heroSubtitle:
+      "Compare trusted caterers, curated menus, and reliable delivery for office events, private parties, and large gatherings.",
     deliveryAddressPlaceholder: "Enter your delivery address",
     postalCodePlaceholder: "Add Postal Code",
     search: "Search",
@@ -196,17 +197,17 @@ const en = {
         location: {
           title: "Choose Location",
           description:
-            "Enter your delivery address or postal code to see which menus are available in your area for office or home delivery.",
+            "Enter your delivery address or postal code to see which caterers and event menus are available in your area.",
         },
         food: {
           title: "Select Food",
           description:
-            "Browse our varied menu options. Pick from flexible corporate lunch plans or delicious catering packages for your private events.",
+            "Browse buffet spreads, plated menus, finger food, and event packages built for meetings, celebrations, and large group catering.",
         },
         delivery: {
           title: "Get Delivered",
           description:
-            "Sit back and relax. Our team delivers fresh, chef-prepared meals directly to your door, exactly when you need them.",
+            "Place your booking with confidence and get your catering delivered on schedule for your team, guests, or event venue.",
         },
       },
     },

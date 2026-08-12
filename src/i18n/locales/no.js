@@ -167,10 +167,10 @@ const no = {
     },
   },
   home: {
-    heroTitleLineOne: "Bestill lunsj for",
-    heroTitleLineTwo: "jobb eller hjem",
+    heroTitleLineOne: "Bestill catering til",
+    heroTitleLineTwo: "arrangementer som teller",
     heroSubtitle:
-      "Ferske m\u00e5ltider fra lokale leverand\u00f8rer levert i tide.",
+      "Sammenlign p\u00e5litelige cateringleverand\u00f8rer, utvalgte menyer og trygg levering til kontorarrangementer, private selskaper og store samlinger.",
     deliveryAddressPlaceholder: "Skriv inn leveringsadressen din",
     postalCodePlaceholder: "Legg til postnummer",
     search: "S\u00f8k",
@@ -200,17 +200,17 @@ const no = {
         location: {
           title: "Velg sted",
           description:
-            "Skriv inn leveringsadressen eller postnummeret ditt for å se hvilke menyer som er tilgjengelige i området ditt for levering til kontor eller hjem.",
+            "Skriv inn leveringsadressen eller postnummeret ditt for å se hvilke cateringleverandører og arrangementsmenyer som er tilgjengelige i området ditt.",
         },
         food: {
           title: "Velg mat",
           description:
-            "Utforsk menyutvalget vårt. Velg mellom fleksible bedriftslunsjer eller smakfulle cateringpakker til private arrangementer.",
+            "Utforsk buffeter, serveringsfat, fingermat og cateringpakker laget for møter, feiringer og arrangementer med mange gjester.",
         },
         delivery: {
           title: "Få levert",
           description:
-            "Len deg tilbake og slapp av. Teamet vårt leverer ferske, kokketilberedte måltider direkte til døren din, akkurat når du trenger dem.",
+            "Bestill med trygghet og få cateringen levert til rett tid for teamet ditt, gjestene dine eller arrangementsstedet.",
         },
       },
     },
