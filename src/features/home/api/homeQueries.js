@@ -7,6 +7,7 @@ export const FETCH_HOME_DATA_QUERY = `
           name
           status
           isActive
+          applicationStatus
           postCode
           rating
           discountPercentage
@@ -72,6 +73,7 @@ export const FETCH_HOME_DATA_QUERY = `
           name
           status
           isActive
+          applicationStatus
           postCode
           rating
           discountPercentage
@@ -138,6 +140,7 @@ export const FETCH_HOME_DATA_QUERY = `
           name
           status
           isActive
+          applicationStatus
           postCode
           rating
           discountPercentage
@@ -204,6 +207,7 @@ export const FETCH_HOME_DATA_QUERY = `
           name
           status
           isActive
+          applicationStatus
           postCode
           rating
           discountPercentage
@@ -299,6 +303,7 @@ export const FETCH_HOME_DATA_QUERY = `
             name
             status
             isActive
+            applicationStatus
             postCode
             rating
             reviewsCount

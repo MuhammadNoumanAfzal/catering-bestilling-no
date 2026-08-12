@@ -29,6 +29,29 @@ function ensureActiveUser(user, contextLabel) {
   }
 
   if (user.isActive === false) {
+    const applicationStatus = `${user?.applicationStatus ?? ""}`.trim().toUpperCase();
+    const vendorStatus = `${user?.vendorStatus ?? user?.status ?? ""}`.trim().toUpperCase();
+
+    if (applicationStatus === "PENDING_APPROVAL" || vendorStatus === "PENDING_APPROVAL") {
+      throw new Error("This account is pending approval and is not available yet.");
+    }
+
+    if (applicationStatus === "REVIEWING") {
+      throw new Error("This account is currently under review.");
+    }
+
+    if (applicationStatus === "REJECTED") {
+      throw new Error("This account was rejected. Please contact support.");
+    }
+
+    if (vendorStatus === "SUSPENDED" || applicationStatus === "SUSPENDED") {
+      throw new Error("This account is suspended. Please contact support.");
+    }
+
+    if (vendorStatus === "DEACTIVATED" || applicationStatus === "DEACTIVATED") {
+      throw new Error("This account is deactivated. Please contact support.");
+    }
+
     throw new Error("This account is inactive. Please contact support.");
   }
 }

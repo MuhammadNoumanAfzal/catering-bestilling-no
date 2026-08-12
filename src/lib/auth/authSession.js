@@ -16,6 +16,9 @@ export function normalizeAuthenticatedUser(user) {
     ...user,
     email,
     name: fullName || email || "User",
+    applicationStatus: `${user?.applicationStatus ?? ""}`.trim(),
+    vendorStatus: `${user?.vendorStatus ?? ""}`.trim(),
+    status: `${user?.status ?? ""}`.trim(),
   };
 }
 
