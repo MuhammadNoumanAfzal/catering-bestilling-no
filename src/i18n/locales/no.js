@@ -167,10 +167,36 @@ const no = {
     },
   },
   home: {
+    heroBadgeOne: "Kuratert arrangementscatering",
+    heroBadgeTwo: "Enklere firmaplanlegging",
+    heroBadgeThree: "Private feiringer",
     heroTitleLineOne: "Bestill catering til",
     heroTitleLineTwo: "arrangementer som teller",
     heroSubtitle:
       "Sammenlign p\u00e5litelige cateringleverand\u00f8rer, utvalgte menyer og trygg levering til kontorarrangementer, private selskaper og store samlinger.",
+    heroSlideTwoTitleLineOne: "Samle teamet med",
+    heroSlideTwoTitleLineTwo: "smartere catering",
+    heroSlideTwoSubtitle:
+      "Planlegg kontorlunsjer, workshops, lanseringer og m\u00f8ter med menyer som passer tidsplanen, antall gjester og uttrykket dere vil ha.",
+    heroSlideThreeTitleLineOne: "Feir med menyer",
+    heroSlideThreeTitleLineTwo: "gjestene husker",
+    heroSlideThreeSubtitle:
+      "Utforsk buffeter, serverte retter og ferdige pakker til bursdager, bryllup, familiesamlinger og sesongfeiringer.",
+    heroPreviewOne: "Premium arrangementsmenyer fra p\u00e5litelige lokale caterere",
+    heroPreviewTwo: "M\u00f8tepakker, boxed meals og firmaservering",
+    heroPreviewThree: "Buffeter og feiringsmenyer til spesielle anledninger",
+    heroStatOne: "verifiserte cateringpartnere klare til sammenligning",
+    heroStatTwo: "typisk planleggingsvindu for st\u00f8rre bestillinger",
+    heroStatThree: "serveringsstiler for alt fra m\u00f8ter til feiringer",
+    heroCardOneTitle: "Kurert for kvalitet og timing",
+    heroCardOneBody:
+      "Fra serverte retter til buffetbord kan du finne leverand\u00f8rer som matcher anledning, leveringsomr\u00e5de og serviceniv\u00e5.",
+    heroCardTwoTitle: "Laget for enkel kontorkoordinering",
+    heroCardTwoBody:
+      "Sammenlign leverand\u00f8rer, menyer og serveringsformater for faste teambestillinger og viktige bedriftsarrangementer.",
+    heroCardThreeTitle: "Skapt for samlinger som skal f\u00f8les spesielle",
+    heroCardThreeBody:
+      "Velg menyer med fokus p\u00e5 presentasjon, gjesteopplevelse og trygg levering til private og famili\u00e6re feiringer.",
     deliveryAddressPlaceholder: "Skriv inn leveringsadressen din",
     postalCodePlaceholder: "Legg til postnummer",
     search: "S\u00f8k",

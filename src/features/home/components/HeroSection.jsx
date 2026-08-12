@@ -1,4 +1,4 @@
-import { FiArrowRight, FiMapPin, FiSearch } from "react-icons/fi";
+import { FiMapPin, FiSearch } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import HomeNavbar from "./HomeNavbar";
 
@@ -21,74 +21,69 @@ export default function HeroSection({
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#fbf8f5]">
-      <img
-        src="/home/heroBg.webp"
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover opacity-20"
-      />
-
-      <div className="relative z-10 mx-auto max-w-7xl">
+    <section className="bg-[#fffaf5]">
+      <div className="mx-auto max-w-[1380px]">
         <HomeNavbar />
 
-        <div className="mx-auto grid min-h-[calc(100vh-88px)] max-w-7xl items-center gap-10 px-5 py-10 md:px-6 lg:grid-cols-2 lg:gap-14 lg:px-10 lg:py-14">
-          <div className="max-w-[620px]">
-            <h1 className="max-w-[560px] text-[40px] font-extrabold leading-[1.04] tracking-[-0.03em] text-black sm:text-[54px] lg:text-[64px]">
-              {t("home.heroTitleLineOne")}
-              <br />
-              {t("home.heroTitleLineTwo")}
-            </h1>
+        <div className="px-4 pb-8 sm:px-6 lg:px-8 lg:pb-10">
+          <div className="grid items-center gap-8 overflow-hidden bg-transparent py-4 lg:grid-cols-[0.95fr_1.05fr] lg:gap-6 lg:py-6">
+            <div className="max-w-[610px] pl-2 sm:pl-4 lg:pl-6">
+              <h1 className="text-[38px] font-black leading-[1.05] tracking-[-0.04em] text-[#17110d] sm:text-[48px] lg:text-[62px]">
+                {t("home.heroTitleLineOne")}
+                <br />
+                {t("home.heroTitleLineTwo")}
+              </h1>
 
-            <p className="type-h5 mt-6 max-w-[540px] text-gray-700">
-              {t("home.heroSubtitle")}
-            </p>
+              <p className="mt-4 max-w-[560px] text-[16px] leading-7 text-[#5f544c] sm:text-[17px]">
+                {t("home.heroSubtitle")}
+              </p>
 
-            <div className="mt-8 max-w-[600px]">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <div className="flex h-12 py-2 flex-1 items-center rounded-xl border border-gray-300 bg-white px-4 transition focus-within:border-[#e98c65]">
-                  <FiMapPin className="shrink-0 text-sm text-gray-500" />
+              <div className="mt-7 max-w-[620px]">
+                <div className="grid gap-3 md:grid-cols-[1.2fr_0.75fr_0.68fr]">
+                  <div className="flex h-14 items-center rounded-xl border border-[#e7d8cd] bg-white px-4 shadow-[0_10px_24px_rgba(97,63,39,0.06)]">
+                    <FiMapPin className="shrink-0 text-sm text-[#8b7b70]" />
+                    <input
+                      type="text"
+                      value={deliveryAddress}
+                      onChange={(event) =>
+                        onDeliveryAddressChange?.(event.target.value)
+                      }
+                      onKeyDown={handleKeyDown}
+                      placeholder={t("home.deliveryAddressPlaceholder")}
+                      className="ml-3 w-full bg-transparent text-[15px] text-[#514741] outline-none placeholder:text-[#b6a79c]"
+                    />
+                  </div>
+
                   <input
                     type="text"
-                    value={deliveryAddress}
+                    inputMode="numeric"
+                    value={postalCode}
                     onChange={(event) =>
-                      onDeliveryAddressChange?.(event.target.value)
+                      onPostalCodeChange?.(
+                        event.target.value.replace(/\D/g, "").slice(0, 5),
+                      )
                     }
                     onKeyDown={handleKeyDown}
-                    placeholder={t("home.deliveryAddressPlaceholder")}
-                    className="type-para ml-3 w-full bg-transparent text-gray-700 outline-none placeholder:text-gray-400"
+                    placeholder={t("home.postalCodePlaceholder")}
+                    className="h-14 rounded-xl border border-[#e7d8cd] bg-white px-4 text-[15px] text-[#514741] outline-none placeholder:text-[#b6a79c] shadow-[0_10px_24px_rgba(97,63,39,0.06)] transition focus:border-[#e98c65]"
                   />
+
+                  <button
+                    type="button"
+                    onClick={onSearch}
+                    className="inline-flex h-14 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#d46f38] px-6 text-[15px] font-bold text-white shadow-[0_14px_30px_rgba(212,111,56,0.22)] transition hover:bg-[#bf5f2d]"
+                  >
+                    <FiSearch className="text-base" />
+                    {t("home.search")}
+                  </button>
                 </div>
 
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={postalCode}
-                  onChange={(event) =>
-                    onPostalCodeChange?.(
-                      event.target.value.replace(/\D/g, "").slice(0, 5),
-                    )
-                  }
-                  onKeyDown={handleKeyDown}
-                  placeholder={t("home.postalCodePlaceholder")}
-                  className="type-para h-12 rounded-xl border border-gray-300 bg-white px-4 text-gray-700 outline-none placeholder:text-gray-400 transition focus-within:border-[#e98c65] sm:w-[180px]"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={onSearch}
-                className="type-h6 mt-3 flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#c85f33] px-6 text-white transition hover:bg-[#b9542b]"
-              >
-                <FiSearch className="text-base" />
-                {t("home.search")}
-              </button>
-              <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={onBrowseVendors}
-                  className="group type-h6 inline-flex h-[52px] cursor-pointer items-center justify-center gap-3 self-start rounded-2xl border border-[#e8d4c8] bg-white px-5 text-[#241815] shadow-[0_14px_34px_rgba(115,63,37,0.12)] transition duration-200 hover:-translate-y-[2px] hover:border-[#cf6e38] hover:shadow-[0_20px_44px_rgba(201,95,51,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#cf6e38]/30"
+                  className="mt-4 inline-flex h-[54px] cursor-pointer items-center gap-3 rounded-2xl border border-[#ead7ca] bg-white px-5 text-[#241815] shadow-[0_12px_28px_rgba(97,63,39,0.08)] transition hover:border-[#cf6e38]"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,#d97845_0%,#bf5c31_100%)] text-white shadow-[0_8px_16px_rgba(191,92,49,0.28)] transition duration-200 group-hover:scale-105">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#d46f38] text-white">
                     <FiSearch className="text-sm" />
                   </span>
                   <span className="flex flex-col items-start leading-none">
@@ -99,32 +94,31 @@ export default function HeroSection({
                       {t("home.browseAllVendors")}
                     </span>
                   </span>
-                  <FiArrowRight className="ml-1 text-base text-[#c46a35] transition duration-200 group-hover:translate-x-1" />
                 </button>
-              </div>
-              {searchValidationMessage || (postalCode && !hasValidPostalCode) ? (
-                <p className="mt-3 text-sm text-[#5f5a55]">
-                  {searchValidationMessage ? (
-                    <span className="font-medium text-[#b6542c]">
-                      {searchValidationMessage}
-                    </span>
-                  ) : (
-                    t("home.postalCodeHint")
-                  )}
-                </p>
-              ) : null}
-            </div>
-          </div>
 
-          <div className="flex w-full items-center justify-center">
-            <div className="relative w-full">
+                {searchValidationMessage ||
+                (postalCode && !hasValidPostalCode) ? (
+                  <p className="mt-3 text-sm text-[#5f5a55]">
+                    {searchValidationMessage ? (
+                      <span className="font-medium text-[#b6542c]">
+                        {searchValidationMessage}
+                      </span>
+                    ) : (
+                      t("home.postalCodeHint")
+                    )}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center lg:justify-end">
               <img
-                src="/home/home-hero.webp"
-                alt="Home hero"
+                src="/home/hero2.png"
+                alt="Catering hero"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
-                className="h-[320px] w-full object-contain sm:h-[420px] lg:h-[560px]"
+                className="h-auto w-full max-w-[760px] object-contain"
               />
             </div>
           </div>
