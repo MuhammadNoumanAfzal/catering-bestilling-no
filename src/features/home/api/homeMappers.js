@@ -52,7 +52,19 @@ function formatDeliveryFee(value) {
 }
 
 function normalizeTags(tags, fallback = []) {
-  return Array.isArray(tags) && tags.length > 0 ? tags : fallback;
+  if (!Array.isArray(tags) || tags.length === 0) {
+    return fallback;
+  }
+
+  return tags
+    .map((tag) => {
+      if (typeof tag === "string") {
+        return tag;
+      }
+
+      return tag?.name || tag?.slug || "";
+    })
+    .filter(Boolean);
 }
 
 function normalizeTaxonomyTags(items = [], fallback = []) {

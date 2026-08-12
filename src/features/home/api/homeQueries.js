@@ -283,7 +283,13 @@ export const FETCH_HOME_DATA_QUERY = `
             name
             slug
           }
-          dietaryTags
+          dietaryTags {
+            id
+            name
+            slug
+            isActive
+            sortOrder
+          }
           minimumGuests
           coverImage {
             fileUrl
