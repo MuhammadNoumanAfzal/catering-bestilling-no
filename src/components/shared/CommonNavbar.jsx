@@ -117,10 +117,7 @@ function formatAttendeeInputValue(value) {
   return value > 0 ? `${value}` : "";
 }
 
-export default function CommonNavbar({
-  hideLogo = false,
-  className = "",
-}) {
+export default function CommonNavbar({ hideLogo = false, className = "" }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -147,8 +144,7 @@ export default function CommonNavbar({
     openNotification,
     readAllNotifications,
     unreadNotificationCount,
-  } =
-    useUserNotifications();
+  } = useUserNotifications();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -181,7 +177,9 @@ export default function CommonNavbar({
       const nextDropdown = current === key ? null : key;
 
       if (nextDropdown === "delivery") {
-        const nextDate = isPastDate(deliveryDate) ? null : (deliveryDate ?? null);
+        const nextDate = isPastDate(deliveryDate)
+          ? null
+          : (deliveryDate ?? null);
         const monthSource = nextDate ?? new Date();
         setDraftDate(nextDate);
         setDraftTime(deliveryTime);
@@ -261,7 +259,9 @@ export default function CommonNavbar({
 
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
-      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+      search: shouldPreserveSearchParams(location.pathname)
+        ? location.search
+        : "",
     });
   };
 
@@ -276,7 +276,9 @@ export default function CommonNavbar({
 
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
-      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+      search: shouldPreserveSearchParams(location.pathname)
+        ? location.search
+        : "",
     });
   };
 
@@ -293,7 +295,9 @@ export default function CommonNavbar({
 
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
-      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+      search: shouldPreserveSearchParams(location.pathname)
+        ? location.search
+        : "",
     });
   };
 
@@ -311,7 +315,9 @@ export default function CommonNavbar({
 
     navigate({
       pathname: resolveNavbarFilterRoute(location.pathname),
-      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+      search: shouldPreserveSearchParams(location.pathname)
+        ? location.search
+        : "",
     });
   };
 
@@ -323,7 +329,9 @@ export default function CommonNavbar({
 
     navigate({
       pathname: nextPathname,
-      search: shouldPreserveSearchParams(location.pathname) ? location.search : "",
+      search: shouldPreserveSearchParams(location.pathname)
+        ? location.search
+        : "",
     });
   };
 
@@ -339,7 +347,8 @@ export default function CommonNavbar({
     await showSuccessToast("Logged out successfully");
   };
 
-  const headerClasses = `sticky top-0 z-40 bg-white px-6 py-2 md:px-10 ${className}`.trim();
+  const headerClasses =
+    `sticky top-0 z-40 bg-white px-6 py-2 md:px-10 ${className}`.trim();
   const innerClasses = hideLogo
     ? "grid w-full grid-cols-[1fr_auto] items-center gap-3 px-2 py-2"
     : "grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 px-2 py-2";
@@ -350,9 +359,9 @@ export default function CommonNavbar({
         {!hideLogo ? (
           <Link to="/" className="flex shrink-0 items-center self-center">
             <img
-              src="/home/logo.png"
+              src="/home/logo.jpeg"
               alt="Lunsjavtale"
-              className="h-14 w-auto object-contain"
+              className="h-28 w-auto object-contain"
             />
           </Link>
         ) : null}
