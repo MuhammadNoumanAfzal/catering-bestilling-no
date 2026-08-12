@@ -75,6 +75,7 @@ export async function fetchVendorProfiles() {
   if (!vendorProfilesPromise) {
     vendorProfilesPromise = fetchVendors()
       .then((vendors) => vendors.map((vendor) => adaptApiVendorToProfile(vendor)))
+      .then((profiles) => profiles.filter(Boolean))
       .then((profiles) =>
         Promise.all(
           profiles.map((profile) =>

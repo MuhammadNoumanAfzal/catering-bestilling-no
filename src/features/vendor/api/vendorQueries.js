@@ -5,6 +5,8 @@ export const FETCH_VENDORS_QUERY = `
         node {
           id
           name
+          status
+          isActive
           rating
           reviewsCount
           logoUrl
@@ -104,6 +106,8 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       id
       slug
       name
+      status
+      isActive
       rating
       reviewsCount
       canReview
