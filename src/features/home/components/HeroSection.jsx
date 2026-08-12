@@ -27,16 +27,12 @@ export default function HeroSection({
 
         <div className="px-4 pb-8 sm:px-6 lg:px-8 lg:pb-10">
           <div className="grid items-center gap-8 overflow-hidden bg-transparent py-4 lg:grid-cols-[0.95fr_1.05fr] lg:gap-6 lg:py-6">
-            <div className="max-w-[610px] pl-2 sm:pl-4 lg:pl-6">
-              <h1 className="text-[38px] font-black leading-[1.05] tracking-[-0.04em] text-[#17110d] sm:text-[48px] lg:text-[62px]">
+            <div className="max-w-[680px] pl-2 sm:pl-4 lg:pl-6">
+              <h1 className="text-[36px] font-black leading-[1.05] tracking-[-0.04em] text-[#17110d] sm:text-[46px] lg:text-[56px]">
                 {t("home.heroTitleLineOne")}
                 <br />
                 {t("home.heroTitleLineTwo")}
               </h1>
-
-              <p className="mt-4 max-w-[560px] text-[16px] leading-7 text-[#5f544c] sm:text-[17px]">
-                {t("home.heroSubtitle")}
-              </p>
 
               <div className="mt-7 max-w-[620px]">
                 <div className="grid gap-3 md:grid-cols-[1.2fr_0.75fr_0.68fr]">
