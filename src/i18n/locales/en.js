@@ -167,10 +167,36 @@ const en = {
     },
   },
   home: {
+    heroBadgeOne: "Curated event catering",
+    heroBadgeTwo: "Corporate planning made easy",
+    heroBadgeThree: "Private celebrations",
     heroTitleLineOne: "Book Catering For",
     heroTitleLineTwo: "Events That Matter",
     heroSubtitle:
       "Compare trusted caterers, curated menus, and reliable delivery for office events, private parties, and large gatherings.",
+    heroSlideTwoTitleLineOne: "Bring Teams Together",
+    heroSlideTwoTitleLineTwo: "With Smarter Catering",
+    heroSlideTwoSubtitle:
+      "Plan office lunches, workshops, launches, and boardroom meetings with menus that fit your timing, guest count, and brand feel.",
+    heroSlideThreeTitleLineOne: "Celebrate With Menus",
+    heroSlideThreeTitleLineTwo: "Guests Remember",
+    heroSlideThreeSubtitle:
+      "Explore buffets, plated service, and party-ready packages tailored for birthdays, weddings, family gatherings, and seasonal events.",
+    heroPreviewOne: "Premium event menus from trusted local caterers",
+    heroPreviewTwo: "Corporate trays, boxed meals, and meeting packages",
+    heroPreviewThree: "Buffets and celebration spreads for special moments",
+    heroStatOne: "verified catering partners ready to compare",
+    heroStatTwo: "average planning window for large bookings",
+    heroStatThree: "guest styles supported from meetings to celebrations",
+    heroCardOneTitle: "Curated for quality and timing",
+    heroCardOneBody:
+      "From plated service to buffet tables, discover vendors that match your occasion, delivery area, and service expectations.",
+    heroCardTwoTitle: "Built for office coordination",
+    heroCardTwoBody:
+      "Shortlist vendors, compare formats, and line up smooth delivery for recurring team orders or one-off business events.",
+    heroCardThreeTitle: "Made for gatherings that feel special",
+    heroCardThreeBody:
+      "Choose menus designed for guest experience, presentation, and dependable setup for family and private celebrations.",
     deliveryAddressPlaceholder: "Enter your delivery address",
     postalCodePlaceholder: "Add Postal Code",
     search: "Search",
