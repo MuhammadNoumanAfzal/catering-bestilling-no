@@ -45,6 +45,22 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, "");
 }
 
+function normalizeTags(tags, fallback = []) {
+  if (!Array.isArray(tags) || tags.length === 0) {
+    return fallback;
+  }
+
+  return tags
+    .map((tag) => {
+      if (typeof tag === "string") {
+        return tag;
+      }
+
+      return tag?.name || tag?.slug || "";
+    })
+    .filter(Boolean);
+}
+
 function extractCityFromAddress(address) {
   const segments = `${address ?? ""}`
     .split(",")
@@ -242,8 +258,8 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const unitPrice = price;
   const detailLines = [
     product.description || "",
-    product.allergens?.length
-      ? `Allergens: ${product.allergens.join(", ")}`
+    normalizeTags(product.allergens).length
+      ? `Allergens: ${normalizeTags(product.allergens).join(", ")}`
       : "",
   ].filter(Boolean);
   const availableDays = Array.isArray(product.availableDays)
@@ -261,8 +277,8 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
     tag: product.isPopular ? "Popular" : product.isFeatured ? "Featured" : "",
     description: product.description || "",
     detailLines,
-    dietaryLabels: product.dietaryTags || [],
-    allergens: product.allergens || [],
+    dietaryLabels: normalizeTags(product.dietaryTags),
+    allergens: normalizeTags(product.allergens),
     price,
     pricingType,
     availableDays,

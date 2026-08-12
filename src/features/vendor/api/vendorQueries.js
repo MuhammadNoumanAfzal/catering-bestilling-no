@@ -80,7 +80,11 @@ export const FETCH_VENDORS_QUERY = `
               slug
               categoryTags
               contains
-              dietaryTags
+              dietaryTags {
+                id
+                name
+                slug
+              }
               allergens
               minLeadTimeDays
               minLeadTimeHours
@@ -191,7 +195,11 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
           isFeatured
           categoryTags
           contains
-          dietaryTags
+          dietaryTags {
+            id
+            name
+            slug
+          }
           allergens
           minLeadTimeDays
           minLeadTimeHours

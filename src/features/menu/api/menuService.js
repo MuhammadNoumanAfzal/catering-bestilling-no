@@ -3,7 +3,10 @@ import {
   adaptApiProductToMenuItem,
   adaptApiVendorToProfile,
 } from "../../vendor";
-import { fetchVendorReviews } from "../../vendor/api/vendorService";
+import {
+  fetchVendorProfileBySlug,
+  fetchVendorReviews,
+} from "../../vendor/api/vendorService";
 import { attachAddOnsToMenuItem } from "./menuMappers";
 import {
   FETCH_PRODUCT_QUERY,
@@ -146,11 +149,25 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
     throw new Error("Product does not belong to the requested vendor.");
   }
 
-  const [productResult, vendor, vendorAddOns] = await Promise.all([
+  const [productResult, vendorProfileResult, vendorAddOns] = await Promise.all([
     Promise.resolve(adaptApiProductToMenuItem(response.product)),
-    Promise.resolve(adaptApiVendorToProfile(response.product.vendor)).then(
-      (vendorProfile) => hydrateMenuVendorRating(vendorProfile, vendorSlug),
-    ),
+    Promise.resolve(adaptApiVendorToProfile(response.product.vendor))
+      .then(async (vendorProfile) => {
+        if (vendorProfile) {
+          return vendorProfile;
+        }
+
+        if (!responseVendorSlug) {
+          return null;
+        }
+
+        try {
+          return await fetchVendorProfileBySlug(responseVendorSlug);
+        } catch {
+          return null;
+        }
+      })
+      .then((vendorProfile) => hydrateMenuVendorRating(vendorProfile, vendorSlug)),
     fetchVendorAddOns(response.product.vendor?.id),
   ]);
 
@@ -163,6 +180,6 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
 
   return {
     product,
-    vendor,
+    vendor: vendorProfileResult,
   };
 }

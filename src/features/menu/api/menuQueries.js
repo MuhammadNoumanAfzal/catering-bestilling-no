@@ -15,7 +15,11 @@ export const FETCH_PRODUCT_QUERY = `
       isAvailabilityWindowEnabled
       availableFrom
       availableUntil
-      dietaryTags
+      dietaryTags {
+        id
+        name
+        slug
+      }
       allergens
       coverImage {
         id
@@ -112,7 +116,11 @@ export const FETCH_VENDOR_ADD_ONS_QUERY = `
           priceWithTax
           taxPercent
           menuStatus
-          dietaryTags
+          dietaryTags {
+            id
+            name
+            slug
+          }
           coverImage {
             id
             fileUrl
