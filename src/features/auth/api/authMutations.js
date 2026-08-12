@@ -24,6 +24,11 @@ export const REGISTER_USER_MUTATION = `
       user {
         id
         email
+        role
+        isActive
+        applicationStatus
+        vendorStatus
+        status
       }
     }
   }
@@ -49,6 +54,9 @@ export const LOGIN_USER_MUTATION = `
         lastName
         role
         isActive
+        applicationStatus
+        vendorStatus
+        status
       }
     }
   }

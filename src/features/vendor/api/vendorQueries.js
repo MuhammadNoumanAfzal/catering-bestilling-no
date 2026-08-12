@@ -7,6 +7,7 @@ export const FETCH_VENDORS_QUERY = `
           name
           status
           isActive
+          applicationStatus
           rating
           reviewsCount
           logoUrl
@@ -108,6 +109,7 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       name
       status
       isActive
+      applicationStatus
       rating
       reviewsCount
       canReview

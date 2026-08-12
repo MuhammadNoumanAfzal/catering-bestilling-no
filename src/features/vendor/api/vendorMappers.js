@@ -169,6 +169,27 @@ function hasPublicActiveMenuProducts(vendor) {
 
 function isExplicitlyVisibleVendorStatus(vendor) {
   const status = `${vendor?.status ?? ""}`.trim().toUpperCase();
+  const applicationStatus = `${vendor?.applicationStatus ?? ""}`.trim().toUpperCase();
+
+  if (applicationStatus) {
+    if (["ACTIVE", "APPROVED"].includes(applicationStatus)) {
+      return true;
+    }
+
+    if (
+      [
+        "PENDING_APPROVAL",
+        "REVIEWING",
+        "CHANGES_REQUESTED",
+        "REJECTED",
+        "SUSPENDED",
+        "DEACTIVATED",
+        "INACTIVE",
+      ].includes(applicationStatus)
+    ) {
+      return false;
+    }
+  }
 
   if (status) {
     if (["ACTIVE", "APPROVED", "PUBLISHED"].includes(status)) {
