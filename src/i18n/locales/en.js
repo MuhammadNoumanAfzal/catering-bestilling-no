@@ -170,8 +170,9 @@ const en = {
     heroBadgeOne: "Curated event catering",
     heroBadgeTwo: "Corporate planning made easy",
     heroBadgeThree: "Private celebrations",
-    heroTitleLineOne: "Book Catering For",
-    heroTitleLineTwo: "Events That Matter",
+    heroTitle: "Order catering from your favorite supplier across Norway",
+    heroTitleLineOne: "Order catering from",
+    heroTitleLineTwo: "your favorite supplier across Norway",
     heroSubtitle:
       "Compare trusted caterers, curated menus, and reliable delivery for office events, private parties, and large gatherings.",
     heroSlideTwoTitleLineOne: "Bring Teams Together",

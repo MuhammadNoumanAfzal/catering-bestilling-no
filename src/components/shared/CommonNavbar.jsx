@@ -359,7 +359,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
         {!hideLogo ? (
           <Link to="/" className="flex shrink-0 items-center self-center">
             <img
-              src="/home/logo.jpeg"
+              src="/home/logo (2).png"
               alt="Lunsjavtale"
               className="h-28 w-auto object-contain"
             />

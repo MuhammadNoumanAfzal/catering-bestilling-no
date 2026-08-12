@@ -170,8 +170,9 @@ const no = {
     heroBadgeOne: "Kuratert arrangementscatering",
     heroBadgeTwo: "Enklere firmaplanlegging",
     heroBadgeThree: "Private feiringer",
-    heroTitleLineOne: "Bestill catering til",
-    heroTitleLineTwo: "arrangementer som teller",
+    heroTitle: "Bestill catering fra din favorittleverandør i hele Norge",
+    heroTitleLineOne: "Bestill catering fra din",
+    heroTitleLineTwo: "favorittleverandør i hele Norge",
     heroSubtitle:
       "Sammenlign p\u00e5litelige cateringleverand\u00f8rer, utvalgte menyer og trygg levering til kontorarrangementer, private selskaper og store samlinger.",
     heroSlideTwoTitleLineOne: "Samle teamet med",
