@@ -28,22 +28,22 @@ export default function HeroSection({
         className="absolute inset-0 h-full w-full object-cover opacity-20"
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto ">
+      <div className="relative z-10 mx-auto max-w-7xl">
         <HomeNavbar />
 
-        <div className="grid min-h-[calc(100vh-88px)] max-w-7xl  mx-auto items-center gap-12 px-5 py-10 md:px-6 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-14">
-          <div className="md:max-w-2xl">
-            <h1 className=" text-[40px] md:text-[70px] font-extrabold text-black">
+        <div className="mx-auto grid min-h-[calc(100vh-88px)] max-w-7xl items-center gap-10 px-5 py-10 md:px-6 lg:grid-cols-2 lg:gap-14 lg:px-10 lg:py-14">
+          <div className="max-w-[620px]">
+            <h1 className="max-w-[560px] text-[40px] font-extrabold leading-[1.04] tracking-[-0.03em] text-black sm:text-[54px] lg:text-[64px]">
               {t("home.heroTitleLineOne")}
               <br />
               {t("home.heroTitleLineTwo")}
             </h1>
 
-            <p className="type-h5 mt-5 max-w-xl text-gray-700">
+            <p className="type-h5 mt-6 max-w-[540px] text-gray-700">
               {t("home.heroSubtitle")}
             </p>
 
-            <div className="mt-8 max-w-2xl">
+            <div className="mt-8 max-w-[600px]">
               <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="flex h-12 py-2 flex-1 items-center rounded-xl border border-gray-300 bg-white px-4 transition focus-within:border-[#e98c65]">
                   <FiMapPin className="shrink-0 text-sm text-gray-500" />
