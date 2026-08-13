@@ -1,3 +1,5 @@
+import { isPublicVendorVisible } from "../../vendor/api/publicVisibility";
+
 function slugify(text) {
   return String(text)
     .toLowerCase()
@@ -77,89 +79,8 @@ function normalizeTaxonomyTags(items = [], fallback = []) {
   return mappedItems.length > 0 ? mappedItems : fallback;
 }
 
-function isPrimaryMenuProduct(node) {
-  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
-}
-
 function isCustomerVisibleMenuProduct(node) {
   return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
-}
-
-function hasPublicActiveMenuProducts(node) {
-  const categories = Array.isArray(node?.menuCategories) ? node.menuCategories : [];
-
-  return categories.some((category) =>
-    Array.isArray(category?.vendorProducts) &&
-    category.vendorProducts.some(
-      (product) =>
-        isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product),
-    ),
-  );
-}
-
-function isExplicitlyVisibleVendorStatus(node) {
-  const status = `${node?.status ?? ""}`.trim().toUpperCase();
-  const applicationStatus = `${node?.applicationStatus ?? ""}`.trim().toUpperCase();
-
-  if (applicationStatus) {
-    if (["ACTIVE", "APPROVED"].includes(applicationStatus)) {
-      return true;
-    }
-
-    if (
-      [
-        "PENDING_APPROVAL",
-        "REVIEWING",
-        "CHANGES_REQUESTED",
-        "REJECTED",
-        "SUSPENDED",
-        "DEACTIVATED",
-        "INACTIVE",
-      ].includes(applicationStatus)
-    ) {
-      return false;
-    }
-  }
-
-  if (status) {
-    if (["ACTIVE", "APPROVED", "PUBLISHED"].includes(status)) {
-      return true;
-    }
-
-    if (
-      [
-        "PENDING",
-        "PENDING_APPROVAL",
-        "REVIEWING",
-        "REJECTED",
-        "SUSPENDED",
-        "DEACTIVATED",
-        "INACTIVE",
-      ].includes(status)
-    ) {
-      return false;
-    }
-  }
-
-  if (typeof node?.isActive === "boolean") {
-    return node.isActive;
-  }
-
-  return null;
-}
-
-function isPublicVendorVisible(node) {
-  const statusVisibility = isExplicitlyVisibleVendorStatus(node);
-
-  if (statusVisibility === false) {
-    return false;
-  }
-
-  if (!hasPublicActiveMenuProducts(node)) {
-    return false;
-  }
-
-  return true;
 }
 
 function mapVendorNode(node) {
