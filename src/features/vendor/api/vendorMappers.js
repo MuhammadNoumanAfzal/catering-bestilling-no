@@ -42,6 +42,25 @@ function isCustomerVisibleMenuProduct(node) {
   return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
 }
 
+function getFirstVendorMenuImage(categories = []) {
+  for (const category of categories) {
+    const products = Array.isArray(category?.vendorProducts) ? category.vendorProducts : [];
+
+    for (const product of products) {
+      if (!isPrimaryMenuProduct(product) || !isCustomerVisibleMenuProduct(product)) {
+        continue;
+      }
+
+      const fileUrl = `${product?.coverImage?.fileUrl ?? ""}`.trim();
+      if (fileUrl) {
+        return fileUrl;
+      }
+    }
+  }
+
+  return "";
+}
+
 function normalizeDayCode(day) {
   const normalized = `${day ?? ""}`.trim().toLowerCase();
   const dayIndex = DAY_MAP[normalized];
@@ -367,6 +386,8 @@ export function adaptApiVendorToProfile(apiVendor) {
       };
     })
     .filter((section) => section.items.length > 0);
+  const firstMenuImage = getFirstVendorMenuImage(apiVendor.menuCategories || []);
+  const primaryImage = banner || firstMenuImage || logo || "";
 
   const categories = menuSections.map((category) => category.title);
 
@@ -389,9 +410,10 @@ export function adaptApiVendorToProfile(apiVendor) {
       Number.isFinite(Number(apiVendor?.publicActiveMenuCount))
         ? Number(apiVendor.publicActiveMenuCount)
         : getPublicMenuCount(apiVendor),
+    image: primaryImage,
     logo,
-    banner,
-    heroSideImage: banner,
+    banner: primaryImage,
+    heroSideImage: primaryImage,
     rating: rating.toFixed(1),
     reviewCount: apiVendor.reviewsCount || 0,
     cuisine,
