@@ -1,3 +1,5 @@
+import { isPublicVendorVisible } from "./publicVisibility";
+
 const DAY_MAP = {
   su: 0,
   sun: 0,
@@ -117,10 +119,6 @@ function buildOptionalSelections(product) {
   }));
 }
 
-function isPrimaryMenuProduct(product) {
-  return `${product?.productType ?? "menu"}`.toLowerCase() === "menu";
-}
-
 function normalizeDeliverySlot(slot) {
   const day = normalizeDayCode(slot?.day);
   const start = `${slot?.start ?? ""}`.trim();
@@ -165,87 +163,6 @@ function unwrapSpecialClosures(specialClosures) {
   }
 
   return [];
-}
-
-function isCustomerVisibleMenuProduct(product) {
-  return `${product?.menuStatus ?? "active"}`.toLowerCase() === "active";
-}
-
-function hasPublicActiveMenuProducts(vendor) {
-  const categories = Array.isArray(vendor?.menuCategories) ? vendor.menuCategories : [];
-
-  return categories.some((category) =>
-    Array.isArray(category?.vendorProducts) &&
-    category.vendorProducts.some(
-      (product) =>
-        isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product),
-    ),
-  );
-}
-
-function isExplicitlyVisibleVendorStatus(vendor) {
-  const status = `${vendor?.status ?? ""}`.trim().toUpperCase();
-  const applicationStatus = `${vendor?.applicationStatus ?? ""}`.trim().toUpperCase();
-
-  if (applicationStatus) {
-    if (["ACTIVE", "APPROVED"].includes(applicationStatus)) {
-      return true;
-    }
-
-    if (
-      [
-        "PENDING_APPROVAL",
-        "REVIEWING",
-        "CHANGES_REQUESTED",
-        "REJECTED",
-        "SUSPENDED",
-        "DEACTIVATED",
-        "INACTIVE",
-      ].includes(applicationStatus)
-    ) {
-      return false;
-    }
-  }
-
-  if (status) {
-    if (["ACTIVE", "APPROVED", "PUBLISHED"].includes(status)) {
-      return true;
-    }
-
-    if (
-      [
-        "PENDING",
-        "PENDING_APPROVAL",
-        "REVIEWING",
-        "REJECTED",
-        "SUSPENDED",
-        "DEACTIVATED",
-        "INACTIVE",
-      ].includes(status)
-    ) {
-      return false;
-    }
-  }
-
-  if (typeof vendor?.isActive === "boolean") {
-    return vendor.isActive;
-  }
-
-  return null;
-}
-
-function isPublicVendorVisible(vendor) {
-  const statusVisibility = isExplicitlyVisibleVendorStatus(vendor);
-
-  if (statusVisibility === false) {
-    return false;
-  }
-
-  if (!hasPublicActiveMenuProducts(vendor)) {
-    return false;
-  }
-
-  return true;
 }
 
 function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
