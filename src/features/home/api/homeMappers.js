@@ -86,6 +86,27 @@ function isCustomerVisibleMenuProduct(node) {
   return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
 }
 
+function getFirstVendorMenuImage(node) {
+  const categories = Array.isArray(node?.menuCategories) ? node.menuCategories : [];
+
+  for (const category of categories) {
+    const products = Array.isArray(category?.vendorProducts) ? category.vendorProducts : [];
+
+    for (const product of products) {
+      if (!isCustomerVisibleMenuProduct(product)) {
+        continue;
+      }
+
+      const fileUrl = `${product?.coverImage?.fileUrl ?? ""}`.trim();
+      if (fileUrl) {
+        return fileUrl;
+      }
+    }
+  }
+
+  return "";
+}
+
 function mapVendorNode(node) {
   if (!isPublicVendorVisible(node)) {
     return null;
@@ -103,15 +124,23 @@ function mapVendorNode(node) {
   const deliverySlots = Array.isArray(node?.deliverySettings?.deliveryTimeSlots)
     ? node.deliverySettings.deliveryTimeSlots
     : [];
+  const firstMenuImage = getFirstVendorMenuImage(node);
+  const primaryImage =
+    node?.coverPhotoUrl ||
+    node?.businessSettings?.coverPhotoUrl ||
+    firstMenuImage ||
+    node?.logoUrl ||
+    node?.businessSettings?.logoUrl ||
+    "";
 
   return {
     id: node?.id || "",
     slug: node?.slug || slugify(name),
     name,
-    image: node?.coverPhotoUrl || node?.logoUrl || "",
-    logo: node?.logoUrl || "",
-    banner: node?.coverPhotoUrl || node?.logoUrl || "",
-    heroSideImage: node?.coverPhotoUrl || node?.logoUrl || "",
+    image: primaryImage,
+    logo: node?.logoUrl || node?.businessSettings?.logoUrl || "",
+    banner: primaryImage,
+    heroSideImage: primaryImage,
     rating: formatRating(node?.rating),
     deliveryFee: formatDeliveryFee(fee),
     discount:
