@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FiStar, FiX } from "react-icons/fi";
 import {
   createInitialVendorReviewFormState,
@@ -6,6 +7,8 @@ import {
 } from "../utils/vendorReviewForm";
 
 function RatingPicker({ value, onChange }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-2">
       {[1, 2, 3, 4, 5].map((rating) => (
@@ -18,7 +21,7 @@ function RatingPicker({ value, onChange }) {
               ? "border-[#f4c44f] bg-[#fff5d8] text-[#c48a00]"
               : "border-[#e3d8cc] bg-white text-[#8f8479]"
           }`}
-          aria-label={`Rate ${rating} out of 5`}
+          aria-label={t("vendor.reviewModal.rateAria", { rating })}
         >
           <FiStar className={rating <= value ? "fill-current" : ""} />
         </button>
@@ -33,6 +36,7 @@ export default function VendorReviewModal({
   onSubmit,
   isSubmitting = false,
 }) {
+  const { t } = useTranslation();
   const [formState, setFormState] = useState(() =>
     createInitialVendorReviewFormState(),
   );
@@ -51,14 +55,13 @@ export default function VendorReviewModal({
         <div className="flex items-start justify-between gap-4 border-b border-[#efe2d6] px-5 py-4 sm:px-6">
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#cf6e38]">
-              Leave a review
+              {t("vendor.reviewModal.eyebrow")}
             </p>
             <h2 className="mt-2 text-[24px] font-semibold tracking-[-0.03em] text-[#171512] sm:text-[28px]">
-              Share your experience with {vendor.name}
+              {t("vendor.reviewModal.title", { vendorName: vendor.name })}
             </h2>
             <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6a5d52]">
-              Your review helps other customers understand food quality,
-              delivery reliability, and the overall catering experience.
+              {t("vendor.reviewModal.description")}
             </p>
           </div>
 
@@ -66,7 +69,7 @@ export default function VendorReviewModal({
             type="button"
             onClick={onCancel}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e3d8cc] bg-white text-[#54493f] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
-            aria-label="Close review form"
+            aria-label={t("vendor.reviewModal.closeAria")}
           >
             <FiX className="text-[18px]" />
           </button>
@@ -76,7 +79,7 @@ export default function VendorReviewModal({
           <div className="space-y-4">
             <div>
               <span className="mb-2 block text-[13px] font-semibold uppercase tracking-[0.12em] text-[#8a7d71]">
-                Overall rating
+                {t("vendor.reviewModal.overallRating")}
               </span>
               <RatingPicker
                 value={formState.rating}
@@ -87,25 +90,25 @@ export default function VendorReviewModal({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-2 block text-[13px] font-semibold text-[#2a241f]">
-                  Your name
+                  {t("vendor.reviewModal.yourName")}
                 </span>
                 <input
                   value={formState.authorName}
                   onChange={(event) => updateField("authorName", event.target.value)}
-                  placeholder="John Doe"
+                  placeholder={t("vendor.reviewModal.namePlaceholder")}
                   className="h-11 w-full rounded-[12px] border border-[#ddd2c6] bg-white px-3 text-[#1f1a16] outline-none transition focus:border-[#cf6e38]"
                 />
               </label>
 
               <label className="block">
                 <span className="mb-2 block text-[13px] font-semibold text-[#2a241f]">
-                  Email
+                  {t("vendor.reviewModal.email")}
                 </span>
                 <input
                   type="email"
                   value={formState.authorEmail}
                   onChange={(event) => updateField("authorEmail", event.target.value)}
-                  placeholder="name@example.com"
+                  placeholder={t("vendor.reviewModal.emailPlaceholder")}
                   className="h-11 w-full rounded-[12px] border border-[#ddd2c6] bg-white px-3 text-[#1f1a16] outline-none transition focus:border-[#cf6e38]"
                 />
               </label>
@@ -114,7 +117,7 @@ export default function VendorReviewModal({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-2 block text-[13px] font-semibold text-[#2a241f]">
-                  Occasion
+                  {t("vendor.reviewModal.occasion")}
                 </span>
                 <select
                   value={formState.occasion}
@@ -131,7 +134,7 @@ export default function VendorReviewModal({
 
               <label className="block">
                 <span className="mb-2 block text-[13px] font-semibold text-[#2a241f]">
-                  Event date
+                  {t("vendor.reviewModal.eventDate")}
                 </span>
                 <input
                   type="date"
@@ -144,36 +147,36 @@ export default function VendorReviewModal({
 
             <label className="block">
               <span className="mb-2 block text-[13px] font-semibold text-[#2a241f]">
-                Review title
+                {t("vendor.reviewModal.reviewTitle")}
               </span>
               <input
                 value={formState.title}
                 onChange={(event) => updateField("title", event.target.value)}
-                placeholder="Professional service and very fresh food"
+                placeholder={t("vendor.reviewModal.titlePlaceholder")}
                 className="h-11 w-full rounded-[12px] border border-[#ddd2c6] bg-white px-3 text-[#1f1a16] outline-none transition focus:border-[#cf6e38]"
               />
             </label>
 
             <label className="block">
               <span className="mb-2 block text-[13px] font-semibold text-[#2a241f]">
-                Order ID
+                {t("vendor.reviewModal.orderId")}
               </span>
               <input
                 value={formState.orderId}
                 onChange={(event) => updateField("orderId", event.target.value)}
-                placeholder="ORD-10293"
+                placeholder={t("vendor.reviewModal.orderIdPlaceholder")}
                 className="h-11 w-full rounded-[12px] border border-[#ddd2c6] bg-white px-3 text-[#1f1a16] outline-none transition focus:border-[#cf6e38]"
               />
             </label>
 
             <label className="block">
               <span className="mb-2 block text-[13px] font-semibold text-[#2a241f]">
-                Review details
+                {t("vendor.reviewModal.reviewDetails")}
               </span>
               <textarea
                 value={formState.comment}
                 onChange={(event) => updateField("comment", event.target.value)}
-                placeholder="Tell other customers how the food, setup, delivery, and overall experience went."
+                placeholder={t("vendor.reviewModal.detailsPlaceholder")}
                 className="min-h-[110px] w-full rounded-[12px] border border-[#ddd2c6] bg-white px-3 py-3 text-[#1f1a16] outline-none transition focus:border-[#cf6e38]"
               />
             </label>
@@ -186,7 +189,7 @@ export default function VendorReviewModal({
             onClick={onCancel}
             className="rounded-[12px] border border-[#d8ccc0] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#27211c] transition hover:bg-[#faf5f0]"
           >
-            Cancel
+            {t("vendor.reviewModal.cancel")}
           </button>
           <button
             type="button"
@@ -194,7 +197,7 @@ export default function VendorReviewModal({
             disabled={isSubmitting}
             className="rounded-[12px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
           >
-            {isSubmitting ? "Submitting..." : "Submit review"}
+            {isSubmitting ? t("vendor.reviewModal.submitting") : t("vendor.reviewModal.submit")}
           </button>
         </div>
       </div>

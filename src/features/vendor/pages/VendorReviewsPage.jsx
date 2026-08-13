@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FiMapPin,
   FiMessageSquare,
@@ -123,6 +124,7 @@ function EmptyReviewsState({ onAddReview, canReview }) {
 }
 
 export default function VendorReviewsPage() {
+  const { t } = useTranslation();
   const { vendorSlug } = useParams();
   const { vendor, isLoading, error } = useVendorProfile(vendorSlug);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -195,8 +197,8 @@ export default function VendorReviewsPage() {
 
     if (!payload.authorName || !payload.authorEmail || !payload.title || !payload.comment) {
       await showAuthErrorAlert(
-        "Please complete name, email, title, and review details before submitting.",
-        "Missing review details",
+        t("vendor.reviews.missingDetailsMessage"),
+        t("vendor.reviews.missingDetailsTitle"),
       );
       return;
     }
@@ -204,11 +206,11 @@ export default function VendorReviewsPage() {
     try {
       const response = await createReview(payload);
       setIsReviewModalOpen(false);
-      await showSuccessToast(response.message || "Review submitted successfully");
+      await showSuccessToast(response.message || t("vendor.reviews.submittedSuccess"));
     } catch (submitError) {
       await showAuthErrorAlert(
-        submitError.message || "Unable to submit your review right now.",
-        "Review submission failed",
+        submitError.message || t("vendor.reviews.submitFailedMessage"),
+        t("vendor.reviews.submitFailedTitle"),
       );
     }
   };
@@ -219,7 +221,7 @@ export default function VendorReviewsPage() {
 
       <div className="mx-auto max-w-6xl">
         <BackLinkButton to={`/vendor/${vendor.slug}`}>
-          Back to vendor page
+          {t("vendor.reviews.backToVendor")}
         </BackLinkButton>
 
         <div className="mt-5 overflow-hidden rounded-[30px] border border-[#eadfd2] bg-[linear-gradient(135deg,#fffaf6_0%,#fff2e9_45%,#fff9f3_100%)] shadow-[0_24px_56px_rgba(31,19,8,0.08)]">
@@ -227,10 +229,10 @@ export default function VendorReviewsPage() {
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#cf6e38]">
-                  Guest Feedback
+                  {t("vendor.reviews.eyebrow")}
                 </p>
                 <h1 className="mt-3 text-[36px] font-semibold leading-[1.02] tracking-[-0.04em] text-[#171512] sm:text-[48px]">
-                  Reviews for {vendor.name}
+                  {t("vendor.reviews.title", { vendorName: vendor.name })}
                 </h1>
 
                 <div className="mt-6 flex flex-wrap items-center gap-4 text-[15px] text-[#4f4740]">
@@ -239,7 +241,7 @@ export default function VendorReviewsPage() {
                     <span className="font-semibold text-[#171512]">
                       {averageRating}
                     </span>
-                    <span>from {reviewCount} reviews</span>
+                    <span>{t("vendor.reviews.fromReviews", { count: reviewCount })}</span>
                   </span>
                   <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
                     <FiMapPin className="text-[14px]" />
@@ -248,7 +250,7 @@ export default function VendorReviewsPage() {
                   {!canReview ? (
                     <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
                       <FiMessageSquare className="text-[14px]" />
-                      Review available after eligible order
+                      {t("vendor.reviews.availableAfterOrder")}
                     </span>
                   ) : null}
                 </div>
@@ -261,7 +263,7 @@ export default function VendorReviewsPage() {
                   className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
                 >
                   <FiPlus className="text-[16px]" />
-                  Write a review
+                  {t("vendor.reviews.writeReview")}
                 </button>
               ) : null}
             </div>
@@ -315,7 +317,7 @@ export default function VendorReviewsPage() {
               disabled={isLoadingMore}
               className="rounded-[12px] border border-[#d8ccc0] bg-white px-5 py-3 text-[14px] font-semibold text-[#27211c] transition hover:bg-[#faf5f0] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isLoadingMore ? "Loading..." : "Load more reviews"}
+              {isLoadingMore ? t("vendor.reviews.loading") : t("vendor.reviews.loadMore")}
             </button>
           </div>
         ) : null}

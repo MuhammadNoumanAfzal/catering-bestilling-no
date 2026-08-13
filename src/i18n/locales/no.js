@@ -347,9 +347,13 @@ const no = {
     priorityDesk: "Prioritert desk",
     formTitle: "Fortell oss hva du trenger, så sender vi det raskt videre",
     fullName: "Fullt navn",
+    namePlaceholder: "Alex Johnson",
     emailAddress: "E-postadresse",
+    emailPlaceholder: "alex@company.com",
     company: "Bedrift eller organisasjon",
+    companyPlaceholder: "Lunsjavtale Studio",
     phone: "Telefon",
+    phonePlaceholder: "+47 000 00 000",
     helpTopic: "Hva kan vi hjelpe med?",
     message: "Melding",
     messagePlaceholder:
@@ -449,6 +453,47 @@ const no = {
     fee: "Gebyr:",
     freeDeliveryOver: "Gratis levering over {{amount}}",
     noServiceAreas: "Ingen tjenesteområder er lagt til ennå.",
+    reviews: {
+      backToVendor: "Tilbake til leverandørsiden",
+      eyebrow: "Gjestevurderinger",
+      title: "Anmeldelser for {{vendorName}}",
+      fromReviews: "fra {{count}} anmeldelser",
+      availableAfterOrder: "Anmeldelse tilgjengelig etter gyldig bestilling",
+      writeReview: "Skriv en anmeldelse",
+      loading: "Laster...",
+      loadMore: "Last inn flere anmeldelser",
+      missingDetailsTitle: "Mangler anmeldelsesdetaljer",
+      missingDetailsMessage:
+        "Fyll inn navn, e-post, tittel og anmeldelsesdetaljer før innsending.",
+      submittedSuccess: "Anmeldelsen ble sendt inn",
+      submitFailedTitle: "Innsending av anmeldelse mislyktes",
+      submitFailedMessage: "Kunne ikke sende inn anmeldelsen din akkurat nå.",
+    },
+    reviewModal: {
+      rateAria: "Gi {{rating}} av 5 stjerner",
+      eyebrow: "Legg igjen en anmeldelse",
+      title: "Del opplevelsen din med {{vendorName}}",
+      description:
+        "Anmeldelsen din hjelper andre kunder å forstå matkvalitet, leveringssikkerhet og den totale cateringopplevelsen.",
+      closeAria: "Lukk anmeldelsesskjema",
+      overallRating: "Totalvurdering",
+      yourName: "Navnet ditt",
+      namePlaceholder: "John Doe",
+      email: "E-post",
+      emailPlaceholder: "name@example.com",
+      occasion: "Anledning",
+      eventDate: "Arrangementsdato",
+      reviewTitle: "Tittel på anmeldelse",
+      titlePlaceholder: "Profesjonell service og veldig fersk mat",
+      orderId: "Ordre-ID",
+      orderIdPlaceholder: "ORD-10293",
+      reviewDetails: "Anmeldelsesdetaljer",
+      detailsPlaceholder:
+        "Fortell andre kunder hvordan maten, oppsettet, leveringen og totalopplevelsen var.",
+      cancel: "Avbryt",
+      submitting: "Sender inn...",
+      submit: "Send inn anmeldelse",
+    },
   },
   menu: {
     back: "Tilbake",
@@ -1177,6 +1222,62 @@ const no = {
       editProfile: "Rediger profil",
       password: "Passord",
       notification: "Varsling",
+    },
+    supportResponses: {
+      title: "Supportsvar",
+      description:
+        "Se oppdateringer på saker og fortsett supportsamtaler fra en egen side.",
+      backToSupport: "Tilbake til supportskjema",
+      ticketListTitle: "Dine supportsaker",
+      ticketListDescription: "Se saksstatus og svar direkte til support.",
+      refresh: "Oppdater",
+      orderReference: "Ordre: {{orderReference}}",
+      noTickets: "Ingen supportsaker ennå.",
+      previous: "Forrige",
+      next: "Neste",
+      pageSummary: "Side {{page}} av {{totalPages}}",
+      loadingDetails: "Laster saksdetaljer...",
+      openedOn: "Åpnet {{createdAtLabel}}",
+      emptyConversation: "Ingen meldinger tilgjengelig for denne saken ennå.",
+      replyLabel: "Svar til support",
+      replyPlaceholder: "Skriv svaret ditt her...",
+      replyHint: "Svar sendes i den samme supporttråden.",
+      sending: "Sender...",
+      sendReply: "Send svar",
+      emptySelection:
+        "Velg en supportsak for å se samtalen og sende et svar.",
+      replyFailedTitle: "Svar mislyktes",
+      replyFailedMessage: "Kunne ikke sende supportsvar akkurat nå.",
+    },
+    placeholderPages: {
+      orders: {
+        title: "Bestillinger",
+        description:
+          "Følg ordreinngang, fremdrift og leveringstider på ett sted.",
+      },
+      invoices: {
+        title: "Faktura",
+        description:
+          "Se fakturahistorikk, betalingsstatus og eksportklare fakturaposter.",
+      },
+      address: {
+        title: "Adresse",
+        description:
+          "Vedlikehold hente-, leverings- og fakturaadresser brukt i leverandørdriften.",
+      },
+      settings: {
+        title: "Innstilling",
+        description:
+          "Oppdater kontovalg, sikkerhetsinnstillinger og konfigurasjon på dashbordnivå.",
+      },
+      default: {
+        title: "Leverandørside",
+        description: "Denne delen er klar for sin dedikerte innholdsmodul.",
+      },
+      readyTitle: "Denne siden er strukturert og klar for videre funksjonsarbeid.",
+      readyDescription:
+        "Felles layout, ruting, navigasjonstilstand og sidebeholder er allerede på plass. Du kan nå bygge denne skjermen videre uten å endre leverandørskallet igjen.",
+      readyBadge: "Klar for neste modul",
     },
     dashboard: {
       title: "Oversikt",
