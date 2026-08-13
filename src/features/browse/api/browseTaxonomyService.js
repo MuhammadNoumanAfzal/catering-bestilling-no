@@ -150,7 +150,11 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
             name
             slug
           }
-          dietaryTags
+          dietaryTags {
+            id
+            name
+            slug
+          }
         }
       }
       pageInfo {
@@ -250,7 +254,11 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
             name
             slug
           }
-          dietaryTags
+          dietaryTags {
+            id
+            name
+            slug
+          }
         }
       }
       pageInfo {
@@ -404,6 +412,17 @@ function mapProductNode(node, mode) {
     mode === "occasion"
       ? (node?.occasions || []).map((item) => item.slug).filter(Boolean)
       : (node?.foodTypes || []).map((item) => item.slug).filter(Boolean);
+  const dietaryTags = Array.isArray(node?.dietaryTags)
+    ? node.dietaryTags
+        .map((tag) => {
+          if (typeof tag === "string") {
+            return tag;
+          }
+
+          return tag?.slug || tag?.name || "";
+        })
+        .filter(Boolean)
+    : [];
 
   return {
     id: node?.id || "",
@@ -420,7 +439,7 @@ function mapProductNode(node, mode) {
     price: formatPriceWithLabel(node?.priceWithTax, node?.pricingType),
     discount: node?.badge || "",
     categoryTags,
-    dietaryTags: Array.isArray(node?.dietaryTags) ? node.dietaryTags : [],
+    dietaryTags,
     offerTags: [],
     pricingTier: "",
     individualPackaging: false,

@@ -5,6 +5,7 @@ export const FETCH_VENDORS_QUERY = `
         node {
           id
           name
+          slug
           status
           isActive
           applicationStatus

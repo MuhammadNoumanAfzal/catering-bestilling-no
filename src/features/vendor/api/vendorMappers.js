@@ -1,4 +1,4 @@
-import { isPublicVendorVisible } from "./publicVisibility";
+import { getPublicMenuCount, isPublicVendorVisible } from "./publicVisibility";
 
 const DAY_MAP = {
   su: 0,
@@ -369,6 +369,18 @@ export function adaptApiVendorToProfile(apiVendor) {
     canReview: Boolean(apiVendor.canReview),
     hasReviewed: Boolean(apiVendor.hasReviewed),
     reviewSummary: apiVendor.reviewSummary || null,
+    isPubliclyVisible:
+      typeof apiVendor.isPubliclyVisible === "boolean"
+        ? apiVendor.isPubliclyVisible
+        : isPublicVendorVisible(apiVendor),
+    hasPublicActiveMenus:
+      typeof apiVendor.hasPublicActiveMenus === "boolean"
+        ? apiVendor.hasPublicActiveMenus
+        : menuSections.length > 0,
+    publicActiveMenuCount:
+      Number.isFinite(Number(apiVendor?.publicActiveMenuCount))
+        ? Number(apiVendor.publicActiveMenuCount)
+        : getPublicMenuCount(apiVendor),
     logo,
     banner,
     heroSideImage: banner,
