@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import { FiStar } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
 import { useNavigate } from "react-router-dom";
+
+const DEFAULT_VENDOR_IMAGE = "/home/hero1.webp";
 
 export default function VendorCard({
   image,
@@ -13,6 +16,11 @@ export default function VendorCard({
   publicActiveMenuCount,
 }) {
   const navigate = useNavigate();
+  const [displayImage, setDisplayImage] = useState(image || DEFAULT_VENDOR_IMAGE);
+
+  useEffect(() => {
+    setDisplayImage(image || DEFAULT_VENDOR_IMAGE);
+  }, [image]);
 
   return (
     <article
@@ -21,9 +29,14 @@ export default function VendorCard({
     >
       <div className="overflow-hidden rounded-[22px] bg-[#f2f2f2]">
         <img
-          src={image}
+          src={displayImage}
           alt={name}
           className="h-[260px] w-full object-cover transition duration-300 group-hover:scale-105"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => {
+            setDisplayImage(DEFAULT_VENDOR_IMAGE);
+          }}
         />
       </div>
 

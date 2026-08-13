@@ -9,6 +9,9 @@ export const FETCH_VENDORS_QUERY = `
           status
           isActive
           applicationStatus
+          isPubliclyVisible
+          hasPublicActiveMenus
+          publicActiveMenuCount
           rating
           reviewsCount
           logoUrl
@@ -115,6 +118,9 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       status
       isActive
       applicationStatus
+      isPubliclyVisible
+      hasPublicActiveMenus
+      publicActiveMenuCount
       rating
       reviewsCount
       canReview
