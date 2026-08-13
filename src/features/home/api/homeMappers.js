@@ -1,5 +1,7 @@
 import {
   getPublicMenuCount,
+  isCustomerVisibleMenuProduct,
+  isPrimaryMenuProduct,
   isPublicVendorVisible,
 } from "../../vendor/api/publicVisibility";
 
@@ -82,10 +84,6 @@ function normalizeTaxonomyTags(items = [], fallback = []) {
   return mappedItems.length > 0 ? mappedItems : fallback;
 }
 
-function isCustomerVisibleMenuProduct(node) {
-  return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
-}
-
 function getFirstVendorMenuImage(node) {
   const categories = Array.isArray(node?.menuCategories) ? node.menuCategories : [];
 
@@ -137,6 +135,8 @@ function mapVendorNode(node) {
     id: node?.id || "",
     slug: node?.slug || slugify(name),
     name,
+    isPopular: Boolean(node?.isPopular),
+    isFeatured: Boolean(node?.isFeatured),
     image: primaryImage,
     logo: node?.logoUrl || node?.businessSettings?.logoUrl || "",
     banner: primaryImage,
@@ -225,6 +225,8 @@ export function mapProductNode(node) {
     vendorSlug: vendor?.slug || "",
     name,
     title: name,
+    isPopular: Boolean(node?.isPopular),
+    isFeatured: Boolean(node?.isFeatured),
     description: node?.description || "",
     vendorName: vendor?.name || "",
     vendor: vendor?.name || "",
@@ -244,26 +246,85 @@ export function mapProductNode(node) {
   };
 }
 
+function uniqueById(items = []) {
+  const seen = new Set();
+
+  return items.filter((item) => {
+    const id = item?.id || item?.slug;
+
+    if (!id || seen.has(id)) {
+      return false;
+    }
+
+    seen.add(id);
+    return true;
+  });
+}
+
+function flattenVendorProducts(vendors = []) {
+  return vendors.flatMap((vendorEdge) => {
+    const vendorNode = vendorEdge?.node;
+    const categories = Array.isArray(vendorNode?.menuCategories)
+      ? vendorNode.menuCategories
+      : [];
+
+    return categories.flatMap((category) => {
+      const products = Array.isArray(category?.vendorProducts)
+        ? category.vendorProducts
+        : [];
+
+      return products.map((product) => ({
+        ...product,
+        vendor: vendorNode,
+      }));
+    });
+  });
+}
+
 export function mapHomeResponse(response) {
+  const allVendorNodes = (response?.allVendors?.edges || []).map((edge) => edge?.node);
+  const mappedAllVendors = allVendorNodes
+    .map((node) => mapVendorNode(node))
+    .filter(Boolean);
+  const mappedSearchedVendors = (response?.searchVendors?.edges || [])
+    .map((edge) => mapVendorNode(edge.node))
+    .filter(Boolean);
+  const mappedFeaturedVendors = (response?.featured?.edges || [])
+    .map((edge) => mapVendorNode(edge.node))
+    .filter(Boolean);
+  const mappedPopularVendors = (response?.popularVendors?.edges || [])
+    .map((edge) => mapVendorNode(edge.node))
+    .filter(Boolean);
+  const fallbackFeaturedVendors = mappedAllVendors.filter((vendor) => vendor.isFeatured);
+  const fallbackPopularVendors = mappedAllVendors.filter((vendor) => vendor.isPopular);
+  const mappedPopularProducts = (response?.popularProducts?.edges || [])
+    .filter(
+      (edge) =>
+        isPrimaryMenuProduct(edge?.node) && isCustomerVisibleMenuProduct(edge?.node),
+    )
+    .map((edge) => mapProductNode(edge.node))
+    .filter(Boolean);
+  const fallbackPopularProducts = flattenVendorProducts(response?.allVendors?.edges || [])
+    .filter(
+      (product) =>
+        Boolean(product?.isPopular) &&
+        isPrimaryMenuProduct(product) &&
+        isCustomerVisibleMenuProduct(product),
+    )
+    .map((product) => mapProductNode(product))
+    .filter(Boolean);
+
   return {
-    allVendors: (response?.allVendors?.edges || []).map((edge) =>
-      mapVendorNode(edge.node),
-    ).filter(Boolean),
-    searchedVendors: (response?.searchVendors?.edges || []).map((edge) =>
-      mapVendorNode(edge.node),
-    ).filter(Boolean),
-    featuredVendors: (response?.featured?.edges || []).map((edge) =>
-      mapVendorNode(edge.node),
-    ).filter(Boolean),
-    popularVendors: (response?.popularVendors?.edges || []).map(
-      (edge) => mapVendorNode(edge.node),
-    ).filter(Boolean),
-    popularProducts: (response?.popularProducts?.edges || [])
-      .filter(
-        (edge) =>
-          isPrimaryMenuProduct(edge?.node) && isCustomerVisibleMenuProduct(edge?.node),
-      )
-      .map((edge) => mapProductNode(edge.node))
-      .filter(Boolean),
+    allVendors: mappedAllVendors,
+    searchedVendors: mappedSearchedVendors,
+    featuredVendors: uniqueById(
+      mappedFeaturedVendors.length > 0 ? mappedFeaturedVendors : fallbackFeaturedVendors,
+    ),
+    popularVendors: uniqueById(
+      mappedPopularVendors.length > 0 ? mappedPopularVendors : fallbackPopularVendors,
+    ),
+    popularProducts: uniqueById(
+      mappedPopularProducts.length > 0 ? mappedPopularProducts : fallbackPopularProducts,
+    ),
   };
 }

@@ -6,6 +6,8 @@ export const FETCH_HOME_DATA_QUERY = `
           id
           name
           slug
+          isPopular
+          isFeatured
           status
           isActive
           applicationStatus
@@ -76,6 +78,8 @@ export const FETCH_HOME_DATA_QUERY = `
           id
           name
           slug
+          isPopular
+          isFeatured
           status
           isActive
           applicationStatus
@@ -147,6 +151,8 @@ export const FETCH_HOME_DATA_QUERY = `
           id
           name
           slug
+          isPopular
+          isFeatured
           status
           isActive
           applicationStatus
@@ -218,6 +224,8 @@ export const FETCH_HOME_DATA_QUERY = `
           id
           name
           slug
+          isPopular
+          isFeatured
           status
           isActive
           applicationStatus
@@ -318,6 +326,8 @@ export const FETCH_HOME_DATA_QUERY = `
             id
             name
             slug
+            isPopular
+            isFeatured
             status
             isActive
             applicationStatus

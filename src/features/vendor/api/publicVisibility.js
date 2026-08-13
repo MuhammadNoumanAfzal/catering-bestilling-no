@@ -1,8 +1,8 @@
-function isPrimaryMenuProduct(node) {
+export function isPrimaryMenuProduct(node) {
   return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
 }
 
-function isCustomerVisibleMenuProduct(node) {
+export function isCustomerVisibleMenuProduct(node) {
   return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
 }
 
