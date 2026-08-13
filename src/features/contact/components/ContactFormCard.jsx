@@ -63,7 +63,7 @@ export default function ContactFormCard({
                 type="text"
                 value={formState.name}
                 onChange={(event) => updateField("name", event.target.value)}
-                placeholder="Alex Johnson"
+                placeholder={t("contact.namePlaceholder")}
                 disabled={isSubmitting}
                 required
               />
@@ -76,7 +76,7 @@ export default function ContactFormCard({
                 type="email"
                 value={formState.email}
                 onChange={(event) => updateField("email", event.target.value)}
-                placeholder="alex@company.com"
+                placeholder={t("contact.emailPlaceholder")}
                 disabled={isSubmitting}
                 required
               />
@@ -91,7 +91,7 @@ export default function ContactFormCard({
                 type="text"
                 value={formState.company}
                 onChange={(event) => updateField("company", event.target.value)}
-                placeholder="Lunsjavtale Studio"
+                placeholder={t("contact.companyPlaceholder")}
                 disabled={isSubmitting}
               />
               <ContactFieldError message={fieldErrors.company} />
@@ -103,7 +103,7 @@ export default function ContactFormCard({
                 type="tel"
                 value={formState.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
-                placeholder="+47 000 00 000"
+                placeholder={t("contact.phonePlaceholder")}
                 disabled={isSubmitting}
               />
               <ContactFieldError message={fieldErrors.phone} />

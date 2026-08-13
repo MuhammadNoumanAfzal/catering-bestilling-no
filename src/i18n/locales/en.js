@@ -344,9 +344,13 @@ const en = {
     priorityDesk: "Priority desk",
     formTitle: "Tell us what you need and we will route it to the right catering team fast",
     fullName: "Full name",
+    namePlaceholder: "Alex Johnson",
     emailAddress: "Email address",
+    emailPlaceholder: "alex@company.com",
     company: "Company or organization",
+    companyPlaceholder: "Lunsjavtale Studio",
     phone: "Phone",
+    phonePlaceholder: "+47 000 00 000",
     helpTopic: "What can we help with?",
     message: "Message",
     messagePlaceholder:
@@ -445,6 +449,47 @@ const en = {
     fee: "Fee:",
     freeDeliveryOver: "Free delivery over {{amount}}",
     noServiceAreas: "No service areas have been added yet.",
+    reviews: {
+      backToVendor: "Back to vendor page",
+      eyebrow: "Guest feedback",
+      title: "Reviews for {{vendorName}}",
+      fromReviews: "from {{count}} reviews",
+      availableAfterOrder: "Review available after eligible order",
+      writeReview: "Write a review",
+      loading: "Loading...",
+      loadMore: "Load more reviews",
+      missingDetailsTitle: "Missing review details",
+      missingDetailsMessage:
+        "Please complete name, email, title, and review details before submitting.",
+      submittedSuccess: "Review submitted successfully",
+      submitFailedTitle: "Review submission failed",
+      submitFailedMessage: "Unable to submit your review right now.",
+    },
+    reviewModal: {
+      rateAria: "Rate {{rating}} out of 5",
+      eyebrow: "Leave a review",
+      title: "Share your experience with {{vendorName}}",
+      description:
+        "Your review helps other customers understand food quality, delivery reliability, and the overall catering experience.",
+      closeAria: "Close review form",
+      overallRating: "Overall rating",
+      yourName: "Your name",
+      namePlaceholder: "John Doe",
+      email: "Email",
+      emailPlaceholder: "name@example.com",
+      occasion: "Occasion",
+      eventDate: "Event date",
+      reviewTitle: "Review title",
+      titlePlaceholder: "Professional service and very fresh food",
+      orderId: "Order ID",
+      orderIdPlaceholder: "ORD-10293",
+      reviewDetails: "Review details",
+      detailsPlaceholder:
+        "Tell other customers how the food, setup, delivery, and overall experience went.",
+      cancel: "Cancel",
+      submitting: "Submitting...",
+      submit: "Submit review",
+    },
   },
   menu: {
     back: "Back",
@@ -802,6 +847,62 @@ const en = {
       editProfile: "Edit Profile",
       password: "Password",
       notification: "Notification",
+    },
+    supportResponses: {
+      title: "Support Responses",
+      description:
+        "Review ticket updates and continue support conversations from a separate page.",
+      backToSupport: "Back To Support Form",
+      ticketListTitle: "Your Support Tickets",
+      ticketListDescription: "Review ticket status and reply directly to support.",
+      refresh: "Refresh",
+      orderReference: "Order: {{orderReference}}",
+      noTickets: "No support tickets yet.",
+      previous: "Previous",
+      next: "Next",
+      pageSummary: "Page {{page}} of {{totalPages}}",
+      loadingDetails: "Loading ticket details...",
+      openedOn: "Opened {{createdAtLabel}}",
+      emptyConversation: "No messages available for this ticket yet.",
+      replyLabel: "Reply to support",
+      replyPlaceholder: "Write your reply here...",
+      replyHint: "Replies are sent into the same support ticket thread.",
+      sending: "Sending...",
+      sendReply: "Send Reply",
+      emptySelection:
+        "Select a support ticket to review the conversation and send a reply.",
+      replyFailedTitle: "Reply failed",
+      replyFailedMessage: "Unable to send support reply right now.",
+    },
+    placeholderPages: {
+      orders: {
+        title: "Orders",
+        description:
+          "Track order intake, fulfillment progress, and delivery timelines from one place.",
+      },
+      invoices: {
+        title: "Invoice",
+        description:
+          "Review billing history, payment states, and export-ready invoice records.",
+      },
+      address: {
+        title: "Address",
+        description:
+          "Maintain pickup, delivery, and billing addresses used across your vendor operations.",
+      },
+      settings: {
+        title: "Setting",
+        description:
+          "Update account preferences, security settings, and dashboard-level configuration options.",
+      },
+      default: {
+        title: "Vendor Page",
+        description: "This section is ready for its dedicated content module.",
+      },
+      readyTitle: "This page is structured and ready for feature work.",
+      readyDescription:
+        "The shared layout, routing, navigation state, and page container are already in place. You can now build this screen independently without touching the vendor shell again.",
+      readyBadge: "Ready for the next module",
     },
     dashboard: {
       title: "Dashboard",

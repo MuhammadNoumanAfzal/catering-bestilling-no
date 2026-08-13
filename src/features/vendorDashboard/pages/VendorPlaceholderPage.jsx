@@ -1,40 +1,39 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { FiClock, FiTool } from "react-icons/fi";
 
-const pageContent = {
-  "/vendor-dashboard/orders": {
-    title: "Orders",
-    description:
-      "Track order intake, fulfillment progress, and delivery timelines from one place.",
-  },
-  "/vendor-dashboard/invoices": {
-    title: "Invoice",
-    description:
-      "Review billing history, payment states, and export-ready invoice records.",
-  },
-  "/vendor-dashboard/address": {
-    title: "Address",
-    description:
-      "Maintain pickup, delivery, and billing addresses used across your vendor operations.",
-  },
-  "/vendor-dashboard/settings": {
-    title: "Setting",
-    description:
-      "Update account preferences, security settings, and dashboard-level configuration options.",
-  },
-};
-
 export default function VendorPlaceholderPage() {
+  const { t } = useTranslation();
   const location = useLocation();
 
   const content = useMemo(
-    () =>
-      pageContent[location.pathname] ?? {
-        title: "Vendor Page",
-        description: "This section is ready for its dedicated content module.",
-      },
-    [location.pathname],
+    () => {
+      const knownContent = {
+        "/vendor-dashboard/orders": {
+          title: t("vendorPanel.placeholderPages.orders.title"),
+          description: t("vendorPanel.placeholderPages.orders.description"),
+        },
+        "/vendor-dashboard/invoices": {
+          title: t("vendorPanel.placeholderPages.invoices.title"),
+          description: t("vendorPanel.placeholderPages.invoices.description"),
+        },
+        "/vendor-dashboard/address": {
+          title: t("vendorPanel.placeholderPages.address.title"),
+          description: t("vendorPanel.placeholderPages.address.description"),
+        },
+        "/vendor-dashboard/settings": {
+          title: t("vendorPanel.placeholderPages.settings.title"),
+          description: t("vendorPanel.placeholderPages.settings.description"),
+        },
+      };
+
+      return knownContent[location.pathname] ?? {
+        title: t("vendorPanel.placeholderPages.default.title"),
+        description: t("vendorPanel.placeholderPages.default.description"),
+      };
+    },
+    [location.pathname, t],
   );
 
   return (
@@ -53,18 +52,16 @@ export default function VendorPlaceholderPage() {
           </div>
 
           <h2 className="text-2xl font-bold text-[#1f1f1f]">
-            This page is structured and ready for feature work.
+            {t("vendorPanel.placeholderPages.readyTitle")}
           </h2>
 
           <p className="text-sm leading-6 text-[#5d5d5d]">
-            The shared layout, routing, navigation state, and page container are
-            already in place. You can now build this screen independently
-            without touching the vendor shell again.
+            {t("vendorPanel.placeholderPages.readyDescription")}
           </p>
 
           <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-[#faf5ef] px-4 py-2 text-sm font-semibold text-[#8a5b36]">
             <FiClock className="text-[16px]" />
-            <span>Ready for the next module</span>
+            <span>{t("vendorPanel.placeholderPages.readyBadge")}</span>
           </div>
         </div>
       </section>
