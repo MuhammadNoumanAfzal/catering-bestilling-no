@@ -5,6 +5,7 @@ import {
   formatCategoryLabel,
   parseCategoryParamValue,
 } from "../../browse/utils/categoryFilters";
+import { fetchVendorProfiles } from "../../vendor/api";
 import { CatalogListingPageLayout, VendorCard } from "../components";
 import { HOME_LISTING_PAGE_SIZE } from "../constants/homeConstants";
 import { useHomeData } from "../hooks/useHomeData";
@@ -20,12 +21,44 @@ export default function VendorListingPage() {
   const { deliveryDate, deliveryTime, locationValue, searchQuery } = useBrowseFilters();
   const { allVendors, popularVendors, featuredVendors } = useHomeData();
   const [visibleCount, setVisibleCount] = useState(HOME_LISTING_PAGE_SIZE);
+  const [directVendors, setDirectVendors] = useState([]);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
   const activeCategoryLabel = formatCategoryLabel(selectedCategory);
 
   useEffect(() => {
     setVisibleCount(HOME_LISTING_PAGE_SIZE);
   }, [selectedCategory, vendorType]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadDirectVendors() {
+      if (vendorType !== "all" || allVendors.length > 0) {
+        if (isMounted) {
+          setDirectVendors([]);
+        }
+        return;
+      }
+
+      try {
+        const vendors = await fetchVendorProfiles();
+
+        if (isMounted) {
+          setDirectVendors(Array.isArray(vendors) ? vendors : []);
+        }
+      } catch {
+        if (isMounted) {
+          setDirectVendors([]);
+        }
+      }
+    }
+
+    loadDirectVendors();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [allVendors.length, vendorType]);
 
   const isAll = vendorType === "all";
   const isPopular = vendorType === "popular";
@@ -46,7 +79,7 @@ export default function VendorListingPage() {
       ? "Explore the vendors customers order from most often for everyday lunches and office catering."
       : "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.";
   const vendors = isAll
-    ? allVendors
+    ? (allVendors.length > 0 ? allVendors : directVendors)
     : isPopular
       ? popularVendors
       : featuredVendors;

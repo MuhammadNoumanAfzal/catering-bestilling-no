@@ -5,6 +5,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          slug
           status
           isActive
           applicationStatus
@@ -71,6 +72,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          slug
           status
           isActive
           applicationStatus
@@ -138,6 +140,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          slug
           status
           isActive
           applicationStatus
@@ -205,6 +208,7 @@ export const FETCH_HOME_DATA_QUERY = `
         node {
           id
           name
+          slug
           status
           isActive
           applicationStatus
@@ -301,6 +305,7 @@ export const FETCH_HOME_DATA_QUERY = `
           vendor {
             id
             name
+            slug
             status
             isActive
             applicationStatus

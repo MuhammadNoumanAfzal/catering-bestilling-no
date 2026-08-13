@@ -1,4 +1,7 @@
-import { isPublicVendorVisible } from "../../vendor/api/publicVisibility";
+import {
+  getPublicMenuCount,
+  isPublicVendorVisible,
+} from "../../vendor/api/publicVisibility";
 
 function slugify(text) {
   return String(text)
@@ -103,7 +106,7 @@ function mapVendorNode(node) {
 
   return {
     id: node?.id || "",
-    slug: slugify(name),
+    slug: node?.slug || slugify(name),
     name,
     image: node?.coverPhotoUrl || node?.logoUrl || "",
     logo: node?.logoUrl || "",
@@ -120,6 +123,18 @@ function mapVendorNode(node) {
       normalizeTags(node?.categoryTags),
     ),
     reviewCount: Number(node?.reviewsCount || 0),
+    isPubliclyVisible:
+      typeof node?.isPubliclyVisible === "boolean"
+        ? node.isPubliclyVisible
+        : isPublicVendorVisible(node),
+    hasPublicActiveMenus:
+      typeof node?.hasPublicActiveMenus === "boolean"
+        ? node.hasPublicActiveMenus
+        : getPublicMenuCount(node) > 0,
+    publicActiveMenuCount:
+      Number.isFinite(Number(node?.publicActiveMenuCount))
+        ? Number(node.publicActiveMenuCount)
+        : getPublicMenuCount(node),
     addressLine: address,
     city: extractCityFromAddress(address),
     pickupAddress,

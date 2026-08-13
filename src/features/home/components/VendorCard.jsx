@@ -9,6 +9,8 @@ export default function VendorCard({
   rating,
   deliveryFee,
   discount,
+  hasPublicActiveMenus,
+  publicActiveMenuCount,
 }) {
   const navigate = useNavigate();
 
@@ -46,6 +48,16 @@ export default function VendorCard({
           {discount}
         </div>
       ) : null}
+
+      {hasPublicActiveMenus ? (
+        <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#edf8ef] px-2 py-1 text-[#2c8b52]">
+          {publicActiveMenuCount} Menus Available
+        </div>
+      ) : (
+        <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#fff6e8] px-2 py-1 text-[#b36a1e]">
+          No Active Menus Currently
+        </div>
+      )}
     </article>
   );
 }

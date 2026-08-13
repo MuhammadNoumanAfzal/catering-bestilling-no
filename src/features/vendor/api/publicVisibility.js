@@ -7,6 +7,10 @@ function isCustomerVisibleMenuProduct(node) {
 }
 
 function getPublicMenuVisibility(node) {
+  if (typeof node?.hasPublicActiveMenus === "boolean") {
+    return node.hasPublicActiveMenus;
+  }
+
   const categories = Array.isArray(node?.menuCategories) ? node.menuCategories : null;
 
   if (!categories) {
@@ -31,6 +35,23 @@ function getPublicMenuVisibility(node) {
     (product) =>
       isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product),
   );
+}
+
+export function getPublicMenuCount(node) {
+  if (Number.isFinite(Number(node?.publicActiveMenuCount))) {
+    return Number(node.publicActiveMenuCount);
+  }
+
+  const categories = Array.isArray(node?.menuCategories) ? node.menuCategories : [];
+  const products = categories
+    .filter((category) => Array.isArray(category?.vendorProducts))
+    .flatMap((category) => category.vendorProducts)
+    .filter(Boolean);
+
+  return products.filter(
+    (product) =>
+      isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product),
+  ).length;
 }
 
 function isExplicitlyVisibleVendorStatus(node) {
@@ -85,15 +106,13 @@ function isExplicitlyVisibleVendorStatus(node) {
 }
 
 export function isPublicVendorVisible(node) {
+  if (typeof node?.isPubliclyVisible === "boolean") {
+    return node.isPubliclyVisible;
+  }
+
   const statusVisibility = isExplicitlyVisibleVendorStatus(node);
 
   if (statusVisibility === false) {
-    return false;
-  }
-
-  const menuVisibility = getPublicMenuVisibility(node);
-
-  if (menuVisibility === false) {
     return false;
   }
 
