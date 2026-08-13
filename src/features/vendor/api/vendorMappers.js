@@ -34,6 +34,14 @@ const DAY_NAMES_SHORT = {
 };
 const DAY_CODE_BY_INDEX = ["su", "mo", "tu", "we", "th", "fr", "sa"];
 
+function isPrimaryMenuProduct(node) {
+  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
+}
+
+function isCustomerVisibleMenuProduct(node) {
+  return `${node?.menuStatus ?? "active"}`.toLowerCase() === "active";
+}
+
 function normalizeDayCode(day) {
   const normalized = `${day ?? ""}`.trim().toLowerCase();
   const dayIndex = DAY_MAP[normalized];

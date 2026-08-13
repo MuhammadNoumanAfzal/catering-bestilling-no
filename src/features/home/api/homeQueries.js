@@ -9,6 +9,9 @@ export const FETCH_HOME_DATA_QUERY = `
           status
           isActive
           applicationStatus
+          isPubliclyVisible
+          hasPublicActiveMenus
+          publicActiveMenuCount
           postCode
           rating
           discountPercentage
@@ -76,6 +79,9 @@ export const FETCH_HOME_DATA_QUERY = `
           status
           isActive
           applicationStatus
+          isPubliclyVisible
+          hasPublicActiveMenus
+          publicActiveMenuCount
           postCode
           rating
           discountPercentage
@@ -144,6 +150,9 @@ export const FETCH_HOME_DATA_QUERY = `
           status
           isActive
           applicationStatus
+          isPubliclyVisible
+          hasPublicActiveMenus
+          publicActiveMenuCount
           postCode
           rating
           discountPercentage
@@ -212,6 +221,9 @@ export const FETCH_HOME_DATA_QUERY = `
           status
           isActive
           applicationStatus
+          isPubliclyVisible
+          hasPublicActiveMenus
+          publicActiveMenuCount
           postCode
           rating
           discountPercentage
@@ -309,6 +321,9 @@ export const FETCH_HOME_DATA_QUERY = `
             status
             isActive
             applicationStatus
+            isPubliclyVisible
+            hasPublicActiveMenus
+            publicActiveMenuCount
             postCode
             rating
             reviewsCount
