@@ -350,7 +350,7 @@ export default function VendorSupportResponsesPage() {
                     </div>
                     <p className="mt-2 text-sm text-[#746b63]">
                       Opened {selectedTicket.createdAtLabel}
-                      {selectedTicket.orderReference ? ` • Order ${selectedTicket.orderReference}` : ""}
+                      {selectedTicket.orderReference ? ` | Order ${selectedTicket.orderReference}` : ""}
                     </p>
                   </div>
 
