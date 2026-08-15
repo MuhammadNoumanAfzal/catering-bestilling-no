@@ -1,10 +1,10 @@
-import AccountSafetySection from "../components/settings/AccountSafetySection";
 import { useTranslation } from "react-i18next";
 import { translateSettings } from "../components/settings/settingsI18n";
 import NotificationSettingsSection from "../components/settings/NotificationSettingsSection";
 import PasswordSettingsSection from "../components/settings/PasswordSettingsSection";
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
 import SettingsActions from "../components/settings/SettingsActions";
+import VendorProfilePhotoSection from "../components/settings/VendorProfilePhotoSection";
 import { useVendorSettingsPage } from "../settings/hooks/useVendorSettingsPage";
 
 export default function VendorSettingsPage() {
@@ -13,10 +13,13 @@ export default function VendorSettingsPage() {
   const {
     formState,
     handleReset,
+    handleRemoveAvatar,
     handleSave,
+    handleUploadAvatar,
     isDirty,
     isLoading,
     isSaving,
+    isUploadingAvatar,
     loadWarning,
     updateField,
   } = useVendorSettingsPage();
@@ -41,6 +44,12 @@ export default function VendorSettingsPage() {
             {loadWarning}
           </div>
         ) : null}
+        <VendorProfilePhotoSection
+          formState={formState}
+          isUploading={isUploadingAvatar}
+          onRemoveAvatar={handleRemoveAvatar}
+          onUploadAvatar={handleUploadAvatar}
+        />
         <ProfileSettingsSection formState={formState} updateField={updateField} />
         <NotificationSettingsSection
           formState={formState}
@@ -50,7 +59,6 @@ export default function VendorSettingsPage() {
           formState={formState}
           updateField={updateField}
         />
-        <AccountSafetySection email={formState.primaryEmail} />
         <SettingsActions
           isDirty={isDirty}
           isSaving={isSaving}

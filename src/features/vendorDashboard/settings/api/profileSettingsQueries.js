@@ -4,6 +4,7 @@ export const GET_SETTINGS_PROFILE_QUERY = `
       id
       firstName
       lastName
+      fullName
       email
       phone
       postCode
@@ -12,6 +13,10 @@ export const GET_SETTINGS_PROFILE_QUERY = `
       companyName
       jobTitle
       industryUsage
+      avatarUrl
+      avatarThumbnailUrl
+      avatarUpdatedAt
+      profileCompletionPercent
       notificationPreferences
     }
   }

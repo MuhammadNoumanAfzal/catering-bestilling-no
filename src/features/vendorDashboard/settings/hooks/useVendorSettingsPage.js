@@ -11,7 +11,9 @@ import {
 import { vendorSettingsInitialState } from "../constants/settingsForm";
 import {
   fetchSettingsProfile,
+  removeSettingsAvatar,
   updateSettingsProfile,
+  uploadSettingsAvatar,
 } from "../api";
 
 function getPasswordFields() {
@@ -59,6 +61,7 @@ export function useVendorSettingsPage() {
   }));
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [loadWarning, setLoadWarning] = useState("");
 
   useEffect(() => {
@@ -223,13 +226,68 @@ export function useVendorSettingsPage() {
     }
   };
 
+  const handleUploadAvatar = async (file) => {
+    setIsUploadingAvatar(true);
+
+    try {
+      const result = await uploadSettingsAvatar(file, formState);
+      writeSavedSettings(result.formState);
+      setSavedFormState(result.formState);
+      setFormState((current) => ({
+        ...result.formState,
+        ...getPasswordFields(),
+        oldPassword: current.oldPassword,
+        confirmOldPassword: current.confirmOldPassword,
+        newPassword: current.newPassword,
+        confirmNewPassword: current.confirmNewPassword,
+      }));
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error ? error.message : st("updateFailedMessage"),
+        st("updateFailedTitle"),
+      );
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    setIsUploadingAvatar(true);
+
+    try {
+      const result = await removeSettingsAvatar(formState);
+      writeSavedSettings(result.formState);
+      setSavedFormState(result.formState);
+      setFormState((current) => ({
+        ...result.formState,
+        ...getPasswordFields(),
+        oldPassword: current.oldPassword,
+        confirmOldPassword: current.confirmOldPassword,
+        newPassword: current.newPassword,
+        confirmNewPassword: current.confirmNewPassword,
+      }));
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error ? error.message : st("updateFailedMessage"),
+        st("updateFailedTitle"),
+      );
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
   return {
     formState,
     handleReset,
+    handleRemoveAvatar,
     handleSave,
+    handleUploadAvatar,
     isDirty,
     isLoading,
     isSaving,
+    isUploadingAvatar,
     loadWarning,
     updateField,
   };

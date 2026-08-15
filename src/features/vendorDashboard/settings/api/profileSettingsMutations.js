@@ -29,6 +29,7 @@ export const UPDATE_GENERAL_PROFILE_MUTATION = `
         id
         firstName
         lastName
+        fullName
         email
         phone
         workPhone
@@ -36,6 +37,10 @@ export const UPDATE_GENERAL_PROFILE_MUTATION = `
         companyName
         jobTitle
         industryUsage
+        avatarUrl
+        avatarThumbnailUrl
+        avatarUpdatedAt
+        profileCompletionPercent
         notificationPreferences
       }
     }
