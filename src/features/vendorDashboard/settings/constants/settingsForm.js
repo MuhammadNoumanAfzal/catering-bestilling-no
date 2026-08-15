@@ -1,6 +1,7 @@
 export const vendorSettingsInitialState = {
   firstName: "",
   lastName: "",
+  fullName: "",
   primaryEmail: "",
   secondaryEmail: "",
   mobilePhone: "",
@@ -9,6 +10,10 @@ export const vendorSettingsInitialState = {
   company: "",
   jobTitle: "",
   industry: "",
+  avatarUrl: "",
+  avatarThumbnailUrl: "",
+  avatarUpdatedAt: "",
+  profileCompletionPercent: 0,
   textNotifications: false,
   emailNotifications: false,
   pushNotifications: false,

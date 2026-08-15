@@ -27,6 +27,10 @@ export function mapSettingsProfileToFormState(user) {
     ...vendorSettingsInitialState,
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
+    fullName:
+      user?.fullName ||
+      [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+      "",
     primaryEmail: user?.email || "",
     secondaryEmail: user?.secondaryEmail || "",
     mobilePhone: user?.phone || "",
@@ -35,6 +39,10 @@ export function mapSettingsProfileToFormState(user) {
     company: user?.companyName || "",
     jobTitle: user?.jobTitle || "",
     industry: user?.industryUsage || "",
+    avatarUrl: user?.avatarUrl || "",
+    avatarThumbnailUrl: user?.avatarThumbnailUrl || "",
+    avatarUpdatedAt: user?.avatarUpdatedAt || "",
+    profileCompletionPercent: Number(user?.profileCompletionPercent ?? 0) || 0,
     textNotifications: Boolean(deliveryUpdates.textMessage),
     emailNotifications: Boolean(deliveryUpdates.email),
     pushNotifications: Boolean(deliveryUpdates.pushNotification),
