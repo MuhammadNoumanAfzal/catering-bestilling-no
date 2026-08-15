@@ -1,60 +1,39 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 
-const FETCH_USER_NOTIFICATIONS_QUERY = `
-  query GetUserNotifications(
-    $status: NotificationReadStatus
-    $datePreset: NotificationDatePreset
-    $first: Int = 20
-    $after: String
-  ) {
-    userNotifications(
-      status: $status
-      datePreset: $datePreset
-      first: $first
-      after: $after
-    ) {
-      totalCount
+const NOTIFICATION_BELL_QUERY = `
+  query NotificationBell {
+    notificationBell {
       unreadCount
-      edges {
-        cursor
-        node {
-          id
-          notificationType
-          title
-          message
-          isRead
-          createdAt
-          orderId
-          reviewId
-        }
-      }
-      pageInfo {
-        hasNextPage
-        endCursor
+      items {
+        id
+        title
+        message
+        entityType
+        entityId
+        actionUrl
+        isRead
+        createdAt
       }
     }
   }
 `;
 
-const MARK_USER_NOTIFICATION_AS_READ_MUTATION = `
-  mutation MarkUserNotificationAsRead($id: ID!) {
-    markUserNotificationAsRead(id: $id) {
-      success
-      message
-      unreadCount
+const MARK_NOTIFICATION_READ_MUTATION = `
+  mutation MarkNotificationRead($id: ID!) {
+    markNotificationRead(id: $id) {
       notification {
         id
         isRead
+        readAt
       }
     }
   }
 `;
 
-const MARK_ALL_USER_NOTIFICATIONS_AS_READ_MUTATION = `
-  mutation MarkAllUserNotificationsAsRead {
-    markAllUserNotificationsAsRead {
+const MARK_ALL_NOTIFICATIONS_READ_MUTATION = `
+  mutation MarkAllNotificationsRead {
+    markAllNotificationsRead {
       success
-      message
       unreadCount
     }
   }
@@ -110,136 +89,125 @@ function formatDayLabel(createdAt) {
   }).format(createdDate);
 }
 
-function mapNotificationType(notificationType) {
-  const normalizedType = `${notificationType ?? ""}`.toLowerCase();
+function sanitizeNotificationMessage(message) {
+  return `${message ?? ""}`
+    .trim()
+    .replace(/\s{2,}/g, " ");
+}
 
-  if (normalizedType.includes("review") || normalizedType.includes("reply")) {
+function mapNotificationType(entityType, actionUrl) {
+  const normalizedType = `${entityType ?? ""}`.toLowerCase();
+  const normalizedUrl = `${actionUrl ?? ""}`.toLowerCase();
+
+  if (normalizedType.includes("support") || normalizedUrl.includes("support")) {
     return "review";
   }
 
-  if (normalizedType.includes("order")) {
+  if (normalizedType.includes("order") || normalizedUrl.includes("order")) {
     return "order-update";
   }
 
-  if (normalizedType.includes("payment") || normalizedType.includes("payout")) {
+  if (normalizedType.includes("payout") || normalizedUrl.includes("payment")) {
     return "payment";
   }
 
-  if (normalizedType.includes("delivery")) {
+  if (normalizedType.includes("delivery") || normalizedUrl.includes("delivery")) {
     return "delivery";
   }
 
   return "menu";
 }
 
-function sanitizeNotificationMessage(message) {
-  const rawMessage = `${message ?? ""}`.trim();
-
-  if (!rawMessage) {
-    return "";
-  }
-
-  return rawMessage
-    .replace(/\s*->\s*['"].*?['"]\s*$/u, "")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-}
-
 function resolveNotificationTarget(node) {
-  if (node?.orderId) {
-    return "/vendor-dashboard/orders";
+  const actionUrl = `${node?.actionUrl ?? ""}`.trim();
+  if (actionUrl) {
+    return actionUrl;
   }
 
-  if (node?.reviewId) {
-    return "/vendor-dashboard/notifications";
+  const entityType = `${node?.entityType ?? ""}`.toLowerCase();
+  const entityId = `${node?.entityId ?? ""}`.trim();
+
+  if (entityType.includes("support")) {
+    return "/vendor-dashboard/support/responses";
   }
 
-  return "";
+  if (entityType.includes("order")) {
+    return entityId ? `/vendor-dashboard/orders/${entityId}` : "/vendor-dashboard/orders";
+  }
+
+  return "/vendor-dashboard/notifications";
 }
 
 function mapNotificationNode(node) {
   return {
-    id: node.id,
-    title: node.title || "Notification",
-    message: sanitizeNotificationMessage(node.message),
-    timeLabel: formatNotificationTime(node.createdAt),
-    unread: !node.isRead,
-    category: node.isRead ? "read" : "unread",
-    type: mapNotificationType(node.notificationType),
-    createdAt: node.createdAt ? `${node.createdAt}`.split("T")[0] : "",
-    dayLabel: formatDayLabel(node.createdAt),
-    notificationType: node.notificationType,
-    orderId: node.orderId || "",
-    reviewId: node.reviewId || "",
-    createdOn: node.createdAt || "",
+    id: node?.id ?? "",
+    title: node?.title || "Notification",
+    message: sanitizeNotificationMessage(node?.message),
+    timeLabel: formatNotificationTime(node?.createdAt),
+    unread: !node?.isRead,
+    category: node?.isRead ? "read" : "unread",
+    type: mapNotificationType(node?.entityType, node?.actionUrl),
+    createdAt: node?.createdAt ? `${node.createdAt}`.split("T")[0] : "",
+    dayLabel: formatDayLabel(node?.createdAt),
+    notificationType: node?.entityType || "",
+    entityId: node?.entityId || "",
+    entityType: node?.entityType || "",
+    createdOn: node?.createdAt || "",
     actionUrl: resolveNotificationTarget(node),
   };
 }
 
-function getMutationErrorMessage(result, fallbackMessage) {
-  return result?.message || fallbackMessage;
-}
-
-export async function fetchUserNotifications({
-  status = null,
-  datePreset = null,
-  first = 50,
-  after = null,
-} = {}) {
+export async function fetchUserNotifications() {
   const response = await graphqlRequest({
-    query: FETCH_USER_NOTIFICATIONS_QUERY,
-    variables: { status, datePreset, first, after },
+    query: NOTIFICATION_BELL_QUERY,
   });
 
-  const connection = response.userNotifications || {};
+  const bell = response?.notificationBell;
+  const notifications = Array.isArray(bell?.items)
+    ? bell.items.map(mapNotificationNode)
+    : [];
 
   return {
-    notifications: (connection.edges || []).map((edge) =>
-      mapNotificationNode(edge.node),
-    ),
-    unreadCount: Number(connection.unreadCount ?? 0) || 0,
-    totalCount: Number(connection.totalCount ?? 0) || 0,
-    hasNextPage: Boolean(connection.pageInfo?.hasNextPage),
-    endCursor: connection.pageInfo?.endCursor || null,
+    notifications,
+    unreadCount: Number(bell?.unreadCount ?? 0) || notifications.filter((item) => item.unread).length,
+    totalCount: notifications.length,
+    hasNextPage: false,
+    endCursor: null,
   };
 }
 
 export async function markUserNotificationAsRead(id) {
   const response = await graphqlRequest({
-    query: MARK_USER_NOTIFICATION_AS_READ_MUTATION,
+    query: MARK_NOTIFICATION_READ_MUTATION,
     variables: { id },
   });
 
-  const result = response?.markUserNotificationAsRead;
+  const result = response?.markNotificationRead;
 
-  if (!result?.success) {
-    throw new Error(
-      getMutationErrorMessage(result, "Unable to mark the notification as read."),
-    );
+  if (!result?.notification?.id) {
+    throw new Error("Unable to mark the notification as read.");
   }
 
   return {
-    message: result.message || "Notification marked as read.",
-    unreadCount: Number(result.unreadCount ?? 0) || 0,
-    notification: result.notification || null,
+    message: "Notification marked as read.",
+    unreadCount: null,
+    notification: result.notification,
   };
 }
 
 export async function markAllUserNotificationsAsRead() {
   const response = await graphqlRequest({
-    query: MARK_ALL_USER_NOTIFICATIONS_AS_READ_MUTATION,
+    query: MARK_ALL_NOTIFICATIONS_READ_MUTATION,
   });
 
-  const result = response?.markAllUserNotificationsAsRead;
+  const result = response?.markAllNotificationsRead;
 
   if (!result?.success) {
-    throw new Error(
-      getMutationErrorMessage(result, "Unable to mark all notifications as read."),
-    );
+    throw new Error("Unable to mark all notifications as read.");
   }
 
   return {
-    message: result.message || "All notifications marked as read.",
-    unreadCount: Number(result.unreadCount ?? 0) || 0,
+    message: "All notifications marked as read.",
+    unreadCount: Number(result?.unreadCount ?? 0) || 0,
   };
 }
