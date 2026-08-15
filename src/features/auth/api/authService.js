@@ -4,9 +4,9 @@ import {
   LOGIN_USER_MUTATION,
   LOGOUT_USER_MUTATION,
   PASSWORD_RESET_MAIL_MUTATION,
+  REGISTER_USER_MUTATION,
   RESET_PASSWORD_MUTATION,
   SEND_SIGNUP_OTP_MUTATION,
-  VERIFY_SIGNUP_OTP_MUTATION,
   VERIFY_RESET_CODE_MUTATION,
 } from "./authMutations";
 import {
@@ -100,9 +100,9 @@ export async function verifySignupOtp(input) {
   const variables = normalizeVerifySignupOtpInput(input);
 
   return runAuthMutation({
-    query: VERIFY_SIGNUP_OTP_MUTATION,
+    query: REGISTER_USER_MUTATION,
     variables,
-    dataKey: "verifySignupOtp",
+    dataKey: "registerUser",
     fallbackMessage: "Verification failed.",
     validate: (result) => {
       if (!result?.user) {
