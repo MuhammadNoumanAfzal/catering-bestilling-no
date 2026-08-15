@@ -91,14 +91,35 @@ function buildSignedUploadHeaders(headers = []) {
   }, {});
 }
 
-async function uploadAvatarBinary(uploadUrl, headers, file) {
+function getUploadMethod(uploadConfig) {
+  const normalizedMethod = `${uploadConfig?.method ?? ""}`.trim().toUpperCase();
+  return normalizedMethod || "PUT";
+}
+
+function buildAvatarUploadHeaders(headers, file) {
+  const normalizedHeaders = { ...headers };
+  const hasContentTypeHeader = Object.keys(normalizedHeaders).some(
+    (key) => key.toLowerCase() === "content-type",
+  );
+
+  if (!hasContentTypeHeader) {
+    normalizedHeaders["Content-Type"] = file.type;
+  }
+
+  return normalizedHeaders;
+}
+
+async function uploadAvatarBinary(uploadConfig, file) {
+  const uploadMethod = getUploadMethod(uploadConfig);
+  const uploadHeaders = buildAvatarUploadHeaders(
+    buildSignedUploadHeaders(uploadConfig?.headers),
+    file,
+  );
+
   try {
-    const response = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type,
-        ...headers,
-      },
+    const response = await fetch(uploadConfig.uploadUrl, {
+      method: uploadMethod,
+      headers: uploadHeaders,
       body: file,
     });
 
@@ -136,11 +157,7 @@ export async function uploadClientAvatar(file, currentFormState) {
     throw new Error("Unable to prepare image upload.");
   }
 
-  await uploadAvatarBinary(
-    uploadConfig.uploadUrl,
-    buildSignedUploadHeaders(uploadConfig.headers),
-    file,
-  );
+  await uploadAvatarBinary(uploadConfig, file);
 
   const response = await graphqlRequest({
     query: UPDATE_MY_AVATAR_MUTATION,
