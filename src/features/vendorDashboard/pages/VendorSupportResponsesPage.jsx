@@ -52,7 +52,9 @@ function parseMessageContent(message) {
 }
 
 function MessageBubble({ item }) {
-  const isOwnReply = `${item.side ?? ""}`.toLowerCase() !== "admin";
+  const normalizedSide = `${item.side ?? ""}`.trim().toLowerCase();
+  const normalizedRole = `${item.author?.role ?? ""}`.trim().toLowerCase();
+  const isOwnReply = normalizedSide === "vendor" || normalizedRole === "vendor";
   const { text, urls } = parseMessageContent(item.message);
 
   return (
