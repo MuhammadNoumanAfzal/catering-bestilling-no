@@ -76,16 +76,13 @@ function normalizePostCode(value) {
 
 export function normalizeRegisterUserInput(input) {
   return {
-    input: {
-      email: normalizeEmail(input.email),
-      phone: normalizePhoneNumber(input.phone),
-      password: normalizePassword(input.password),
-      role: normalizeRole(input.role),
-      firstName: requireNonEmptyString(input.firstName, "First name"),
-      lastName: requireNonEmptyString(input.lastName, "Last name"),
-      postCode: normalizePostCode(input.postCode),
-    },
-    otp: normalizeSignupOtp(input.otp),
+    email: normalizeEmail(input.email),
+    phone: normalizePhoneNumber(input.phone),
+    password: normalizePassword(input.password),
+    role: normalizeRole(input.role),
+    firstName: requireNonEmptyString(input.firstName, "First name"),
+    lastName: requireNonEmptyString(input.lastName, "Last name"),
+    postCode: normalizePostCode(input.postCode),
   };
 }
 
@@ -143,4 +140,19 @@ export function normalizeSignupOtp(value) {
   }
 
   return otp;
+}
+
+export function normalizeSignupOtpRequestInput(input) {
+  return {
+    input: normalizeRegisterUserInput(input),
+  };
+}
+
+export function normalizeVerifySignupOtpInput(input) {
+  return {
+    input: {
+      email: normalizeEmail(input.email),
+      otp: normalizeSignupOtp(input.otp),
+    },
+  };
 }
