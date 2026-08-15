@@ -1,4 +1,8 @@
-import { AUTH_ROLE, PASSWORD_RESET_OTP_LENGTH } from "../constants/authForms";
+import {
+  AUTH_ROLE,
+  PASSWORD_RESET_OTP_LENGTH,
+  SIGNUP_OTP_LENGTH,
+} from "../constants/authForms";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
@@ -72,13 +76,16 @@ function normalizePostCode(value) {
 
 export function normalizeRegisterUserInput(input) {
   return {
-    email: normalizeEmail(input.email),
-    phone: normalizePhoneNumber(input.phone),
-    password: normalizePassword(input.password),
-    role: normalizeRole(input.role),
-    firstName: requireNonEmptyString(input.firstName, "First name"),
-    lastName: requireNonEmptyString(input.lastName, "Last name"),
-    postCode: normalizePostCode(input.postCode),
+    input: {
+      email: normalizeEmail(input.email),
+      phone: normalizePhoneNumber(input.phone),
+      password: normalizePassword(input.password),
+      role: normalizeRole(input.role),
+      firstName: requireNonEmptyString(input.firstName, "First name"),
+      lastName: requireNonEmptyString(input.lastName, "Last name"),
+      postCode: normalizePostCode(input.postCode),
+    },
+    otp: normalizeSignupOtp(input.otp),
   };
 }
 
@@ -126,4 +133,14 @@ export function normalizeResetPasswordInput(input) {
     password1,
     password2,
   };
+}
+
+export function normalizeSignupOtp(value) {
+  const otp = requireNonEmptyString(value, "Verification code");
+
+  if (!new RegExp(`^\\d{${SIGNUP_OTP_LENGTH}}$`).test(otp)) {
+    throw new Error(`Verification code must be ${SIGNUP_OTP_LENGTH} digits.`);
+  }
+
+  return otp;
 }

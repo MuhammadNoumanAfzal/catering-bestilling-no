@@ -5,5 +5,6 @@ export {
   passwordResetMail,
   registerUser,
   resetPassword,
+  sendSignupOtp,
   verifyResetCode,
 } from "./authService";

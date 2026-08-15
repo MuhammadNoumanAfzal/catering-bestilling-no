@@ -6,6 +6,7 @@ import {
   PASSWORD_RESET_MAIL_MUTATION,
   REGISTER_USER_MUTATION,
   RESET_PASSWORD_MUTATION,
+  SEND_SIGNUP_OTP_MUTATION,
   VERIFY_RESET_CODE_MUTATION,
 } from "./authMutations";
 import {
@@ -100,6 +101,17 @@ export async function registerUser(input) {
       ...result,
       user: normalizeAuthenticatedUser(result.user),
     }),
+  });
+}
+
+export async function sendSignupOtp(email) {
+  return runAuthMutation({
+    query: SEND_SIGNUP_OTP_MUTATION,
+    variables: {
+      email: `${email ?? ""}`.trim().toLowerCase(),
+    },
+    dataKey: "sendSignupOtp",
+    fallbackMessage: "Unable to send verification code.",
   });
 }
 
