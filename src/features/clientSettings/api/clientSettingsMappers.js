@@ -1,18 +1,32 @@
 import { clientSettingsInitialState } from "../constants/clientSettingsForm";
 
-export function mapClientSettingsProfileToFormState(notificationSettings) {
-  const settings = notificationSettings || {};
+export function mapClientSettingsProfileToFormState(profile) {
+  const notificationSettings = profile?.notificationSettings || {};
+  const user = profile?.user || {};
 
   return {
     ...clientSettingsInitialState,
+    id: user.id || "",
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
+    fullName:
+      user.fullName ||
+      [user.firstName, user.lastName].filter(Boolean).join(" ").trim(),
+    email: user.email || "",
+    phone: user.phone || "",
+    avatarUrl: user.avatarUrl || "",
+    avatarThumbnailUrl: user.avatarThumbnailUrl || "",
+    avatarUpdatedAt: user.avatarUpdatedAt || "",
+    profileCompletionPercent:
+      Number(user.profileCompletionPercent ?? clientSettingsInitialState.profileCompletionPercent) || 0,
     emailEnabled:
-      settings.emailEnabled ??
+      notificationSettings.emailEnabled ??
       clientSettingsInitialState.emailEnabled,
     smsEnabled:
-      settings.smsEnabled ??
+      notificationSettings.smsEnabled ??
       clientSettingsInitialState.smsEnabled,
     pushEnabled:
-      settings.pushEnabled ??
+      notificationSettings.pushEnabled ??
       clientSettingsInitialState.pushEnabled,
   };
 }

@@ -9,9 +9,12 @@ import {
   readSavedSettings,
   writeSavedSettings,
 } from "../../../utils/customerProfileStorage";
+import { useAuth } from "../../auth";
 import { clientSettingsInitialState } from "../constants/clientSettingsForm";
 import {
   fetchClientSettingsProfile,
+  removeClientAvatar,
+  uploadClientAvatar,
   updateClientSettingsProfile,
 } from "../api/clientSettingsService";
 
@@ -20,20 +23,17 @@ function readInitialClientSettings() {
 
   return {
     ...clientSettingsInitialState,
-    emailEnabled:
-      savedSettings.emailEnabled ?? clientSettingsInitialState.emailEnabled,
-    smsEnabled:
-      savedSettings.smsEnabled ?? clientSettingsInitialState.smsEnabled,
-    pushEnabled:
-      savedSettings.pushEnabled ?? clientSettingsInitialState.pushEnabled,
+    ...savedSettings,
   };
 }
 
 export function useClientSettingsPage() {
+  const { accessToken, setAuthSession, user } = useAuth();
   const [savedFormState, setSavedFormState] = useState(readInitialClientSettings);
   const [formState, setFormState] = useState(readInitialClientSettings);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAvatarUploading, setIsAvatarUploading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -113,6 +113,65 @@ export function useClientSettingsPage() {
     }
   };
 
+  const syncAuthenticatedUser = (nextState) => {
+    if (!accessToken || !user) {
+      return;
+    }
+
+    setAuthSession({
+      accessToken,
+      user: {
+        ...user,
+        firstName: nextState.firstName || user.firstName,
+        lastName: nextState.lastName || user.lastName,
+        email: nextState.email || user.email,
+        phone: nextState.phone || user.phone,
+        avatarUrl: nextState.avatarUrl || "",
+        avatarThumbnailUrl: nextState.avatarThumbnailUrl || "",
+      },
+    });
+  };
+
+  const handleAvatarUpload = async (file) => {
+    setIsAvatarUploading(true);
+
+    try {
+      const result = await uploadClientAvatar(file, formState);
+      setSavedFormState(result.formState);
+      setFormState(result.formState);
+      writeSavedSettings(result.formState);
+      syncAuthenticatedUser(result.formState);
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error?.message || "Unable to upload your profile photo.",
+        i18n.t("settings.updateErrorTitle"),
+      );
+    } finally {
+      setIsAvatarUploading(false);
+    }
+  };
+
+  const handleAvatarRemove = async () => {
+    setIsAvatarUploading(true);
+
+    try {
+      const result = await removeClientAvatar(formState);
+      setSavedFormState(result.formState);
+      setFormState(result.formState);
+      writeSavedSettings(result.formState);
+      syncAuthenticatedUser(result.formState);
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error?.message || "Unable to remove your profile photo.",
+        i18n.t("settings.updateErrorTitle"),
+      );
+    } finally {
+      setIsAvatarUploading(false);
+    }
+  };
+
   return {
     formState,
     isDirty,
@@ -121,6 +180,9 @@ export function useClientSettingsPage() {
     handleReset,
     handleSave,
     handleLanguageChange,
+    handleAvatarRemove,
+    handleAvatarUpload,
+    isAvatarUploading,
     updateField,
   };
 }

@@ -247,6 +247,25 @@ const no = {
     title: "Innstillinger",
     description:
       "Administrer om Catering bestilling.no kontakter deg via e-post, tekstmelding eller push-varsler.",
+    profilePhotoTitle: "Profilbilde",
+    profilePhotoSubtitle:
+      "Last opp et tydelig bilde for kontoen din og gi profilen et renere uttrykk i hele appen.",
+    profilePhotoBadge: "Avatarstudio",
+    profilePhotoFormats: "JPG, PNG eller WEBP opptil 5MB",
+    profilePhotoFallbackName: "Profilen din",
+    profilePhotoHelp:
+      "Bildet ditt vises der kundeprofilen din brukes, slik at supportdialoger og kontoaktivitet blir lettere å kjenne igjen.",
+    profilePhotoEmail: "E-postadresse",
+    profilePhotoPhone: "Telefonnummer",
+    profilePhotoStatus: "Bildestatus",
+    profilePhotoAdded: "Bilde lastet opp",
+    profilePhotoNotAdded: "Ingen bilde ennå",
+    profilePhotoUpload: "Last opp nytt bilde",
+    profilePhotoUploading: "Laster opp bilde...",
+    profilePhotoRemove: "Fjern bilde",
+    profilePhotoAlt: "Profilbilde for kunde",
+    profilePhotoUnavailable: "Ikke oppgitt",
+    profileCompletion: "Profilfullføring",
     notificationTitle: "Varslingsinnstillinger",
     notificationSubtitle:
       "Velg hvordan du vil motta konto- og ordrevarsler.",

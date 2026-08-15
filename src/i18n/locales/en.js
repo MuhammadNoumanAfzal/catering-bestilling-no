@@ -244,6 +244,25 @@ const en = {
     title: "Settings",
     description:
       "Manage whether Catering bestilling.no contacts you by email, text message, or push notification.",
+    profilePhotoTitle: "Profile photo",
+    profilePhotoSubtitle:
+      "Upload a clear image for your account and keep your profile looking polished across the app.",
+    profilePhotoBadge: "Avatar Studio",
+    profilePhotoFormats: "JPG, PNG or WEBP up to 5MB",
+    profilePhotoFallbackName: "Your profile",
+    profilePhotoHelp:
+      "Your photo appears anywhere your customer profile is shown, making support conversations and account activity easier to recognize.",
+    profilePhotoEmail: "Email address",
+    profilePhotoPhone: "Phone number",
+    profilePhotoStatus: "Photo status",
+    profilePhotoAdded: "Photo uploaded",
+    profilePhotoNotAdded: "No photo yet",
+    profilePhotoUpload: "Upload new photo",
+    profilePhotoUploading: "Uploading photo...",
+    profilePhotoRemove: "Remove photo",
+    profilePhotoAlt: "Customer profile photo",
+    profilePhotoUnavailable: "Not provided",
+    profileCompletion: "Profile completion",
     notificationTitle: "Notification Preferences",
     notificationSubtitle:
       "Choose how you want to receive account and order notifications.",

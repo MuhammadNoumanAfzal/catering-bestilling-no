@@ -4,6 +4,7 @@ import { useAuth } from "../../auth";
 import SettingsActions from "../../vendorDashboard/components/settings/SettingsActions";
 import ClientLanguageSettingsSection from "../components/ClientLanguageSettingsSection";
 import ClientNotificationSettingsSection from "../components/ClientNotificationSettingsSection";
+import ClientProfilePhotoSection from "../components/ClientProfilePhotoSection";
 import { useClientSettingsPage } from "../hooks/useClientSettingsPage";
 
 export default function ClientSettingsPage() {
@@ -15,6 +16,9 @@ export default function ClientSettingsPage() {
     isDirty,
     isLoading,
     isSaving,
+    isAvatarUploading,
+    handleAvatarRemove,
+    handleAvatarUpload,
     handleReset,
     handleSave,
     updateField,
@@ -49,6 +53,12 @@ export default function ClientSettingsPage() {
         </div>
 
         <div className="mt-6 space-y-6">
+          <ClientProfilePhotoSection
+            formState={formState}
+            isUploading={isAvatarUploading}
+            onRemoveAvatar={handleAvatarRemove}
+            onUploadAvatar={handleAvatarUpload}
+          />
           <ClientLanguageSettingsSection
             onChangeLanguage={handleLanguageChange}
           />
