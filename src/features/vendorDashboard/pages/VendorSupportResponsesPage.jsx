@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { showAuthErrorAlert } from "../../../utils/alerts";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import {
   getMySupportTicket,
   getMySupportTickets,
@@ -225,6 +225,9 @@ export default function VendorSupportResponsesPage() {
         ),
       );
       setDraftReply("");
+      await showSuccessToast(
+        result?.message || t("vendorPanel.supportResponses.sendReply"),
+      );
     } catch (error) {
       await showAuthErrorAlert(
         error?.message || t("vendorPanel.supportResponses.replyFailedMessage"),
