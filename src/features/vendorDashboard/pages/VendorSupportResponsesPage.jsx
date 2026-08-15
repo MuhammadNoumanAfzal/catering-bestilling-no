@@ -9,6 +9,7 @@ import {
 } from "../support/api";
 
 const PAGE_SIZE = 10;
+const URL_PATTERN = /(https?:\/\/[^\s]+)/giu;
 
 function formatStatusLabel(value) {
   return `${value ?? ""}`
@@ -35,8 +36,24 @@ function getStatusClasses(status) {
   }
 }
 
+function parseMessageContent(message) {
+  const rawMessage = `${message ?? ""}`.trim();
+  const urls = Array.from(rawMessage.matchAll(URL_PATTERN)).map((match) => match[0]);
+  const cleanedMessage = rawMessage
+    .replace(/\n?Attachments:\s*/giu, "\n")
+    .replace(URL_PATTERN, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  return {
+    text: cleanedMessage,
+    urls,
+  };
+}
+
 function MessageBubble({ item }) {
   const isOwnReply = `${item.side ?? ""}`.toLowerCase() !== "admin";
+  const { text, urls } = parseMessageContent(item.message);
 
   return (
     <div className={["flex", isOwnReply ? "justify-end" : "justify-start"].join(" ")}>
@@ -55,7 +72,27 @@ function MessageBubble({ item }) {
           <span className="font-bold">{item.author.fullName}</span>
           <span>{item.createdAtLabel}</span>
         </div>
-        <p className="text-[14px] leading-6">{item.message}</p>
+        {text ? <p className="text-[14px] leading-6 whitespace-pre-line">{text}</p> : null}
+        {urls.length ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {urls.map((url, index) => (
+              <a
+                key={`${item.id}-url-${index}`}
+                className={[
+                  "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold no-underline transition",
+                  isOwnReply
+                    ? "bg-white/15 text-white hover:bg-white/20"
+                    : "bg-[#fff3ea] text-[#c45f30] hover:bg-[#ffe7d8]",
+                ].join(" ")}
+                href={url}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span>Open attachment</span>
+              </a>
+            ))}
+          </div>
+        ) : null}
         {item.attachments.length ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {item.attachments.map((attachment) => (
