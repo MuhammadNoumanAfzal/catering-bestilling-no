@@ -32,6 +32,19 @@ const NORWEGIAN_TRANSLATIONS = {
   "må være en gyldig e-postadresse": "Must be a valid email address.",
 };
 
+const GRAPHQL_CONTRACT_ERROR_TRANSLATIONS = [
+  {
+    pattern: /cannot query field ['"]sendsignupotp['"] on type ['"]mutation['"]/i,
+    message:
+      "Email OTP signup is not available on the current backend deployment yet.",
+  },
+  {
+    pattern: /cannot query field ['"]registeruser['"] on type ['"]mutation['"]/i,
+    message:
+      "The new signup flow is not available on the current backend deployment yet.",
+  },
+];
+
 function translateNorwegianToEnglish(message) {
   if (!message || typeof message !== "string") {
     return message;
@@ -123,6 +136,18 @@ function sanitizeServerErrorMessage(message, fallbackMessage) {
   return message.trim();
 }
 
+function translateGraphqlContractError(message) {
+  if (!message || typeof message !== "string") {
+    return message;
+  }
+
+  const matchedTranslation = GRAPHQL_CONTRACT_ERROR_TRANSLATIONS.find(({ pattern }) =>
+    pattern.test(message),
+  );
+
+  return matchedTranslation?.message ?? message;
+}
+
 export async function graphqlRequest({ query, variables = {}, signal }) {
   const headers = {
     "Content-Type": "application/json",
@@ -164,7 +189,9 @@ export async function graphqlRequest({ query, variables = {}, signal }) {
   }
 
   if (payload?.errors?.length) {
-    const error = new Error(buildGraphqlErrorMessage(payload.errors));
+    const error = new Error(
+      translateGraphqlContractError(buildGraphqlErrorMessage(payload.errors)),
+    );
     error.fieldErrors = extractGraphqlFieldErrors(payload.errors);
     throw error;
   }

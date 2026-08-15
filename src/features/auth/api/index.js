@@ -3,8 +3,8 @@ export {
   loginUser,
   logoutUser,
   passwordResetMail,
-  registerUser,
   resetPassword,
   sendSignupOtp,
+  verifySignupOtp,
   verifyResetCode,
 } from "./authService";

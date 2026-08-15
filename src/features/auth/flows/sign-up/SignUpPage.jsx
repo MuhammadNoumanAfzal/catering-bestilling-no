@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiEdit3 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
-import { registerUser, sendSignupOtp } from "../../api";
+import { sendSignupOtp, verifySignupOtp } from "../../api";
 import {
   AuthButton,
   AuthCard,
   AuthInput,
   AuthPageFooter,
+  OtpInput,
 } from "../../components";
 import {
   AUTH_ROLE,
@@ -19,56 +20,55 @@ import {
 const VENDOR_REGISTER_URL =
   "https://catering-bestilling-no-vendor-panel.vercel.app/";
 
+const SIGNUP_STEP = {
+  FORM: "form",
+  VERIFY: "verify",
+};
+
 export default function SignUpPage() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const [signupStep, setSignupStep] = useState(SIGNUP_STEP.FORM);
   const [formState, setFormState] = useState(SIGN_UP_INITIAL_FORM_STATE);
   const [otpCode, setOtpCode] = useState("");
-  const [otpSentTo, setOtpSentTo] = useState("");
   const [otpError, setOtpError] = useState("");
   const [isSendingOtp, setIsSendingOtp] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+
+  const normalizedEmail = formState.email.trim().toLowerCase();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormState((current) => ({ ...current, [name]: value }));
 
-    if (name === "email" && value.trim().toLowerCase() !== otpSentTo) {
+    if (name === "email" && signupStep === SIGNUP_STEP.VERIFY) {
+      setSignupStep(SIGNUP_STEP.FORM);
       setOtpCode("");
       setOtpError("");
-      setOtpSentTo("");
     }
   };
 
-  const handleOtpChange = (event) => {
-    setOtpError("");
-    setOtpCode(event.target.value.replace(/\D/g, "").slice(0, SIGNUP_OTP_LENGTH));
-  };
-
-  const handleSendOtp = async () => {
-    const email = formState.email.trim().toLowerCase();
-
-    if (!email) {
-      await showAuthErrorAlert(
-        t("auth.signUp.emailRequired", { defaultValue: "Please enter your email address first." }),
-        t("auth.signUp.errorTitle"),
-      );
-      return;
-    }
-
+  const handleSendOtp = async (event) => {
+    event.preventDefault();
     setIsSendingOtp(true);
 
     try {
-      const result = await sendSignupOtp(email);
-      setOtpSentTo(email);
+      const result = await sendSignupOtp({
+        ...formState,
+        role: AUTH_ROLE,
+      });
+
+      setOtpCode("");
       setOtpError("");
+      setSignupStep(SIGNUP_STEP.VERIFY);
       await showSuccessToast(
         result.message ||
-          t("auth.signUp.otpSent", { defaultValue: "Verification code sent to your email." }),
+          t("auth.signUp.otpSent", {
+            defaultValue: "Verification code sent to your email.",
+          }),
       );
     } catch (error) {
-      setOtpSentTo("");
       await showAuthErrorAlert(
         error instanceof Error
           ? error.message
@@ -82,20 +82,8 @@ export default function SignUpPage() {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleVerifyOtp = async (event) => {
     event.preventDefault();
-
-    const normalizedEmail = formState.email.trim().toLowerCase();
-
-    if (!otpSentTo || otpSentTo !== normalizedEmail) {
-      await showAuthErrorAlert(
-        t("auth.signUp.otpRequiredFirst", {
-          defaultValue: "Please send a verification code to your email before creating the account.",
-        }),
-        t("auth.signUp.errorTitle"),
-      );
-      return;
-    }
 
     if (otpCode.length !== SIGNUP_OTP_LENGTH) {
       setOtpError(
@@ -108,19 +96,18 @@ export default function SignUpPage() {
     }
 
     setOtpError("");
-    setIsSubmitting(true);
+    setIsVerifyingOtp(true);
 
     try {
-      const result = await registerUser({
-        ...formState,
-        role: AUTH_ROLE,
+      const result = await verifySignupOtp({
+        email: normalizedEmail,
         otp: otpCode,
       });
 
-      await showSuccessToast(
-        result.message || t("auth.signUp.success"),
-      );
+      await showSuccessToast(result.message || t("auth.signUp.success"));
       setFormState(SIGN_UP_INITIAL_FORM_STATE);
+      setOtpCode("");
+      setSignupStep(SIGNUP_STEP.FORM);
       navigate("/signin", {
         replace: true,
         state: {
@@ -145,15 +132,27 @@ export default function SignUpPage() {
         );
       }
     } finally {
-      setIsSubmitting(false);
+      setIsVerifyingOtp(false);
     }
   };
 
   return (
     <AuthCard
       badge={t("auth.signUp.badge")}
-      title={t("auth.signUp.title")}
-      subtitle={t("auth.signUp.subtitle")}
+      title={
+        signupStep === SIGNUP_STEP.VERIFY
+          ? t("auth.signUp.verifyTitle", { defaultValue: "Verify your email" })
+          : t("auth.signUp.title")
+      }
+      subtitle={
+        signupStep === SIGNUP_STEP.VERIFY
+          ? t("auth.signUp.verifySubtitle", {
+              defaultValue:
+                "Enter the 6-digit verification code we sent to {{email}} to complete your account setup.",
+              email: normalizedEmail,
+            })
+          : t("auth.signUp.subtitle")
+      }
       backTo="/"
       footer={
         <AuthPageFooter
@@ -165,156 +164,174 @@ export default function SignUpPage() {
         />
       }
     >
-      <form className="space-y-5" onSubmit={handleSubmit}>
-        <div className="grid gap-4 sm:grid-cols-2">
+      {signupStep === SIGNUP_STEP.FORM ? (
+        <form className="space-y-5" onSubmit={handleSendOtp}>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AuthInput
+              label={t("auth.signUp.firstName")}
+              name="firstName"
+              placeholder={t("auth.signUp.firstNamePlaceholder")}
+              value={formState.firstName}
+              onChange={handleChange}
+              required
+            />
+            <AuthInput
+              label={t("auth.signUp.lastName")}
+              name="lastName"
+              placeholder={t("auth.signUp.lastNamePlaceholder")}
+              value={formState.lastName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AuthInput
+              label={t("auth.common.email")}
+              name="email"
+              type="email"
+              placeholder={t("auth.common.emailPlaceholder")}
+              value={formState.email}
+              onChange={handleChange}
+              helperText={t("auth.signUp.emailStepHelper", {
+                defaultValue: "We will send a verification code after you click Register.",
+              })}
+              required
+            />
+            <AuthInput
+              label={t("auth.common.password")}
+              name="password"
+              type="password"
+              placeholder={t("auth.common.passwordPlaceholder")}
+              value={formState.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
           <AuthInput
-            label={t("auth.signUp.firstName")}
-            name="firstName"
-            placeholder={t("auth.signUp.firstNamePlaceholder")}
-            value={formState.firstName}
+            label={t("auth.signUp.phone")}
+            name="phone"
+            type="tel"
+            placeholder={t("auth.signUp.phonePlaceholder")}
+            value={formState.phone}
             onChange={handleChange}
             required
           />
+
           <AuthInput
-            label={t("auth.signUp.lastName")}
-            name="lastName"
-            placeholder={t("auth.signUp.lastNamePlaceholder")}
-            value={formState.lastName}
+            label={t("auth.signUp.postCode")}
+            name="postCode"
+            type="text"
+            placeholder={t("auth.signUp.postCodePlaceholder")}
+            value={formState.postCode}
             onChange={handleChange}
             required
           />
-        </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <AuthInput
-            label={t("auth.common.email")}
-            name="email"
-            type="email"
-            placeholder={t("auth.common.emailPlaceholder")}
-            value={formState.email}
-            onChange={handleChange}
-            helperText={
-              otpSentTo === formState.email.trim().toLowerCase()
-                ? t("auth.signUp.otpSentHelper", {
-                    defaultValue: "Verification code sent. Enter the 6-digit code below.",
-                  })
-                : t("auth.signUp.otpHelper", {
-                    defaultValue: "We will send a 6-digit verification code to this email.",
-                  })
-            }
-            required
-          />
-          <AuthInput
-            label={t("auth.common.password")}
-            name="password"
-            type="password"
-            placeholder={t("auth.common.passwordPlaceholder")}
-            value={formState.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <AuthButton
+            type="submit"
+            disabled={isSendingOtp}
+            className="inline-flex items-center justify-center gap-2 pt-3"
+          >
+            {isSendingOtp
+              ? t("auth.signUp.sendingOtp", { defaultValue: "Sending code..." })
+              : t("auth.signUp.registerAndSendOtp", {
+                  defaultValue: "Register",
+                })}
+            <FiArrowRight className="text-[16px]" />
+          </AuthButton>
 
-        <AuthInput
-          label={t("auth.signUp.phone")}
-          name="phone"
-          type="tel"
-          placeholder={t("auth.signUp.phonePlaceholder")}
-          value={formState.phone}
-          onChange={handleChange}
-          required
-        />
-
-        <AuthInput
-          label={t("auth.signUp.postCode")}
-          name="postCode"
-          type="text"
-          placeholder={t("auth.signUp.postCodePlaceholder")}
-          value={formState.postCode}
-          onChange={handleChange}
-          required
-        />
-
-        <div className="overflow-hidden rounded-[28px] border border-[#ecd8ca] bg-[linear-gradient(180deg,#fffaf5_0%,#fff3ea_100%)] shadow-[0_16px_34px_rgba(200,95,51,0.08)]">
-          <div className="border-b border-[#f1dfd2] px-4 py-3 sm:px-5">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="px-1 text-[12px] leading-6 text-[#867d75]">
+            {t("auth.signUp.agreementPrefix")}{" "}
+            <Link
+              to="/terms-and-conditions"
+              className="font-semibold text-[#c85f33]"
+            >
+              {t("auth.signUp.terms")}
+            </Link>{" "}
+            {t("auth.signUp.agreementJoiner")}{" "}
+            <Link to="/privacy-policy" className="font-semibold text-[#c85f33]">
+              {t("auth.signUp.privacy")}
+            </Link>
+            {t("auth.signUp.agreementSuffix")}
+          </p>
+        </form>
+      ) : (
+        <form className="space-y-5" onSubmit={handleVerifyOtp}>
+          <div className="rounded-[26px] border border-[#ecd8ca] bg-[linear-gradient(180deg,#fffaf5_0%,#fff3ea_100%)] p-5 shadow-[0_16px_34px_rgba(200,95,51,0.08)]">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#c56b3c]">
-                  {t("auth.signUp.verificationBadge", { defaultValue: "Verify Email" })}
+                  {t("auth.signUp.verificationBadge", { defaultValue: "Email Verification" })}
                 </p>
-                <p className="mt-1 text-[13px] leading-5 text-[#7e6c61]">
-                  {otpSentTo === formState.email.trim().toLowerCase()
-                    ? t("auth.signUp.verificationReady", {
-                        defaultValue: "We sent your code. Enter it below to finish creating the account.",
-                      })
-                    : t("auth.signUp.verificationIntro", {
-                        defaultValue: "Send a one-time code to confirm your email before submitting.",
-                      })}
-                </p>
+                <p className="mt-1 text-[14px] text-[#6f6158]">{normalizedEmail}</p>
               </div>
 
-              <span className="inline-flex w-fit items-center rounded-full border border-[#efd8cb] bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9e7b69]">
-                {otpSentTo === formState.email.trim().toLowerCase()
-                  ? t("auth.signUp.codeSentBadge", { defaultValue: "Code Sent" })
-                  : t("auth.signUp.codePendingBadge", { defaultValue: "Step 1 of 2" })}
-              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setSignupStep(SIGNUP_STEP.FORM);
+                  setOtpCode("");
+                  setOtpError("");
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-[#e3cdbf] bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#8f6e5a] transition hover:border-[#c85f33] hover:text-[#c85f33]"
+              >
+                <FiEdit3 className="text-[14px]" />
+                {t("auth.signUp.editDetails", { defaultValue: "Edit details" })}
+              </button>
+            </div>
+
+            <div className="mt-5">
+              <OtpInput
+                length={SIGNUP_OTP_LENGTH}
+                value={otpCode}
+                onChange={(value) => {
+                  setOtpError("");
+                  setOtpCode(value);
+                }}
+              />
+              {otpError ? (
+                <p className="mt-3 text-center text-[13px] font-medium text-[#d76a4a]">
+                  {otpError}
+                </p>
+              ) : (
+                <p className="mt-3 text-center text-[13px] text-[#7e6c61]">
+                  {t("auth.signUp.otpInputHelper", {
+                    defaultValue: "Enter the code sent to your email. It expires in 10 minutes.",
+                  })}
+                </p>
+              )}
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 sm:py-5">
-            <AuthInput
-              label={t("auth.signUp.otpLabel", { defaultValue: "Email verification code" })}
-              name="otp"
-              type="text"
-              placeholder={t("auth.signUp.otpPlaceholder", { defaultValue: "Enter 6-digit code" })}
-              value={otpCode}
-              onChange={handleOtpChange}
-              errorText={otpError}
-              helperText={t("auth.signUp.otpInputHelper", {
-                defaultValue: "Enter the code sent to your email. It expires in 10 minutes.",
-              })}
-              className="bg-white sm:min-w-[260px]"
-            />
-
+          <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
               onClick={handleSendOtp}
-              disabled={isSendingOtp || !formState.email.trim()}
-              className="inline-flex min-h-13 w-full items-center justify-center rounded-[18px] border border-[#e4a788] bg-white px-5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#c85f33] transition hover:border-[#c85f33] hover:bg-[#fff1e7] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-end"
+              disabled={isSendingOtp || isVerifyingOtp}
+              className="inline-flex min-h-13 w-full items-center justify-center rounded-[18px] border border-[#e4a788] bg-white px-5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#c85f33] transition hover:border-[#c85f33] hover:bg-[#fff1e7] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSendingOtp
-                ? t("auth.signUp.sendingOtp", { defaultValue: "Sending..." })
-                : otpSentTo === formState.email.trim().toLowerCase()
-                  ? t("auth.signUp.resendOtp", { defaultValue: "Resend code" })
-                  : t("auth.signUp.sendOtp", { defaultValue: "Send code" })}
+                ? t("auth.signUp.sendingOtp", { defaultValue: "Sending code..." })
+                : t("auth.signUp.resendOtp", { defaultValue: "Resend code" })}
             </button>
+
+            <AuthButton
+              type="submit"
+              disabled={isVerifyingOtp || otpCode.length !== SIGNUP_OTP_LENGTH}
+              className="inline-flex items-center justify-center gap-2"
+            >
+              {isVerifyingOtp
+                ? t("auth.signUp.verifyingOtp", { defaultValue: "Verifying..." })
+                : t("auth.signUp.verifyAndCreate", {
+                    defaultValue: "Verify and create account",
+                  })}
+              <FiArrowRight className="text-[16px]" />
+            </AuthButton>
           </div>
-        </div>
-
-        <AuthButton
-          type="submit"
-          disabled={isSubmitting || isSendingOtp}
-          className="inline-flex items-center justify-center gap-2 pt-4"
-        >
-          {isSubmitting ? t("auth.signUp.submitting") : t("auth.signUp.submit")}
-          <FiArrowRight className="text-[16px]" />
-        </AuthButton>
-
-        <p className="px-1 text-[12px] leading-6 text-[#867d75]">
-          {t("auth.signUp.agreementPrefix")}{" "}
-          <Link
-            to="/terms-and-conditions"
-            className="font-semibold text-[#c85f33]"
-          >
-            {t("auth.signUp.terms")}
-          </Link>{" "}
-          {t("auth.signUp.agreementJoiner")}{" "}
-          <Link to="/privacy-policy" className="font-semibold text-[#c85f33]">
-            {t("auth.signUp.privacy")}
-          </Link>
-          {t("auth.signUp.agreementSuffix")}
-        </p>
-      </form>
+        </form>
+      )}
     </AuthCard>
   );
 }

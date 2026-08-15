@@ -4,16 +4,17 @@ import {
   LOGIN_USER_MUTATION,
   LOGOUT_USER_MUTATION,
   PASSWORD_RESET_MAIL_MUTATION,
-  REGISTER_USER_MUTATION,
   RESET_PASSWORD_MUTATION,
   SEND_SIGNUP_OTP_MUTATION,
+  VERIFY_SIGNUP_OTP_MUTATION,
   VERIFY_RESET_CODE_MUTATION,
 } from "./authMutations";
 import {
   normalizeForgotPasswordInput,
   normalizeLoginUserInput,
-  normalizeRegisterUserInput,
   normalizeResetPasswordInput,
+  normalizeSignupOtpRequestInput,
+  normalizeVerifySignupOtpInput,
   normalizeVerifyResetCodeInput,
 } from "./authNormalizers";
 import { normalizeAuthenticatedUser } from "../../../lib/auth/authSession";
@@ -84,34 +85,34 @@ async function runAuthMutation({
   return mapResult ? mapResult(result) : result;
 }
 
-export async function registerUser(input) {
-  const variables = normalizeRegisterUserInput(input);
+export async function sendSignupOtp(input) {
+  const variables = normalizeSignupOtpRequestInput(input);
 
   return runAuthMutation({
-    query: REGISTER_USER_MUTATION,
+    query: SEND_SIGNUP_OTP_MUTATION,
     variables,
-    dataKey: "registerUser",
-    fallbackMessage: "Registration failed.",
+    dataKey: "sendSignupOtp",
+    fallbackMessage: "Unable to send verification code.",
+  });
+}
+
+export async function verifySignupOtp(input) {
+  const variables = normalizeVerifySignupOtpInput(input);
+
+  return runAuthMutation({
+    query: VERIFY_SIGNUP_OTP_MUTATION,
+    variables,
+    dataKey: "verifySignupOtp",
+    fallbackMessage: "Verification failed.",
     validate: (result) => {
       if (!result?.user) {
-        throw new Error("Registration response did not include a user object.");
+        throw new Error("Verification response did not include a user object.");
       }
     },
     mapResult: (result) => ({
       ...result,
       user: normalizeAuthenticatedUser(result.user),
     }),
-  });
-}
-
-export async function sendSignupOtp(email) {
-  return runAuthMutation({
-    query: SEND_SIGNUP_OTP_MUTATION,
-    variables: {
-      email: `${email ?? ""}`.trim().toLowerCase(),
-    },
-    dataKey: "sendSignupOtp",
-    fallbackMessage: "Unable to send verification code.",
   });
 }
 
