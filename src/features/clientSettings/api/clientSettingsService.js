@@ -1,10 +1,10 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
+import { uploadMenuImage } from "../../menu/api/menuUploadApi";
 import {
   mapClientSettingsProfileToFormState,
   mergeClientSettingsFormState,
 } from "./clientSettingsMappers";
 import {
-  CREATE_AVATAR_UPLOAD_URL_MUTATION,
   REMOVE_MY_AVATAR_MUTATION,
   UPDATE_CLIENT_NOTIFICATION_SETTINGS_MUTATION,
   UPDATE_MY_AVATAR_MUTATION,
@@ -82,88 +82,15 @@ function validateAvatarFile(file) {
   }
 }
 
-function buildSignedUploadHeaders(headers = []) {
-  return headers.reduce((accumulator, item) => {
-    if (item?.key) {
-      accumulator[item.key] = item?.value || "";
-    }
-    return accumulator;
-  }, {});
-}
-
-function getUploadMethod(uploadConfig) {
-  const normalizedMethod = `${uploadConfig?.method ?? ""}`.trim().toUpperCase();
-  return normalizedMethod || "PUT";
-}
-
-function buildAvatarUploadHeaders(headers, file) {
-  const normalizedHeaders = { ...headers };
-  const hasContentTypeHeader = Object.keys(normalizedHeaders).some(
-    (key) => key.toLowerCase() === "content-type",
-  );
-
-  if (!hasContentTypeHeader) {
-    normalizedHeaders["Content-Type"] = file.type;
-  }
-
-  return normalizedHeaders;
-}
-
-async function uploadAvatarBinary(uploadConfig, file) {
-  const uploadMethod = getUploadMethod(uploadConfig);
-  const uploadHeaders = buildAvatarUploadHeaders(
-    buildSignedUploadHeaders(uploadConfig?.headers),
-    file,
-  );
-
-  try {
-    const response = await fetch(uploadConfig.uploadUrl, {
-      method: uploadMethod,
-      headers: uploadHeaders,
-      body: file,
-    });
-
-    if (!response.ok) {
-      throw new Error("Unable to upload the selected image.");
-    }
-  } catch (error) {
-    if (error instanceof TypeError) {
-      throw new Error(
-        "Image upload could not reach the storage service. Please verify the signed upload URL method and storage CORS settings.",
-      );
-    }
-
-    throw error;
-  }
-}
-
 export async function uploadClientAvatar(file, currentFormState) {
   validateAvatarFile(file);
-
-  const uploadResponse = await graphqlRequest({
-    query: CREATE_AVATAR_UPLOAD_URL_MUTATION,
-    variables: {
-      input: {
-        fileName: file.name,
-        contentType: file.type,
-        fileSize: file.size,
-      },
-    },
-  });
-
-  const uploadConfig = uploadResponse?.createAvatarUploadUrl;
-
-  if (!uploadConfig?.uploadUrl || !uploadConfig?.fileUrl) {
-    throw new Error("Unable to prepare image upload.");
-  }
-
-  await uploadAvatarBinary(uploadConfig, file);
+  const uploadResult = await uploadMenuImage(file);
 
   const response = await graphqlRequest({
     query: UPDATE_MY_AVATAR_MUTATION,
     variables: {
       input: {
-        avatarUrl: uploadConfig.fileUrl,
+        avatarUrl: uploadResult.fileUrl,
       },
     },
   });
