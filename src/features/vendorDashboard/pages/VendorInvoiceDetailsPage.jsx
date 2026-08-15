@@ -122,6 +122,7 @@ export default function VendorInvoiceDetailsPage() {
   });
   const paymentTypeLabel =
     invoice.paymentType || invoiceDetailsT("notSpecified");
+  const isBankTransfer = `${invoice.paymentMethod || invoice.paymentType || ""}`.trim().toUpperCase() === "BANK_TRANSFER";
   const transactionReferenceLabel =
     invoice.transactionReference || invoiceDetailsT("notAvailable");
   const eventNameLabel = localizedOrderLabel;
@@ -299,6 +300,26 @@ export default function VendorInvoiceDetailsPage() {
               <DetailRow label={invoiceDetailsT("dueAmount")} value={invoice.dueAmount} />
             </div>
           </DetailSection>
+
+          {isBankTransfer ? (
+            <DetailSection title="Bank transfer details">
+              <div className="space-y-4">
+                {invoice.bankTransferInstructions ? (
+                  <div className="rounded-[18px] border border-[#f1e3d6] bg-[#fff8f3] px-4 py-3">
+                    <p className="text-sm leading-6 text-[#6d645c]">{invoice.bankTransferInstructions}</p>
+                  </div>
+                ) : null}
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <DetailRow label="Account name" value={invoice.bankAccountName || invoiceDetailsT("notProvided")} />
+                  <DetailRow label="Account number" value={invoice.bankAccountNumber || invoiceDetailsT("notProvided")} />
+                  <DetailRow label="IBAN" value={invoice.iban || invoiceDetailsT("notProvided")} />
+                  <DetailRow label="SWIFT / BIC" value={invoice.swiftCode || invoiceDetailsT("notProvided")} />
+                  <DetailRow label="Reference (KID)" value={invoice.invoiceNumber || invoiceDetailsT("notAvailable")} />
+                </div>
+              </div>
+            </DetailSection>
+          ) : null}
 
           <DetailSection title={invoiceDetailsT("eventAndBilling")}>
             <div className="space-y-4 text-sm text-[#4b463f]">

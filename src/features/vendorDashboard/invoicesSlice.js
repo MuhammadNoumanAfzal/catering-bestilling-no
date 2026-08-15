@@ -82,6 +82,11 @@ const GET_INVOICE_DETAIL_QUERY = `
       currency
       paymentStatus
       paymentMethod
+      bankTransferInstructions
+      bankAccountName
+      bankAccountNumber
+      iban
+      swiftCode
       pricing {
         subtotal
         taxRate
@@ -94,6 +99,14 @@ const GET_INVOICE_DETAIL_QUERY = `
         grandTotal
         amountPaid
         amountDue
+      }
+      lineItems {
+        id
+        label
+        description
+        quantity
+        unitPrice
+        totalPrice
       }
     }
   }
@@ -335,8 +348,14 @@ function mapInvoiceDetail(node) {
     paidAmount: formatMoney(pricing.amountPaid || node.paidAmount, currency),
     dueAmount: formatMoney(pricing.amountDue || node.dueAmount, currency),
     paymentType: node.paymentMethod || node.paymentType || "",
+    paymentMethod: node.paymentMethod || "",
     transactionReference: node.orderNumber || node.transactionReference || "",
     note: node.note || "",
+    bankTransferInstructions: node.bankTransferInstructions || "",
+    bankAccountName: node.bankAccountName || "",
+    bankAccountNumber: node.bankAccountNumber || "",
+    iban: node.iban || "",
+    swiftCode: node.swiftCode || "",
     vendor: {
       id: node.vendor?.id || "",
       name: node.vendor?.name || "",
@@ -356,7 +375,16 @@ function mapInvoiceDetail(node) {
       country: "",
       phone: "",
     },
-    lineItems: [],
+    lineItems: Array.isArray(node.lineItems)
+      ? node.lineItems.map((item) => ({
+          id: item?.id || "",
+          label: item?.label || "Invoice item",
+          description: item?.description || "",
+          quantity: Number(item?.quantity ?? 0),
+          unitPrice: formatMoney(item?.unitPrice, currency),
+          totalPrice: formatMoney(item?.totalPrice, currency),
+        }))
+      : [],
   };
 }
 
