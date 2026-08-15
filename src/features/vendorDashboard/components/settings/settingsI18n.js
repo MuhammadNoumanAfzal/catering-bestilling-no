@@ -10,6 +10,10 @@ export function legacySettingsKey(key) {
   return `modifyOrder.settingsPage.${key}`;
 }
 
+export function sharedSettingsKey(key) {
+  return `settings.${key}`;
+}
+
 export function translateSettings(t, i18n, key, options = {}) {
   const isNorwegian = `${i18n?.resolvedLanguage || i18n?.language || ""}`
     .toLowerCase()
@@ -20,13 +24,19 @@ export function translateSettings(t, i18n, key, options = {}) {
       ...options,
       defaultValue: t(vendorSettingsKey(key), {
         ...options,
-        defaultValue: t(settingsKey(key), options),
+        defaultValue: t(settingsKey(key), {
+          ...options,
+          defaultValue: t(sharedSettingsKey(key), options),
+        }),
       }),
     });
   }
 
   return t(settingsKey(key), {
     ...options,
-    defaultValue: t(vendorSettingsKey(key), options),
+    defaultValue: t(vendorSettingsKey(key), {
+      ...options,
+      defaultValue: t(sharedSettingsKey(key), options),
+    }),
   });
 }
