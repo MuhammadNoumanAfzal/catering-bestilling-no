@@ -11,6 +11,8 @@ export default function AuthInput({
   readOnly = false,
   className = "",
   required = false,
+  helperText = "",
+  errorText = "",
 }) {
   const isPasswordField = type === "password";
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -35,7 +37,11 @@ export default function AuthInput({
           onChange={onChange}
           readOnly={readOnly}
           required={required}
-          className={`type-para h-13 w-full rounded-[18px] border border-[#ddd3ca] bg-[#fffdfa] px-4 text-[#1d1a17] outline-none transition placeholder:text-[#b4aba2] focus:border-[#c85f33] focus:bg-white focus:ring-4 focus:ring-[#c85f33]/10 ${
+          className={`type-para h-13 w-full rounded-[18px] border bg-[#fffdfa] px-4 text-[#1d1a17] outline-none transition placeholder:text-[#b4aba2] focus:bg-white focus:ring-4 ${
+            errorText
+              ? "border-[#d76a4a] focus:border-[#d76a4a] focus:ring-[#d76a4a]/10"
+              : "border-[#ddd3ca] focus:border-[#c85f33] focus:ring-[#c85f33]/10"
+          } ${
             isPasswordField ? "pr-12" : ""
           } ${className}`}
         />
@@ -54,6 +60,16 @@ export default function AuthInput({
           </button>
         ) : null}
       </div>
+      {errorText ? (
+        <span className="mt-2 block text-[12px] font-medium text-[#d76a4a]">
+          {errorText}
+        </span>
+      ) : null}
+      {!errorText && helperText ? (
+        <span className="mt-2 block text-[12px] text-[#867d75]">
+          {helperText}
+        </span>
+      ) : null}
     </label>
   );
 }

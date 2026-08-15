@@ -19,6 +19,9 @@ const NORWEGIAN_TRANSLATIONS = {
 
   "e-posten er allerede i bruk": "This email is already in use.",
   "e-postadresse er allerede registrert": "This email address is already registered.",
+  "feil engangskode. vennligst prøv igjen.": "Incorrect one-time code. Please try again.",
+  "engangskoden er utløpt. vennligst be om en ny kode.": "The one-time code has expired. Please request a new code.",
+  "ingen engangskode funnet for denne e-posten. vennligst send kode først.": "No one-time code was found for this email. Please request a code first.",
   "ugyldig e-post eller passord": "Invalid email or password.",
   "feil e-post eller passord": "Incorrect email or password.",
   "brukeren eksisterer ikke": "User does not exist.",
@@ -53,7 +56,8 @@ function buildGraphqlErrorMessage(errors) {
   }
 
   const primaryError = errors[0];
-  const fieldErrors = primaryError?.extensions?.errors;
+  const fieldErrors =
+    primaryError?.extensions?.fields ?? primaryError?.extensions?.errors;
   let rawMessage = "Something went wrong.";
 
   if (fieldErrors && typeof fieldErrors === "object") {
@@ -69,6 +73,29 @@ function buildGraphqlErrorMessage(errors) {
   }
 
   return translateNorwegianToEnglish(rawMessage);
+}
+
+function extractGraphqlFieldErrors(errors) {
+  if (!Array.isArray(errors) || errors.length === 0) {
+    return null;
+  }
+
+  const rawFieldErrors =
+    errors[0]?.extensions?.fields ?? errors[0]?.extensions?.errors;
+
+  if (!rawFieldErrors || typeof rawFieldErrors !== "object") {
+    return null;
+  }
+
+  return Object.fromEntries(
+    Object.entries(rawFieldErrors).map(([field, value]) => {
+      const messages = (Array.isArray(value) ? value : [value])
+        .filter((item) => typeof item === "string" && item.trim())
+        .map((item) => translateNorwegianToEnglish(item));
+
+      return [field, messages];
+    }),
+  );
 }
 
 function looksLikeHtmlDocument(value) {
@@ -137,7 +164,9 @@ export async function graphqlRequest({ query, variables = {}, signal }) {
   }
 
   if (payload?.errors?.length) {
-    throw new Error(buildGraphqlErrorMessage(payload.errors));
+    const error = new Error(buildGraphqlErrorMessage(payload.errors));
+    error.fieldErrors = extractGraphqlFieldErrors(payload.errors);
+    throw error;
   }
 
   if (!payload?.data) {
