@@ -10,6 +10,24 @@ import {
 import { useTranslation } from "react-i18next";
 import NotificationPopover from "./NotificationPopover";
 
+function getUserAvatarUrl(user) {
+  return user?.avatarThumbnailUrl || user?.avatarUrl || "";
+}
+
+function getUserInitials(user) {
+  const source =
+    user?.name ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+    user?.email ||
+    "U";
+
+  return source
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+}
+
 export default function CommonNavbarActions({
   actionMenuRef,
   cartItemCount,
@@ -31,6 +49,8 @@ export default function CommonNavbarActions({
 }) {
   const location = useLocation();
   const { t } = useTranslation();
+  const avatarUrl = getUserAvatarUrl(user);
+  const userInitials = getUserInitials(user);
 
   return (
     <div className="ml-auto" ref={actionMenuRef}>
@@ -91,8 +111,16 @@ export default function CommonNavbarActions({
             aria-label={t("nav.openMenu")}
             aria-expanded={isActionMenuOpen}
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1e9] text-[#c85f33]">
-              <FiUser />
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#fff1e9] text-[11px] font-bold text-[#c85f33]">
+              {avatarUrl ? (
+                <img
+                  alt={user?.name || "User"}
+                  className="h-full w-full object-cover"
+                  src={avatarUrl}
+                />
+              ) : (
+                userInitials
+              )}
             </div>
             {isLoggedIn ? (
               <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
