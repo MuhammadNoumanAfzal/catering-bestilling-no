@@ -6,8 +6,6 @@ import {
   REPLY_TO_OWN_SUPPORT_TICKET_MUTATION,
 } from "./supportMutations";
 
-const OWN_SUPPORT_MESSAGE_IDS_STORAGE_KEY = "vendor-support-own-message-ids";
-
 function formatDisplayDate(value) {
   if (!value) {
     return "";
@@ -24,40 +22,11 @@ function formatDisplayDate(value) {
   }).format(date);
 }
 
-function readOwnSupportMessageIds() {
-  if (typeof window === "undefined") {
-    return {};
-  }
+function normalizeConversationItem(message) {
+  const side = `${message?.side ?? ""}`.trim().toLowerCase() || "admin";
+  const authorRole = `${message?.author?.role ?? side}`.trim();
+  const fallbackAuthorName = side === "admin" ? "Support" : "You";
 
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(OWN_SUPPORT_MESSAGE_IDS_STORAGE_KEY) || "{}");
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function storeOwnSupportMessageId(ticketId, messageId) {
-  if (typeof window === "undefined" || !ticketId || !messageId) {
-    return;
-  }
-
-  const currentMap = readOwnSupportMessageIds();
-  const existingIds = Array.isArray(currentMap[ticketId]) ? currentMap[ticketId] : [];
-
-  if (existingIds.includes(messageId)) {
-    return;
-  }
-
-  const nextMap = {
-    ...currentMap,
-    [ticketId]: [...existingIds, messageId],
-  };
-
-  window.localStorage.setItem(OWN_SUPPORT_MESSAGE_IDS_STORAGE_KEY, JSON.stringify(nextMap));
-}
-
-function normalizeConversationItem(message, side = "admin", authorName = "Support") {
   return {
     id: message?.id ?? "",
     side,
@@ -65,26 +34,12 @@ function normalizeConversationItem(message, side = "admin", authorName = "Suppor
     createdAt: message?.createdAt ?? "",
     createdAtLabel: formatDisplayDate(message?.createdAt),
     author: {
-      id: "",
-      fullName: authorName,
-      role: side === "admin" ? "Support" : "Customer",
+      id: message?.author?.id ?? "",
+      fullName: message?.author?.fullName ?? fallbackAuthorName,
+      role: authorRole || (side === "admin" ? "admin" : "vendor"),
     },
     attachments: [],
   };
-}
-
-function normalizeConversation(messages, ticketId) {
-  const ownMessageIds = readOwnSupportMessageIds();
-  const ownIdsForTicket = new Set(Array.isArray(ownMessageIds[ticketId]) ? ownMessageIds[ticketId] : []);
-
-  return (Array.isArray(messages) ? messages : []).map((item, index) => {
-    const isOwnMessage = ownIdsForTicket.has(item?.id) || index === 0;
-    return normalizeConversationItem(
-      item,
-      isOwnMessage ? "customer" : "admin",
-      isOwnMessage ? "You" : "Support",
-    );
-  });
 }
 
 function normalizeTicketListItem(item) {
@@ -202,7 +157,7 @@ export async function getMySupportTicket(ticketId) {
     updatedAt: messages[messages.length - 1]?.createdAt ?? ticket.createdAt ?? "",
     updatedAtLabel: formatDisplayDate(messages[messages.length - 1]?.createdAt || ticket.createdAt),
     orderReference: ticket.ticketNo ?? "",
-    conversation: normalizeConversation(messages, ticketId),
+    conversation: Array.isArray(messages) ? messages.map(normalizeConversationItem) : [],
   };
 }
 
@@ -235,11 +190,9 @@ export async function replyToOwnSupportTicket(ticketId, message, attachmentIds =
     throw new Error(result?.message || "Unable to send support reply.");
   }
 
-  storeOwnSupportMessageId(ticketId, result.messageItem.id);
-
   return {
     message: result.message || "Reply sent successfully.",
-    reply: normalizeConversationItem(result.messageItem, "customer", "You"),
+    reply: normalizeConversationItem(result.messageItem),
     ticket: {
       id: result.ticket?.id ?? ticketId,
       lastMessageAt: result.ticket?.lastMessageAt ?? result.messageItem.createdAt,
