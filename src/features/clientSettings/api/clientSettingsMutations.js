@@ -15,6 +15,7 @@ export const UPDATE_CLIENT_NOTIFICATION_SETTINGS_MUTATION = `
 export const CREATE_AVATAR_UPLOAD_URL_MUTATION = `
   mutation CreateAvatarUploadUrl($input: CreateAvatarUploadUrlInput!) {
     createAvatarUploadUrl(input: $input) {
+      method
       uploadUrl
       fileUrl
       fileKey
