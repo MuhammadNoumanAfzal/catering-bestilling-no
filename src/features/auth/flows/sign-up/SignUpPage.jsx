@@ -165,7 +165,7 @@ export default function SignUpPage() {
         />
       }
     >
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="grid gap-4 sm:grid-cols-2">
           <AuthInput
             label={t("auth.signUp.firstName")}
@@ -235,8 +235,33 @@ export default function SignUpPage() {
           required
         />
 
-        <div className="rounded-[24px] border border-[#eadfd4] bg-[#fff8f2] p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="overflow-hidden rounded-[28px] border border-[#ecd8ca] bg-[linear-gradient(180deg,#fffaf5_0%,#fff3ea_100%)] shadow-[0_16px_34px_rgba(200,95,51,0.08)]">
+          <div className="border-b border-[#f1dfd2] px-4 py-3 sm:px-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#c56b3c]">
+                  {t("auth.signUp.verificationBadge", { defaultValue: "Verify Email" })}
+                </p>
+                <p className="mt-1 text-[13px] leading-5 text-[#7e6c61]">
+                  {otpSentTo === formState.email.trim().toLowerCase()
+                    ? t("auth.signUp.verificationReady", {
+                        defaultValue: "We sent your code. Enter it below to finish creating the account.",
+                      })
+                    : t("auth.signUp.verificationIntro", {
+                        defaultValue: "Send a one-time code to confirm your email before submitting.",
+                      })}
+                </p>
+              </div>
+
+              <span className="inline-flex w-fit items-center rounded-full border border-[#efd8cb] bg-white/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9e7b69]">
+                {otpSentTo === formState.email.trim().toLowerCase()
+                  ? t("auth.signUp.codeSentBadge", { defaultValue: "Code Sent" })
+                  : t("auth.signUp.codePendingBadge", { defaultValue: "Step 1 of 2" })}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 sm:py-5">
             <AuthInput
               label={t("auth.signUp.otpLabel", { defaultValue: "Email verification code" })}
               name="otp"
@@ -248,14 +273,14 @@ export default function SignUpPage() {
               helperText={t("auth.signUp.otpInputHelper", {
                 defaultValue: "Enter the code sent to your email. It expires in 10 minutes.",
               })}
-              className="sm:min-w-[260px]"
+              className="bg-white sm:min-w-[260px]"
             />
 
             <button
               type="button"
               onClick={handleSendOtp}
               disabled={isSendingOtp || !formState.email.trim()}
-              className="inline-flex h-13 items-center justify-center rounded-[18px] border border-[#c85f33] px-5 text-[13px] font-semibold uppercase tracking-[0.08em] text-[#c85f33] transition hover:bg-[#fff1e7] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-13 w-full items-center justify-center rounded-[18px] border border-[#e4a788] bg-white px-5 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#c85f33] transition hover:border-[#c85f33] hover:bg-[#fff1e7] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:self-end"
             >
               {isSendingOtp
                 ? t("auth.signUp.sendingOtp", { defaultValue: "Sending..." })
@@ -269,13 +294,13 @@ export default function SignUpPage() {
         <AuthButton
           type="submit"
           disabled={isSubmitting || isSendingOtp}
-          className="inline-flex items-center justify-center gap-2"
+          className="inline-flex items-center justify-center gap-2 pt-4"
         >
           {isSubmitting ? t("auth.signUp.submitting") : t("auth.signUp.submit")}
           <FiArrowRight className="text-[16px]" />
         </AuthButton>
 
-        <p className="text-[12px] leading-5 text-[#867d75]">
+        <p className="px-1 text-[12px] leading-6 text-[#867d75]">
           {t("auth.signUp.agreementPrefix")}{" "}
           <Link
             to="/terms-and-conditions"
