@@ -100,8 +100,10 @@ export default function SignUpPage() {
 
     try {
       const result = await verifySignupOtp({
-        email: normalizedEmail,
         otp: otpCode,
+        ...formState,
+        email: normalizedEmail,
+        role: AUTH_ROLE,
       });
 
       await showSuccessToast(result.message || t("auth.signUp.success"));

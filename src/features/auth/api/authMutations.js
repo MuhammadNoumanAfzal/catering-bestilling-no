@@ -1,16 +1,15 @@
 export const SEND_SIGNUP_OTP_MUTATION = `
-  mutation SendSignupOTP($input: SignupOtpRequestInput!) {
-    sendSignupOtp(input: $input) {
+  mutation SendSignupOTP($email: String!) {
+    sendSignupOtp(email: $email) {
       success
       message
-      expiresIn
     }
   }
 `;
 
-export const VERIFY_SIGNUP_OTP_MUTATION = `
-  mutation VerifySignupOtp($input: SignupOtpVerifyInput!) {
-    verifySignupOtp(input: $input) {
+export const REGISTER_USER_MUTATION = `
+  mutation RegisterUser($input: SignupFormInput!, $otp: String!) {
+    registerUser(input: $input, otp: $otp) {
       success
       message
       user {

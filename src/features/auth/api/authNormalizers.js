@@ -144,15 +144,13 @@ export function normalizeSignupOtp(value) {
 
 export function normalizeSignupOtpRequestInput(input) {
   return {
-    input: normalizeRegisterUserInput(input),
+    email: normalizeEmail(input.email),
   };
 }
 
 export function normalizeVerifySignupOtpInput(input) {
   return {
-    input: {
-      email: normalizeEmail(input.email),
-      otp: normalizeSignupOtp(input.otp),
-    },
+    input: normalizeRegisterUserInput(input),
+    otp: normalizeSignupOtp(input.otp),
   };
 }
