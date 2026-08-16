@@ -19,6 +19,8 @@ import {
 
 const VENDOR_REGISTER_URL =
   "https://catering-bestilling-no-vendor-panel.vercel.app/";
+const VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY =
+  "vendor-dashboard-onboarding-guide-pending";
 
 const SIGNUP_STEP = {
   FORM: "form",
@@ -106,7 +108,17 @@ export default function SignUpPage() {
         role: AUTH_ROLE,
       });
 
-      await showSuccessToast(result.message || t("auth.signUp.success"));
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(
+          VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY,
+          "true",
+        );
+      }
+
+      await showSuccessToast(
+        result.message ||
+          "Account created. After sign in, go to Settings to complete your profile and add your address during checkout.",
+      );
       setFormState(SIGN_UP_INITIAL_FORM_STATE);
       setOtpCode("");
       setSignupStep(SIGNUP_STEP.FORM);
