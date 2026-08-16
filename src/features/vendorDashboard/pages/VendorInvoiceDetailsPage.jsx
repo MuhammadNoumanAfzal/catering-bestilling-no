@@ -172,7 +172,11 @@ export default function VendorInvoiceDetailsPage() {
               fetchInvoiceDownloadUrl.fulfilled.match(result) &&
               typeof window !== "undefined"
             ) {
-              window.open(result.payload.url, "_blank", "noopener,noreferrer");
+              window.open(
+                result.payload.downloadUrl,
+                "_blank",
+                "noopener,noreferrer",
+              );
             }
           }}
           disabled={downloadStatus === "loading"}

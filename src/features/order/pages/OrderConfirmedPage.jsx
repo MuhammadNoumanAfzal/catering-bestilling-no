@@ -60,6 +60,8 @@ export default function OrderConfirmedPage() {
             <OrderConfirmationHero />
             <OrderStatusSummary
               primaryOrderId={primaryOrderId}
+              invoiceNumber={orderPreview.invoiceNumber}
+              invoiceStatus={orderPreview.invoiceStatus}
               modificationRequest={modificationRequest}
               orderStatus={orderWorkflow?.status}
               pendingVendorAdjustment={pendingVendorAdjustment}

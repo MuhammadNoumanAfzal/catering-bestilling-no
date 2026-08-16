@@ -71,6 +71,8 @@ function getModificationSummary({
 
 export default function OrderStatusSummary({
   primaryOrderId,
+  invoiceNumber,
+  invoiceStatus,
   modificationRequest,
   orderStatus,
   pendingVendorAdjustment,
@@ -86,7 +88,7 @@ export default function OrderStatusSummary({
   });
 
   return (
-    <div className="mx-auto mt-8 grid max-w-2xl gap-4 rounded-[20px] border border-[#eee4da] bg-[#fcf9f6] p-5 text-left sm:grid-cols-3">
+    <div className="mx-auto mt-8 grid max-w-3xl gap-4 rounded-[20px] border border-[#eee4da] bg-[#fcf9f6] p-5 text-left sm:grid-cols-4">
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
           {t("orderConfirmed.status")}
@@ -101,6 +103,17 @@ export default function OrderStatusSummary({
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#cf6e38]">
           {primaryOrderId}
+        </p>
+      </div>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
+          Invoice
+        </p>
+        <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
+          {invoiceNumber || "Will appear in invoices"}
+        </p>
+        <p className="mt-1 text-xs font-medium text-[#8a7d72]">
+          {invoiceStatus || "Pending"}
         </p>
       </div>
       <div>
