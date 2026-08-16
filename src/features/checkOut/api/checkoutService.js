@@ -5,8 +5,8 @@ import {
   mapCurrentUserToCheckoutProfile,
 } from "./checkoutMappers";
 import {
-  buildPlaceClientOrderVariables,
-  PLACE_CLIENT_ORDER_MUTATION,
+  buildCreateOrderVariables,
+  CREATE_ORDER_MUTATION,
 } from "./checkoutMutations";
 import {
   GET_CHECKOUT_PREVIEW_QUERY,
@@ -90,33 +90,64 @@ export async function fetchCheckoutPreview({ cart, checkoutType, formState }) {
 
 async function placeSingleOrder({ cart, checkoutType, formState }) {
   const payload = buildPlaceOrderPayload({ cart, checkoutType, formState });
-  const variables = buildPlaceClientOrderVariables(payload);
+  const variables = buildCreateOrderVariables(payload);
   const response = await graphqlRequest({
-    query: PLACE_CLIENT_ORDER_MUTATION,
+    query: CREATE_ORDER_MUTATION,
     variables,
   });
-  const result = response?.placeClientOrder;
+  const result = response?.createOrder;
 
   if (!result?.success) {
-    const availabilityErrors = Array.isArray(result?.availability?.errors)
-      ? result.availability.errors
-      : [];
-    const firstAvailabilityMessage = availabilityErrors
-      .map((issue) => `${issue?.message ?? ""}`.trim())
-      .find(Boolean);
     throw new Error(
-      firstAvailabilityMessage ||
-        result?.message ||
-        `Failed to place order for ${cart.vendor.name}.`,
+      result?.message || `Failed to place order for ${cart.vendor.name}.`,
     );
   }
+
+  const order = result.order || {};
+  const invoice = result.invoice || {};
+  const bankDetails = invoice.bankDetails || {};
 
   return {
     vendorSlug: cart.vendor.slug,
     vendorName: cart.vendor.name,
-    orderId: result.orderId,
+    orderId: order.id || "",
+    orderNumber: order.orderNumber || "",
+    orderStatus: order.status || "",
     message: result.message || "Order placed successfully.",
-    promisedDeliveryWindow: result.promisedDeliveryWindow || null,
+    invoiceId: invoice.id || "",
+    invoiceNumber: invoice.invoiceNumber || "",
+    invoiceStatus: invoice.status || "",
+    invoiceIssueDate: invoice.issueDate || "",
+    invoiceDueDate: invoice.dueDate || "",
+    paymentMethod: invoice.paymentMethod || "",
+    paymentReference: invoice.paymentReference || "",
+    invoicePdfUrl: invoice.pdfUrl || "",
+    bankDetails: {
+      accountName: bankDetails.accountName || "",
+      accountNumber: bankDetails.accountNumber || "",
+      iban: bankDetails.iban || "",
+      swiftCode: bankDetails.swiftCode || "",
+      bankName: bankDetails.bankName || "",
+      instructions: bankDetails.instructions || "",
+    },
+    pricing: {
+      subtotal: invoice.pricing?.subtotal ?? null,
+      taxAmount: invoice.pricing?.taxAmount ?? null,
+      deliveryFee: invoice.pricing?.deliveryFee ?? null,
+      grandTotal: invoice.pricing?.grandTotal ?? null,
+      amountPaid: invoice.pricing?.amountPaid ?? null,
+      amountDue: invoice.pricing?.amountDue ?? null,
+      currency: order.amount?.currency || "NOK",
+      formattedTotal:
+        order.amount?.formatted ||
+        invoice.pricing?.grandTotal ||
+        "",
+    },
+    customer: {
+      id: order.customer?.id || "",
+      fullName: order.customer?.fullName || "",
+      email: order.customer?.email || "",
+    },
   };
 }
 

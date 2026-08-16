@@ -2,16 +2,26 @@ export function formatOrderPreview(orderDraft) {
   const primaryCart = orderDraft?.carts?.[0];
   const formState = orderDraft?.formState ?? {};
   const placedOrders = orderDraft?.placedOrders ?? [];
+  const primaryPlacedOrder = placedOrders[0] ?? null;
   const modificationRequest = orderDraft?.modificationRequest ?? null;
   const promisedDeliveryWindowLabel =
-    `${placedOrders?.[0]?.promisedDeliveryWindow?.label ?? ""}`.trim();
+    `${primaryPlacedOrder?.promisedDeliveryWindow?.label ?? ""}`.trim();
   const orderIds = placedOrders
-    .map((order) => `${order.orderId ?? ""}`.trim())
+    .map((order) => `${order.orderNumber || order.orderId || ""}`.trim())
     .filter(Boolean)
     .map((orderId) => (orderId.startsWith("#") ? orderId : `#${orderId}`));
 
   return {
     orderIds,
+    invoiceId: primaryPlacedOrder?.invoiceId || "",
+    invoiceNumber: primaryPlacedOrder?.invoiceNumber || "",
+    invoiceStatus: primaryPlacedOrder?.invoiceStatus || "",
+    invoiceDueDate: primaryPlacedOrder?.invoiceDueDate || "",
+    paymentMethod: primaryPlacedOrder?.paymentMethod || "",
+    paymentReference: primaryPlacedOrder?.paymentReference || "",
+    invoicePdfUrl: primaryPlacedOrder?.invoicePdfUrl || "",
+    bankDetails: primaryPlacedOrder?.bankDetails || null,
+    amountDue: primaryPlacedOrder?.pricing?.formattedTotal || "",
     address:
       formState.deliveryAddress ||
       primaryCart?.orderSummary?.deliveryAddress ||

@@ -1,34 +1,64 @@
-export const PLACE_CLIENT_ORDER_MUTATION = `
-  mutation PlaceClientOrder($input: PlaceClientOrderInput!) {
-    placeClientOrder(input: $input) {
+export const CREATE_ORDER_MUTATION = `
+  mutation CreateOrder($input: CreateOrderInput!) {
+    createOrder(input: $input) {
       success
       message
-      orderId
-      availability {
-        isValid
-        errors {
-          code
-          message
-          field
-          meta
+      order {
+        id
+        orderNumber
+        status
+        placedAt
+        eventDate
+        vendor {
+          id
+          name
         }
-        warnings {
-          code
-          message
-          field
-          meta
+        customer {
+          id
+          fullName
+          email
+        }
+        amount {
+          subtotal
+          tax
+          deliveryFee
+          serviceFee
+          total
+          currency
+          formatted
         }
       }
-      promisedDeliveryWindow {
-        minMinutes
-        maxMinutes
-        label
+      invoice {
+        id
+        invoiceNumber
+        status
+        issueDate
+        dueDate
+        paymentMethod
+        paymentReference
+        pdfUrl
+        pricing {
+          subtotal
+          taxAmount
+          deliveryFee
+          grandTotal
+          amountPaid
+          amountDue
+        }
+        bankDetails {
+          accountName
+          accountNumber
+          iban
+          swiftCode
+          bankName
+          instructions
+        }
       }
     }
   }
 `;
 
-export function buildPlaceClientOrderVariables(payload) {
+export function buildCreateOrderVariables(payload) {
   const input = Object.fromEntries(
     Object.entries(payload).filter(([, value]) => {
       if (value === undefined || value === null) {

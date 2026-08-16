@@ -79,23 +79,29 @@ const GET_INVOICE_DETAIL_QUERY = `
       orderNumber
       issueDate
       dueDate
+      status
       currency
       paymentStatus
       paymentMethod
+      paymentReference
+      pdfUrl
       bankTransferInstructions
       bankAccountName
       bankAccountNumber
       iban
       swiftCode
+      bankDetails {
+        accountName
+        accountNumber
+        iban
+        swiftCode
+        bankName
+        instructions
+      }
       pricing {
         subtotal
-        taxRate
         taxAmount
         deliveryFee
-        addOnsTotal
-        tipAmount
-        discountAmount
-        serviceFee
         grandTotal
         amountPaid
         amountDue
@@ -115,7 +121,7 @@ const GET_INVOICE_DETAIL_QUERY = `
 const GET_INVOICE_DOWNLOAD_URL_QUERY = `
   query GetInvoiceDownloadUrl($invoiceId: ID!) {
     invoiceDownloadUrl(invoiceId: $invoiceId) {
-      url
+      downloadUrl
       expiresAt
     }
   }
@@ -253,24 +259,7 @@ function buildTotals(summary = {}) {
 
 function mapInvoiceListNode(node) {
   const pricing = node.pricing || {};
-  const total = parseFloat(pricing.grandTotal || node.totalAmount || 0);
-  const paid = parseFloat(pricing.amountPaid || node.paidAmount || 0);
-  
-  let calculatedStatus = "pending";
-  if (paid >= total && total > 0) {
-    calculatedStatus = "paid";
-  } else {
-    const dueDateObj = new Date(node.dueDate);
-    const today = new Date();
-    const isPastDue = !isNaN(dueDateObj.getTime()) && dueDateObj.setHours(0,0,0,0) < today.setHours(0,0,0,0);
-    if (isPastDue) {
-      calculatedStatus = "overdue";
-    } else {
-      calculatedStatus = "pending";
-    }
-  }
-
-  const status = mapInvoiceStatus(calculatedStatus);
+  const status = mapInvoiceStatus(node.status);
   const currency = node.currency || "NOK";
   const orderId = node.id || node.order?.id || "";
 
@@ -309,25 +298,8 @@ function mapInvoiceListNode(node) {
 
 function mapInvoiceDetail(node) {
   const pricing = node.pricing || {};
-  const total = parseFloat(pricing.grandTotal || node.totalAmount || 0);
-  const paid = parseFloat(pricing.amountPaid || node.paidAmount || 0);
-  const statusSource = node.paymentStatus || node.status || "";
-  
-  let calculatedStatus = "pending";
-  if (paid >= total && total > 0) {
-    calculatedStatus = "paid";
-  } else {
-    const dueDateObj = new Date(node.dueDate);
-    const today = new Date();
-    const isPastDue = !isNaN(dueDateObj.getTime()) && dueDateObj.setHours(0,0,0,0) < today.setHours(0,0,0,0);
-    if (isPastDue) {
-      calculatedStatus = "overdue";
-    } else {
-      calculatedStatus = "pending";
-    }
-  }
-
-  const status = mapInvoiceStatus(statusSource || calculatedStatus);
+  const bankDetails = node.bankDetails || {};
+  const status = mapInvoiceStatus(node.paymentStatus || node.status);
   const currency = node.currency || "NOK";
 
   return {
@@ -350,13 +322,20 @@ function mapInvoiceDetail(node) {
     dueAmount: formatMoney(pricing.amountDue || node.dueAmount, currency),
     paymentType: node.paymentMethod || node.paymentType || "",
     paymentMethod: node.paymentMethod || "",
-    transactionReference: node.invoiceNumber || node.orderNumber || node.transactionReference || "",
+    transactionReference:
+      node.paymentReference ||
+      node.invoiceNumber ||
+      node.orderNumber ||
+      node.transactionReference ||
+      "",
     note: node.note || "",
-    bankTransferInstructions: node.bankTransferInstructions || "",
-    bankAccountName: node.bankAccountName || "",
-    bankAccountNumber: node.bankAccountNumber || "",
-    iban: node.iban || "",
-    swiftCode: node.swiftCode || "",
+    bankTransferInstructions:
+      node.bankTransferInstructions || bankDetails.instructions || "",
+    bankAccountName: node.bankAccountName || bankDetails.accountName || "",
+    bankAccountNumber:
+      node.bankAccountNumber || bankDetails.accountNumber || "",
+    iban: node.iban || bankDetails.iban || "",
+    swiftCode: node.swiftCode || bankDetails.swiftCode || "",
     vendor: {
       id: node.vendor?.id || "",
       name: node.vendor?.name || "",
@@ -453,7 +432,7 @@ export const fetchInvoiceDownloadUrl = createAsyncThunk(
         variables: { invoiceId },
       });
 
-      if (!response.invoiceDownloadUrl?.url) {
+      if (!response.invoiceDownloadUrl?.downloadUrl) {
         throw new Error("Invoice download link is not available.");
       }
 
