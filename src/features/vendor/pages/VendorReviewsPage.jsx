@@ -18,16 +18,77 @@ import {
   getVendorReviewSummaryCards,
 } from "../utils/vendorReviewForm";
 
-function SummaryCard({ icon: Icon, label, value, note }) {
+function formatScheduleGroups(slots = [], fallbackLabel = "") {
+  if (!Array.isArray(slots) || slots.length === 0) {
+    return fallbackLabel ? [fallbackLabel] : [];
+  }
+
+  const groupedSlots = slots.reduce((groups, slot) => {
+    const start = `${slot?.start ?? ""}`.trim();
+    const end = `${slot?.end ?? ""}`.trim();
+    const day = `${slot?.day ?? ""}`.trim();
+
+    if (!start || !end || !day) {
+      return groups;
+    }
+
+    const key = `${start}-${end}`;
+    if (!groups[key]) {
+      groups[key] = {
+        time: `${start} - ${end}`,
+        days: [],
+      };
+    }
+
+    groups[key].days.push(day);
+    return groups;
+  }, {});
+
+  return Object.values(groupedSlots).map(({ days, time }) => {
+    const formattedDays = days
+      .map((day) => `${day}`.slice(0, 1).toUpperCase() + `${day}`.slice(1, 3))
+      .join(", ");
+
+    return formattedDays ? `${formattedDays}: ${time}` : time;
+  });
+}
+
+function SummaryCard({
+  icon: Icon,
+  label,
+  value,
+  note,
+  scheduleLines = [],
+  compact = false,
+}) {
   return (
     <div className="rounded-[22px] border border-[#eadfd2] bg-[#f8f2eb] p-5 shadow-[0_10px_22px_rgba(31,19,8,0.04)]">
       <div className="flex items-center gap-2 text-[#171512]">
         <Icon className="text-[16px]" />
         <p className="text-[16px] font-medium">{label}</p>
       </div>
-      <p className="mt-3 text-[31px] font-semibold leading-none tracking-[-0.04em] text-[#171512]">
-        {value}
-      </p>
+      {scheduleLines.length > 0 ? (
+        <div className="mt-4 space-y-2">
+          {scheduleLines.map((line) => (
+            <div
+              key={line}
+              className="rounded-[14px] bg-white px-3 py-2 text-[13px] font-medium leading-5 text-[#3f372f] shadow-[0_6px_14px_rgba(31,19,8,0.04)]"
+            >
+              {line}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p
+          className={`mt-3 font-semibold tracking-[-0.04em] text-[#171512] ${
+            compact
+              ? "text-[20px] leading-6"
+              : "text-[31px] leading-none"
+          }`}
+        >
+          {value}
+        </p>
+      )}
       {note ? (
         <p className="mt-3 text-[14px] leading-6 text-[#665b51]">{note}</p>
       ) : null}
@@ -160,6 +221,14 @@ export default function VendorReviewsPage() {
     derivedAverageRating ??
     Number(vendor?.rating ?? 0)
   ).toString();
+  const scheduleLines = useMemo(
+    () =>
+      formatScheduleGroups(
+        vendor?.availability?.delivery?.slots,
+        vendor?.availability?.delivery?.label,
+      ),
+    [vendor],
+  );
   const summaryCards = useMemo(
     () =>
       getVendorReviewSummaryCards({
@@ -168,6 +237,8 @@ export default function VendorReviewsPage() {
         reviewCount,
       }).map((card, index) => ({
         ...card,
+        compact: index > 0,
+        scheduleLines: index === 3 ? scheduleLines : [],
         icon:
           index === 0
             ? FiStar
@@ -177,7 +248,7 @@ export default function VendorReviewsPage() {
                 ? FiTruck
                 : FiMessageSquare,
       })),
-    [averageRating, reviewCount, vendor],
+    [averageRating, reviewCount, scheduleLines, vendor],
   );
 
   if (isLoading || isReviewsLoading) {
@@ -226,7 +297,7 @@ export default function VendorReviewsPage() {
 
         <div className="mt-5 overflow-hidden rounded-[30px] border border-[#eadfd2] bg-[linear-gradient(135deg,#fffaf6_0%,#fff2e9_45%,#fff9f3_100%)] shadow-[0_24px_56px_rgba(31,19,8,0.08)]">
           <div className="p-6 lg:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
               <div className="max-w-3xl">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#cf6e38]">
                   {t("vendor.reviews.eyebrow")}
@@ -235,7 +306,7 @@ export default function VendorReviewsPage() {
                   {t("vendor.reviews.title", { vendorName: vendor.name })}
                 </h1>
 
-                <div className="mt-6 flex flex-wrap items-center gap-4 text-[15px] text-[#4f4740]">
+                <div className="mt-5 flex flex-wrap items-center gap-3 text-[15px] text-[#4f4740]">
                   <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 shadow-[0_8px_18px_rgba(31,19,8,0.04)]">
                     <FiStar className="fill-[#f4b400] text-[#f4b400]" />
                     <span className="font-semibold text-[#171512]">
@@ -256,16 +327,32 @@ export default function VendorReviewsPage() {
                 </div>
               </div>
 
-              {canReview ? (
+              <div className="rounded-[24px] border border-white/70 bg-white/75 p-5 shadow-[0_14px_28px_rgba(31,19,8,0.06)] backdrop-blur-sm">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#cf6e38]">
+                  {t("vendor.reviews.eyebrow")}
+                </p>
+                <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#171512]">
+                  {t("vendor.reviews.writeReview")}
+                </h2>
+                <p className="mt-2 text-[14px] leading-6 text-[#6f6258]">
+                  {canReview
+                    ? t("vendor.reviewModal.description")
+                    : t("vendor.reviews.availableAfterOrder")}
+                </p>
                 <button
                   type="button"
                   onClick={() => setIsReviewModalOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
+                  disabled={!canReview}
+                  className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[14px] px-5 py-3 text-[14px] font-semibold transition ${
+                    canReview
+                      ? "bg-[#cf6e38] text-white hover:bg-[#bb602d]"
+                      : "cursor-not-allowed bg-[#d8c8bc] text-[#7f736a]"
+                  }`}
                 >
                   <FiPlus className="text-[16px]" />
                   {t("vendor.reviews.writeReview")}
                 </button>
-              ) : null}
+              </div>
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -276,6 +363,8 @@ export default function VendorReviewsPage() {
                   label={card.label}
                   value={card.value}
                   note={card.note}
+                  compact={card.compact}
+                  scheduleLines={card.scheduleLines}
                 />
               ))}
             </div>
