@@ -53,8 +53,16 @@ export function getInvoiceStatusClasses(status) {
     return "bg-[#fff4d6] text-[#cf8b19]";
   }
 
+  if (normalizedStatus === "reported") {
+    return "bg-[#e8f0ff] text-[#2c76ff]";
+  }
+
   if (normalizedStatus === "overdue") {
     return "bg-[#fde2d9] text-[#d06036]";
+  }
+
+  if (normalizedStatus === "rejected") {
+    return "bg-[#fde8e8] text-[#c34242]";
   }
 
   return "bg-[#eef3fc] text-[#2c76ff]";

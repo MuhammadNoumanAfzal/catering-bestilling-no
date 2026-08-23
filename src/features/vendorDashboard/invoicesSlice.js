@@ -1,5 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
+import { getStoredAccessToken } from "../../lib/auth/authSession";
+
+const DEFAULT_RECEIPT_UPLOAD_ENDPOINT =
+  "https://api.gocatering.no/api/upload-receipt/";
+
+const RECEIPT_UPLOAD_ENDPOINT =
+  import.meta.env.VITE_RECEIPT_UPLOAD_URL ??
+  DEFAULT_RECEIPT_UPLOAD_ENDPOINT;
 
 const FETCH_INVOICES_QUERY = `
   query FetchInvoices(
@@ -76,20 +84,51 @@ const GET_INVOICE_DETAIL_QUERY = `
     invoice(id: $invoiceId) {
       id
       invoiceNumber
-      orderNumber
-      issueDate
-      dueDate
-      status
-      currency
       paymentStatus
       paymentMethod
       paymentReference
-      pdfUrl
-      bankTransferInstructions
-      bankAccountName
-      bankAccountNumber
-      iban
-      swiftCode
+      dueDate
+      issuedAt
+      paidAt
+      verifiedAt
+      rejectedAt
+      customerName
+      customerEmail
+      customerPhone
+      orderId
+      orderNumber
+      vendorId
+      vendorName
+      subtotal {
+        amount
+        currency
+        formatted
+      }
+      taxAmount {
+        amount
+        currency
+        formatted
+      }
+      deliveryFee {
+        amount
+        currency
+        formatted
+      }
+      grandTotal {
+        amount
+        currency
+        formatted
+      }
+      amountPaid {
+        amount
+        currency
+        formatted
+      }
+      amountDue {
+        amount
+        currency
+        formatted
+      }
       bankDetails {
         accountName
         accountNumber
@@ -98,21 +137,36 @@ const GET_INVOICE_DETAIL_QUERY = `
         bankName
         instructions
       }
-      pricing {
-        subtotal
-        taxAmount
-        deliveryFee
-        grandTotal
-        amountPaid
-        amountDue
+      paymentReport {
+        paymentDate
+        transferReference
+        note
+        receiptUrl
+        reportedAt
+        reportedByCustomerId
       }
-      lineItems {
+      paymentHistory {
         id
-        label
-        description
-        quantity
-        unitPrice
-        totalPrice
+        action
+        actorType
+        actorId
+        actorName
+        fromStatus
+        toStatus
+        note
+        createdAt
+      }
+    }
+  }
+`;
+
+const REPORT_INVOICE_PAYMENT_MUTATION = `
+  mutation ReportInvoicePayment($invoiceId: ID!, $input: ReportInvoicePaymentInput!) {
+    reportInvoicePayment(invoiceId: $invoiceId, input: $input) {
+      success
+      message
+      invoice {
+        id
       }
     }
   }
@@ -143,6 +197,30 @@ function formatDate(value) {
       day: "2-digit",
       month: "short",
       year: "numeric",
+    }).format(date);
+  } catch {
+    return value;
+  }
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   } catch {
     return value;
@@ -200,11 +278,27 @@ function mapInvoiceStatus(status) {
     };
   }
 
+  if (normalized === "payment-reported" || normalized === "payment_reported") {
+    return {
+      raw: status || "payment-reported",
+      key: "reported",
+      label: "Payment Reported",
+    };
+  }
+
   if (normalized === "payment-overdue" || normalized === "overdue") {
     return {
       raw: status || "payment-overdue",
       key: "overdue",
       label: "Overdue",
+    };
+  }
+
+  if (normalized === "rejected") {
+    return {
+      raw: status || "rejected",
+      key: "rejected",
+      label: "Rejected",
     };
   }
 
@@ -297,29 +391,47 @@ function mapInvoiceListNode(node) {
 }
 
 function mapInvoiceDetail(node) {
-  const pricing = node.pricing || {};
   const bankDetails = node.bankDetails || {};
   const status = mapInvoiceStatus(node.paymentStatus || node.status);
-  const currency = node.currency || "NOK";
+  const currency =
+    node.grandTotal?.currency ||
+    node.amountDue?.currency ||
+    node.amountPaid?.currency ||
+    node.subtotal?.currency ||
+    "NOK";
 
   return {
     id: node.id || "",
-    orderId: node.id || "",
+    orderId: node.orderId || "",
     invoiceNumber: node.invoiceNumber || node.id || "Invoice",
     orderNumber: node.orderNumber || node.invoiceNumber || node.id || "",
     status: status.label,
     statusKey: status.key,
     statusRaw: status.raw,
-    issuedOn: formatDate(node.issueDate || node.issuedOn),
+    issuedOn: formatDate(node.issuedAt || node.issueDate || node.issuedOn),
     dueOn: formatDate(node.dueDate),
-    paidOn: formatDate(node.paidOn),
-    subtotal: formatMoney(pricing.subtotal || node.subtotal, currency),
-    taxAmount: formatMoney(pricing.taxAmount || node.taxAmount, currency),
-    deliveryFee: formatMoney(pricing.deliveryFee || node.deliveryFee, currency),
-    tipAmount: formatMoney(pricing.tipAmount || node.tipAmount, currency),
-    totalAmount: formatMoney(pricing.grandTotal || node.totalAmount, currency),
-    paidAmount: formatMoney(pricing.amountPaid || node.paidAmount, currency),
-    dueAmount: formatMoney(pricing.amountDue || node.dueAmount, currency),
+    paidOn: formatDate(node.paidAt || node.paidOn),
+    paidOnRaw: node.paidAt || node.paidOn || "",
+    issuedAtRaw: node.issuedAt || node.issueDate || node.issuedOn || "",
+    dueDateRaw: node.dueDate || "",
+    verifiedAt: formatDateTime(node.verifiedAt),
+    rejectedAt: formatDateTime(node.rejectedAt),
+    subtotal:
+      node.subtotal?.formatted || formatMoney(node.subtotal?.amount, currency),
+    taxAmount:
+      node.taxAmount?.formatted || formatMoney(node.taxAmount?.amount, currency),
+    deliveryFee:
+      node.deliveryFee?.formatted ||
+      formatMoney(node.deliveryFee?.amount, currency),
+    tipAmount: formatMoney(0, currency),
+    totalAmount:
+      node.grandTotal?.formatted ||
+      formatMoney(node.grandTotal?.amount, currency),
+    paidAmount:
+      node.amountPaid?.formatted ||
+      formatMoney(node.amountPaid?.amount, currency),
+    dueAmount:
+      node.amountDue?.formatted || formatMoney(node.amountDue?.amount, currency),
     paymentType: node.paymentMethod || node.paymentType || "",
     paymentMethod: node.paymentMethod || "",
     transactionReference:
@@ -336,15 +448,16 @@ function mapInvoiceDetail(node) {
       node.bankAccountNumber || bankDetails.accountNumber || "",
     iban: node.iban || bankDetails.iban || "",
     swiftCode: node.swiftCode || bankDetails.swiftCode || "",
+    bankName: bankDetails.bankName || "",
     vendor: {
-      id: node.vendor?.id || "",
-      name: node.vendor?.name || "",
+      id: node.vendorId || node.vendor?.id || "",
+      name: node.vendorName || node.vendor?.name || "",
       slug: node.vendor?.slug || "",
       logoUrl: node.vendor?.logoUrl || "",
-      companyName: node.vendor?.companyName || "",
+      companyName: node.vendor?.companyName || node.vendorName || "",
     },
     order: {
-      id: node.id || "",
+      id: node.orderId || "",
       eventName: node.orderNumber || node.invoiceNumber || "",
       eventDate: formatDate(node.dueDate),
       personCount: 0,
@@ -353,19 +466,73 @@ function mapInvoiceDetail(node) {
     billingAddress: {
       address: "",
       country: "",
-      phone: "",
+      phone: node.customerPhone || "",
     },
-    lineItems: Array.isArray(node.lineItems)
-      ? node.lineItems.map((item) => ({
+    customer: {
+      name: node.customerName || "",
+      email: node.customerEmail || "",
+      phone: node.customerPhone || "",
+    },
+    paymentReport: node.paymentReport
+      ? {
+          paymentDate: node.paymentReport.paymentDate || "",
+          transferReference: node.paymentReport.transferReference || "",
+          note: node.paymentReport.note || "",
+          receiptUrl: node.paymentReport.receiptUrl || "",
+          reportedAt: node.paymentReport.reportedAt || "",
+          reportedAtLabel: formatDateTime(node.paymentReport.reportedAt),
+          reportedByCustomerId: node.paymentReport.reportedByCustomerId || "",
+        }
+      : null,
+    paymentHistory: Array.isArray(node.paymentHistory)
+      ? node.paymentHistory.map((item) => ({
           id: item?.id || "",
-          label: item?.label || "Invoice item",
-          description: item?.description || "",
-          quantity: Number(item?.quantity ?? 0),
-          unitPrice: formatMoney(item?.unitPrice, currency),
-          totalPrice: formatMoney(item?.totalPrice, currency),
+          action: item?.action || "",
+          actorType: item?.actorType || "",
+          actorId: item?.actorId || "",
+          actorName: item?.actorName || "",
+          fromStatus: item?.fromStatus || "",
+          toStatus: item?.toStatus || "",
+          note: item?.note || "",
+          createdAt: item?.createdAt || "",
+          createdAtLabel: formatDateTime(item?.createdAt),
         }))
       : [],
+    lineItems: [],
   };
+}
+
+async function uploadReceiptFile(file) {
+  if (!(file instanceof File)) {
+    throw new Error("Please choose a valid receipt file.");
+  }
+
+  const accessToken = getStoredAccessToken();
+
+  if (!accessToken) {
+    throw new Error("Please sign in again before uploading a receipt.");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(RECEIPT_UPLOAD_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Authorization: `JWT ${accessToken}`,
+    },
+    body: formData,
+  });
+
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok || !payload?.success || !payload?.receiptUrl) {
+    throw new Error(
+      payload?.message || "Receipt upload failed. Please try again.",
+    );
+  }
+
+  return payload.receiptUrl;
 }
 
 export const fetchInvoices = createAsyncThunk(
@@ -423,6 +590,62 @@ export const fetchInvoiceDetail = createAsyncThunk(
   },
 );
 
+export const reportInvoicePayment = createAsyncThunk(
+  "invoices/reportInvoicePayment",
+  async (
+    { invoiceId, input, receiptFile = null },
+    { rejectWithValue },
+  ) => {
+    try {
+      let receiptUrl = input?.receiptUrl || "";
+
+      if (receiptFile) {
+        receiptUrl = await uploadReceiptFile(receiptFile);
+      }
+
+      const mutationResponse = await graphqlRequest({
+        query: REPORT_INVOICE_PAYMENT_MUTATION,
+        variables: {
+          invoiceId,
+          input: {
+            paymentDate: input?.paymentDate,
+            transferReference: input?.transferReference || null,
+            note: input?.note || null,
+            receiptUrl: receiptUrl || null,
+          },
+        },
+      });
+
+      if (!mutationResponse.reportInvoicePayment?.success) {
+        throw new Error(
+          mutationResponse.reportInvoicePayment?.message ||
+            "Unable to report this invoice payment.",
+        );
+      }
+
+      const detailResponse = await graphqlRequest({
+        query: GET_INVOICE_DETAIL_QUERY,
+        variables: { invoiceId },
+      });
+
+      if (!detailResponse.invoice?.id) {
+        throw new Error("Invoice details not found after reporting payment.");
+      }
+
+      return {
+        message:
+          mutationResponse.reportInvoicePayment?.message ||
+          "Invoice payment reported successfully.",
+        invoice: mapInvoiceDetail(detailResponse.invoice),
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.message || "Unable to report this invoice payment.",
+      );
+    }
+  },
+);
+
 export const fetchInvoiceDownloadUrl = createAsyncThunk(
   "invoices/fetchInvoiceDownloadUrl",
   async (invoiceId, { rejectWithValue }) => {
@@ -455,6 +678,8 @@ const initialState = {
   selectedInvoiceDetail: null,
   selectedInvoiceDetailStatus: "idle",
   selectedInvoiceDetailError: null,
+  reportPaymentStatus: "idle",
+  reportPaymentError: null,
   downloadStatus: "idle",
   downloadError: null,
 };
@@ -467,6 +692,8 @@ const invoicesSlice = createSlice({
       state.selectedInvoiceDetail = null;
       state.selectedInvoiceDetailStatus = "idle";
       state.selectedInvoiceDetailError = null;
+      state.reportPaymentStatus = "idle";
+      state.reportPaymentError = null;
     },
     clearInvoiceDownloadState(state) {
       state.downloadStatus = "idle";
@@ -502,6 +729,19 @@ const invoicesSlice = createSlice({
         state.selectedInvoiceDetailStatus = "failed";
         state.selectedInvoiceDetailError =
           action.payload || "Failed to load invoice details.";
+      })
+      .addCase(reportInvoicePayment.pending, (state) => {
+        state.reportPaymentStatus = "loading";
+        state.reportPaymentError = null;
+      })
+      .addCase(reportInvoicePayment.fulfilled, (state, action) => {
+        state.reportPaymentStatus = "succeeded";
+        state.selectedInvoiceDetail = action.payload.invoice;
+      })
+      .addCase(reportInvoicePayment.rejected, (state, action) => {
+        state.reportPaymentStatus = "failed";
+        state.reportPaymentError =
+          action.payload || "Unable to report this invoice payment.";
       })
       .addCase(fetchInvoiceDownloadUrl.pending, (state) => {
         state.downloadStatus = "loading";
