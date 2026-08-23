@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FiArrowLeft,
@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { getInvoiceStatusClasses } from "../components/invoices/invoiceUtils";
 import {
   translateInvoiceDetails,
@@ -21,6 +22,7 @@ import {
   clearSelectedInvoiceDetail,
   fetchInvoiceDetail,
   fetchInvoiceDownloadUrl,
+  reportInvoicePayment,
 } from "../invoicesSlice";
 
 function DetailRow({ label, value }) {
@@ -54,10 +56,15 @@ export default function VendorInvoiceDetailsPage() {
   const { invoiceId } = useParams();
   const decodedInvoiceId = invoiceId ? decodeURIComponent(invoiceId) : "";
   const dispatch = useDispatch();
+  const [paymentDate, setPaymentDate] = useState("");
+  const [transferReference, setTransferReference] = useState("");
+  const [paymentNote, setPaymentNote] = useState("");
+  const [receiptFile, setReceiptFile] = useState(null);
   const {
     selectedInvoiceDetail,
     selectedInvoiceDetailStatus,
     selectedInvoiceDetailError,
+    reportPaymentStatus,
     downloadStatus,
     downloadError,
   } = useSelector((state) => state.invoices);
@@ -106,6 +113,8 @@ export default function VendorInvoiceDetailsPage() {
   }
 
   const invoice = selectedInvoiceDetail;
+  const normalizedInvoiceStatus = `${invoice.statusRaw || ""}`.trim().toUpperCase();
+  const canReportPayment = !["PAID"].includes(normalizedInvoiceStatus);
   const localizedOrderLabel = invoice.order.eventName
     ? invoiceDetailsT("orderLabel", {
         orderNumber: invoice.order.eventName,
@@ -145,6 +154,37 @@ export default function VendorInvoiceDetailsPage() {
     ]
       .filter(Boolean)
       .join(", ") || invoiceDetailsT("notProvided");
+
+  async function handleSubmitPaymentReport(event) {
+    event.preventDefault();
+
+    const result = await dispatch(
+      reportInvoicePayment({
+        invoiceId: invoice.id,
+        input: {
+          paymentDate,
+          transferReference,
+          note: paymentNote,
+        },
+        receiptFile,
+      }),
+    );
+
+    if (reportInvoicePayment.fulfilled.match(result)) {
+      setReceiptFile(null);
+      setPaymentDate("");
+      setTransferReference("");
+      setPaymentNote("");
+      await showSuccessToast(result.payload.message);
+      dispatch(fetchInvoiceDetail(decodedInvoiceId));
+      return;
+    }
+
+    await showAuthErrorAlert(
+      result.payload || "Unable to report this invoice payment.",
+      "Payment report failed",
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -302,8 +342,75 @@ export default function VendorInvoiceDetailsPage() {
               />
               <DetailRow label={invoiceDetailsT("paidAmount")} value={invoice.paidAmount} />
               <DetailRow label={invoiceDetailsT("dueAmount")} value={invoice.dueAmount} />
+              <DetailRow label="Verified at" value={invoice.verifiedAt || invoiceDetailsT("notAvailable")} />
+              <DetailRow label="Rejected at" value={invoice.rejectedAt || invoiceDetailsT("notAvailable")} />
             </div>
           </DetailSection>
+
+          {canReportPayment ? (
+            <DetailSection title="Report bank transfer payment">
+              <form className="space-y-4" onSubmit={handleSubmitPaymentReport}>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <label className="flex flex-col gap-1 text-sm text-[#4b463f]">
+                    <span className="font-semibold text-[#1f1f1f]">Payment date</span>
+                    <input
+                      className="rounded-[14px] border border-[#e4d8cf] bg-white px-3 py-3 outline-none"
+                      max={new Date().toISOString().slice(0, 10)}
+                      onChange={(event) => setPaymentDate(event.target.value)}
+                      required
+                      type="date"
+                      value={paymentDate}
+                    />
+                  </label>
+
+                  <label className="flex flex-col gap-1 text-sm text-[#4b463f]">
+                    <span className="font-semibold text-[#1f1f1f]">Transfer reference</span>
+                    <input
+                      className="rounded-[14px] border border-[#e4d8cf] bg-white px-3 py-3 outline-none"
+                      onChange={(event) => setTransferReference(event.target.value)}
+                      placeholder="KID or bank transfer reference"
+                      value={transferReference}
+                    />
+                  </label>
+                </div>
+
+                <label className="flex flex-col gap-1 text-sm text-[#4b463f]">
+                  <span className="font-semibold text-[#1f1f1f]">Note</span>
+                  <textarea
+                    className="min-h-[110px] rounded-[14px] border border-[#e4d8cf] bg-white px-3 py-3 outline-none"
+                    onChange={(event) => setPaymentNote(event.target.value)}
+                    placeholder="Tell the admin how you paid this invoice"
+                    value={paymentNote}
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1 text-sm text-[#4b463f]">
+                  <span className="font-semibold text-[#1f1f1f]">Receipt file</span>
+                  <input
+                    accept=".jpg,.jpeg,.png,.pdf,.webp"
+                    onChange={(event) => setReceiptFile(event.target.files?.[0] || null)}
+                    type="file"
+                  />
+                  <span className="text-xs text-[#7a7068]">
+                    JPG, JPEG, PNG, PDF, or WEBP up to 5 MB.
+                  </span>
+                  {receiptFile ? (
+                    <span className="text-xs font-medium text-[#4b463f]">{receiptFile.name}</span>
+                  ) : null}
+                </label>
+
+                <button
+                  className="inline-flex items-center justify-center rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-70"
+                  disabled={reportPaymentStatus === "loading"}
+                  type="submit"
+                >
+                  {reportPaymentStatus === "loading"
+                    ? "Submitting payment report..."
+                    : "Report payment"}
+                </button>
+              </form>
+            </DetailSection>
+          ) : null}
 
           {isBankTransfer ? (
             <DetailSection title="Bank transfer details">
@@ -317,10 +424,63 @@ export default function VendorInvoiceDetailsPage() {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <DetailRow label="Account name" value={invoice.bankAccountName || invoiceDetailsT("notProvided")} />
                   <DetailRow label="Account number" value={invoice.bankAccountNumber || invoiceDetailsT("notProvided")} />
+                  <DetailRow label="Bank name" value={invoice.bankName || invoiceDetailsT("notProvided")} />
                   <DetailRow label="IBAN" value={invoice.iban || invoiceDetailsT("notProvided")} />
                   <DetailRow label="SWIFT / BIC" value={invoice.swiftCode || invoiceDetailsT("notProvided")} />
                   <DetailRow label="Reference (KID)" value={invoice.invoiceNumber || invoiceDetailsT("notAvailable")} />
                 </div>
+              </div>
+            </DetailSection>
+          ) : null}
+
+          {invoice.paymentReport ? (
+            <DetailSection title="Reported payment details">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <DetailRow label="Payment date" value={invoice.paymentReport.paymentDate || invoiceDetailsT("notAvailable")} />
+                <DetailRow label="Reported at" value={invoice.paymentReport.reportedAtLabel || invoiceDetailsT("notAvailable")} />
+                <DetailRow label="Transfer reference" value={invoice.paymentReport.transferReference || invoiceDetailsT("notAvailable")} />
+                <DetailRow label="Receipt URL" value={invoice.paymentReport.receiptUrl || invoiceDetailsT("notAvailable")} />
+              </div>
+              {invoice.paymentReport.note ? (
+                <div className="mt-4 rounded-[18px] border border-[#f1e3d6] bg-[#fff8f3] px-4 py-3">
+                  <p className="font-semibold text-[#1f1f1f]">Customer note</p>
+                  <p className="mt-1 text-sm text-[#6d645c]">{invoice.paymentReport.note}</p>
+                </div>
+              ) : null}
+            </DetailSection>
+          ) : null}
+
+          {invoice.paymentHistory?.length ? (
+            <DetailSection title="Payment history">
+              <div className="space-y-3">
+                {invoice.paymentHistory.map((item) => (
+                  <article
+                    key={item.id}
+                    className="rounded-[18px] border border-[#efe5dc] bg-white px-4 py-4"
+                  >
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-[#1f1f1f]">
+                          {item.action || "Payment activity"}
+                        </p>
+                        <p className="mt-1 text-sm text-[#6f665f]">
+                          {[item.actorName, item.actorType].filter(Boolean).join(" • ") || "System"}
+                        </p>
+                        {(item.fromStatus || item.toStatus) ? (
+                          <p className="mt-1 text-xs text-[#8b827b]">
+                            {`${item.fromStatus || "Unknown"} -> ${item.toStatus || "Unknown"}`}
+                          </p>
+                        ) : null}
+                      </div>
+                      <p className="text-xs font-medium text-[#8b827b]">
+                        {item.createdAtLabel || invoiceDetailsT("notAvailable")}
+                      </p>
+                    </div>
+                    {item.note ? (
+                      <p className="mt-3 text-sm text-[#4b463f]">{item.note}</p>
+                    ) : null}
+                  </article>
+                ))}
               </div>
             </DetailSection>
           ) : null}
@@ -349,8 +509,9 @@ export default function VendorInvoiceDetailsPage() {
                 <FiUser className="mt-0.5 text-[#cf6e38]" />
                 <div>
                   <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("billingContact")}</p>
-                  <p className="mt-1">{billingContactLabel}</p>
-                  <p>{invoice.billingAddress.phone || invoiceDetailsT("noPhoneAdded")}</p>
+                  <p className="mt-1">{invoice.customer.name || billingContactLabel}</p>
+                  <p>{invoice.customer.phone || invoice.billingAddress.phone || invoiceDetailsT("noPhoneAdded")}</p>
+                  <p>{invoice.customer.email || invoiceDetailsT("notProvided")}</p>
                 </div>
               </div>
 
