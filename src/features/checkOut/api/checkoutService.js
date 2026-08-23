@@ -1,4 +1,5 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
+import i18n from "../../../i18n";
 import {
   buildCheckoutPreviewPayload,
   buildPlaceOrderPayload,
@@ -13,6 +14,36 @@ import {
   GET_CURRENT_USER_DETAILS_QUERY,
   GET_AVAILABLE_DELIVERY_SLOTS_QUERY,
 } from "./checkoutQueries";
+
+function translateBankInstructions(value) {
+  const message = `${value ?? ""}`.trim();
+
+  if (!message) {
+    return "";
+  }
+
+  const isNorwegian = `${i18n.resolvedLanguage || i18n.language || ""}`
+    .toLowerCase()
+    .startsWith("no");
+
+  if (isNorwegian) {
+    return message;
+  }
+
+  const normalized = message
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  if (
+    normalized ===
+    "vennligst overfor belopet til var bankkonto innen forfallsdato. oppgi fakturanummer som referanse."
+  ) {
+    return "Please transfer the amount to our bank account before the due date. Use the invoice number as the payment reference.";
+  }
+
+  return message;
+}
 
 function isAuthAvailabilityError(error) {
   const message = `${error?.message ?? ""}`.toLowerCase();
@@ -128,7 +159,7 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
       iban: bankDetails.iban || "",
       swiftCode: bankDetails.swiftCode || "",
       bankName: bankDetails.bankName || "",
-      instructions: bankDetails.instructions || "",
+      instructions: translateBankInstructions(bankDetails.instructions || ""),
     },
     pricing: {
       subtotal: invoice.pricing?.subtotal ?? null,

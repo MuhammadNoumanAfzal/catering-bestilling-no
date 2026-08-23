@@ -2,6 +2,8 @@ export const STATUS_OPTIONS = [
   { labelKey: "vendorPanel.invoices.allStatus", value: "all" },
   { labelKey: "vendorPanel.invoices.paid", value: "paid" },
   { labelKey: "vendorPanel.invoices.pending", value: "pending" },
+  { labelKey: "vendorPanel.invoices.reported", value: "reported" },
+  { labelKey: "vendorPanel.invoices.rejected", value: "rejected" },
   { labelKey: "vendorPanel.invoices.overdue", value: "overdue" },
 ];
 

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../lib/auth/authSession";
+import i18n from "../../i18n";
 
 const DEFAULT_RECEIPT_UPLOAD_ENDPOINT =
   "https://api.gocatering.no/api/upload-receipt/";
@@ -193,11 +194,16 @@ function formatDate(value) {
       return value;
     }
 
-    return new Intl.DateTimeFormat("en-GB", {
+    return new Intl.DateTimeFormat(
+      `${i18n.resolvedLanguage || i18n.language || "en"}`.startsWith("no")
+        ? "nb-NO"
+        : "en-GB",
+      {
       day: "2-digit",
       month: "short",
       year: "numeric",
-    }).format(date);
+      },
+    ).format(date);
   } catch {
     return value;
   }
@@ -215,13 +221,18 @@ function formatDateTime(value) {
       return value;
     }
 
-    return new Intl.DateTimeFormat("en-GB", {
+    return new Intl.DateTimeFormat(
+      `${i18n.resolvedLanguage || i18n.language || "en"}`.startsWith("no")
+        ? "nb-NO"
+        : "en-GB",
+      {
       day: "2-digit",
       month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(date);
+      },
+    ).format(date);
   } catch {
     return value;
   }
@@ -235,15 +246,47 @@ function formatMoney(value, currency = "NOK") {
   }
 
   try {
-    return new Intl.NumberFormat("en-NO", {
+    return new Intl.NumberFormat(
+      `${i18n.resolvedLanguage || i18n.language || "en"}`.startsWith("no")
+        ? "nb-NO"
+        : "en",
+      {
       style: "currency",
       currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+      },
+    ).format(amount);
   } catch {
     return `${currency} ${amount.toFixed(2)}`;
   }
+}
+
+function translateBankInstructions(value) {
+  const message = `${value ?? ""}`.trim();
+
+  if (!message) {
+    return "";
+  }
+
+  const isNorwegian = `${i18n.resolvedLanguage || i18n.language || ""}`
+    .toLowerCase()
+    .startsWith("no");
+
+  if (isNorwegian) {
+    return message;
+  }
+
+  const normalized = message.toLowerCase();
+
+  if (
+    normalized ===
+    "vennligst overfor beløpet til vår bankkonto innen forfallsdato. oppgi fakturanummer som referanse."
+  ) {
+    return "Please transfer the amount to our bank account before the due date. Use the invoice number as the payment reference.";
+  }
+
+  return message;
 }
 
 function toNumber(value) {
@@ -442,7 +485,9 @@ function mapInvoiceDetail(node) {
       "",
     note: node.note || "",
     bankTransferInstructions:
-      node.bankTransferInstructions || bankDetails.instructions || "",
+      translateBankInstructions(
+        node.bankTransferInstructions || bankDetails.instructions || "",
+      ),
     bankAccountName: node.bankAccountName || bankDetails.accountName || "",
     bankAccountNumber:
       node.bankAccountNumber || bankDetails.accountNumber || "",
