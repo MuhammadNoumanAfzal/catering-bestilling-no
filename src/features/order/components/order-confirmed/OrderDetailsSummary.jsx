@@ -39,7 +39,7 @@ export default function OrderDetailsSummary({ orderPreview }) {
       </div>
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-          Amount due
+          {t("orderConfirmed.amountDue")}
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
           {orderPreview.amountDue || t("orderConfirmed.notSpecified")}
@@ -47,7 +47,7 @@ export default function OrderDetailsSummary({ orderPreview }) {
       </div>
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-          Payment reference
+          {t("orderConfirmed.paymentReference")}
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
           {orderPreview.paymentReference || orderPreview.invoiceNumber || t("orderConfirmed.notSpecified")}
@@ -55,13 +55,13 @@ export default function OrderDetailsSummary({ orderPreview }) {
       </div>
       <div className="sm:col-span-2 xl:col-span-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-          Bank transfer
+          {t("orderConfirmed.bankTransfer")}
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
-          {orderPreview.bankDetails?.accountName || "Account details available in Invoices"}
+          {orderPreview.bankDetails?.accountName || t("orderConfirmed.accountDetailsInInvoices")}
         </p>
         <p className="mt-1 text-sm text-[#6f665f]">
-          {orderPreview.bankDetails?.instructions || "Open your invoice to see account number, IBAN, SWIFT, and transfer instructions."}
+          {orderPreview.bankDetails?.instructions || t("orderConfirmed.openInvoiceForBankDetails")}
         </p>
       </div>
     </div>

@@ -289,14 +289,14 @@ export default function VendorInvoicesPage() {
                             setIsDateMenuOpen(false);
                           }
                         }}
-                        className={[
+                    className={[
                           "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition",
                           isSelected
                             ? "bg-[#fff1e8] font-semibold text-[#c85f33]"
                             : "text-[#2f2f2f] hover:bg-[#faf7f3]",
                         ].join(" ")}
                       >
-                        <span>{option.label}</span>
+                        <span>{option.labelKey ? t(option.labelKey) : option.label}</span>
                         {isSelected ? (
                           <span className="text-xs font-semibold">{t("vendorPanel.invoices.active")}</span>
                         ) : null}
