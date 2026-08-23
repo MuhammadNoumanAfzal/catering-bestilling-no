@@ -161,6 +161,45 @@ const GET_INVOICE_DETAIL_QUERY = `
   }
 `;
 
+const GET_INVOICE_ORDER_FALLBACK_QUERY = `
+  query GetInvoiceOrderFallback($orderId: ID!) {
+    clientOrder(id: $orderId) {
+      id
+      eventName
+      personCount
+      deliveryAddressStr
+      orderNotes
+      eventDate
+      eventTime
+      pricing {
+        subtotal
+        taxAmount
+        deliveryFee
+        addOnsTotal
+        tipAmount
+        grandTotal
+        amountPaid
+        amountDue
+      }
+      items {
+        id
+        productName
+        quantity
+        unitPrice
+        lineTotal
+        specialInstructions
+        selectedOptions
+        selectedAddons {
+          name
+          unitPrice
+          quantity
+          totalPrice
+        }
+      }
+    }
+  }
+`;
+
 const REPORT_INVOICE_PAYMENT_MUTATION = `
   mutation ReportInvoicePayment($invoiceId: ID!, $input: ReportInvoicePaymentInput!) {
     reportInvoicePayment(invoiceId: $invoiceId, input: $input) {
@@ -292,6 +331,18 @@ function translateBankInstructions(value) {
 function toNumber(value) {
   const amount = Number(value ?? 0);
   return Number.isFinite(amount) ? amount : 0;
+}
+
+function formatFlexibleMoney(value, currency = "NOK") {
+  if (value && typeof value === "object") {
+    if (value.formatted) {
+      return value.formatted;
+    }
+
+    return formatMoney(value.amount, value.currency || currency);
+  }
+
+  return formatMoney(value, currency);
 }
 
 function titleizeStatus(value) {
@@ -433,7 +484,61 @@ function mapInvoiceListNode(node) {
   };
 }
 
-function mapInvoiceDetail(node) {
+function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
+  const pricing = orderNode?.pricing || {};
+
+  return {
+    eventName: orderNode?.eventName || "",
+    eventDate: formatDate(orderNode?.eventDate),
+    personCount: toNumber(orderNode?.personCount, 0),
+    deliveryAddressStr: orderNode?.deliveryAddressStr || "",
+    orderNotes: orderNode?.orderNotes || "",
+    tipAmount: formatFlexibleMoney(pricing?.tipAmount, currency),
+    lineItems: Array.isArray(orderNode?.items)
+      ? orderNode.items.map((item) => {
+          const selectedOptions = item?.selectedOptions || {};
+          const addOns = Array.isArray(item?.selectedAddons)
+            ? item.selectedAddons
+                .map((addon) =>
+                  addon?.name
+                    ? `${addon.name}${
+                        addon?.totalPrice || addon?.unitPrice
+                          ? ` (+${formatMoney(
+                              addon.totalPrice || addon.unitPrice,
+                              currency,
+                            )})`
+                          : ""
+                      }`
+                    : "",
+                )
+                .filter(Boolean)
+            : [];
+
+          const descriptionParts = [
+            item?.specialInstructions ? `Note: ${item.specialInstructions}` : "",
+            ...Object.entries(selectedOptions).map(
+              ([key, value]) => `${key}: ${value}`,
+            ),
+            ...addOns.map((addon) => `Add-on: ${addon}`),
+          ].filter(Boolean);
+
+          return {
+            id: item?.id || `${item?.productName || "item"}-${item?.quantity || 1}`,
+            label: item?.productName || "Invoice item",
+            description: descriptionParts.join(" | "),
+            quantity: toNumber(item?.quantity, 1),
+            unitPrice: formatFlexibleMoney(item?.unitPrice, currency),
+            totalPrice: formatFlexibleMoney(
+              item?.lineTotal || item?.totalPrice || item?.unitPrice,
+              currency,
+            ),
+          };
+        })
+      : [],
+  };
+}
+
+function mapInvoiceDetail(node, orderFallback = null) {
   const bankDetails = node.bankDetails || {};
   const status = mapInvoiceStatus(node.paymentStatus || node.status);
   const currency =
@@ -442,6 +547,7 @@ function mapInvoiceDetail(node) {
     node.amountPaid?.currency ||
     node.subtotal?.currency ||
     "NOK";
+  const fallbackOrder = mapInvoiceOrderFallback(orderFallback, currency);
 
   return {
     id: node.id || "",
@@ -466,7 +572,7 @@ function mapInvoiceDetail(node) {
     deliveryFee:
       node.deliveryFee?.formatted ||
       formatMoney(node.deliveryFee?.amount, currency),
-    tipAmount: formatMoney(0, currency),
+    tipAmount: fallbackOrder.tipAmount || formatMoney(0, currency),
     totalAmount:
       node.grandTotal?.formatted ||
       formatMoney(node.grandTotal?.amount, currency),
@@ -483,7 +589,7 @@ function mapInvoiceDetail(node) {
       node.orderNumber ||
       node.transactionReference ||
       "",
-    note: node.note || "",
+    note: node.note || fallbackOrder.orderNotes || "",
     bankTransferInstructions:
       translateBankInstructions(
         node.bankTransferInstructions || bankDetails.instructions || "",
@@ -503,10 +609,14 @@ function mapInvoiceDetail(node) {
     },
     order: {
       id: node.orderId || "",
-      eventName: node.orderNumber || node.invoiceNumber || "",
-      eventDate: formatDate(node.dueDate),
-      personCount: 0,
-      deliveryAddressStr: "",
+      eventName:
+        fallbackOrder.eventName ||
+        node.orderNumber ||
+        node.invoiceNumber ||
+        "",
+      eventDate: fallbackOrder.eventDate || formatDate(node.dueDate),
+      personCount: fallbackOrder.personCount || 0,
+      deliveryAddressStr: fallbackOrder.deliveryAddressStr || "",
     },
     billingAddress: {
       address: "",
@@ -543,7 +653,7 @@ function mapInvoiceDetail(node) {
           createdAtLabel: formatDateTime(item?.createdAt),
         }))
       : [],
-    lineItems: [],
+    lineItems: fallbackOrder.lineItems,
   };
 }
 
@@ -626,7 +736,18 @@ export const fetchInvoiceDetail = createAsyncThunk(
         throw new Error("Invoice details not found.");
       }
 
-      return mapInvoiceDetail(response.invoice);
+      let orderFallback = null;
+
+      if (response.invoice?.orderId) {
+        orderFallback = await graphqlRequest({
+          query: GET_INVOICE_ORDER_FALLBACK_QUERY,
+          variables: { orderId: response.invoice.orderId },
+        })
+          .then((payload) => payload?.clientOrder || null)
+          .catch(() => null);
+      }
+
+      return mapInvoiceDetail(response.invoice, orderFallback);
     } catch (error) {
       return rejectWithValue(
         error.message || "Failed to load invoice details.",
@@ -677,11 +798,22 @@ export const reportInvoicePayment = createAsyncThunk(
         throw new Error("Invoice details not found after reporting payment.");
       }
 
+      let orderFallback = null;
+
+      if (detailResponse.invoice?.orderId) {
+        orderFallback = await graphqlRequest({
+          query: GET_INVOICE_ORDER_FALLBACK_QUERY,
+          variables: { orderId: detailResponse.invoice.orderId },
+        })
+          .then((payload) => payload?.clientOrder || null)
+          .catch(() => null);
+      }
+
       return {
         message:
           mutationResponse.reportInvoicePayment?.message ||
           "Invoice payment reported successfully.",
-        invoice: mapInvoiceDetail(detailResponse.invoice),
+        invoice: mapInvoiceDetail(detailResponse.invoice, orderFallback),
       };
     } catch (error) {
       return rejectWithValue(
