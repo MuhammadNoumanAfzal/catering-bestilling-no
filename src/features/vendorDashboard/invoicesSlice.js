@@ -157,6 +157,36 @@ const GET_INVOICE_DETAIL_QUERY = `
         note
         createdAt
       }
+      settlement {
+        id
+        settlementNumber
+        status
+        fundedAt
+        readyForPayoutAt
+        settledAt
+        vendorPayable {
+          amount
+          currency
+          formatted
+        }
+        commissionRecord {
+          id
+          status
+          commissionModel
+          ratePercent
+          grossCommission {
+            amount
+            currency
+            formatted
+          }
+          totalCommission {
+            amount
+            currency
+            formatted
+          }
+          lockedAt
+        }
+      }
     }
   }
 `;
@@ -653,6 +683,47 @@ function mapInvoiceDetail(node, orderFallback = null) {
           createdAtLabel: formatDateTime(item?.createdAt),
         }))
       : [],
+    settlement: node.settlement
+      ? {
+          id: node.settlement.id || "",
+          settlementNumber: node.settlement.settlementNumber || "",
+          status: titleizeStatus(node.settlement.status),
+          fundedAt: formatDateTime(node.settlement.fundedAt),
+          readyForPayoutAt: formatDateTime(node.settlement.readyForPayoutAt),
+          settledAt: formatDateTime(node.settlement.settledAt),
+          vendorPayable:
+            node.settlement.vendorPayable?.formatted ||
+            formatMoney(node.settlement.vendorPayable?.amount, currency),
+          commission: node.settlement.commissionRecord
+            ? {
+                id: node.settlement.commissionRecord.id || "",
+                status: titleizeStatus(node.settlement.commissionRecord.status),
+                model:
+                  node.settlement.commissionRecord.commissionModel || "",
+                ratePercent:
+                  node.settlement.commissionRecord.ratePercent === 0 ||
+                  node.settlement.commissionRecord.ratePercent
+                    ? `${node.settlement.commissionRecord.ratePercent}%`
+                    : "",
+                grossCommission:
+                  node.settlement.commissionRecord.grossCommission?.formatted ||
+                  formatMoney(
+                    node.settlement.commissionRecord.grossCommission?.amount,
+                    currency,
+                  ),
+                totalCommission:
+                  node.settlement.commissionRecord.totalCommission?.formatted ||
+                  formatMoney(
+                    node.settlement.commissionRecord.totalCommission?.amount,
+                    currency,
+                  ),
+                lockedAt: formatDateTime(
+                  node.settlement.commissionRecord.lockedAt,
+                ),
+              }
+            : null,
+        }
+      : null,
     lineItems: fallbackOrder.lineItems,
   };
 }

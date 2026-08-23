@@ -544,6 +544,57 @@ export default function VendorInvoiceDetailsPage() {
             </DetailSection>
           ) : null}
 
+          {invoice.settlement ? (
+            <DetailSection title={invoiceDetailsT("settlementAndCommission")}>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <DetailRow
+                  label={invoiceDetailsT("settlementNumber")}
+                  value={invoice.settlement.settlementNumber || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("settlementStatus")}
+                  value={invoice.settlement.status || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("vendorPayable")}
+                  value={invoice.settlement.vendorPayable || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("fundedAt")}
+                  value={invoice.settlement.fundedAt || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("readyForPayoutAt")}
+                  value={invoice.settlement.readyForPayoutAt || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("settledAt")}
+                  value={invoice.settlement.settledAt || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("commissionStatus")}
+                  value={invoice.settlement.commission?.status || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("commissionModel")}
+                  value={invoice.settlement.commission?.model || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("commissionRate")}
+                  value={invoice.settlement.commission?.ratePercent || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("platformCommission")}
+                  value={invoice.settlement.commission?.totalCommission || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("commissionLockedAt")}
+                  value={invoice.settlement.commission?.lockedAt || invoiceDetailsT("notAvailable")}
+                />
+              </div>
+            </DetailSection>
+          ) : null}
+
           <DetailSection title={invoiceDetailsT("eventAndBilling")}>
             <div className="space-y-4 text-sm text-[#4b463f]">
               <div className="flex items-start gap-3">
