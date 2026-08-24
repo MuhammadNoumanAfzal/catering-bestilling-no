@@ -10,6 +10,11 @@ const RECEIPT_UPLOAD_ENDPOINT =
   import.meta.env.VITE_RECEIPT_UPLOAD_URL ??
   DEFAULT_RECEIPT_UPLOAD_ENDPOINT;
 
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_RECEIPT_UPLOAD_PRESET =
+  import.meta.env.VITE_CLOUDINARY_RECEIPT_UPLOAD_PRESET ??
+  import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
 const FETCH_INVOICES_QUERY = `
   query FetchInvoices(
     $status: String
@@ -758,6 +763,41 @@ async function uploadReceiptFile(file) {
     throw new Error("Please choose a valid receipt file.");
   }
 
+  if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_RECEIPT_UPLOAD_PRESET) {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_RECEIPT_UPLOAD_PRESET);
+    formData.append("resource_type", "auto");
+    formData.append("folder", "invoice-receipts");
+
+    let response;
+
+    try {
+      response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+    } catch {
+      throw new Error(
+        "Could not upload the receipt to Cloudinary. Please check your internet connection or Cloudinary preset settings.",
+      );
+    }
+
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok || !payload?.secure_url) {
+      throw new Error(
+        payload?.error?.message ||
+          "Cloudinary receipt upload failed. Please verify your upload preset allows unsigned uploads for images and PDFs.",
+      );
+    }
+
+    return payload.secure_url;
+  }
+
   const accessToken = getStoredAccessToken();
 
   if (!accessToken) {
@@ -767,13 +807,21 @@ async function uploadReceiptFile(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(RECEIPT_UPLOAD_ENDPOINT, {
-    method: "POST",
-    headers: {
-      Authorization: `JWT ${accessToken}`,
-    },
-    body: formData,
-  });
+  let response;
+
+  try {
+    response = await fetch(RECEIPT_UPLOAD_ENDPOINT, {
+      method: "POST",
+      headers: {
+        Authorization: `JWT ${accessToken}`,
+      },
+      body: formData,
+    });
+  } catch {
+    throw new Error(
+      "Receipt upload failed before reaching the server. Add Cloudinary config or verify the receipt upload endpoint is reachable.",
+    );
+  }
 
   const payload = await response.json().catch(() => null);
 
