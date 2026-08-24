@@ -405,31 +405,64 @@ export default function VendorInvoiceDetailsPage() {
       </div>
 
       {paymentStateMessage ? (
-        <section className="relative overflow-hidden rounded-[28px] border border-[#efcdbb] bg-[linear-gradient(135deg,#fff7f0_0%,#ffe8da_45%,#fffaf6_100%)] px-5 py-5 shadow-[0_18px_36px_rgba(201,95,48,0.12)] sm:px-6">
-          <div className="absolute -right-10 top-0 h-24 w-24 rounded-full bg-[#ffd7c2]/60 blur-2xl" aria-hidden="true" />
-          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <section className="relative overflow-hidden rounded-[32px] border border-[#ebbda1] bg-[linear-gradient(135deg,#fff4ea_0%,#ffe2ce_38%,#fff8f2_100%)] px-5 py-5 shadow-[0_24px_52px_rgba(201,95,48,0.18)] sm:px-7 sm:py-6">
+          <div className="absolute -left-8 top-0 h-24 w-24 rounded-full bg-[#fff0cc]/70 blur-3xl" aria-hidden="true" />
+          <div className="absolute -right-10 top-0 h-28 w-28 rounded-full bg-[#ffd7c2]/70 blur-3xl" aria-hidden="true" />
+          <div className="absolute bottom-0 right-20 h-20 w-20 rounded-full bg-[#ffe7d8]/60 blur-2xl" aria-hidden="true" />
+
+          <div className="relative flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#b06f4a]">
-                Payment Status
-              </p>
-              <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#1f1713] sm:text-[26px]">
+              <div className="inline-flex items-center rounded-full border border-[#efc3aa] bg-white/80 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#ba6537] shadow-[0_10px_22px_rgba(52,31,18,0.08)]">
+                Payment Status Update
+              </div>
+              <h2 className="mt-4 text-[24px] font-semibold tracking-[-0.04em] text-[#1f1713] sm:text-[30px]">
                 {invoiceDetailsT("paymentStatusNoticeTitle")}
               </h2>
-              <p className="mt-2 max-w-3xl text-[14px] leading-7 text-[#6a5b51] sm:text-[15px]">
+              <p className="mt-3 max-w-3xl text-[15px] leading-7 text-[#6a5b51] sm:text-[16px]">
                 {paymentStateMessage}
               </p>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                <div className="rounded-full border border-[#efcfbc] bg-white/82 px-4 py-2 text-[12px] font-semibold text-[#7c6457] shadow-[0_8px_18px_rgba(42,26,15,0.05)]">
+                  Invoice: <span className="text-[#1f1713]">{invoice.invoiceNumber}</span>
+                </div>
+                <div className="rounded-full border border-[#efcfbc] bg-white/82 px-4 py-2 text-[12px] font-semibold text-[#7c6457] shadow-[0_8px_18px_rgba(42,26,15,0.05)]">
+                  Status: <span className="text-[#c35f31]">{localizedStatus}</span>
+                </div>
+                {invoice.dueOn ? (
+                  <div className="rounded-full border border-[#efcfbc] bg-white/82 px-4 py-2 text-[12px] font-semibold text-[#7c6457] shadow-[0_8px_18px_rgba(42,26,15,0.05)]">
+                    Due: <span className="text-[#1f1713]">{invoice.dueOn}</span>
+                  </div>
+                ) : null}
+              </div>
+
+              {isWaitingForVendorAcceptance && invoice.order.status ? (
+                <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.18em] text-[#9c897d]">
+                  {invoiceDetailsT("currentOrderStatus")}: {invoice.order.status}
+                </p>
+              ) : null}
             </div>
 
-            <div className="shrink-0 rounded-full border border-[#efcdbb] bg-white/80 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#c35f31] shadow-[0_8px_18px_rgba(42,26,15,0.06)]">
-              {localizedStatus}
+            <div className="grid min-w-[240px] grid-cols-1 gap-3 sm:grid-cols-2 lg:w-[320px] lg:grid-cols-1">
+              <div className="rounded-[22px] border border-[#efc7af] bg-white/88 px-5 py-4 shadow-[0_14px_30px_rgba(42,26,15,0.07)]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b17859]">
+                  Amount Due
+                </p>
+                <p className="mt-2 text-[26px] font-semibold tracking-[-0.04em] text-[#1f1713]">
+                  {invoice.dueAmount}
+                </p>
+              </div>
+
+              <div className="rounded-[22px] border border-[#efc7af] bg-[linear-gradient(135deg,#fff8f2_0%,#fff1e7_100%)] px-5 py-4 shadow-[0_14px_30px_rgba(42,26,15,0.07)]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b17859]">
+                  Payment Method
+                </p>
+                <p className="mt-2 text-[16px] font-semibold text-[#1f1713]">
+                  {paymentTypeLabel}
+                </p>
+              </div>
             </div>
           </div>
-
-          {isWaitingForVendorAcceptance && invoice.order.status ? (
-            <p className="relative mt-4 text-[11px] font-bold uppercase tracking-[0.18em] text-[#9c897d]">
-              {invoiceDetailsT("currentOrderStatus")}: {invoice.order.status}
-            </p>
-          ) : null}
         </section>
       ) : null}
 
@@ -723,8 +756,20 @@ export default function VendorInvoiceDetailsPage() {
                   value={invoice.settlement.commission?.ratePercent || invoiceDetailsT("notAvailable")}
                 />
                 <DetailRow
+                  label={invoiceDetailsT("grossCommission")}
+                  value={invoice.settlement.commission?.grossCommission || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
                   label={invoiceDetailsT("platformCommission")}
                   value={invoice.settlement.commission?.totalCommission || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("fixedFee")}
+                  value={invoice.settlement.commission?.fixedFee || invoiceDetailsT("notAvailable")}
+                />
+                <DetailRow
+                  label={invoiceDetailsT("vatOnCommission")}
+                  value={invoice.settlement.commission?.vatOnCommission || invoiceDetailsT("notAvailable")}
                 />
                 <DetailRow
                   label={invoiceDetailsT("commissionLockedAt")}
