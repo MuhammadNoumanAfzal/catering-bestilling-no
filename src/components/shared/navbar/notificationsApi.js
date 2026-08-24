@@ -1,40 +1,56 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 
+const CLIENT_FINANCE_NOTIFICATION_FIELDS = `
+  id
+  type
+  audience
+  title
+  message
+  isRead
+  createdAt
+  invoiceId
+  orderId
+  paymentStatus
+  actorName
+  note
+  rejectionReason
+  receiptUrl
+  transferReference
+  paymentDate
+`;
+
 const NOTIFICATION_BELL_QUERY = `
-  query NotificationBell {
-    notificationBell {
-      unreadCount
-      items {
-        id
-        title
-        message
-        entityType
-        entityId
-        actionUrl
-        isRead
-        createdAt
+  query ClientFinanceNotifications($first: Int, $status: String) {
+    clientFinanceNotifications(first: $first, status: $status) {
+      edges {
+        node {
+          ${CLIENT_FINANCE_NOTIFICATION_FIELDS}
+        }
       }
+      unreadCount
+      totalCount
     }
   }
 `;
 
 const MARK_NOTIFICATION_READ_MUTATION = `
-  mutation MarkNotificationRead($id: ID!) {
-    markNotificationRead(id: $id) {
+  mutation MarkFinanceNotificationRead($id: ID!) {
+    markFinanceNotificationRead(id: $id) {
+      success
+      message
       notification {
         id
         isRead
-        readAt
       }
     }
   }
 `;
 
 const MARK_ALL_NOTIFICATIONS_READ_MUTATION = `
-  mutation MarkAllNotificationsRead {
-    markAllNotificationsRead {
+  mutation MarkAllFinanceNotificationsRead($audience: String!) {
+    markAllFinanceNotificationsRead(audience: $audience) {
       success
-      unreadCount
+      message
     }
   }
 `;
@@ -95,82 +111,100 @@ function sanitizeNotificationMessage(message) {
     .replace(/\s{2,}/g, " ");
 }
 
-function mapNotificationType(entityType, actionUrl) {
-  const normalizedType = `${entityType ?? ""}`.toLowerCase();
-  const normalizedUrl = `${actionUrl ?? ""}`.toLowerCase();
+function mapNotificationType(type) {
+  const normalizedType = `${type ?? ""}`.toLowerCase();
 
-  if (normalizedType.includes("support") || normalizedUrl.includes("support")) {
-    return "review";
-  }
-
-  if (normalizedType.includes("order") || normalizedUrl.includes("order")) {
-    return "order-update";
-  }
-
-  if (normalizedType.includes("payout") || normalizedUrl.includes("payment")) {
+  if (
+    normalizedType.includes("payment") ||
+    normalizedType.includes("invoice") ||
+    normalizedType.includes("settlement")
+  ) {
     return "payment";
   }
 
-  if (normalizedType.includes("delivery") || normalizedUrl.includes("delivery")) {
+  if (normalizedType.includes("delivery")) {
     return "delivery";
   }
 
-  return "menu";
+  if (normalizedType.includes("order")) {
+    return "order-update";
+  }
+
+  return "payment";
 }
 
 function resolveNotificationTarget(node) {
-  const actionUrl = `${node?.actionUrl ?? ""}`.trim();
-  if (actionUrl) {
-    return actionUrl;
+  if (node?.invoiceId) {
+    return `/vendor-dashboard/invoices/${encodeURIComponent(node.invoiceId)}`;
   }
 
-  const entityType = `${node?.entityType ?? ""}`.toLowerCase();
-  const entityId = `${node?.entityId ?? ""}`.trim();
-
-  if (entityType.includes("support")) {
-    return "/vendor-dashboard/support/responses";
+  if (node?.orderId) {
+    return `/vendor-dashboard/orders/${encodeURIComponent(node.orderId)}`;
   }
 
-  if (entityType.includes("order")) {
-    return entityId ? `/vendor-dashboard/orders/${entityId}` : "/vendor-dashboard/orders";
-  }
-
-  return "/vendor-dashboard/notifications";
+  return "/vendor-dashboard/invoices";
 }
 
 function mapNotificationNode(node) {
+  const messageParts = [sanitizeNotificationMessage(node?.message)];
+
+  if (node?.note) {
+    messageParts.push(`Note: ${node.note}`);
+  }
+
+  if (node?.rejectionReason) {
+    messageParts.push(`Reason: ${node.rejectionReason}`);
+  }
+
+  if (node?.transferReference) {
+    messageParts.push(`Reference: ${node.transferReference}`);
+  }
+
   return {
     id: node?.id ?? "",
-    title: node?.title || "Notification",
-    message: sanitizeNotificationMessage(node?.message),
+    title: node?.title || "Finance notification",
+    message: messageParts.filter(Boolean).join(" "),
     timeLabel: formatNotificationTime(node?.createdAt),
     unread: !node?.isRead,
     category: node?.isRead ? "read" : "unread",
-    type: mapNotificationType(node?.entityType, node?.actionUrl),
+    type: mapNotificationType(node?.type),
     createdAt: node?.createdAt ? `${node.createdAt}`.split("T")[0] : "",
     dayLabel: formatDayLabel(node?.createdAt),
-    notificationType: node?.entityType || "",
-    entityId: node?.entityId || "",
-    entityType: node?.entityType || "",
+    notificationType: node?.type || "",
+    entityId: node?.invoiceId || node?.orderId || "",
+    entityType: node?.invoiceId ? "INVOICE" : node?.orderId ? "ORDER" : "",
     createdOn: node?.createdAt || "",
     actionUrl: resolveNotificationTarget(node),
+    invoiceId: node?.invoiceId || "",
+    orderId: node?.orderId || "",
+    note: node?.note || "",
+    rejectionReason: node?.rejectionReason || "",
+    receiptUrl: node?.receiptUrl || "",
+    transferReference: node?.transferReference || "",
+    paymentDate: node?.paymentDate || "",
+    paymentStatus: node?.paymentStatus || "",
+    actorName: node?.actorName || "",
   };
 }
 
 export async function fetchUserNotifications() {
   const response = await graphqlRequest({
     query: NOTIFICATION_BELL_QUERY,
+    variables: {
+      first: 20,
+      status: null,
+    },
   });
 
-  const bell = response?.notificationBell;
-  const notifications = Array.isArray(bell?.items)
-    ? bell.items.map(mapNotificationNode)
+  const bell = response?.clientFinanceNotifications;
+  const notifications = Array.isArray(bell?.edges)
+    ? bell.edges.map((edge) => mapNotificationNode(edge?.node))
     : [];
 
   return {
     notifications,
     unreadCount: Number(bell?.unreadCount ?? 0) || notifications.filter((item) => item.unread).length,
-    totalCount: notifications.length,
+    totalCount: Number(bell?.totalCount ?? notifications.length) || notifications.length,
     hasNextPage: false,
     endCursor: null,
   };
@@ -182,10 +216,10 @@ export async function markUserNotificationAsRead(id) {
     variables: { id },
   });
 
-  const result = response?.markNotificationRead;
+  const result = response?.markFinanceNotificationRead;
 
-  if (!result?.notification?.id) {
-    throw new Error("Unable to mark the notification as read.");
+  if (!result?.success || !result?.notification?.id) {
+    throw new Error(result?.message || "Unable to mark the notification as read.");
   }
 
   return {
@@ -198,16 +232,19 @@ export async function markUserNotificationAsRead(id) {
 export async function markAllUserNotificationsAsRead() {
   const response = await graphqlRequest({
     query: MARK_ALL_NOTIFICATIONS_READ_MUTATION,
+    variables: {
+      audience: "CLIENT",
+    },
   });
 
-  const result = response?.markAllNotificationsRead;
+  const result = response?.markAllFinanceNotificationsRead;
 
   if (!result?.success) {
-    throw new Error("Unable to mark all notifications as read.");
+    throw new Error(result?.message || "Unable to mark all notifications as read.");
   }
 
   return {
-    message: "All notifications marked as read.",
-    unreadCount: Number(result?.unreadCount ?? 0) || 0,
+    message: result?.message || "All notifications marked as read.",
+    unreadCount: 0,
   };
 }

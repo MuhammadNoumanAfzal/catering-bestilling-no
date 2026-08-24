@@ -156,7 +156,7 @@ export default function useUserNotifications() {
       closePopover();
     }
 
-    const target = notification.actionUrl || "/vendor-dashboard/notifications";
+    const target = notification.actionUrl || "/vendor-dashboard/invoices";
     navigate(target);
   };
 
