@@ -111,6 +111,20 @@ export default function NotificationPopover({
                   <p className="mt-1 pr-2 text-[13px] leading-5 text-[#6f6258] break-words">
                     {notification.message}
                   </p>
+                  {notification.paymentDate || notification.transferReference ? (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {notification.paymentDate ? (
+                        <span className="rounded-full bg-[#faf4ee] px-2.5 py-1 text-[11px] font-medium text-[#8a7568]">
+                          {notification.paymentDate}
+                        </span>
+                      ) : null}
+                      {notification.transferReference ? (
+                        <span className="rounded-full bg-[#faf4ee] px-2.5 py-1 text-[11px] font-medium text-[#8a7568]">
+                          {notification.transferReference}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 {notification.unread ? (

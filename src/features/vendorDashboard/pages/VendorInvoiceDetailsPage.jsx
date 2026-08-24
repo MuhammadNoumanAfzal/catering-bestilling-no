@@ -57,6 +57,43 @@ function DetailSection({ title, children }) {
   );
 }
 
+function ReceiptPreview({ url }) {
+  const normalizedUrl = `${url || ""}`.trim();
+
+  if (!normalizedUrl) {
+    return null;
+  }
+
+  const isPdf = /\.pdf($|\?)/i.test(normalizedUrl);
+  const isImage = /\.(png|jpe?g|webp|gif)($|\?)/i.test(normalizedUrl);
+
+  return (
+    <div className="mt-4 rounded-[18px] border border-[#f1e3d6] bg-white px-4 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-[#1f1f1f]">{isPdf ? "Uploaded receipt PDF" : "Uploaded receipt"}</p>
+        <a
+          className="text-sm font-semibold text-[#cf6e38] transition hover:text-[#b85e2a]"
+          href={normalizedUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Open file
+        </a>
+      </div>
+      {isImage ? (
+        <img
+          alt="Uploaded payment receipt"
+          className="mt-3 max-h-[320px] w-full rounded-[14px] border border-[#eadfd5] object-contain"
+          src={normalizedUrl}
+        />
+      ) : null}
+      {!isImage ? (
+        <p className="mt-3 text-sm text-[#6d645c] break-all">{normalizedUrl}</p>
+      ) : null}
+    </div>
+  );
+}
+
 export default function VendorInvoiceDetailsPage() {
   const { t, i18n } = useTranslation();
   const invoiceDetailsT = (key, options = {}) =>
@@ -535,6 +572,7 @@ export default function VendorInvoiceDetailsPage() {
                   <p className="mt-1 text-sm text-[#6d645c]">{invoice.paymentReport.note}</p>
                 </div>
               ) : null}
+              <ReceiptPreview url={invoice.paymentReport.receiptUrl} />
             </DetailSection>
           ) : null}
 
