@@ -986,6 +986,8 @@ const no = {
         rejectedAt: "Avvist den",
         paymentStatusNoticeTitle: "Betalingsstatus",
         paymentReportingUnavailable: "Betalingsrapportering er ikke tilgjengelig",
+        invoiceAccessDeniedNotice:
+          "Du har ikke tilgang til å se denne fakturaen.",
         bankTransferOnlyNotice:
           "Denne fakturaen kan ikke rapporteres her fordi den ikke er markert som en bankoverføringsfaktura.",
         alreadyPaidNotice:
@@ -994,6 +996,11 @@ const no = {
           "Betalingsrapporten din er sendt inn og venter nå på administrativ gjennomgang.",
         paymentUnavailableNotice:
           "Denne fakturaen er ikke åpen for en ny betalingsrapport akkurat nå.",
+        waitingForVendorAcceptanceNotice:
+          "Venter på leverandørbekreftelse. Betalingsdetaljene blir tilgjengelige når leverandøren har akseptert bestillingen.",
+        paymentLockedUntilAcceptanceNotice:
+          "Denne fakturaen kan først betales etter at leverandøren har akseptert bestillingen.",
+        currentOrderStatus: "Nåværende ordrestatus",
         reportBankTransferPayment: "Rapporter bankoverføring",
         paymentDate: "Betalingsdato",
         transferReference: "Betalingsreferanse",

@@ -98,8 +98,17 @@ const GET_INVOICE_DETAIL_QUERY = `
       customerPhone
       orderId
       orderNumber
+      order {
+        id
+        status
+        acceptedAt
+      }
       vendorId
       vendorName
+      canViewInvoice
+      canPayInvoice
+      canReportPayment
+      payableAfterVendorAcceptance
       subtotal {
         amount
         currency
@@ -237,6 +246,15 @@ const REPORT_INVOICE_PAYMENT_MUTATION = `
       message
       invoice {
         id
+        paymentStatus
+        canReportPayment
+        canPayInvoice
+        paymentReport {
+          transferReference
+          note
+          receiptUrl
+          reportedAt
+        }
       }
     }
   }
@@ -613,6 +631,10 @@ function mapInvoiceDetail(node, orderFallback = null) {
       node.amountDue?.formatted || formatMoney(node.amountDue?.amount, currency),
     paymentType: node.paymentMethod || node.paymentType || "",
     paymentMethod: node.paymentMethod || "",
+    canViewInvoice: Boolean(node.canViewInvoice ?? true),
+    canPayInvoice: Boolean(node.canPayInvoice),
+    canReportPayment: Boolean(node.canReportPayment),
+    payableAfterVendorAcceptance: Boolean(node.payableAfterVendorAcceptance),
     transactionReference:
       node.paymentReference ||
       node.invoiceNumber ||
@@ -638,7 +660,10 @@ function mapInvoiceDetail(node, orderFallback = null) {
       companyName: node.vendor?.companyName || node.vendorName || "",
     },
     order: {
-      id: node.orderId || "",
+      id: node.order?.id || node.orderId || "",
+      status: node.order?.status || "",
+      acceptedAt: node.order?.acceptedAt || "",
+      acceptedAtLabel: formatDateTime(node.order?.acceptedAt),
       eventName:
         fallbackOrder.eventName ||
         node.orderNumber ||
