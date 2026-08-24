@@ -110,6 +110,26 @@ function ReceiptPreview({ url }) {
   );
 }
 
+function formatHistoryActionLabel(action) {
+  return String(action || "Payment activity")
+    .toLowerCase()
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatHistoryActorLabel(item, fallbackLabel) {
+  const actorName = String(item?.actorName || "").trim();
+  const actorType = String(item?.actorType || "").trim();
+
+  if (actorName && actorType) {
+    return `${actorName} · ${actorType}`;
+  }
+
+  return actorName || actorType || fallbackLabel;
+}
+
 export default function VendorInvoiceDetailsPage() {
   const { t, i18n } = useTranslation();
   const invoiceDetailsT = (key, options = {}) =>
@@ -530,29 +550,43 @@ export default function VendorInvoiceDetailsPage() {
                 {invoice.paymentHistory.map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-[22px] border border-[#ede0d5] bg-[linear-gradient(180deg,#ffffff_0%,#fffaf6_100%)] px-5 py-4 shadow-[0_10px_24px_rgba(42,26,15,0.05)]"
+                    className="overflow-hidden rounded-[24px] border border-[#ede0d5] bg-[linear-gradient(180deg,#ffffff_0%,#fffaf6_100%)] shadow-[0_10px_24px_rgba(42,26,15,0.05)]"
                   >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <p className="text-sm font-semibold text-[#1f1f1f]">
-                          {item.action || invoiceDetailsT("paymentActivity")}
-                        </p>
-                        <p className="mt-1 text-sm text-[#6f665f]">
-                          {[item.actorName, item.actorType].filter(Boolean).join(" | ") || invoiceDetailsT("system")}
-                        </p>
+                    <div className="flex flex-col gap-4 px-5 py-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="inline-flex items-center rounded-full border border-[#f2d7c7] bg-[linear-gradient(135deg,#fff4ec_0%,#ffe9dc_100%)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#bf6737]">
+                              {formatHistoryActionLabel(item.action || invoiceDetailsT("paymentActivity"))}
+                            </span>
+                            {(item.fromStatus || item.toStatus) ? (
+                              <span className="inline-flex items-center rounded-full bg-[#f6f1ec] px-3 py-1 text-[11px] font-semibold text-[#74675f]">
+                                {(item.fromStatus || invoiceDetailsT("unknown"))} to {(item.toStatus || invoiceDetailsT("unknown"))}
+                              </span>
+                            ) : null}
+                          </div>
+                          <p className="mt-3 text-sm font-semibold text-[#1f1f1f]">
+                            {formatHistoryActorLabel(item, invoiceDetailsT("system"))}
+                          </p>
+                        </div>
+
+                        <div className="rounded-full bg-[#fbf5ef] px-3 py-1.5 text-[11px] font-semibold text-[#8f8177]">
+                          {item.createdAtLabel || invoiceDetailsT("notAvailable")}
+                        </div>
+                      </div>
+
+                      {item.note ? (
+                        <div className="rounded-[16px] border border-[#f1e4da] bg-white/85 px-4 py-3">
+                          <p className="text-sm leading-7 text-[#4b463f]">{item.note}</p>
+                        </div>
+                      ) : null}
+
                         {(item.fromStatus || item.toStatus) ? (
                           <p className="mt-1 text-xs text-[#8b827b]">
                             {`${item.fromStatus || invoiceDetailsT("unknown")} -> ${item.toStatus || invoiceDetailsT("unknown")}`}
                           </p>
                         ) : null}
-                      </div>
-                      <p className="text-xs font-medium text-[#8b827b]">
-                        {item.createdAtLabel || invoiceDetailsT("notAvailable")}
-                      </p>
                     </div>
-                    {item.note ? (
-                      <p className="mt-3 text-sm text-[#4b463f]">{item.note}</p>
-                    ) : null}
                   </article>
                 ))}
               </div>
