@@ -404,6 +404,35 @@ export default function VendorInvoiceDetailsPage() {
         </button>
       </div>
 
+      {paymentStateMessage ? (
+        <section className="relative overflow-hidden rounded-[28px] border border-[#efcdbb] bg-[linear-gradient(135deg,#fff7f0_0%,#ffe8da_45%,#fffaf6_100%)] px-5 py-5 shadow-[0_18px_36px_rgba(201,95,48,0.12)] sm:px-6">
+          <div className="absolute -right-10 top-0 h-24 w-24 rounded-full bg-[#ffd7c2]/60 blur-2xl" aria-hidden="true" />
+          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#b06f4a]">
+                Payment Status
+              </p>
+              <h2 className="mt-2 text-[22px] font-semibold tracking-[-0.03em] text-[#1f1713] sm:text-[26px]">
+                {invoiceDetailsT("paymentStatusNoticeTitle")}
+              </h2>
+              <p className="mt-2 max-w-3xl text-[14px] leading-7 text-[#6a5b51] sm:text-[15px]">
+                {paymentStateMessage}
+              </p>
+            </div>
+
+            <div className="shrink-0 rounded-full border border-[#efcdbb] bg-white/80 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#c35f31] shadow-[0_8px_18px_rgba(42,26,15,0.06)]">
+              {localizedStatus}
+            </div>
+          </div>
+
+          {isWaitingForVendorAcceptance && invoice.order.status ? (
+            <p className="relative mt-4 text-[11px] font-bold uppercase tracking-[0.18em] text-[#9c897d]">
+              {invoiceDetailsT("currentOrderStatus")}: {invoice.order.status}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
       <section className="relative overflow-hidden rounded-[34px] border border-[#e2d5ca] bg-[linear-gradient(135deg,#fffdfa_0%,#fff7f0_52%,#fff2e6_100%)] p-5 shadow-[0_22px_48px_rgba(31,20,12,0.08)] md:p-7">
         <div className="absolute -right-14 top-0 h-40 w-40 rounded-full bg-[#ffd9c6]/55 blur-3xl" aria-hidden="true" />
         <div className="absolute bottom-0 left-0 h-32 w-32 rounded-full bg-[#fff2d6]/55 blur-3xl" aria-hidden="true" />
@@ -724,20 +753,6 @@ export default function VendorInvoiceDetailsPage() {
               <DetailRow label={invoiceDetailsT("rejectedAt")} value={invoice.rejectedAt || invoiceDetailsT("notAvailable")} />
             </div>
           </DetailSection>
-
-          {!canReportPayment && paymentStateMessage ? (
-            <div className="rounded-[24px] border border-[#efdccc] bg-[linear-gradient(135deg,#fff9f4_0%,#fff0e4_100%)] px-5 py-5 text-sm text-[#6d645c] shadow-[0_12px_28px_rgba(50,30,18,0.05)]">
-              <p className="text-[15px] font-semibold text-[#1f1f1f]">
-                {invoiceDetailsT("paymentStatusNoticeTitle")}
-              </p>
-              <p className="mt-2 leading-7">{paymentStateMessage}</p>
-              {isWaitingForVendorAcceptance && invoice.order.status ? (
-                <p className="mt-3 text-xs font-bold uppercase tracking-[0.18em] text-[#9c897d]">
-                  {invoiceDetailsT("currentOrderStatus")}: {invoice.order.status}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
 
           {canReportPayment ? (
             <DetailSection title={invoiceDetailsT("reportBankTransferPayment")}>
