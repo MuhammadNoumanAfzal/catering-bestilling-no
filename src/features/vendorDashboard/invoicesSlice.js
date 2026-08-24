@@ -255,21 +255,29 @@ const GET_INVOICE_ORDER_FALLBACK_QUERY = `
 `;
 
 const REPORT_INVOICE_PAYMENT_MUTATION = `
-  mutation ReportInvoicePayment($invoiceId: ID!, $input: ReportInvoicePaymentInput!) {
-    reportInvoicePayment(invoiceId: $invoiceId, input: $input) {
+  mutation ReportInvoicePayment($input: ReportInvoicePaymentInput!) {
+    reportInvoicePayment(input: $input) {
       success
       message
       invoice {
         id
+        invoiceNumber
         paymentStatus
         canReportPayment
         canPayInvoice
         paymentReport {
+          paymentDate
           transferReference
           note
           receiptUrl
           reportedAt
         }
+      }
+      payment {
+        id
+        paymentStatus
+        settlementStatus
+        paymentReportedAt
       }
     }
   }
@@ -938,8 +946,8 @@ export const reportInvoicePayment = createAsyncThunk(
       const mutationResponse = await graphqlRequest({
         query: REPORT_INVOICE_PAYMENT_MUTATION,
         variables: {
-          invoiceId,
           input: {
+            invoiceId,
             paymentDate: input?.paymentDate,
             transferReference: input?.transferReference || null,
             note: input?.note || null,
