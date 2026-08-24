@@ -140,19 +140,30 @@ export default function VendorInvoiceDetailsPage() {
   const paymentTypeLabel =
     invoice.paymentType || invoiceDetailsT("notSpecified");
   const isBankTransfer = `${invoice.paymentMethod || invoice.paymentType || ""}`.trim().toUpperCase() === "BANK_TRANSFER";
-  const canReportPayment =
-    isBankTransfer &&
-    ["PENDING", "OVERDUE", "REJECTED"].includes(normalizedInvoiceStatus) &&
-    !hasReportedPayment;
-  const paymentStateMessage = !isBankTransfer
-    ? invoiceDetailsT("bankTransferOnlyNotice")
-    : normalizedInvoiceStatus === "PAID"
-      ? invoiceDetailsT("alreadyPaidNotice")
-      : normalizedInvoiceStatus === "REPORTED" || hasReportedPayment
-        ? invoiceDetailsT("awaitingAdminReviewNotice")
-        : !canReportPayment
-          ? invoiceDetailsT("paymentUnavailableNotice")
-          : "";
+  const isWaitingForVendorAcceptance =
+    invoice.payableAfterVendorAcceptance &&
+    !invoice.canPayInvoice &&
+    !invoice.canReportPayment &&
+    !invoice.order.acceptedAt &&
+    ["PLACED", "PENDING", "NEW"].includes(
+      `${invoice.order.status || ""}`.trim().toUpperCase(),
+    );
+  const canReportPayment = isBankTransfer && invoice.canReportPayment;
+  const paymentStateMessage = !invoice.canViewInvoice
+    ? invoiceDetailsT("invoiceAccessDeniedNotice")
+    : !isBankTransfer
+      ? invoiceDetailsT("bankTransferOnlyNotice")
+      : isWaitingForVendorAcceptance
+        ? invoiceDetailsT("waitingForVendorAcceptanceNotice")
+        : normalizedInvoiceStatus === "PAID"
+          ? invoiceDetailsT("alreadyPaidNotice")
+          : normalizedInvoiceStatus === "PAYMENT_REPORTED" || hasReportedPayment
+            ? invoiceDetailsT("awaitingAdminReviewNotice")
+            : !invoice.canPayInvoice && invoice.payableAfterVendorAcceptance
+              ? invoiceDetailsT("paymentLockedUntilAcceptanceNotice")
+              : !canReportPayment
+                ? invoiceDetailsT("paymentUnavailableNotice")
+                : "";
   const transactionReferenceLabel =
     invoice.transactionReference || invoiceDetailsT("notAvailable");
   const eventNameLabel = localizedOrderLabel;
@@ -233,6 +244,19 @@ export default function VendorInvoiceDetailsPage() {
     await showAuthErrorAlert(
       result.payload || "Unable to report this invoice payment.",
       invoiceDetailsT("paymentReportFailed"),
+    );
+  }
+
+  if (!invoice.canViewInvoice) {
+    return (
+      <section className="rounded-[24px] border border-red-200 bg-red-50 p-6 text-center">
+        <h2 className="text-lg font-semibold text-red-700">
+          {invoiceDetailsT("loadErrorTitle")}
+        </h2>
+        <p className="mt-2 text-sm text-red-600">
+          {invoiceDetailsT("invoiceAccessDeniedNotice")}
+        </p>
+      </section>
     );
   }
 
@@ -403,6 +427,11 @@ export default function VendorInvoiceDetailsPage() {
                 {invoiceDetailsT("paymentStatusNoticeTitle")}
               </p>
               <p className="mt-1 leading-6">{paymentStateMessage}</p>
+              {isWaitingForVendorAcceptance && invoice.order.status ? (
+                <p className="mt-2 text-xs font-medium uppercase tracking-[0.08em] text-[#9c897d]">
+                  {invoiceDetailsT("currentOrderStatus")}: {invoice.order.status}
+                </p>
+              ) : null}
             </div>
           ) : null}
 

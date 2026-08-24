@@ -1137,14 +1137,21 @@ const en = {
         rejectedAt: "Rejected At",
         paymentStatusNoticeTitle: "Payment Status",
         paymentReportingUnavailable: "Payment reporting unavailable",
+        invoiceAccessDeniedNotice:
+          "You do not have permission to view this invoice.",
         bankTransferOnlyNotice:
           "This invoice cannot be reported here because it is not marked as a bank transfer invoice.",
+        waitingForVendorAcceptanceNotice:
+          "Waiting for vendor confirmation. Payment details will be unlocked once the vendor accepts your order.",
+        paymentLockedUntilAcceptanceNotice:
+          "This invoice will become payable only after the vendor accepts the order.",
         alreadyPaidNotice:
           "This invoice is already marked as paid. No further customer payment action is required.",
         awaitingAdminReviewNotice:
           "Your payment report has been submitted successfully and is now waiting for admin review.",
         paymentUnavailableNotice:
           "This invoice is not currently open for another payment report.",
+        currentOrderStatus: "Current order status",
         reportBankTransferPayment: "Report Bank Transfer Payment",
         paymentDate: "Payment Date",
         transferReference: "Transfer Reference",
