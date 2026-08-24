@@ -33,13 +33,13 @@ const ALLOWED_RECEIPT_TYPES = new Set([
   "application/pdf",
 ]);
 
-function DetailRow({ label, value }) {
+function DetailRow({ label, value, valueClassName = "" }) {
   return (
     <div className="group rounded-[22px] border border-[#eadccf] bg-[linear-gradient(180deg,#fffdfa_0%,#fff8f2_100%)] px-4 py-4 shadow-[0_10px_24px_rgba(53,33,20,0.04)] transition duration-200 hover:-translate-y-[1px] hover:border-[#e5c9b5] hover:shadow-[0_16px_32px_rgba(53,33,20,0.08)] sm:px-5">
       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ab8f7f]">
         {label}
       </p>
-      <p className="mt-2 text-[15px] font-semibold leading-6 text-[#201815] sm:text-[17px]">
+      <p className={`mt-2 text-[15px] font-semibold leading-6 text-[#201815] sm:text-[17px] ${valueClassName}`.trim()}>
         {value}
       </p>
     </div>
@@ -128,6 +128,32 @@ function formatHistoryActorLabel(item, fallbackLabel) {
   }
 
   return actorName || actorType || fallbackLabel;
+}
+
+function parsePaymentHistoryNote(note) {
+  const rawNote = String(note || "").trim();
+
+  if (!rawNote) {
+    return {
+      summary: "",
+      reference: "",
+      note: "",
+    };
+  }
+
+  const referenceMatch = rawNote.match(/reference:\s*(.*?)(?=(?:\s+note:)|$)/i);
+  const noteMatch = rawNote.match(/note:\s*(.*)$/i);
+  const summary = rawNote
+    .replace(/reference:\s*.*?(?=(?:\s+note:)|$)/i, "")
+    .replace(/note:\s*.*$/i, "")
+    .trim()
+    .replace(/\s{2,}/g, " ");
+
+  return {
+    summary,
+    reference: referenceMatch?.[1]?.trim() || "",
+    note: noteMatch?.[1]?.trim() || "",
+  };
 }
 
 export default function VendorInvoiceDetailsPage() {
@@ -548,6 +574,10 @@ export default function VendorInvoiceDetailsPage() {
             <DetailSection title={invoiceDetailsT("paymentHistory")}>
               <div className="space-y-3">
                 {invoice.paymentHistory.map((item) => (
+                  (() => {
+                    const parsedHistoryNote = parsePaymentHistoryNote(item.note);
+
+                    return (
                   <article
                     key={item.id}
                     className="overflow-hidden rounded-[24px] border border-[#ede0d5] bg-[linear-gradient(180deg,#ffffff_0%,#fffaf6_100%)] shadow-[0_10px_24px_rgba(42,26,15,0.05)]"
@@ -577,7 +607,36 @@ export default function VendorInvoiceDetailsPage() {
 
                       {item.note ? (
                         <div className="rounded-[16px] border border-[#f1e4da] bg-white/85 px-4 py-3">
-                          <p className="text-sm leading-7 text-[#4b463f]">{item.note}</p>
+                          {parsedHistoryNote.summary ? (
+                            <p className="text-sm font-medium leading-7 text-[#4b463f]">
+                              {parsedHistoryNote.summary}
+                            </p>
+                          ) : null}
+
+                          {(parsedHistoryNote.reference || parsedHistoryNote.note) ? (
+                            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                              {parsedHistoryNote.reference ? (
+                                <div className="rounded-[14px] border border-[#efe3d8] bg-[#fff9f4] px-3 py-2.5">
+                                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">
+                                    Transfer Reference
+                                  </p>
+                                  <p className="mt-1 text-[13px] font-semibold text-[#201815] break-words">
+                                    {parsedHistoryNote.reference}
+                                  </p>
+                                </div>
+                              ) : null}
+                              {parsedHistoryNote.note ? (
+                                <div className="rounded-[14px] border border-[#efe3d8] bg-[#fff9f4] px-3 py-2.5 sm:col-span-1">
+                                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">
+                                    Verification Note
+                                  </p>
+                                  <p className="mt-1 text-[13px] font-semibold leading-6 text-[#201815] break-words">
+                                    {parsedHistoryNote.note}
+                                  </p>
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : null}
                         </div>
                       ) : null}
 
@@ -588,6 +647,8 @@ export default function VendorInvoiceDetailsPage() {
                         ) : null}
                     </div>
                   </article>
+                    );
+                  })()
                 ))}
               </div>
             </DetailSection>
@@ -771,7 +832,24 @@ export default function VendorInvoiceDetailsPage() {
                 <DetailRow label={invoiceDetailsT("paymentDate")} value={invoice.paymentReport.paymentDate || invoiceDetailsT("notAvailable")} />
                 <DetailRow label={invoiceDetailsT("reportedAt")} value={invoice.paymentReport.reportedAtLabel || invoiceDetailsT("notAvailable")} />
                 <DetailRow label={invoiceDetailsT("transferReference")} value={invoice.paymentReport.transferReference || invoiceDetailsT("notAvailable")} />
-                <DetailRow label={invoiceDetailsT("receiptUrl")} value={invoice.paymentReport.receiptUrl || invoiceDetailsT("notAvailable")} />
+                <DetailRow
+                  label="Receipt file"
+                  value={
+                    invoice.paymentReport.receiptUrl ? (
+                      <a
+                        className="inline-flex items-center rounded-full border border-[#edc7b2] bg-[#fff4ec] px-3 py-1.5 text-[13px] font-semibold text-[#c45f2f] transition hover:border-[#d7a98d] hover:text-[#ab5228]"
+                        href={invoice.paymentReport.receiptUrl}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Open uploaded receipt
+                      </a>
+                    ) : (
+                      invoiceDetailsT("notAvailable")
+                    )
+                  }
+                  valueClassName="break-words"
+                />
               </div>
               {invoice.paymentReport.note ? (
                 <div className="mt-4 rounded-[20px] border border-[#f1dfd2] bg-[linear-gradient(135deg,#fff9f4_0%,#fff1e5_100%)] px-5 py-4">
