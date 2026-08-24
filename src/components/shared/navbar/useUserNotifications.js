@@ -8,9 +8,10 @@ import {
 } from "./notificationsApi";
 import { showSuccessToast } from "../../../utils/alerts";
 
-const NOTIFICATIONS_POLL_INTERVAL_MS = 30000;
+const NOTIFICATIONS_POLL_INTERVAL_MS = 10000;
 const FRESH_NOTIFICATION_HIGHLIGHT_MS = 12000;
 const LAST_ACKNOWLEDGED_NOTIFICATION_KEY = "last-acknowledged-notification-id";
+const LAST_SEEN_NOTIFICATION_KEY = "last-seen-notification-id";
 
 function readLastAcknowledgedNotificationId() {
   if (typeof window === "undefined") {
@@ -31,6 +32,22 @@ function writeLastAcknowledgedNotificationId(notificationId) {
   );
 }
 
+function readLastSeenNotificationId() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.localStorage.getItem(LAST_SEEN_NOTIFICATION_KEY);
+}
+
+function writeLastSeenNotificationId(notificationId) {
+  if (typeof window === "undefined" || !notificationId) {
+    return;
+  }
+
+  window.localStorage.setItem(LAST_SEEN_NOTIFICATION_KEY, notificationId);
+}
+
 export default function useUserNotifications() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
@@ -42,7 +59,6 @@ export default function useUserNotifications() {
     let isMounted = true;
     let pollTimerId = null;
     let highlightTimerId = null;
-    let previousTopNotificationId = null;
 
     if (!isLoggedIn) {
       setNotifications([]);
@@ -57,14 +73,16 @@ export default function useUserNotifications() {
 
         if (isMounted) {
           const nextNotifications = result.notifications || [];
+          const topNotification = nextNotifications[0] || null;
           const nextTopNotificationId = nextNotifications[0]?.id || null;
           const lastAcknowledgedNotificationId =
             readLastAcknowledgedNotificationId();
+          const lastSeenNotificationId = readLastSeenNotificationId();
 
           if (
-            previousTopNotificationId &&
             nextTopNotificationId &&
-            nextTopNotificationId !== previousTopNotificationId
+            nextTopNotificationId !== lastSeenNotificationId &&
+            topNotification?.unread
           ) {
             setHasFreshNotification(true);
             if (highlightTimerId) {
@@ -77,8 +95,9 @@ export default function useUserNotifications() {
             }, FRESH_NOTIFICATION_HIGHLIGHT_MS);
 
             const notificationTitle =
-              nextNotifications[0]?.title || "New notification received";
+              topNotification?.title || "New notification received";
             showSuccessToast(notificationTitle);
+            writeLastSeenNotificationId(nextTopNotificationId);
           }
 
           if (
@@ -87,8 +106,6 @@ export default function useUserNotifications() {
           ) {
             setHasFreshNotification(true);
           }
-
-          previousTopNotificationId = nextTopNotificationId;
           setNotifications(nextNotifications);
           setUnreadNotificationCount(
             Number(result.unreadCount ?? 0) ||
@@ -105,9 +122,22 @@ export default function useUserNotifications() {
 
     loadNotifications();
     pollTimerId = window.setInterval(
-      loadNotifications,
+      () => {
+        if (document.visibilityState === "visible") {
+          void loadNotifications();
+        }
+      },
       NOTIFICATIONS_POLL_INTERVAL_MS,
     );
+
+    const handleRefreshNotifications = () => {
+      if (document.visibilityState === "visible") {
+        void loadNotifications();
+      }
+    };
+
+    window.addEventListener("focus", handleRefreshNotifications);
+    document.addEventListener("visibilitychange", handleRefreshNotifications);
 
     return () => {
       isMounted = false;
@@ -117,6 +147,8 @@ export default function useUserNotifications() {
       if (highlightTimerId) {
         window.clearTimeout(highlightTimerId);
       }
+      window.removeEventListener("focus", handleRefreshNotifications);
+      document.removeEventListener("visibilitychange", handleRefreshNotifications);
     };
   }, [isLoggedIn]);
 
@@ -128,6 +160,7 @@ export default function useUserNotifications() {
     }
 
     writeLastAcknowledgedNotificationId(topNotificationId);
+    writeLastSeenNotificationId(topNotificationId);
     setHasFreshNotification(false);
   };
 
@@ -151,6 +184,8 @@ export default function useUserNotifications() {
         // Keep navigation usable even if read state update fails.
       }
     }
+
+    writeLastSeenNotificationId(notification.id);
 
     if (typeof closePopover === "function") {
       closePopover();
