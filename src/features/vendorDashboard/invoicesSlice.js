@@ -198,6 +198,16 @@ const GET_INVOICE_DETAIL_QUERY = `
             currency
             formatted
           }
+          fixedFee {
+            amount
+            currency
+            formatted
+          }
+          vatOnCommission {
+            amount
+            currency
+            formatted
+          }
           lockedAt
         }
       }
@@ -739,6 +749,18 @@ function mapInvoiceDetail(node, orderFallback = null) {
                   node.settlement.commissionRecord.grossCommission?.formatted ||
                   formatMoney(
                     node.settlement.commissionRecord.grossCommission?.amount,
+                    currency,
+                  ),
+                fixedFee:
+                  node.settlement.commissionRecord.fixedFee?.formatted ||
+                  formatMoney(
+                    node.settlement.commissionRecord.fixedFee?.amount,
+                    currency,
+                  ),
+                vatOnCommission:
+                  node.settlement.commissionRecord.vatOnCommission?.formatted ||
+                  formatMoney(
+                    node.settlement.commissionRecord.vatOnCommission?.amount,
                     currency,
                   ),
                 totalCommission:
