@@ -1,4 +1,5 @@
 export const AUTH_SESSION_STORAGE_KEY = "auth-session";
+const CUSTOMER_FIRST_LOGIN_SEEN_KEY = "customer-first-login-seen";
 
 function sanitizeUserName(user) {
   return [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
@@ -76,4 +77,40 @@ export function clearStoredSession() {
 
 export function getStoredAccessToken() {
   return readStoredSession().accessToken;
+}
+
+function getCustomerFirstLoginStorageKey(user) {
+  const userId = `${user?.id ?? ""}`.trim();
+  const email = `${user?.email ?? ""}`.trim().toLowerCase();
+  const identifier = userId || email;
+
+  return identifier ? `${CUSTOMER_FIRST_LOGIN_SEEN_KEY}:${identifier}` : "";
+}
+
+export function isFirstCustomerLogin(user) {
+  if (typeof window === "undefined" || !user) {
+    return false;
+  }
+
+  const storageKey = getCustomerFirstLoginStorageKey(user);
+
+  if (!storageKey) {
+    return false;
+  }
+
+  return !window.localStorage.getItem(storageKey);
+}
+
+export function markCustomerFirstLoginSeen(user) {
+  if (typeof window === "undefined" || !user) {
+    return;
+  }
+
+  const storageKey = getCustomerFirstLoginStorageKey(user);
+
+  if (!storageKey) {
+    return;
+  }
+
+  window.localStorage.setItem(storageKey, "1");
 }

@@ -5,6 +5,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { loginUser } from "../../api";
 import {
+  isFirstCustomerLogin,
+  markCustomerFirstLoginSeen,
+} from "../../../../lib/auth/authSession";
+import {
   AuthButton,
   AuthCard,
   AuthInput,
@@ -61,12 +65,17 @@ export default function SignInPage() {
         user: result.user,
       });
 
+      const firstCustomerLogin = isFirstCustomerLogin(result.user);
+      markCustomerFirstLoginSeen(result.user);
+
       await showSuccessToast(
         t("auth.signIn.success", {
           name: result.user.firstName || result.user.email,
         }),
       );
-      navigate(resolvePostSignInDestination(location.state), { replace: true });
+      navigate(firstCustomerLogin ? "/settings" : resolvePostSignInDestination(location.state), {
+        replace: true,
+      });
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error ? error.message : t("auth.signIn.errorMessage"),
