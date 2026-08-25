@@ -100,7 +100,20 @@ export default function MenuDetailsPage() {
     setVendorNote(`${storedSummary.vendorNote ?? ""}`);
     setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");
     setSelectedRequired(menuItem.modal.requiredSelection?.options?.[0] ?? "");
-    setSelectedOptional({});
+    setSelectedOptional(
+      (storedSummary.items || []).reduce((accumulator, item) => {
+        if (
+          item?.isAddOn &&
+          item?.parentMenuItemId === menuItem.id &&
+          item?.addOnKey &&
+          Number(item?.quantity) > 0
+        ) {
+          accumulator[item.addOnKey] = Number(item.quantity);
+        }
+
+        return accumulator;
+      }, {}),
+    );
     setIsAvailabilityPopupDismissed(false);
   }, [menuItem, minimumPersons, vendor]);
 
@@ -371,6 +384,22 @@ export default function MenuDetailsPage() {
     );
   }, [menuItem, vendor]);
 
+  const buildAddOnLineItem = (matchedOption, quantity, key) => ({
+    id: `addon-${menuItem.id}-${key}`,
+    productId: matchedOption.productId ?? matchedOption.id,
+    addOnKey: key,
+    parentMenuItemId: menuItem.id,
+    name: matchedOption.label,
+    quantity,
+    serves: quantity,
+    totalServes: quantity,
+    unitPrice: Number(matchedOption.price),
+    price: Number(matchedOption.price) * quantity,
+    pricingType: "fixed",
+    isAddOn: true,
+    details: [`Qty: ${quantity}`, "Add-on item"],
+  });
+
   const includedMenuItems = useMemo(() => {
     if (!menuItem || !menuItem.menuItems) {
       return [];
@@ -511,6 +540,41 @@ export default function MenuDetailsPage() {
       const key = `${groupTitle}:${optionLabel}`;
       const nextValue = Math.max(0, (current[key] ?? 0) + delta);
 
+      setOrderSummary((currentSummary) => {
+        if (!currentSummary) {
+          return currentSummary;
+        }
+
+        const matchedOption = addOnItems.find(
+          (option) => `${option.groupTitle}:${option.label}` === key,
+        );
+
+        if (!matchedOption) {
+          return currentSummary;
+        }
+
+        const remainingItems = currentSummary.items.filter(
+          (item) =>
+            !(
+              item?.isAddOn &&
+              item?.parentMenuItemId === menuItem.id &&
+              item?.addOnKey === key
+            ),
+        );
+
+        if (nextValue === 0) {
+          return {
+            ...currentSummary,
+            items: remainingItems,
+          };
+        }
+
+        return {
+          ...currentSummary,
+          items: [...remainingItems, buildAddOnLineItem(matchedOption, nextValue, key)],
+        };
+      });
+
       if (nextValue === 0) {
         const { [key]: _removed, ...remaining } = current;
         return remaining;
@@ -587,21 +651,7 @@ export default function MenuDetailsPage() {
           return null;
         }
 
-        return {
-          id: `addon-${menuItem.id}-${key}-${Date.now()}`,
-          productId: matchedOption.productId ?? matchedOption.id,
-          addOnKey: key,
-          parentMenuItemId: menuItem.id,
-          name: matchedOption.label,
-          quantity,
-          serves: quantity,
-          totalServes: quantity,
-          unitPrice: Number(matchedOption.price),
-          price: Number(matchedOption.price) * quantity,
-          pricingType: "fixed",
-          isAddOn: true,
-          details: [`Qty: ${quantity}`, "Add-on item"],
-        };
+        return buildAddOnLineItem(matchedOption, quantity, key);
       })
       .filter(Boolean);
 
@@ -653,7 +703,17 @@ export default function MenuDetailsPage() {
         minimumPersons,
         Number(current.personCount ?? minimumPersons),
       ),
-      items: [summaryItem, ...syncedAddOnItems, ...current.items],
+      items: [
+        summaryItem,
+        ...syncedAddOnItems,
+        ...current.items.filter(
+          (item) =>
+            !(
+              (item?.productId === menuItem.id && !item?.isAddOn) ||
+              (item?.isAddOn && item?.parentMenuItemId === menuItem.id)
+            ),
+        ),
+      ],
     }));
 
     showSuccessToast(t("menu.addedToCart", { name: itemName }));
