@@ -840,7 +840,8 @@ const no = {
     additionalDetails: "Flere detaljer",
     sending: "Sender...",
     sendRequest: "Send forespørsel",
-    noLongerModifiable: "Denne bestillingen kan ikke lenger endres.",
+    noLongerModifiable:
+      "Denne bestillingen kan ikke lenger endres her. Hvis du fortsatt trenger hjelp, kan du kontakte support, så hjelper vi deg videre.",
     loadFailed: "Kunne ikke laste gjeldende bestillingsdetaljer.",
     invalidIdMessage: "Denne bestillingen har ikke en gyldig ID for endring.",
     failedTitle: "Endring av bestilling mislyktes",

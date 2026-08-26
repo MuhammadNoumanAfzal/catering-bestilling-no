@@ -836,7 +836,8 @@ const en = {
     additionalDetails: "Additional Details",
     sending: "Sending...",
     sendRequest: "Send Request",
-    noLongerModifiable: "This order can no longer be modified.",
+    noLongerModifiable:
+      "This order is no longer available for change requests. If you still need help, please contact support and we will guide you.",
     loadFailed: "Unable to load current order details.",
     invalidIdMessage: "This order does not have a valid id for modification.",
     failedTitle: "Modify order failed",
