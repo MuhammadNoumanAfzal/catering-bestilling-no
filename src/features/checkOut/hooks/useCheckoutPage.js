@@ -137,6 +137,27 @@ function hasMeaningfulAddressValue(value) {
   return Boolean(`${value ?? ""}`.trim());
 }
 
+function shouldOpenDeliveryAddressEditor(message) {
+  const normalizedMessage = `${message ?? ""}`.toLowerCase();
+
+  return (
+    normalizedMessage.includes("delivery address") ||
+    normalizedMessage.includes("delivery postal code") ||
+    normalizedMessage.includes("delivery city") ||
+    normalizedMessage.includes("does not deliver to postal code")
+  );
+}
+
+function shouldOpenInvoiceAddressEditor(message) {
+  const normalizedMessage = `${message ?? ""}`.toLowerCase();
+
+  return (
+    normalizedMessage.includes("invoice address") ||
+    normalizedMessage.includes("invoice postal code") ||
+    normalizedMessage.includes("invoice city")
+  );
+}
+
 function getCartMinimumPersonCount(cart) {
   const items = Array.isArray(cart?.orderSummary?.items)
     ? cart.orderSummary.items
@@ -867,19 +888,11 @@ export function useCheckoutPage() {
     if (validationError) {
       setCheckoutErrorMessage(validationError);
 
-      if (
-        validationError.includes("delivery address") ||
-        validationError.includes("delivery postal code") ||
-        validationError.includes("delivery city")
-      ) {
+      if (shouldOpenDeliveryAddressEditor(validationError)) {
         setIsDeliveryAddressEditing(true);
       }
 
-      if (
-        validationError.includes("invoice address") ||
-        validationError.includes("invoice postal code") ||
-        validationError.includes("invoice city")
-      ) {
+      if (shouldOpenInvoiceAddressEditor(validationError)) {
         if (formState.invoiceSameAsDelivery) {
           setIsDeliveryAddressEditing(true);
         } else {
@@ -894,6 +907,19 @@ export function useCheckoutPage() {
     if (blockingAvailabilityIssues.length > 0) {
       const message = blockingAvailabilityIssues[0];
       setCheckoutErrorMessage(message);
+
+      if (shouldOpenDeliveryAddressEditor(message)) {
+        setIsDeliveryAddressEditing(true);
+      }
+
+      if (shouldOpenInvoiceAddressEditor(message)) {
+        if (formState.invoiceSameAsDelivery) {
+          setIsDeliveryAddressEditing(true);
+        } else {
+          setIsInvoiceAddressEditing(true);
+        }
+      }
+
       await showAuthErrorAlert(
         message,
         i18n.t("checkout.selectedSlotUnavailableTitle"),
