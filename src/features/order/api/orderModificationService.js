@@ -38,7 +38,7 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
       latestModificationRequest {
         id
         status
-        resolvedOn
+        createdOn
       }
       pendingVendorAdjustment {
         id
@@ -62,7 +62,7 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
       latestVendorAdjustment {
         id
         status
-        resolvedOn
+        createdOn
         customerResponse
       }
     }
@@ -114,7 +114,7 @@ const APPROVE_VENDOR_ORDER_ADJUSTMENT_MUTATION = `
       adjustment {
         id
         status
-        resolvedOn
+        createdOn
       }
     }
   }
@@ -129,7 +129,7 @@ const REJECT_VENDOR_ORDER_ADJUSTMENT_MUTATION = `
         id
         status
         customerResponse
-        resolvedOn
+        createdOn
       }
     }
   }
@@ -148,7 +148,7 @@ function mapModificationRequest(request) {
     id: request.id,
     status: request.status || "",
     createdOn: request.createdOn || "",
-    resolvedOn: request.resolvedOn || "",
+    resolvedOn: request.resolvedOn || request.createdOn || "",
     requestedChanges: {
       eventDate: request.requestedChanges?.eventDate || "",
       eventTime: request.requestedChanges?.eventTime || "",
@@ -194,7 +194,7 @@ function mapVendorAdjustment(adjustment) {
     oldTotal: adjustment.oldTotal ?? null,
     newTotal: adjustment.newTotal ?? null,
     createdOn: adjustment.createdOn || "",
-    resolvedOn: adjustment.resolvedOn || "",
+    resolvedOn: adjustment.resolvedOn || adjustment.createdOn || "",
     customerResponse: adjustment.customerResponse || "",
   };
 }
