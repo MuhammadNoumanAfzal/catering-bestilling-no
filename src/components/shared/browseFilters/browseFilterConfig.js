@@ -120,7 +120,7 @@ export const FILTER_BAR_VARIANTS = {
       "grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:flex xl:flex-wrap xl:items-center xl:gap-3",
     chipContainerClassName: "relative min-w-0",
     chipButtonClassName:
-      "type-subpara inline-flex h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-full border px-4 text-[12px] font-semibold transition duration-200 sm:text-[13px] xl:w-auto xl:min-w-[140px] xl:px-5",
+      "type-subpara inline-flex h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-full border px-4 text-[12px] font-semibold transition duration-200 sm:text-[13px] xl:w-auto xl:min-w-[150px] xl:px-5",
     inactiveChipClassName:
       "border-[#e7c7b2] bg-white text-[#7a4e36] shadow-[0_10px_22px_rgba(207,110,56,0.08)] hover:border-[#cf6e38] hover:bg-[#fff7f1]",
     applyButtonClassName:
