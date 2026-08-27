@@ -120,12 +120,12 @@ export default function HomeNavbar() {
 
   return (
     <header className="relative z-50 w-full">
-      <div className="flex items-center justify-between px-4 py-2 sm:px-6 md:px-10">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 md:px-10">
         <Link to="/" className="flex shrink-0 items-center">
           <img
             src="/home/logo (2).png"
             alt="GoCatering"
-            className="h-10 w-auto object-contain sm:h-12 md:h-34"
+            className="h-7 w-auto object-contain sm:h-12 md:h-34"
           />
         </Link>
 
@@ -280,11 +280,11 @@ export default function HomeNavbar() {
 
         <button
           onClick={() => setOpen((prev) => !prev)}
-          className="flex h-12 w-12 cursor-pointer items-center justify-center md:hidden"
+          className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center md:hidden"
           aria-label={open ? t("nav.closeMenu") : t("nav.openMenu")}
           aria-expanded={open}
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#eadfd7] bg-white text-[22px] text-[#2f2f2f] shadow-[0_6px_16px_rgba(35,22,12,0.08)] transition duration-300 hover:scale-105 hover:border-[#d9c7ba] hover:text-[#c85f33]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#eadfd7] bg-white text-[20px] text-[#2f2f2f] shadow-[0_6px_16px_rgba(35,22,12,0.08)] transition duration-300 hover:scale-105 hover:border-[#d9c7ba] hover:text-[#c85f33]">
             {open ? <FiX /> : <FiMenu />}
           </span>
         </button>
