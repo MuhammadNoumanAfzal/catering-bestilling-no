@@ -40,7 +40,7 @@ export default function Footer() {
               <Link to="/" className="inline-flex shrink-0">
                 <img
                   src="/home/logo2.png"
-                  alt="Cateringbestilling"
+                  alt="GoCatering"
                   className="h-12 w-auto object-contain"
                 />
               </Link>

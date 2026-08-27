@@ -13,9 +13,6 @@ export default function ClientLanguageSettingsSection({ onChangeLanguage }) {
     >
       <div className="flex flex-col gap-3 rounded-[18px] border border-[#eadfd5] bg-[#fffaf6] p-4">
         <LanguageSwitcher onChange={onChangeLanguage} />
-        <p className="text-sm leading-6 text-[#6b5d53]">
-          {t("settings.languageDescription")}
-        </p>
       </div>
     </SettingsSection>
   );

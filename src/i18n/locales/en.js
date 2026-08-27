@@ -65,7 +65,7 @@ const en = {
     headline: "Modern catering, minus the friction.",
     description:
       "Discover local food partners for office lunches, meetings, and private events.",
-    copyright: "\u00a9 2026 Cateringbestilling",
+    copyright: "\u00a9 2026 GoCatering",
   },
   browse: {
     tabs: {
@@ -243,7 +243,7 @@ const en = {
     accountBadge: "Account",
     title: "Settings",
     description:
-      "Manage whether Catering bestilling.no contacts you by email, text message, or push notification.",
+      "Manage whether GoCatering contacts you by email, text message, or push notification.",
     profilePhotoTitle: "Profile photo",
     profilePhotoSubtitle:
       "Upload a clear image for your account and keep your profile looking polished across the app.",
@@ -275,8 +275,6 @@ const en = {
     languageTitle: "Language",
     languageSubtitle:
       "Choose the language used for hardcoded client-side content throughout the app.",
-    languageDescription:
-      "API-driven names and descriptions stay in their original language until bilingual API support is added.",
     saveHeading: "Save changes",
     reset: "Reset",
     save: "Save changes",
@@ -289,12 +287,12 @@ const en = {
   },
   legal: {
     termsEyebrow: "Terms & Conditions",
-    termsTitle: "Terms for ordering through Cateringbestilling",
+    termsTitle: "Terms for ordering through GoCatering",
     termsIntro:
-      "These terms explain how customers use the client-side ordering platform, place catering requests, and interact with listed vendors through Cateringbestilling.",
+      "These terms explain how customers use the client-side ordering platform, place catering requests, and interact with listed vendors through GoCatering.",
     usingPlatformTitle: "Using the platform",
     usingPlatformBodyOne:
-      "You may use Cateringbestilling to browse menus, compare vendors, submit order requests, and manage your account details.",
+      "You may use GoCatering to browse menus, compare vendors, submit order requests, and manage your account details.",
     usingPlatformBodyTwo:
       "You agree to provide accurate booking, contact, and delivery information whenever you create an account or place an order.",
     ordersTitle: "Orders and availability",
@@ -318,7 +316,7 @@ const en = {
     supportBodyTwo:
       "Questions about these terms can be directed to the support contact information published on the platform.",
     privacyEyebrow: "Privacy Policy",
-    privacyTitle: "How Cateringbestilling handles customer information",
+    privacyTitle: "How GoCatering handles customer information",
     privacyIntro:
       "This privacy policy describes the types of information collected through the client-side ordering experience and how that information supports account access, ordering, delivery, and customer support.",
     collectTitle: "Information we collect",
@@ -427,7 +425,7 @@ const en = {
     removedSaved: "{{name}} removed from saved restaurants",
     saveFailed: "Save vendor failed",
     updateSavedFailed: "Unable to update saved vendor right now.",
-    shareText: "Check out {{name}} on Lunsjavtale.",
+    shareText: "Check out {{name}} on GoCatering.",
     sharedSuccess: "{{name}} shared successfully",
     linkCopied: "Restaurant link copied to clipboard",
     sharingUnsupported: "Sharing is not supported on this device",
@@ -767,7 +765,7 @@ const en = {
     updatingTotals: "Updating totals in the background...",
   },
   orderConfirmed: {
-    logoAlt: "Cateringbestilling",
+    logoAlt: "GoCatering",
     placedSuccessfully: "Order placed successfully",
     heroTitle: "Your catering order has been placed",
     heroDescription:
@@ -853,7 +851,7 @@ const en = {
     },
   },
   vendorPanel: {
-    logoAlt: "Cateringbestilling",
+    logoAlt: "GoCatering",
     defaultUser: "Vendor User",
     manageSubtitle: "Manage your restaurants and operations",
     loggedOutSuccess: "Logged out successfully",
@@ -1502,7 +1500,7 @@ const en = {
       individualPackaging: "Individual Packaging",
       individualPackagingDescription: "Restaurants that offer individually packaged items",
       new: "New",
-      newDescription: "Restaurants that are new to Lunsjavtale",
+      newDescription: "Restaurants that are new to GoCatering",
       smallBusiness: "Small business",
       budget: "Budget",
       budgetPerPerson: "Budget per person",
