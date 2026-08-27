@@ -8,7 +8,7 @@ export default function BrowseTabs({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="mx-auto w-full max-w-[440px] rounded-[18px] border border-[#decdbd] bg-[linear-gradient(180deg,#fbf6ef_0%,#efe2d3_100%)] p-1.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_10px_24px_rgba(102,54,26,0.08)] md:max-w-[450px] md:rounded-[24px]">
+    <div className="mx-auto w-full max-w-[440px] rounded-[16px] border border-[#decdbd] bg-[linear-gradient(180deg,#fbf6ef_0%,#efe2d3_100%)] p-1 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_10px_24px_rgba(102,54,26,0.08)] sm:p-1.5 md:max-w-[450px] md:rounded-[24px]">
       <div
         className={`relative grid grid-cols-2 ${gapless ? "gap-0" : "gap-1.5"}`}
       >
@@ -21,7 +21,7 @@ export default function BrowseTabs({
             key={tab.id}
             to={tab.href}
             className={({ isActive }) =>
-              `flex min-h-[42px] items-center justify-center px-3 py-2 text-center transition md:min-h-[38px] md:px-5 ${
+              `flex min-h-[40px] items-center justify-center px-2.5 py-2 text-center transition sm:px-3 md:min-h-[38px] md:px-5 ${
                 isActive
                   ? "bg-[#c85f33] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_8px_18px_rgba(176,84,39,0.2)]"
                   : "bg-transparent text-[#5d3924] hover:bg-[#f7ebde]"
@@ -34,7 +34,7 @@ export default function BrowseTabs({
               }`
             }
           >
-            <span className="text-[12px] font-semibold leading-[1.15] sm:text-[13px] md:text-[16px]">
+            <span className="text-[10px] font-semibold leading-[1.15] sm:text-[13px] md:text-[16px]">
               {t(tab.labelKey)}
             </span>
           </NavLink>

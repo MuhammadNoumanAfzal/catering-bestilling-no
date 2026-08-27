@@ -27,12 +27,12 @@ export default function BrowseMenuSection({
 }) {
   const { t } = useTranslation();
   return (
-    <section id={sectionId} className="mt-12 ">
-      <div className="mx-auto px-4 w-full max-w-7xl">
-        <div className="mb-4 flex items-center justify-between">
+    <section id={sectionId} className="mt-8 sm:mt-12">
+      <div className="mx-auto w-full max-w-7xl px-0 sm:px-4">
+        <div className="mb-4 flex items-start justify-between gap-3 sm:items-center">
           <h2 className="type-h3 font-semibold text-[#191919]">{title}</h2>
-          <div className="flex items-center gap-3">
-            <p className="text-sm text-[#777]">
+          <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <p className="text-xs text-[#777] sm:text-sm">
               {t("browse.itemsCount", { count: totalItems ?? items.length })}
             </p>
 
@@ -40,7 +40,7 @@ export default function BrowseMenuSection({
               <button
                 type="button"
                 onClick={onSeeAllClick}
-                className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#d9d1c7] px-5 py-2 text-sm font-medium text-[#191919] transition hover:border-[#c46a35] hover:text-[#c46a35]"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-[#d9d1c7] px-4 py-2 text-xs font-medium text-[#191919] transition hover:border-[#c46a35] hover:text-[#c46a35] sm:px-5 sm:text-sm"
               >
                 {seeAllLabel || t("browse.seeAll")}
               </button>
@@ -49,7 +49,7 @@ export default function BrowseMenuSection({
         </div>
 
         {items.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 xl:grid-cols-3 ">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
             {items.map((item) => (
               <MenuCard key={item.id} {...item} />
             ))}

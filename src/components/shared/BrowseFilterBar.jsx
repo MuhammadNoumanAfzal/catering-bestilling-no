@@ -257,7 +257,7 @@ export default function BrowseFilterBar({
 
   return (
     <>
-      <div className="sticky top-[76px] z-30 bg-white/95 pb-2 backdrop-blur-[6px]">
+      <div className="sticky top-[68px] z-30 bg-white/95 pb-2 backdrop-blur-[6px] sm:top-[76px]">
         <div className={styles.containerClassName}>
           <BrowseFilterControls
             styles={styles}
