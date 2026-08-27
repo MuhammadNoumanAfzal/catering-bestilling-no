@@ -33,7 +33,7 @@ export default function VendorSidebar() {
     <aside className="hide-scrollbar flex w-full flex-col overflow-y-auto rounded-[28px] bg-[#cb6033] px-3 py-3 text-white shadow-[0_18px_38px_rgba(146,62,26,0.22)] lg:h-screen lg:max-w-[280px] lg:rounded-none lg:px-5 lg:py-6 lg:shadow-none">
       <div className="flex items-center justify-center rounded-[24px] border border-white/20 bg-white/8 px-4 py-3 lg:rounded-[28px] lg:px-5 lg:py-5">
         <img
-          src="/home/logo2.png"
+          src="/home/whiteLogo.png"
           alt={t("vendorPanel.logoAlt")}
           className="h-12 w-auto object-contain sm:h-14 lg:h-16"
         />

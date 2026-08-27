@@ -45,7 +45,6 @@ export default function ClientProfilePhotoSection({
   return (
     <SettingsSection
       id="profile-photo"
-      subtitle={t("settings.profilePhotoSubtitle")}
       title={t("settings.profilePhotoTitle")}
     >
       <div className="overflow-hidden rounded-[26px] border border-[#ecdcd0] bg-[linear-gradient(135deg,#fff8f3_0%,#fffdfb_50%,#fff3e7_100%)] shadow-[0_16px_38px_rgba(69,41,18,0.06)]">

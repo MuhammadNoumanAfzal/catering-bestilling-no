@@ -8,6 +8,7 @@ import {
   isFirstCustomerLogin,
   markCustomerFirstLoginSeen,
 } from "../../../../lib/auth/authSession";
+import { fetchSettingsProfile } from "../../../vendorDashboard/settings/api";
 import {
   AuthButton,
   AuthCard,
@@ -19,6 +20,8 @@ import { useAuth } from "../../hooks/useAuth";
 
 const VENDOR_REGISTER_URL =
   "https://catering-bestilling-no-vendor-panel.vercel.app/";
+const VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY =
+  "vendor-dashboard-onboarding-guide-pending";
 
 function resolvePostSignInDestination(state) {
   const from = state?.from;
@@ -32,6 +35,50 @@ function resolvePostSignInDestination(state) {
   }
 
   return "/";
+}
+
+function shouldCheckVendorDashboardOnboarding(user, state) {
+  const fromPath = `${state?.from?.pathname ?? ""}`.trim();
+  const hasVendorRouteIntent = fromPath.startsWith("/vendor-dashboard");
+  const hasVendorStatus = Boolean(
+    `${user?.vendorStatus ?? user?.applicationStatus ?? ""}`.trim(),
+  );
+  const hasOnboardingFlag =
+    typeof window !== "undefined" &&
+    window.sessionStorage.getItem(VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY) ===
+      "true";
+
+  return hasVendorRouteIntent || hasVendorStatus || hasOnboardingFlag;
+}
+
+function isVendorProfileComplete(profile) {
+  return Number(profile?.profileCompletionPercent ?? 0) >= 100;
+}
+
+async function resolveVendorDashboardDestination(user, state) {
+  if (!shouldCheckVendorDashboardOnboarding(user, state)) {
+    return null;
+  }
+
+  try {
+    const profile = await fetchSettingsProfile();
+
+    if (
+      typeof window !== "undefined" &&
+      isVendorProfileComplete(profile)
+    ) {
+      window.sessionStorage.removeItem(VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY);
+    }
+
+    return isVendorProfileComplete(profile)
+      ? "/vendor-dashboard"
+      : "/vendor-dashboard/settings";
+  } catch {
+    const fromPath = `${state?.from?.pathname ?? ""}`.trim();
+    return fromPath.startsWith("/vendor-dashboard")
+      ? "/vendor-dashboard/settings"
+      : null;
+  }
 }
 
 export default function SignInPage() {
@@ -73,9 +120,21 @@ export default function SignInPage() {
           name: result.user.firstName || result.user.email,
         }),
       );
-      navigate(firstCustomerLogin ? "/settings" : resolvePostSignInDestination(location.state), {
-        replace: true,
-      });
+
+      const vendorDashboardDestination = await resolveVendorDashboardDestination(
+        result.user,
+        location.state,
+      );
+
+      navigate(
+        vendorDashboardDestination ||
+          (firstCustomerLogin
+            ? "/settings"
+            : resolvePostSignInDestination(location.state)),
+        {
+          replace: true,
+        },
+      );
     } catch (error) {
       await showAuthErrorAlert(
         error instanceof Error ? error.message : t("auth.signIn.errorMessage"),
