@@ -102,27 +102,29 @@ export function translateBrowseOptionLabel(t, value) {
 export const FILTER_BAR_VARIANTS = {
   default: {
     containerClassName:
-      "relative mt-4 flex flex-col gap-2.5 lg:mt-5 lg:flex-row lg:items-center lg:gap-2",
+      "relative mt-4 flex flex-col gap-3 overflow-visible rounded-[30px] border border-[#f0d3bf] bg-[linear-gradient(135deg,#fff9f5_0%,#fff2e8_45%,#fffaf6_100%)] px-3 py-3 shadow-[0_24px_50px_rgba(207,110,56,0.18)] lg:mt-5 lg:flex-row lg:items-center lg:gap-3 lg:px-4",
     chipsWrapperClassName:
-      "grid w-full grid-cols-2 gap-2 lg:flex lg:min-w-0 lg:flex-1 lg:items-center lg:gap-2",
-    chipContainerClassName: "relative min-w-0 lg:flex-1",
+      "grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:flex xl:min-w-0 xl:flex-1 xl:items-center xl:gap-3",
+    chipContainerClassName: "relative min-w-0 xl:flex-1",
     chipButtonClassName:
-      "type-subpara inline-flex h-9 w-full items-center justify-between gap-2 rounded-full border px-3 text-[12px] font-semibold transition sm:h-10 lg:px-4",
-    inactiveChipClassName: "border-[#ddd5cc] bg-white text-[#666666]",
+      "type-subpara inline-flex h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-full border px-4 text-[12px] font-semibold transition duration-200 sm:text-[13px] xl:px-5",
+    inactiveChipClassName:
+      "border-[#e7c7b2] bg-white text-[#7a4e36] shadow-[0_10px_22px_rgba(207,110,56,0.08)] hover:border-[#cf6e38] hover:bg-[#fff7f1]",
     applyButtonClassName:
-      "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-6 text-white transition hover:bg-[#b85e2a] lg:w-auto lg:shrink-0 lg:px-8",
+      "type-h6 inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-full border border-[#e7a77e] bg-[linear-gradient(135deg,#cf6e38_0%,#e6905d_100%)] px-6 text-white shadow-[0_12px_28px_rgba(207,110,56,0.24)] transition duration-200 hover:brightness-105 xl:w-auto xl:min-w-[122px] xl:shrink-0 xl:px-8",
   },
   preview: {
     containerClassName:
-      "mt-4 flex flex-col gap-2.5 lg:mt-5 lg:flex-wrap lg:flex-row lg:items-center lg:justify-between lg:gap-2",
+      "mt-4 flex flex-col gap-3 overflow-visible rounded-[28px] border border-[#f0d3bf] bg-[linear-gradient(135deg,#fff9f5_0%,#fff2e8_45%,#fffaf6_100%)] px-3 py-3 shadow-[0_22px_46px_rgba(207,110,56,0.16)] lg:mt-5 lg:flex-wrap lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:px-4",
     chipsWrapperClassName:
-      "grid w-full grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center lg:gap-2",
+      "grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:flex xl:flex-wrap xl:items-center xl:gap-3",
     chipContainerClassName: "relative min-w-0",
     chipButtonClassName:
-      "type-subpara inline-flex h-9 w-full items-center justify-between gap-2 rounded-full border px-3 text-[12px] font-semibold transition sm:h-10 lg:w-auto lg:min-w-[132px] lg:px-4",
-    inactiveChipClassName: "border-[#bdbdbd] bg-white text-[#666666]",
+      "type-subpara inline-flex h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-full border px-4 text-[12px] font-semibold transition duration-200 sm:text-[13px] xl:w-auto xl:min-w-[140px] xl:px-5",
+    inactiveChipClassName:
+      "border-[#e7c7b2] bg-white text-[#7a4e36] shadow-[0_10px_22px_rgba(207,110,56,0.08)] hover:border-[#cf6e38] hover:bg-[#fff7f1]",
     applyButtonClassName:
-      "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-5 text-white transition hover:bg-[#b85e2a] sm:w-auto sm:self-end lg:h-8",
+      "type-h6 inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-full border border-[#e7a77e] bg-[linear-gradient(135deg,#cf6e38_0%,#e6905d_100%)] px-5 text-white shadow-[0_12px_28px_rgba(207,110,56,0.24)] transition duration-200 hover:brightness-105 sm:w-auto sm:self-end xl:min-w-[118px]",
   },
 };
 

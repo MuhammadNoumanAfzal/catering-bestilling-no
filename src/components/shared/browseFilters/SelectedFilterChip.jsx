@@ -7,14 +7,14 @@ export default function SelectedFilterChip({
 }) {
   const toneClassName =
     tone === "highlight"
-      ? "border-[#bfe5af] bg-[#d8f1ca] text-[#1f1f1f]"
-      : "border-[#e2dfda] bg-[#f3f1ee] text-[#1f1f1f]";
+      ? "border-[#f1d29a] bg-[#fff4da] text-[#8b5a12]"
+      : "border-[#f0d7c6] bg-[#fff3ec] text-[#6d4a35]";
 
   return (
     <button
       type="button"
       onClick={onRemove}
-      className={`type-subpara inline-flex h-9 items-center gap-2 rounded-[10px] border px-3 transition hover:opacity-90 ${toneClassName}`}
+      className={`type-subpara inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border px-3 transition hover:opacity-90 ${toneClassName}`}
     >
       <span>{label}</span>
       <FiX className="text-[14px]" />

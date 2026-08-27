@@ -257,7 +257,7 @@ export default function BrowseFilterBar({
 
   return (
     <>
-      <div className="sticky top-[68px] z-30 bg-white/95 pb-2 backdrop-blur-[6px] sm:top-[76px]">
+      <div className="sticky top-[68px] z-30 bg-white/92 pb-3 backdrop-blur-[10px] sm:top-[76px]">
         <div className={styles.containerClassName}>
           <BrowseFilterControls
             styles={styles}
@@ -287,7 +287,9 @@ export default function BrowseFilterBar({
             type="button"
             onClick={handleApplyClick}
             className={`${styles.applyButtonClassName} ${
-              showAppliedState ? "bg-[#2f8f57] hover:bg-[#2a7f4d]" : ""
+              showAppliedState
+                ? "!border-[#d88c5d] !bg-[linear-gradient(135deg,#b95f2d_0%,#cf6e38_100%)]"
+                : ""
             }`}
           >
             {showAppliedState ? t("browse.applied") : t("browse.apply")}

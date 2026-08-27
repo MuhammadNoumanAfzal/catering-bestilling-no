@@ -8,7 +8,7 @@ export default function SelectedFilterChipsRow({ chips, onClearAll }) {
   }
 
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#efe9e2] pt-3">
+    <div className="mt-3 flex flex-wrap items-center gap-2 rounded-[22px] border border-[#efd8c8] bg-[#fffaf6] px-3 py-3 shadow-[0_10px_24px_rgba(207,110,56,0.08)]">
       {chips.map((chip) => (
         <SelectedFilterChip
           key={chip.id}
@@ -21,7 +21,7 @@ export default function SelectedFilterChipsRow({ chips, onClearAll }) {
       <button
         type="button"
         onClick={onClearAll}
-        className="type-subpara inline-flex h-9 items-center rounded-full border border-[#c9c4be] bg-white px-4 text-[#1f1f1f] transition hover:bg-[#f7f2ec]"
+        className="type-subpara inline-flex h-9 cursor-pointer items-center rounded-full border border-[#e5c8b4] bg-white px-4 text-[#7a4e36] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
       >
         {t("browse.clearAllFilters")}
       </button>
