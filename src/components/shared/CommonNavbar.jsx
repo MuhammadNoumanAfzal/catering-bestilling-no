@@ -360,7 +360,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
           <Link to="/" className="flex shrink-0 items-center self-center">
             <img
               src="/home/logo (2).png"
-              alt="Lunsjavtale"
+              alt="GoCatering"
               className="h-28 w-auto object-contain"
             />
           </Link>

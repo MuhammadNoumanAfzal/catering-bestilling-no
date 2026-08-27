@@ -65,7 +65,7 @@ const no = {
     headline: "Moderne catering, uten friksjon.",
     description:
       "Oppdag lokale matpartnere for kontorlunsjer, måter og private arrangementer.",
-    copyright: "\u00a9 2026 Cateringbestilling",
+    copyright: "\u00a9 2026 GoCatering",
   },
   browse: {
     tabs: {
@@ -87,7 +87,7 @@ const no = {
       imCaterer: "Jeg er caterer",
     },
     layout: {
-      badge: "Lunsjavtale-tilgang",
+      badge: "GoCatering-tilgang",
       title: "Enkel tilgang til bestillinger, leverandører og teamlunsjer.",
       description:
         "Et ryddigere sted å logge inn, opprette konto og komme tilbake til cateringflyten din.",
@@ -246,7 +246,7 @@ const no = {
     accountBadge: "Konto",
     title: "Innstillinger",
     description:
-      "Administrer om Catering bestilling.no kontakter deg via e-post, tekstmelding eller push-varsler.",
+      "Administrer om GoCatering kontakter deg via e-post, tekstmelding eller push-varsler.",
     profilePhotoTitle: "Profilbilde",
     profilePhotoSubtitle:
       "Last opp et tydelig bilde for kontoen din og gi profilen et renere uttrykk i hele appen.",
@@ -292,12 +292,12 @@ const no = {
   },
   legal: {
     termsEyebrow: "Vilkår og betingelser",
-    termsTitle: "Vilkår for bestilling gjennom Cateringbestilling",
+    termsTitle: "Vilkår for bestilling gjennom GoCatering",
     termsIntro:
-      "Disse vilkårene forklarer hvordan kunder bruker bestillingsplattformen på klientsiden, legger inn cateringforespårsler og samhandler med oppførte leverandører gjennom Cateringbestilling.",
+      "Disse vilkårene forklarer hvordan kunder bruker bestillingsplattformen på klientsiden, legger inn cateringforespørsler og samhandler med oppførte leverandører gjennom GoCatering.",
     usingPlatformTitle: "Bruk av plattformen",
     usingPlatformBodyOne:
-      "Du kan bruke Cateringbestilling til å bla gjennom menyer, sammenligne leverandører, sende bestillingsforespårsler og administrere kontodetaljene dine.",
+      "Du kan bruke GoCatering til å bla gjennom menyer, sammenligne leverandører, sende bestillingsforespørsler og administrere kontodetaljene dine.",
     usingPlatformBodyTwo:
       "Du samtykker i å oppgi nåyaktig booking-, kontakt- og leveringsinformasjon når du oppretter en konto eller legger inn en bestilling.",
     ordersTitle: "Bestillinger og tilgjengelighet",
@@ -321,7 +321,7 @@ const no = {
     supportBodyTwo:
       "Spårsmål om disse vilkårene kan rettes til kontaktinformasjonen for support som er publisert på plattformen.",
     privacyEyebrow: "Personvernerklæring",
-    privacyTitle: "Hvordan Cateringbestilling håndterer kundeinformasjon",
+    privacyTitle: "Hvordan GoCatering håndterer kundeinformasjon",
     privacyIntro:
       "Denne personvernerklæringen beskriver hvilke typer informasjon som samles inn gjennom bestillingsopplevelsen på klientsiden og hvordan denne informasjonen brukes til kontotilgang, bestilling, levering og kundestøtte.",
     collectTitle: "Informasjon vi samler inn",
@@ -431,7 +431,7 @@ const no = {
     removedSaved: "{{name}} ble fjernet fra lagrede restauranter",
     saveFailed: "Kunne ikke lagre leverandør",
     updateSavedFailed: "Kunne ikke oppdatere lagret leverandør akkurat nå.",
-    shareText: "Sjekk ut {{name}} på Lunsjavtale.",
+    shareText: "Sjekk ut {{name}} på GoCatering.",
     sharedSuccess: "{{name}} ble delt",
     linkCopied: "Restaurantlenken ble kopiert",
     sharingUnsupported: "Deling støttes ikke på denne enheten",
@@ -644,7 +644,7 @@ const no = {
     logoutConfirm: "Logg ut",
     staySignedIn: "Forbli innlogget",
     orderPlacedTitle: "Bestilling lagt inn",
-    orderPlacedText: "Cateringbestillingen din ble sendt.",
+    orderPlacedText: "Bestillingen din hos GoCatering ble sendt.",
     signInRequiredTitle: "Innlogging kreves",
     signInRequiredText:
       "Logg inn eller opprett en konto før du legger inn en bestilling.",
@@ -771,9 +771,9 @@ const no = {
     updatingTotals: "Oppdaterer totalene i bakgrunnen...",
   },
   orderConfirmed: {
-    logoAlt: "Cateringbestilling",
+    logoAlt: "GoCatering",
     placedSuccessfully: "Bestillingen ble lagt inn",
-    heroTitle: "Cateringbestillingen din er lagt inn",
+    heroTitle: "Bestillingen din hos GoCatering er lagt inn",
     heroDescription:
       "Vi har mottatt forespørselen din og sendt den til leverandøren. Du vil snart motta en e-postbekreftelse med de endelige bestillingsdetaljene.",
     backToHome: "Tilbake til hjem",
@@ -1290,7 +1290,7 @@ const no = {
     },
   },
   vendorPanel: {
-    logoAlt: "Cateringbestilling",
+    logoAlt: "GoCatering",
     defaultUser: "Leverandørbruker",
     manageSubtitle: "Administrer restaurantene og driften din",
     loggedOutSuccess: "Du er logget ut",
@@ -1559,7 +1559,7 @@ const no = {
       individualPackaging: "Individuell pakking",
       individualPackagingDescription: "Restauranter som tilbyr individuelt pakkede varer",
       new: "Ny",
-      newDescription: "Restauranter som er nye på Lunsjavtale",
+      newDescription: "Restauranter som er nye på GoCatering",
       smallBusiness: "Liten bedrift",
       budget: "Budsjett",
       budgetPerPerson: "Budsjett per person",

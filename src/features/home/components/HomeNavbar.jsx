@@ -124,7 +124,7 @@ export default function HomeNavbar() {
         <Link to="/" className="flex shrink-0 items-center">
           <img
             src="/home/logo (2).png"
-            alt="Lunsjavtale"
+            alt="GoCatering"
             className="h-10 w-auto object-contain sm:h-12 md:h-34"
           />
         </Link>

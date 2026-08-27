@@ -22,7 +22,7 @@ export default function CheckoutHeader() {
           <Link to="/" className="inline-flex cursor-pointer">
             <img
               src="/home/logo.png"
-              alt="Lunsjavtale"
+              alt="GoCatering"
               className="h-16 w-auto object-contain"
             />
           </Link>
