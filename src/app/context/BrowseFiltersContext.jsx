@@ -4,7 +4,39 @@ import {
   FILTER_DEFAULTS,
 } from "../../components/shared/browseFilters/browseFilterConfig";
 
-const BrowseFiltersContext = createContext(null);
+const noop = () => {};
+
+const defaultBrowseFiltersContextValue = {
+  attendeeCount: 0,
+  clearBrowseFilters: noop,
+  deliveryAddress: "",
+  deliveryDate: null,
+  deliveryTime: "",
+  eventName: "",
+  locationValue: "",
+  otherFilters: createDefaultOtherFilters(),
+  searchQuery: "",
+  selectedDietary: [],
+  selectedOffers: [],
+  selectedPricing: FILTER_DEFAULTS.pricing,
+  selectedRating: FILTER_DEFAULTS.rating,
+  selectedSort: FILTER_DEFAULTS.sort,
+  setAttendeeCount: noop,
+  setDeliveryAddress: noop,
+  setDeliveryDate: noop,
+  setDeliveryTime: noop,
+  setEventName: noop,
+  setLocationValue: noop,
+  setOtherFilters: noop,
+  setSelectedDietary: noop,
+  setSelectedOffers: noop,
+  setSelectedPricing: noop,
+  setSelectedRating: noop,
+  setSelectedSort: noop,
+  setSearchQuery: noop,
+};
+
+const BrowseFiltersContext = createContext(defaultBrowseFiltersContextValue);
 
 export function BrowseFiltersProvider({ children }) {
   const [attendeeCount, setAttendeeCount] = useState(0);
@@ -86,11 +118,5 @@ export function BrowseFiltersProvider({ children }) {
 }
 
 export function useBrowseFilters() {
-  const context = useContext(BrowseFiltersContext);
-
-  if (!context) {
-    throw new Error("useBrowseFilters must be used within BrowseFiltersProvider");
-  }
-
-  return context;
+  return useContext(BrowseFiltersContext);
 }

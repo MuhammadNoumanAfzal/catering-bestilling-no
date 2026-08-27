@@ -31,7 +31,7 @@ function BrowsePageLoader() {
   const { t } = useTranslation();
 
   return (
-    <section className="w-full px-6 py-12 md:px-20">
+    <section className="w-full px-4 py-8 sm:px-6 sm:py-10 md:px-20 md:py-12">
       <div className="mx-auto flex min-h-[48vh] w-full max-w-7xl items-center justify-center">
         <div className="relative flex w-full max-w-xl flex-col items-center overflow-hidden rounded-[32px] border border-[#eadfd7] bg-[linear-gradient(145deg,#fffaf6_0%,#fff2ea_52%,#fffdfb_100%)] px-8 py-14 text-center shadow-[0_24px_60px_rgba(35,22,12,0.12)]">
           <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(207,110,56,0.38),transparent)]" />
@@ -210,7 +210,7 @@ export default function BrowseCatalogView({
 
   if (error) {
     return (
-      <section className="w-full px-6 py-12 md:px-20">
+      <section className="w-full px-4 py-8 sm:px-6 sm:py-10 md:px-20 md:py-12">
         <div className="mx-auto w-full max-w-7xl rounded-[28px] border border-red-200 bg-red-50 px-6 py-8 text-center">
           <h3 className="type-h3 text-red-700">Unable to load browse page</h3>
           <h3 className="type-h3 text-red-700">{t("browse.loadErrorTitle")}</h3>
@@ -221,7 +221,7 @@ export default function BrowseCatalogView({
   }
 
   return (
-    <section className="w-full px-6 py-12 md:px-20">
+    <section className="w-full px-4 py-5 sm:px-6 sm:py-8 md:px-20 md:py-12">
       <div className="mx-auto w-full max-w-7xl">
         <BrowseTabs />
         <BrowseCategoryStrip
@@ -235,7 +235,7 @@ export default function BrowseCatalogView({
           resultsAnchorId="browse-results"
         />
         {isRefreshing ? (
-          <div className="mt-4 flex items-center gap-3 rounded-full border border-[#eadfd7] bg-[#fffaf6] px-4 py-2 text-sm text-[#7a6d61]">
+          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-[#eadfd7] bg-[#fffaf6] px-4 py-2 text-sm text-[#7a6d61] sm:rounded-full">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#cf6e38] border-t-transparent" />
             {t("browse.updatingResults")}
           </div>
@@ -251,12 +251,12 @@ export default function BrowseCatalogView({
       />
 
       {totalPages > 1 ? (
-        <div className="mx-auto mt-8 flex w-full max-w-7xl flex-wrap items-center justify-center gap-2">
+        <div className="mx-auto mt-6 flex w-full max-w-7xl flex-wrap items-center justify-center gap-2 sm:mt-8">
           <button
             type="button"
             onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
             disabled={safeCurrentPage === 1}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-full border px-3 py-2 text-sm font-semibold transition sm:px-4 ${
               safeCurrentPage === 1
                 ? "cursor-not-allowed border-[#ddd6cd] text-[#b5ada4]"
                 : "cursor-pointer border-[#d7cec3] text-[#2b2b2b] hover:border-[#c85f33] hover:text-[#c85f33]"
@@ -271,7 +271,7 @@ export default function BrowseCatalogView({
                 key={page}
                 type="button"
                 onClick={() => setCurrentPage(page)}
-                className={`inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition cursor-pointer ${
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition cursor-pointer sm:h-10 sm:w-10 ${
                   safeCurrentPage === page
                     ? "bg-[#c85f33] text-white"
                     : "border border-[#d7cec3] text-[#2b2b2b] hover:border-[#c85f33] hover:text-[#c85f33]"
@@ -288,7 +288,7 @@ export default function BrowseCatalogView({
               setCurrentPage((page) => Math.min(totalPages, page + 1))
             }
             disabled={safeCurrentPage === totalPages}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-full border px-3 py-2 text-sm font-semibold transition sm:px-4 ${
               safeCurrentPage === totalPages
                 ? "cursor-not-allowed border-[#ddd6cd] text-[#b5ada4]"
                 : "cursor-pointer border-[#d7cec3] text-[#2b2b2b] hover:border-[#c85f33] hover:text-[#c85f33]"

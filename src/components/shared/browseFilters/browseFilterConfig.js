@@ -102,24 +102,24 @@ export function translateBrowseOptionLabel(t, value) {
 export const FILTER_BAR_VARIANTS = {
   default: {
     containerClassName:
-      "relative mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-2",
+      "relative mt-4 flex flex-col gap-2.5 lg:mt-5 lg:flex-row lg:items-center lg:gap-2",
     chipsWrapperClassName:
       "grid w-full grid-cols-2 gap-2 lg:flex lg:min-w-0 lg:flex-1 lg:items-center lg:gap-2",
     chipContainerClassName: "relative min-w-0 lg:flex-1",
     chipButtonClassName:
-      "type-subpara inline-flex h-10 w-full items-center justify-between gap-2 rounded-full border px-3 font-semibold transition lg:px-4",
+      "type-subpara inline-flex h-9 w-full items-center justify-between gap-2 rounded-full border px-3 text-[12px] font-semibold transition sm:h-10 lg:px-4",
     inactiveChipClassName: "border-[#ddd5cc] bg-white text-[#666666]",
     applyButtonClassName:
       "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-6 text-white transition hover:bg-[#b85e2a] lg:w-auto lg:shrink-0 lg:px-8",
   },
   preview: {
     containerClassName:
-      "mt-5 flex flex-col gap-3 lg:flex-wrap lg:flex-row lg:items-center lg:justify-between lg:gap-2",
+      "mt-4 flex flex-col gap-2.5 lg:mt-5 lg:flex-wrap lg:flex-row lg:items-center lg:justify-between lg:gap-2",
     chipsWrapperClassName:
       "grid w-full grid-cols-2 gap-2 lg:flex lg:flex-wrap lg:items-center lg:gap-2",
     chipContainerClassName: "relative min-w-0",
     chipButtonClassName:
-      "type-subpara inline-flex h-10 w-full items-center justify-between gap-2 rounded-full border px-3 font-semibold transition lg:w-auto lg:min-w-[132px] lg:px-4",
+      "type-subpara inline-flex h-9 w-full items-center justify-between gap-2 rounded-full border px-3 text-[12px] font-semibold transition sm:h-10 lg:w-auto lg:min-w-[132px] lg:px-4",
     inactiveChipClassName: "border-[#bdbdbd] bg-white text-[#666666]",
     applyButtonClassName:
       "type-h6 inline-flex h-10 w-full items-center justify-center rounded-full bg-[#c96b33] px-5 text-white transition hover:bg-[#b85e2a] sm:w-auto sm:self-end lg:h-8",

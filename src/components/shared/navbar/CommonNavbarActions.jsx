@@ -53,13 +53,13 @@ export default function CommonNavbarActions({
   const userInitials = getUserInitials(user);
 
   return (
-    <div className="ml-auto" ref={actionMenuRef}>
-      <div className="flex items-center gap-2">
+    <div className="ml-auto shrink-0" ref={actionMenuRef}>
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <div className="relative" ref={notificationRef}>
           <button
             type="button"
             onClick={onNotificationToggle}
-            className={`relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] ${
+            className={`relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-11 sm:w-11 ${
               hasFreshNotification
                 ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
                 : "border-[#e6ddd5]"
@@ -67,7 +67,7 @@ export default function CommonNavbarActions({
             aria-label={t("nav.notifications")}
             aria-expanded={isNotificationOpen}
           >
-            <FiBell className="text-[18px]" />
+            <FiBell className="text-[16px] sm:text-[18px]" />
             {hasFreshNotification ? (
               <span className="absolute -right-1 -top-1 z-20 flex h-3.5 w-3.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#cf6e38] opacity-60" />
@@ -92,10 +92,10 @@ export default function CommonNavbarActions({
         <button
           type="button"
           onClick={onCheckoutClick}
-          className="relative inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33]"
+          className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-11 sm:w-11"
           aria-label={t("nav.goToCheckoutCart")}
         >
-          <FiShoppingCart className="text-[18px]" />
+          <FiShoppingCart className="text-[16px] sm:text-[18px]" />
           {cartItemCount > 0 ? (
             <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
               {cartItemCount}
@@ -107,11 +107,11 @@ export default function CommonNavbarActions({
           <button
             type="button"
             onClick={onToggleActionMenu}
-            className="flex cursor-pointer items-center gap-3 rounded-full border border-[#e6ddd5] bg-white px-2 py-1.5 shadow-sm transition hover:border-[#d9c7ba]"
+            className="flex cursor-pointer items-center gap-2 rounded-full border border-[#e6ddd5] bg-white px-1.5 py-1.5 shadow-sm transition hover:border-[#d9c7ba] sm:gap-3 sm:px-2"
             aria-label={t("nav.openMenu")}
             aria-expanded={isActionMenuOpen}
           >
-            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#fff1e9] text-[11px] font-bold text-[#c85f33]">
+            <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-[#fff1e9] text-[10px] font-bold text-[#c85f33] sm:h-8 sm:w-8 sm:text-[11px]">
               {avatarUrl ? (
                 <img
                   alt={user?.name || "User"}
@@ -131,7 +131,7 @@ export default function CommonNavbarActions({
                 Menu
               </span>
             )}
-            <FiMenu className="text-[18px] text-[#6a625c]" />
+            <FiMenu className="text-[16px] text-[#6a625c] sm:text-[18px]" />
           </button>
 
           {isActionMenuOpen ? (

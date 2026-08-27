@@ -348,10 +348,10 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
   };
 
   const headerClasses =
-    `sticky top-0 z-40 bg-white px-6 py-2 md:px-10 ${className}`.trim();
+    `sticky top-0 z-40 bg-white px-3 py-2 sm:px-4 md:px-6 lg:px-10 ${className}`.trim();
   const innerClasses = hideLogo
-    ? "grid w-full grid-cols-[1fr_auto] items-center gap-3 px-2 py-2"
-    : "grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 px-2 py-2";
+    ? "flex w-full items-center justify-between gap-2 py-1.5 sm:gap-3 sm:py-2 lg:grid lg:grid-cols-[1fr_auto]"
+    : "flex w-full items-center justify-between gap-2 py-1.5 sm:gap-3 sm:py-2 lg:grid lg:grid-cols-[auto_1fr_auto]";
 
   return (
     <header className={headerClasses}>
@@ -361,12 +361,12 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
             <img
               src="/home/logo (2).png"
               alt="GoCatering"
-              className="h-28 w-auto object-contain"
+              className="h-8 w-auto object-contain sm:h-10 lg:h-28"
             />
           </Link>
         ) : null}
 
-        <div className="hidden min-w-0 items-center justify-self-center lg:flex">
+        <div className="hidden min-w-0 flex-1 items-center justify-self-center lg:flex">
           <div ref={dropdownRef}>
             <CommonNavbarFilters
               calendarMonth={calendarMonth}
@@ -469,8 +469,17 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
           unreadNotificationCount={unreadNotificationCount}
           user={user}
         />
-        <LanguageSwitcher className="hidden xl:inline-flex" />
+        <div className="hidden xl:flex xl:justify-end">
+          <LanguageSwitcher />
+        </div>
       </div>
+
+      <div className="pt-1 xl:hidden">
+        <div className="rounded-[20px] border border-[#ece2d9] bg-[#fffdf9] px-3 py-2 shadow-[0_8px_22px_rgba(39,24,16,0.05)]">
+          <LanguageSwitcher className="w-full justify-between" />
+        </div>
+      </div>
+
     </header>
   );
 }
