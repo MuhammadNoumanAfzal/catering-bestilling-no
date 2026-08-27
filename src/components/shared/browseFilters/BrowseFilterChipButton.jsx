@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { FiChevronDown, FiStar } from "react-icons/fi";
+import { FiChevronDown } from "react-icons/fi";
 import { DROPDOWN_CHIP_KEYS, translateBrowseChipLabel } from "./browseFilterConfig";
 
 const FILTER_CHIP_IMAGE_MAP = {
@@ -50,14 +50,6 @@ export default function BrowseFilterChipButton({
         <span className="min-w-0 flex-1 truncate text-left">
           {translateBrowseChipLabel(t, chip.key)}
         </span>
-
-        {chip.icon === "star" ? (
-          <FiStar
-            className={`shrink-0 text-[12px] ${
-              isActive ? "text-[#fff2b8]" : "text-[#d8a520]"
-            }`}
-          />
-        ) : null}
 
         {isDropdownChip ? (
           <FiChevronDown
