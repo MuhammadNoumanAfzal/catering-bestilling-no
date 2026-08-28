@@ -107,29 +107,67 @@ function normalizeSlotDay(day) {
   const normalized = `${day ?? ""}`.trim().toLowerCase();
 
   switch (normalized) {
+    case "0":
     case "sun":
     case "sunday":
       return "su";
+    case "1":
     case "mon":
     case "monday":
       return "mo";
+    case "2":
     case "tue":
     case "tuesday":
       return "tu";
+    case "3":
     case "wed":
     case "wednesday":
       return "we";
+    case "4":
     case "thu":
     case "thursday":
       return "th";
+    case "5":
     case "fri":
     case "friday":
       return "fr";
+    case "6":
     case "sat":
     case "saturday":
       return "sa";
     default:
       return normalized;
+  }
+}
+
+function normalizeScheduleDayIndex(day) {
+  if (day === null || day === undefined || `${day}`.trim() === "") {
+    return null;
+  }
+
+  if (typeof day === "number" && Number.isInteger(day) && day >= 0 && day <= 6) {
+    return day;
+  }
+
+  const normalizedDay = normalizeSlotDay(day);
+
+  switch (normalizedDay) {
+    case "su":
+      return 0;
+    case "mo":
+      return 1;
+    case "tu":
+      return 2;
+    case "we":
+      return 3;
+    case "th":
+      return 4;
+    case "fr":
+      return 5;
+    case "sa":
+      return 6;
+    default:
+      return null;
   }
 }
 
@@ -220,9 +258,14 @@ export function isVendorDeliverySlotAvailable(vendor, date, time) {
     Array.isArray(deliverySchedule.slots) && deliverySchedule.slots.length > 0;
   const hasConfiguredRange =
     `${deliverySchedule.start ?? ""}`.trim() && `${deliverySchedule.end ?? ""}`.trim();
+  const normalizedScheduleDays = Array.isArray(deliverySchedule.days)
+    ? deliverySchedule.days
+        .map((day) => normalizeScheduleDayIndex(day))
+        .filter((day) => day !== null)
+    : [];
 
   const selectedDate = normalizeSelectedDate(date);
-  if (selectedDate && !hasConfiguredDays) {
+  if (selectedDate && normalizedScheduleDays.length === 0) {
     return false;
   }
 
@@ -231,7 +274,7 @@ export function isVendorDeliverySlotAvailable(vendor, date, time) {
   }
 
   const matchesDay = selectedDate
-    ? deliverySchedule.days.includes(selectedDate.getDay())
+    ? normalizedScheduleDays.includes(selectedDate.getDay())
     : true;
 
   let matchesTime = true;
@@ -293,9 +336,12 @@ export function getConfiguredDeliverySlotsForDate(vendor, date) {
     return [];
   }
 
-  const hasMatchingDay =
-    Array.isArray(deliverySchedule.days) &&
-    deliverySchedule.days.includes(selectedDate.getDay());
+  const normalizedScheduleDays = Array.isArray(deliverySchedule.days)
+    ? deliverySchedule.days
+        .map((day) => normalizeScheduleDayIndex(day))
+        .filter((day) => day !== null)
+    : [];
+  const hasMatchingDay = normalizedScheduleDays.includes(selectedDate.getDay());
 
   if (!hasMatchingDay) {
     return [];
