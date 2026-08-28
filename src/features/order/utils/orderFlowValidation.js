@@ -314,10 +314,6 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
     return "Please enter the invoice city.";
   }
 
-  if (!`${formState.invoiceReference ?? ""}`.trim()) {
-    return "Please enter the invoice reference.";
-  }
-
   if (!`${formState.phone ?? ""}`.trim()) {
     return "Please enter the phone number.";
   }
