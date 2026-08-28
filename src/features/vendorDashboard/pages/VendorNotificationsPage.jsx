@@ -286,14 +286,21 @@ export default function VendorNotificationsPage() {
 
           <div className="mt-6 space-y-6">
             {groupedNotifications.length > 0 ? (
-              groupedNotifications.map((group) => (
-                <NotificationSection
-                  key={group.dayLabel}
-                  dayLabel={group.dayLabel}
-                  items={group.items}
-                  onOpenNotification={handleOpenNotification}
-                />
-              ))
+              groupedNotifications.map((group, groupIndex) => {
+                const startIndex = groupedNotifications
+                  .slice(0, groupIndex)
+                  .reduce((total, currentGroup) => total + currentGroup.items.length, 0);
+
+                return (
+                  <NotificationSection
+                    key={group.dayLabel}
+                    dayLabel={group.dayLabel}
+                    items={group.items}
+                    onOpenNotification={handleOpenNotification}
+                    startIndex={startIndex}
+                  />
+                );
+              })
             ) : (
               <div className="rounded-[22px] border border-dashed border-[#ddd4cb] bg-white px-6 py-16 text-center">
                 <h2 className="text-[22px] font-semibold text-[#242424]">

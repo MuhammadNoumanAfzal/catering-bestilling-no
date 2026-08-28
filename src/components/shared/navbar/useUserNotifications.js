@@ -179,7 +179,11 @@ export default function useUserNotifications() {
               : item,
           ),
         );
-        setUnreadNotificationCount(Number(result.unreadCount ?? 0) || 0);
+        setUnreadNotificationCount((currentCount) =>
+          typeof result?.unreadCount === "number"
+            ? Math.max(0, Number(result.unreadCount) || 0)
+            : Math.max(0, currentCount - 1),
+        );
       } catch {
         // Keep navigation usable even if read state update fails.
       }
@@ -204,7 +208,11 @@ export default function useUserNotifications() {
         category: "read",
       })),
     );
-    setUnreadNotificationCount(Number(result.unreadCount ?? 0) || 0);
+    setUnreadNotificationCount(
+      typeof result?.unreadCount === "number"
+        ? Math.max(0, Number(result.unreadCount) || 0)
+        : 0,
+    );
     return result;
   };
 

@@ -191,7 +191,7 @@ export async function fetchUserNotifications() {
   const response = await graphqlRequest({
     query: NOTIFICATION_BELL_QUERY,
     variables: {
-      first: 20,
+      first: 200,
       status: null,
     },
   });

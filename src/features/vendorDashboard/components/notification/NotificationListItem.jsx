@@ -17,7 +17,7 @@ const ICON_BY_TYPE = {
   menu: FiBell,
 };
 
-export default function NotificationListItem({ notification, onOpen }) {
+export default function NotificationListItem({ notification, onOpen, sequenceNumber = null }) {
   const { t, i18n } = useTranslation();
   const nt = (key, options) => translateNotification(t, i18n, key, options);
   const Icon = ICON_BY_TYPE[notification.type] ?? FiBell;
@@ -49,7 +49,7 @@ export default function NotificationListItem({ notification, onOpen }) {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <h3 className="truncate text-sm font-semibold text-[#1f1f1f] sm:text-[15px]">
-              {notification.title}
+              {sequenceNumber ? `${sequenceNumber}. ` : ""}{notification.title}
             </h3>
             <p className="mt-1 text-sm leading-6 text-[#6a625c]">
               {notification.message}
