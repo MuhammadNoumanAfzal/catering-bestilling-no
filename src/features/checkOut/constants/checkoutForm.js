@@ -14,7 +14,7 @@ export const CHECKOUT_MODE_LABELS = {
 export const CHECKOUT_PLACEHOLDERS = {
   companyName: "ABC Company",
   organizationNumber: "123 456 789",
-  invoiceReference: "Reference",
+  invoiceReference: "PO number / reference (optional)",
   firstName: "First name",
   lastName: "Last name",
   email: "name@example.com",

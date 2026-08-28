@@ -265,7 +265,6 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
   };
 
   validateRequiredFields(payload, [
-    "invoiceReference",
     "email",
     "phone",
     "deliveryAddress",
