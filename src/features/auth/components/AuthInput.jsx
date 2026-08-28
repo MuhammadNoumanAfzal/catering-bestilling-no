@@ -2,6 +2,8 @@ import { useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function AuthInput({
+  autoComplete,
+  inputMode,
   label,
   type = "text",
   placeholder,
@@ -30,6 +32,8 @@ export default function AuthInput({
       )}
       <div className="relative">
         <input
+          autoComplete={autoComplete}
+          inputMode={inputMode}
           type={resolvedType}
           name={name}
           placeholder={placeholder}

@@ -145,6 +145,7 @@ export function normalizeSignupOtp(value) {
 export function normalizeSignupOtpRequestInput(input) {
   return {
     email: normalizeEmail(input.email),
+    phone: normalizePhoneNumber(input.phone),
   };
 }
 

@@ -163,6 +163,7 @@ export default function SignInPage() {
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         <AuthInput
+          autoComplete="email"
           label={t("auth.common.email")}
           name="email"
           type="email"
@@ -172,6 +173,7 @@ export default function SignInPage() {
           required
         />
         <AuthInput
+          autoComplete="current-password"
           label={t("auth.common.password")}
           name="password"
           type="password"
