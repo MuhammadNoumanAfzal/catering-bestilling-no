@@ -49,9 +49,9 @@ export default function OrderConfirmedPage() {
           <div className="border-b border-[#f0e5db] px-6 py-5 sm:px-8">
             <Link to="/" className="inline-flex cursor-pointer">
               <img
-                src="/home/logo.png"
+                src="/home/logo (2).png"
                 alt={t("orderConfirmed.logoAlt")}
-                className="h-16 w-auto object-contain"
+                className="h-26 w-auto object-contain"
               />
             </Link>
           </div>
