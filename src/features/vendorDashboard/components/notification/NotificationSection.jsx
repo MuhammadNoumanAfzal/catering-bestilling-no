@@ -2,7 +2,12 @@ import NotificationListItem from "./NotificationListItem";
 import { useTranslation } from "react-i18next";
 import { translateNotification } from "./notificationI18n";
 
-export default function NotificationSection({ dayLabel, items, onOpenNotification }) {
+export default function NotificationSection({
+  dayLabel,
+  items,
+  onOpenNotification,
+  startIndex = 0,
+}) {
   const { t, i18n } = useTranslation();
   const nt = (key, options) => translateNotification(t, i18n, key, options);
   return (
@@ -15,11 +20,12 @@ export default function NotificationSection({ dayLabel, items, onOpenNotificatio
       </div>
 
       <div className="space-y-3">
-        {items.map((notification) => (
+        {items.map((notification, index) => (
           <NotificationListItem
             key={notification.id}
             notification={notification}
             onOpen={onOpenNotification}
+            sequenceNumber={startIndex + index + 1}
           />
         ))}
       </div>

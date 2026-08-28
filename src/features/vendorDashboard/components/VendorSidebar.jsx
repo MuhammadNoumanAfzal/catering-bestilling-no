@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import { vendorNavigationItems } from "../data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
+import useUserNotifications from "../../../components/shared/navbar/useUserNotifications";
 
 function getLinkClasses({ isActive }) {
   return [
@@ -17,6 +18,7 @@ function getLinkClasses({ isActive }) {
 export default function VendorSidebar() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
+  const { unreadNotificationCount } = useUserNotifications();
 
   const handleLogout = async () => {
     const result = await confirmLogout();
@@ -56,8 +58,20 @@ export default function VendorSidebar() {
               `${getLinkClasses(navState)} shrink-0 whitespace-nowrap px-3 py-2.5 lg:shrink lg:px-4 lg:py-3`
             }
           >
-            <Icon className="text-[18px]" />
-            <span>{t(labelKey)}</span>
+            <div className="relative">
+              <Icon className="text-[18px]" />
+              {to === "/vendor-dashboard/notifications" && unreadNotificationCount > 0 ? (
+                <span className="absolute -right-3 -top-2 inline-flex min-w-[16px] items-center justify-center rounded-full bg-[#c85f33] px-1 py-0.5 text-[8px] font-bold leading-none text-white">
+                  {unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}
+                </span>
+              ) : null}
+            </div>
+            <span className="flex-1">{t(labelKey)}</span>
+            {to === "/vendor-dashboard/notifications" && unreadNotificationCount > 0 ? (
+              <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-white/18 px-1.5 py-0.5 text-[10px] font-bold leading-none text-current">
+                {unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}
+              </span>
+            ) : null}
           </NavLink>
         ))}
       </nav>
