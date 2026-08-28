@@ -35,6 +35,7 @@ export default function SignUpPage() {
   const [formState, setFormState] = useState(SIGN_UP_INITIAL_FORM_STATE);
   const [otpCode, setOtpCode] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [formErrors, setFormErrors] = useState({});
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
@@ -43,6 +44,7 @@ export default function SignUpPage() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormState((current) => ({ ...current, [name]: value }));
+    setFormErrors((current) => ({ ...current, [name]: "" }));
 
     if (name === "email" && signupStep === SIGNUP_STEP.VERIFY) {
       setSignupStep(SIGNUP_STEP.FORM);
@@ -53,6 +55,7 @@ export default function SignUpPage() {
 
   const handleSendOtp = async (event) => {
     event.preventDefault();
+    setFormErrors({});
     setIsSendingOtp(true);
 
     try {
@@ -134,9 +137,30 @@ export default function SignUpPage() {
         error instanceof Error && Array.isArray(error.fieldErrors?.otp)
           ? error.fieldErrors.otp[0]
           : "";
+      const phoneError =
+        error instanceof Error && Array.isArray(error.fieldErrors?.phone)
+          ? error.fieldErrors.phone[0]
+          : "";
+      const emailError =
+        error instanceof Error && Array.isArray(error.fieldErrors?.email)
+          ? error.fieldErrors.email[0]
+          : "";
+      const postCodeError =
+        error instanceof Error && Array.isArray(error.fieldErrors?.postCode)
+          ? error.fieldErrors.postCode[0]
+          : "";
 
       if (fieldOtpError) {
         setOtpError(fieldOtpError);
+      } else if (phoneError || emailError || postCodeError) {
+        setSignupStep(SIGNUP_STEP.FORM);
+        setOtpCode("");
+        setOtpError("");
+        setFormErrors({
+          ...(phoneError ? { phone: phoneError } : {}),
+          ...(emailError ? { email: emailError } : {}),
+          ...(postCodeError ? { postCode: postCodeError } : {}),
+        });
       } else {
         await showAuthErrorAlert(
           error instanceof Error
@@ -182,6 +206,7 @@ export default function SignUpPage() {
         <form className="space-y-5" onSubmit={handleSendOtp}>
           <div className="grid gap-4 sm:grid-cols-2">
             <AuthInput
+              autoComplete="given-name"
               label={t("auth.signUp.firstName")}
               name="firstName"
               placeholder={t("auth.signUp.firstNamePlaceholder")}
@@ -190,6 +215,7 @@ export default function SignUpPage() {
               required
             />
             <AuthInput
+              autoComplete="family-name"
               label={t("auth.signUp.lastName")}
               name="lastName"
               placeholder={t("auth.signUp.lastNamePlaceholder")}
@@ -201,18 +227,21 @@ export default function SignUpPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <AuthInput
+              autoComplete="email"
               label={t("auth.common.email")}
               name="email"
               type="email"
               placeholder={t("auth.common.emailPlaceholder")}
               value={formState.email}
               onChange={handleChange}
+              errorText={formErrors.email}
               helperText={t("auth.signUp.emailStepHelper", {
                 defaultValue: "We will send a verification code after you click Register.",
               })}
               required
             />
             <AuthInput
+              autoComplete="new-password"
               label={t("auth.common.password")}
               name="password"
               type="password"
@@ -224,22 +253,28 @@ export default function SignUpPage() {
           </div>
 
           <AuthInput
+            autoComplete="tel"
+            inputMode="tel"
             label={t("auth.signUp.phone")}
             name="phone"
             type="tel"
             placeholder={t("auth.signUp.phonePlaceholder")}
             value={formState.phone}
             onChange={handleChange}
+            errorText={formErrors.phone}
             required
           />
 
           <AuthInput
+            autoComplete="postal-code"
+            inputMode="numeric"
             label={t("auth.signUp.postCode")}
             name="postCode"
             type="text"
             placeholder={t("auth.signUp.postCodePlaceholder")}
             value={formState.postCode}
             onChange={handleChange}
+            errorText={formErrors.postCode}
             required
           />
 

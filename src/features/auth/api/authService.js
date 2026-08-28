@@ -25,6 +25,30 @@ function ensureSuccessResult(result, fallbackMessage) {
   }
 }
 
+function extractMutationFieldErrors(errors = []) {
+  if (!Array.isArray(errors) || errors.length === 0) {
+    return null;
+  }
+
+  const groupedErrors = errors.reduce((accumulator, item) => {
+    const field = `${item?.field ?? ""}`.trim();
+    const message = `${item?.message ?? ""}`.trim();
+
+    if (!field || !message) {
+      return accumulator;
+    }
+
+    if (!Array.isArray(accumulator[field])) {
+      accumulator[field] = [];
+    }
+
+    accumulator[field].push(message);
+    return accumulator;
+  }, {});
+
+  return Object.keys(groupedErrors).length ? groupedErrors : null;
+}
+
 function ensureActiveUser(user, contextLabel) {
   if (!user) {
     throw new Error(`${contextLabel} did not include a user object.`);
@@ -79,7 +103,12 @@ async function runAuthMutation({
   const data = await graphqlRequest({ query, variables });
   const result = data?.[dataKey];
 
-  ensureSuccessResult(result, fallbackMessage);
+  if (!result?.success) {
+    const error = new Error(result?.message ?? fallbackMessage);
+    error.fieldErrors = extractMutationFieldErrors(result?.errors);
+    throw error;
+  }
+
   validate?.(result);
 
   return mapResult ? mapResult(result) : result;
