@@ -20,7 +20,6 @@ export const ORDER_DATE_OPTIONS = [
 ];
 
 export const PAGE_SIZE = 8;
-const ORDER_CLASSIFICATION_TODAY = new Date("2026-07-17T00:00:00");
 
 export function parseOrderDate(dateValue) {
   if (!dateValue) {
@@ -87,7 +86,7 @@ export function getOrderLifecycle(status, eventDate) {
 
   const parsedEventDate = parseOrderDate(eventDate);
   if (!Number.isNaN(parsedEventDate.getTime())) {
-    const today = getStartOfDay(ORDER_CLASSIFICATION_TODAY);
+    const today = getStartOfDay(new Date());
     const orderDay = getStartOfDay(parsedEventDate);
 
     if (orderDay.getTime() > today.getTime()) {
@@ -99,7 +98,8 @@ export function getOrderLifecycle(status, eventDate) {
 }
 
 export function isActiveOrder(status, eventDate) {
-  return getOrderLifecycle(status, eventDate) === "active";
+  const lifecycle = getOrderLifecycle(status, eventDate);
+  return lifecycle === "active" || lifecycle === "scheduled" || lifecycle === "draft";
 }
 
 export function getOrderStatusClasses(status) {
