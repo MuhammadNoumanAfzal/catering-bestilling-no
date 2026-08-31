@@ -65,6 +65,11 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
         createdOn
         customerResponse
       }
+      vendor {
+        id
+        name
+        slug
+      }
     }
   }
 `;
@@ -245,6 +250,24 @@ export async function fetchOrderModificationDetails(orderId) {
     latestModificationRequest: mapModificationRequest(order.latestModificationRequest),
     pendingVendorAdjustment: mapVendorAdjustment(order.pendingVendorAdjustment),
     latestVendorAdjustment: mapVendorAdjustment(order.latestVendorAdjustment),
+    vendorSlug: order?.vendor?.slug || "",
+    vendorName: order?.vendor?.name || "",
+  };
+}
+
+export async function fetchOrderReviewTarget(orderId) {
+  const details = await fetchOrderModificationDetails(orderId);
+
+  if (!details?.vendorSlug) {
+    throw new Error("Unable to open the review page for this order.");
+  }
+
+  return {
+    orderId: details.orderId || orderId,
+    vendorSlug: details.vendorSlug,
+    vendorName: details.vendorName || "",
+    eventDate: details.date || "",
+    reviewPath: `/vendor/${details.vendorSlug}/reviews`,
   };
 }
 

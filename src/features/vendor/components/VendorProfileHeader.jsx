@@ -80,6 +80,14 @@ export default function VendorProfileHeader({
         <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end">
           <button
             type="button"
+            onClick={onReviewsClick}
+            className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium transition hover:border-[#cf6e38] hover:text-[#cf6e38] sm:flex-none"
+          >
+            <FiStar className="text-[12px]" />
+            {t("vendor.review")}
+          </button>
+          <button
+            type="button"
             onClick={onShare}
             className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-full border border-[#ddd6cd] px-4 py-2 text-[12px] font-medium transition hover:border-[#cf6e38] hover:text-[#cf6e38] sm:flex-none"
           >

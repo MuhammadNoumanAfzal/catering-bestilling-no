@@ -434,6 +434,7 @@ const en = {
     openForSelectedTime: "Open for selected time",
     closedOrUnavailable: "Closed / Not Available",
     reviewsCount: "({{count}} reviews)",
+    review: "Review",
     share: "Share",
     save: "Save",
     saved: "Saved",
@@ -639,6 +640,10 @@ const en = {
     staySignedIn: "Stay signed in",
     orderPlacedTitle: "Order placed",
     orderPlacedText: "Your catering order was submitted successfully.",
+    reviewDeliveredTitle: "Order delivered",
+    reviewDeliveredText:
+      "Your order from {{vendorName}} has been delivered. Would you like to leave a review now?",
+    reviewDeliveredConfirm: "Leave a review",
     signInRequiredTitle: "Sign in required",
     signInRequiredText:
       "Please sign in or create an account before placing an order.",

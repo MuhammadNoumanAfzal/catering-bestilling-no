@@ -7,16 +7,16 @@ export const VENDOR_REVIEW_OCCASIONS = [
   "Other",
 ];
 
-export function createInitialVendorReviewFormState() {
+export function createInitialVendorReviewFormState(initialValue = {}) {
   return {
-    rating: 5,
-    title: "",
-    comment: "",
-    occasion: VENDOR_REVIEW_OCCASIONS[0],
-    eventDate: "",
-    orderId: "",
-    authorName: "",
-    authorEmail: "",
+    rating: Number(initialValue?.rating ?? 5) || 5,
+    title: initialValue?.title || "",
+    comment: initialValue?.comment || "",
+    occasion: initialValue?.occasion || VENDOR_REVIEW_OCCASIONS[0],
+    eventDate: initialValue?.eventDate || "",
+    orderId: initialValue?.orderId || "",
+    authorName: initialValue?.authorName || "",
+    authorEmail: initialValue?.authorEmail || "",
   };
 }
 

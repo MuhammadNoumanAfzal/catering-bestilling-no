@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../features/auth";
+import { fetchOrderReviewTarget } from "../../../features/order/api/orderModificationService";
 import {
   fetchUserNotifications,
   markAllUserNotificationsAsRead,
   markUserNotificationAsRead,
 } from "./notificationsApi";
-import { showSuccessToast } from "../../../utils/alerts";
+import { showAuthErrorAlert, showDeliveredReviewPrompt, showSuccessToast } from "../../../utils/alerts";
 
 const NOTIFICATIONS_POLL_INTERVAL_MS = 10000;
 const FRESH_NOTIFICATION_HIGHLIGHT_MS = 12000;
 const LAST_ACKNOWLEDGED_NOTIFICATION_KEY = "last-acknowledged-notification-id";
 const LAST_SEEN_NOTIFICATION_KEY = "last-seen-notification-id";
+const REVIEW_PROMPTED_NOTIFICATIONS_KEY = "review-prompted-notification-ids";
 
 function readLastAcknowledgedNotificationId() {
   if (typeof window === "undefined") {
@@ -48,12 +50,64 @@ function writeLastSeenNotificationId(notificationId) {
   window.localStorage.setItem(LAST_SEEN_NOTIFICATION_KEY, notificationId);
 }
 
+function readReviewPromptedNotificationIds() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(REVIEW_PROMPTED_NOTIFICATIONS_KEY);
+    const parsedValue = rawValue ? JSON.parse(rawValue) : [];
+    return Array.isArray(parsedValue) ? parsedValue : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeReviewPromptedNotificationId(notificationId) {
+  if (typeof window === "undefined" || !notificationId) {
+    return;
+  }
+
+  const existingIds = readReviewPromptedNotificationIds();
+  if (existingIds.includes(notificationId)) {
+    return;
+  }
+
+  window.localStorage.setItem(
+    REVIEW_PROMPTED_NOTIFICATIONS_KEY,
+    JSON.stringify([...existingIds, notificationId].slice(-50)),
+  );
+}
+
+function isDeliveredOrderNotification(notification) {
+  const normalizedType = `${notification?.notificationType || notification?.type || ""}`
+    .trim()
+    .toLowerCase();
+  const normalizedTitle = `${notification?.title || ""}`.trim().toLowerCase();
+  const normalizedMessage = `${notification?.message || ""}`.trim().toLowerCase();
+  const statusKeywords = ["delivered", "delivery", "completed", "complete"];
+
+  if (!notification?.orderId) {
+    return false;
+  }
+
+  return (
+    (normalizedType.includes("order") || normalizedType.includes("delivery")) &&
+    statusKeywords.some(
+      (keyword) =>
+        normalizedTitle.includes(keyword) || normalizedMessage.includes(keyword),
+    )
+  );
+}
+
 export default function useUserNotifications() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [hasFreshNotification, setHasFreshNotification] = useState(false);
+  const isReviewPromptOpenRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -111,6 +165,42 @@ export default function useUserNotifications() {
             Number(result.unreadCount ?? 0) ||
               nextNotifications.filter((item) => item.unread).length,
           );
+
+          const deliveredReviewNotification = nextNotifications.find(
+            (item) =>
+              isDeliveredOrderNotification(item) &&
+              !readReviewPromptedNotificationIds().includes(item.id),
+          );
+
+          if (deliveredReviewNotification && !isReviewPromptOpenRef.current) {
+            isReviewPromptOpenRef.current = true;
+
+            try {
+              const reviewTarget = await fetchOrderReviewTarget(
+                deliveredReviewNotification.orderId,
+              );
+              const promptResult = await showDeliveredReviewPrompt(
+                reviewTarget.vendorName,
+              );
+              writeReviewPromptedNotificationId(deliveredReviewNotification.id);
+
+              if (promptResult.isConfirmed) {
+                navigate(reviewTarget.reviewPath, {
+                  state: {
+                    autoOpenReview: true,
+                    reviewOrderId: reviewTarget.orderId,
+                    reviewEventDate: reviewTarget.eventDate,
+                  },
+                });
+              }
+            } catch (error) {
+              await showAuthErrorAlert(
+                error?.message || "Unable to open the review page right now.",
+              );
+            } finally {
+              isReviewPromptOpenRef.current = false;
+            }
+          }
         }
       } catch {
         if (isMounted) {
