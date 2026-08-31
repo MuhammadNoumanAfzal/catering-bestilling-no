@@ -2,6 +2,11 @@ import { FiArrowRight, FiStar, FiX } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { getOrderStatusClasses } from "./orderUtils";
 
+const PENDING_VENDOR_ADJUSTMENT_STATUSES = new Set([
+  "PENDING",
+  "PENDING_CUSTOMER_APPROVAL",
+]);
+
 function getOrderDetailItems(order) {
   return Array.isArray(order?.items) ? order.items : [];
 }
@@ -65,6 +70,11 @@ function splitItemDetails(details) {
   );
 }
 
+function hasOpenPendingVendorAdjustment(adjustment) {
+  const normalizedStatus = `${adjustment?.status ?? ""}`.trim().toUpperCase();
+  return PENDING_VENDOR_ADJUSTMENT_STATUSES.has(normalizedStatus);
+}
+
 function ItemDetailGroup({ label, items, accent = "default" }) {
   if (!Array.isArray(items) || items.length === 0) {
     return null;
@@ -94,6 +104,9 @@ export default function OrderDetailsModal({
   isOpen,
   onClose,
   onModify,
+  onApproveVendorAdjustment,
+  onRejectVendorAdjustment,
+  isResolvingVendorAdjustment = false,
   isLoading = false,
   error = "",
 }) {
@@ -105,6 +118,20 @@ export default function OrderDetailsModal({
   const items = getOrderDetailItems(order);
   const meta = getOrderMeta(order);
   const modifiedItems = getModifiedItems(order);
+  const pendingVendorAdjustment = order?.pendingVendorAdjustment || null;
+  const latestVendorAdjustment = order?.latestVendorAdjustment || null;
+  const hasPendingVendorAdjustment = hasOpenPendingVendorAdjustment(pendingVendorAdjustment);
+  const visibleVendorAdjustment = hasPendingVendorAdjustment
+    ? pendingVendorAdjustment
+    : latestVendorAdjustment;
+  const proposedAddress = [
+    visibleVendorAdjustment?.proposedAddressLine1,
+    visibleVendorAdjustment?.proposedAddressLine2,
+    visibleVendorAdjustment?.proposedCity,
+    visibleVendorAdjustment?.proposedPostalCode,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(31,22,15,0.45)] px-4 py-6 backdrop-blur-[6px]">
@@ -332,6 +359,121 @@ export default function OrderDetailsModal({
                     </article>
                   ))}
                 </div>
+              </section>
+            ) : null}
+
+            {visibleVendorAdjustment ? (
+              <section className="rounded-[24px] border border-[#f0d8c9] bg-[linear-gradient(180deg,#fff8f3_0%,#ffffff_100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#c67a4d]">
+                      {hasPendingVendorAdjustment
+                        ? "Vendor adjustment pending"
+                        : "Vendor adjustment"}
+                    </p>
+                    <h3 className="mt-2 type-h3 text-[#1f1f1f]">
+                      {hasPendingVendorAdjustment
+                        ? "Review the vendor's requested changes"
+                        : "Latest vendor adjustment"}
+                    </h3>
+                    <p className="mt-1 text-sm text-[#746b63]">
+                      {visibleVendorAdjustment.vendorNote ||
+                        "The vendor proposed updates for this order."}
+                    </p>
+                  </div>
+                  <span className="inline-flex rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
+                    {visibleVendorAdjustment.status || "PENDING"}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {visibleVendorAdjustment.proposedEventDate ? (
+                    <div className="rounded-[16px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                        Proposed Date
+                      </p>
+                      <p className="mt-1 font-semibold text-[#1f1f1f]">
+                        {visibleVendorAdjustment.proposedEventDate}
+                      </p>
+                    </div>
+                  ) : null}
+                  {visibleVendorAdjustment.proposedDeliveryWindowStart ? (
+                    <div className="rounded-[16px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                        Proposed Time
+                      </p>
+                      <p className="mt-1 font-semibold text-[#1f1f1f]">
+                        {visibleVendorAdjustment.proposedDeliveryWindowStart}
+                      </p>
+                    </div>
+                  ) : null}
+                  {visibleVendorAdjustment.proposedGuestCount ? (
+                    <div className="rounded-[16px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                        Proposed Guests
+                      </p>
+                      <p className="mt-1 font-semibold text-[#1f1f1f]">
+                        {visibleVendorAdjustment.proposedGuestCount}
+                      </p>
+                    </div>
+                  ) : null}
+                  {proposedAddress ? (
+                    <div className="rounded-[16px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)] sm:col-span-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                        Proposed Address
+                      </p>
+                      <p className="mt-1 font-semibold text-[#1f1f1f]">
+                        {proposedAddress}
+                      </p>
+                    </div>
+                  ) : null}
+                  {typeof visibleVendorAdjustment.oldTotal === "number" ||
+                  typeof visibleVendorAdjustment.newTotal === "number" ? (
+                    <>
+                      <div className="rounded-[16px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                          Current Total
+                        </p>
+                        <p className="mt-1 font-semibold text-[#1f1f1f]">
+                          {typeof visibleVendorAdjustment.oldTotal === "number"
+                            ? `NOK ${visibleVendorAdjustment.oldTotal.toFixed(2)}`
+                            : order.total}
+                        </p>
+                      </div>
+                      <div className="rounded-[16px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                          Proposed Total
+                        </p>
+                        <p className="mt-1 font-semibold text-[#cf6e38]">
+                          {typeof visibleVendorAdjustment.newTotal === "number"
+                            ? `NOK ${visibleVendorAdjustment.newTotal.toFixed(2)}`
+                            : order.total}
+                        </p>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+
+                {hasPendingVendorAdjustment ? (
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={onApproveVendorAdjustment}
+                      disabled={isResolvingVendorAdjustment}
+                      className="rounded-full bg-[#cf6e38] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isResolvingVendorAdjustment ? "Updating..." : "Accept changes"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onRejectVendorAdjustment}
+                      disabled={isResolvingVendorAdjustment}
+                      className="rounded-full border border-[#d9cec4] bg-white px-5 py-3 text-sm font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Reject changes
+                    </button>
+                  </div>
+                ) : null}
               </section>
             ) : null}
 

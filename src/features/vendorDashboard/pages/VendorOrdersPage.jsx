@@ -5,7 +5,9 @@ import { useTranslation } from "react-i18next";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { ModifyOrderModal } from "../../order";
 import {
+  approveVendorOrderAdjustment,
   mapOrderToModifyForm,
+  rejectVendorOrderAdjustment,
   submitOrderModification,
 } from "../../order/api/orderModificationService";
 import OrderDateFilter from "../components/orders/OrderDateFilter";
@@ -64,6 +66,7 @@ export default function VendorOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [isModifySaving, setIsModifySaving] = useState(false);
+  const [isResolvingVendorAdjustment, setIsResolvingVendorAdjustment] = useState(false);
   const [modifyError, setModifyError] = useState("");
   const dateMenuRef = useRef(null);
 
@@ -283,6 +286,67 @@ export default function VendorOrdersPage() {
     }
   }
 
+  async function refreshOrdersState(orderId) {
+    await Promise.all([
+      dispatch(fetchClientOrders()),
+      dispatch(fetchClientOrderDetail(orderId)),
+    ]);
+  }
+
+  async function handleApproveVendorChanges() {
+    const targetOrder = selectedOrderDetail || selectedOrder;
+    const adjustmentId = targetOrder?.pendingVendorAdjustment?.id;
+    const orderId = targetOrder?.rawId || targetOrder?.orderId || targetOrder?.id;
+
+    if (!adjustmentId || !orderId) {
+      return;
+    }
+
+    setIsResolvingVendorAdjustment(true);
+
+    try {
+      const result = await approveVendorOrderAdjustment({
+        adjustmentId,
+        note: "Customer approved the vendor adjustment.",
+      });
+      await refreshOrdersState(orderId);
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error ? error.message : "Unable to approve the vendor changes.",
+      );
+    } finally {
+      setIsResolvingVendorAdjustment(false);
+    }
+  }
+
+  async function handleRejectVendorChanges() {
+    const targetOrder = selectedOrderDetail || selectedOrder;
+    const adjustmentId = targetOrder?.pendingVendorAdjustment?.id;
+    const orderId = targetOrder?.rawId || targetOrder?.orderId || targetOrder?.id;
+
+    if (!adjustmentId || !orderId) {
+      return;
+    }
+
+    setIsResolvingVendorAdjustment(true);
+
+    try {
+      const result = await rejectVendorOrderAdjustment({
+        adjustmentId,
+        reason: "Customer rejected the vendor adjustment.",
+      });
+      await refreshOrdersState(orderId);
+      await showSuccessToast(result.message);
+    } catch (error) {
+      await showAuthErrorAlert(
+        error instanceof Error ? error.message : "Unable to reject the vendor changes.",
+      );
+    } finally {
+      setIsResolvingVendorAdjustment(false);
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -450,13 +514,16 @@ export default function VendorOrdersPage() {
       <OrderDetailsModal
         order={selectedOrderDetail || selectedOrder}
         isLoading={selectedOrderDetailStatus === "loading"}
+        isResolvingVendorAdjustment={isResolvingVendorAdjustment}
         error={selectedOrderDetailError}
         isOpen={Boolean(selectedOrder)}
+        onApproveVendorAdjustment={handleApproveVendorChanges}
         onClose={handleCloseDetails}
         onModify={() => {
           setModifyError("");
           setIsModifyModalOpen(true);
         }}
+        onRejectVendorAdjustment={handleRejectVendorChanges}
       />
 
       {isModifyModalOpen ? (
