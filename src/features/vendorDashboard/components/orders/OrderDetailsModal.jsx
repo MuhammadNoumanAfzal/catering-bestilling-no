@@ -75,6 +75,19 @@ function hasOpenPendingVendorAdjustment(adjustment) {
   return PENDING_VENDOR_ADJUSTMENT_STATUSES.has(normalizedStatus);
 }
 
+function adjustmentChangesPrice(adjustment, currentGuestCount) {
+  if (!adjustment) {
+    return false;
+  }
+
+  const hasItemChanges =
+    (Array.isArray(adjustment.removedItemsJson) && adjustment.removedItemsJson.length > 0) ||
+    (Array.isArray(adjustment.addedItemsJson) && adjustment.addedItemsJson.length > 0);
+  const proposedGuestCount = Number(adjustment.proposedGuestCount || 0);
+
+  return hasItemChanges || (proposedGuestCount > 0 && proposedGuestCount !== Number(currentGuestCount || 0));
+}
+
 function ItemDetailGroup({ label, items, accent = "default" }) {
   if (!Array.isArray(items) || items.length === 0) {
     return null;
@@ -124,6 +137,7 @@ export default function OrderDetailsModal({
   const visibleVendorAdjustment = hasPendingVendorAdjustment
     ? pendingVendorAdjustment
     : latestVendorAdjustment;
+  const shouldShowPriceChange = adjustmentChangesPrice(visibleVendorAdjustment, order?.person);
   const proposedAddress = [
     visibleVendorAdjustment?.proposedAddressLine1,
     visibleVendorAdjustment?.proposedAddressLine2,
@@ -427,8 +441,9 @@ export default function OrderDetailsModal({
                       </p>
                     </div>
                   ) : null}
-                  {typeof visibleVendorAdjustment.oldTotal === "number" ||
-                  typeof visibleVendorAdjustment.newTotal === "number" ? (
+                  {shouldShowPriceChange &&
+                  (typeof visibleVendorAdjustment.oldTotal === "number" ||
+                  typeof visibleVendorAdjustment.newTotal === "number") ? (
                     <>
                       <div className="rounded-[16px] bg-white px-4 py-3 shadow-[0_6px_18px_rgba(31,22,15,0.05)]">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
