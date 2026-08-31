@@ -12,6 +12,7 @@ import {
 import {
   readPlacedOrderDraft,
   savePlacedOrderDraftChanges,
+  savePlacedOrderDraftDirectUpdate,
   savePlacedOrderDraftModificationRequest,
 } from "../services";
 import { formatOrderPreview } from "../utils/orderPreview";
@@ -147,23 +148,49 @@ export function useOrderConfirmedPage() {
     try {
       const result = await submitOrderModification({
         orderId: rawPrimaryOrderId,
+        status: modifyInitialValue?.status || orderWorkflow?.status || "",
         ...nextValues,
       });
-      const nextPlacedOrderDraft = await savePlacedOrderDraftModificationRequest(
-        placedOrderDraft,
-        result.request,
-      );
+
+      const nextPlacedOrderDraft =
+        result.mode === "direct-update"
+          ? await savePlacedOrderDraftDirectUpdate(placedOrderDraft, {
+              ...nextValues,
+              orderStatus: result.order?.status || modifyInitialValue?.status || "",
+            })
+          : await savePlacedOrderDraftModificationRequest(
+              placedOrderDraft,
+              result.request,
+            );
 
       setPlacedOrderDraft(nextPlacedOrderDraft);
-      setOrderWorkflow((current) =>
-        current
-          ? {
-              ...current,
-              pendingModificationRequest: result.request,
-              latestModificationRequest: result.request,
-            }
-          : current,
-      );
+      setOrderWorkflow((current) => {
+        if (!current) {
+          return current;
+        }
+
+        if (result.mode === "direct-update") {
+          return {
+            ...current,
+            status: result.order?.status || current.status,
+            address: nextValues.address,
+            addressLine2: nextValues.addressLine2,
+            city: nextValues.city,
+            postalCode: nextValues.postalCode,
+            date: nextValues.date,
+            time: nextValues.time,
+            personCount: nextValues.personCount,
+            additionalDetails: nextValues.additionalDetails,
+            pendingModificationRequest: null,
+          };
+        }
+
+        return {
+          ...current,
+          pendingModificationRequest: result.request,
+          latestModificationRequest: result.request,
+        };
+      });
       await showSuccessToast(result.message);
       setIsModifyModalOpen(false);
     } catch (error) {
@@ -286,7 +313,10 @@ export function useOrderConfirmedPage() {
         current
           ? {
               ...current,
-              status: "Confirmed",
+              status: result.order?.status || current.status,
+              canceledAt: result.order?.canceledAt || current.canceledAt,
+              cancellationReason:
+                result.order?.cancellationReason || current.cancellationReason,
               pendingVendorAdjustment: null,
               latestVendorAdjustment: {
                 ...(pendingVendorAdjustment || {}),

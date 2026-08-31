@@ -29,14 +29,19 @@ export default function OrderConfirmedPage() {
     setIsModifyModalOpen,
   } = useOrderConfirmedPage();
   const modificationRequest = orderPreview.modificationRequest || null;
+  const pendingModificationRequest =
+    orderWorkflow?.pendingModificationRequest || modificationRequest || null;
   const pendingVendorAdjustment = orderWorkflow?.pendingVendorAdjustment || null;
   const latestVendorAdjustment = orderWorkflow?.latestVendorAdjustment || null;
-  const normalizedModificationStatus = `${modificationRequest?.status ?? ""}`
+  const normalizedModificationStatus = `${pendingModificationRequest?.status ?? ""}`
     .trim()
     .toUpperCase();
   const hasPendingModificationRequest = normalizedModificationStatus === "PENDING";
+  const pendingVendorAdjustmentStatus =
+    `${pendingVendorAdjustment?.status ?? ""}`.trim().toUpperCase();
   const hasPendingVendorAdjustment =
-    `${pendingVendorAdjustment?.status ?? ""}`.trim().toUpperCase() === "PENDING";
+    pendingVendorAdjustmentStatus === "PENDING" ||
+    pendingVendorAdjustmentStatus === "PENDING_CUSTOMER_APPROVAL";
   const modifyButtonLabel = hasPendingModificationRequest
     ? t("orderConfirmed.requestPending")
     : t("orderConfirmed.modifyOrder");
@@ -62,7 +67,7 @@ export default function OrderConfirmedPage() {
               primaryOrderId={primaryOrderId}
               invoiceNumber={orderPreview.invoiceNumber}
               invoiceStatus={orderPreview.invoiceStatus}
-              modificationRequest={modificationRequest}
+              modificationRequest={pendingModificationRequest}
               orderStatus={orderWorkflow?.status}
               pendingVendorAdjustment={pendingVendorAdjustment}
               latestVendorAdjustment={latestVendorAdjustment}
@@ -180,6 +185,7 @@ export default function OrderConfirmedPage() {
           initialValue={modifyInitialValue || orderPreview}
           isLoading={isModifyLoading}
           isSaving={isModifySaving}
+          pricingPreviewCarts={placedOrderDraft?.carts || []}
           onCancel={() => setIsModifyModalOpen(false)}
           onSave={handleModifySave}
         />

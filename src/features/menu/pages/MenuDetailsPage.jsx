@@ -43,6 +43,20 @@ import {
   validateOrderSummaryBasics,
 } from "../../order/utils/orderFlowValidation";
 
+function resetDerivedOrderSummaryState(summary) {
+  if (!summary) {
+    return summary;
+  }
+
+  return {
+    ...summary,
+    pricing: null,
+    previewItems: [],
+    pricingCurrency: "NOK",
+    availability: null,
+  };
+}
+
 export default function MenuDetailsPage() {
   const { t } = useTranslation();
   const { vendorSlug, itemId } = useParams();
@@ -563,16 +577,16 @@ export default function MenuDetailsPage() {
         );
 
         if (nextValue === 0) {
-          return {
+          return resetDerivedOrderSummaryState({
             ...currentSummary,
             items: remainingItems,
-          };
+          });
         }
 
-        return {
+        return resetDerivedOrderSummaryState({
           ...currentSummary,
           items: [...remainingItems, buildAddOnLineItem(matchedOption, nextValue, key)],
-        };
+        });
       });
 
       if (nextValue === 0) {
@@ -698,7 +712,7 @@ export default function MenuDetailsPage() {
     clearOtherStoredOrderSummaries(vendor.slug);
 
     setOrderSummary((current) => ({
-      ...current,
+      ...resetDerivedOrderSummaryState(current),
       personCount: Math.max(
         minimumPersons,
         Number(current.personCount ?? minimumPersons),
@@ -720,7 +734,7 @@ export default function MenuDetailsPage() {
   };
 
   const handleDeliveryDateChange = (deliveryDate) => {
-    setOrderSummary((current) => ({
+    setOrderSummary((current) => resetDerivedOrderSummaryState({
       ...current,
       deliveryDate,
       deliveryTime: "",
@@ -804,21 +818,31 @@ export default function MenuDetailsPage() {
                 slotAccessMessage={slotAccessState.message}
                 onDeliveryDateChange={handleDeliveryDateChange}
                 onDeliveryTimeChange={(deliveryTime) =>
-                  setOrderSummary((current) => ({ ...current, deliveryTime }))
+                  setOrderSummary((current) =>
+                    resetDerivedOrderSummaryState({
+                      ...current,
+                      deliveryTime,
+                    }),
+                  )
                 }
                 onPersonCountChange={(personCount) =>
-                  setOrderSummary((current) => ({
+                  setOrderSummary((current) => resetDerivedOrderSummaryState({
                     ...current,
                     personCount: Math.max(minimumPersons, personCount),
                   }))
                 }
                 onDeliveryAddressChange={(deliveryAddress) =>
-                  setOrderSummary((current) => ({ ...current, deliveryAddress }))
+                  setOrderSummary((current) =>
+                    resetDerivedOrderSummaryState({
+                      ...current,
+                      deliveryAddress,
+                    }),
+                  )
                 }
                 minimumPersons={minimumPersons}
                 onVendorNoteChange={(nextVendorNote) => {
                   setVendorNote(nextVendorNote);
-                  setOrderSummary((current) => ({
+                  setOrderSummary((current) => resetDerivedOrderSummaryState({
                     ...current,
                     vendorNote: nextVendorNote,
                   }));
@@ -855,14 +879,14 @@ export default function MenuDetailsPage() {
               }
 
               setOrderSummary((current) => {
-                return {
+                return resetDerivedOrderSummaryState({
                   ...current,
                   items: current.items.filter((item) => item.id !== itemKey),
-                };
+                });
               });
             }}
             onTipChange={(tipRate, customTipAmount) =>
-              setOrderSummary((current) => ({
+              setOrderSummary((current) => resetDerivedOrderSummaryState({
                 ...current,
                 tipRate,
                 customTipAmount:
@@ -872,22 +896,42 @@ export default function MenuDetailsPage() {
               }))
             }
             onDeliveryDateChange={(deliveryDate) =>
-              setOrderSummary((current) => ({ ...current, deliveryDate }))
+              setOrderSummary((current) =>
+                resetDerivedOrderSummaryState({
+                  ...current,
+                  deliveryDate,
+                }),
+              )
             }
             onDeliveryTimeChange={(deliveryTime) =>
-              setOrderSummary((current) => ({ ...current, deliveryTime }))
+              setOrderSummary((current) =>
+                resetDerivedOrderSummaryState({
+                  ...current,
+                  deliveryTime,
+                }),
+              )
             }
             onPersonCountChange={(personCount) =>
-              setOrderSummary((current) => ({
+              setOrderSummary((current) => resetDerivedOrderSummaryState({
                 ...current,
                 personCount: Math.max(minimumPersons, personCount),
               }))
             }
             onDeliveryAddressChange={(deliveryAddress) =>
-              setOrderSummary((current) => ({ ...current, deliveryAddress }))
+              setOrderSummary((current) =>
+                resetDerivedOrderSummaryState({
+                  ...current,
+                  deliveryAddress,
+                }),
+              )
             }
             onInvoiceAddressChange={(invoiceAddress) =>
-              setOrderSummary((current) => ({ ...current, invoiceAddress }))
+              setOrderSummary((current) =>
+                resetDerivedOrderSummaryState({
+                  ...current,
+                  invoiceAddress,
+                }),
+              )
             }
             minimumPersons={minimumPersons}
               />

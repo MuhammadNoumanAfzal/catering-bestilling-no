@@ -1,6 +1,27 @@
+import {
+  formatCurrency,
+  getCheckoutTotals,
+} from "../../checkOut/components/summary/checkoutSummaryUtils";
+
+function buildAmountDue(carts = [], fallbackAmount = "") {
+  if (!Array.isArray(carts) || carts.length === 0) {
+    return fallbackAmount || "";
+  }
+
+  const totals = getCheckoutTotals(carts);
+  const grandTotal = Number(totals?.grandTotal ?? 0);
+
+  if (!Number.isFinite(grandTotal) || grandTotal <= 0) {
+    return fallbackAmount || "";
+  }
+
+  return `NOK ${formatCurrency(grandTotal)}`;
+}
+
 export function formatOrderPreview(orderDraft) {
   const primaryCart = orderDraft?.carts?.[0];
   const formState = orderDraft?.formState ?? {};
+  const carts = Array.isArray(orderDraft?.carts) ? orderDraft.carts : [];
   const placedOrders = orderDraft?.placedOrders ?? [];
   const primaryPlacedOrder = placedOrders[0] ?? null;
   const modificationRequest = orderDraft?.modificationRequest ?? null;
@@ -21,7 +42,10 @@ export function formatOrderPreview(orderDraft) {
     paymentReference: primaryPlacedOrder?.paymentReference || "",
     invoicePdfUrl: primaryPlacedOrder?.invoicePdfUrl || "",
     bankDetails: primaryPlacedOrder?.bankDetails || null,
-    amountDue: primaryPlacedOrder?.pricing?.formattedTotal || "",
+    amountDue: buildAmountDue(
+      carts,
+      primaryPlacedOrder?.pricing?.formattedTotal || "",
+    ),
     address:
       formState.deliveryAddress ||
       primaryCart?.orderSummary?.deliveryAddress ||
