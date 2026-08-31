@@ -16,6 +16,10 @@ import LanguageSwitcher from "./LanguageSwitcher";
 const DEFAULT_SEARCH_ROUTE = "/vendors/all";
 const DEFAULT_FILTER_ROUTE = "/";
 
+function isVendorDashboardRoute(pathname) {
+  return pathname === "/vendor-dashboard" || pathname.startsWith("/vendor-dashboard/");
+}
+
 function resolveNavbarSearchRoute(pathname) {
   if (pathname.startsWith("/browse/food-type")) {
     return "/browse/food-type";
@@ -58,6 +62,7 @@ function shouldPreserveSearchParams(pathname) {
 function shouldNavigateForNavbarFilters(pathname) {
   return (
     pathname === "/" ||
+    isVendorDashboardRoute(pathname) ||
     pathname.startsWith("/browse/food-type") ||
     pathname.startsWith("/browse/occasion") ||
     pathname.startsWith("/vendors/all") ||
@@ -68,6 +73,10 @@ function shouldNavigateForNavbarFilters(pathname) {
 }
 
 function resolveNavbarFilterRoute(pathname) {
+  if (isVendorDashboardRoute(pathname)) {
+    return DEFAULT_SEARCH_ROUTE;
+  }
+
   if (
     pathname === "/" ||
     pathname.startsWith("/browse/food-type") ||
