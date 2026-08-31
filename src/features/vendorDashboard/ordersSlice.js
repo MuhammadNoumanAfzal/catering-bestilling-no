@@ -289,6 +289,13 @@ const PENDING_VENDOR_ADJUSTMENT_STATUSES = new Set([
   "PENDING_CUSTOMER_APPROVAL",
 ]);
 
+const REJECTED_VENDOR_ADJUSTMENT_STATUSES = new Set([
+  "REJECTED",
+  "DECLINED",
+  "CANCELED",
+  "CANCELLED",
+]);
+
 function hasOpenPendingVendorAdjustment(node) {
   const backendFlag = node?.hasPendingVendorAdjustment;
   if (typeof backendFlag === "boolean") {
@@ -300,6 +307,26 @@ function hasOpenPendingVendorAdjustment(node) {
     .toUpperCase();
 
   return PENDING_VENDOR_ADJUSTMENT_STATUSES.has(adjustmentStatus);
+}
+
+function hasRejectedVendorAdjustment(node) {
+  const latestStatus = `${node?.latestVendorAdjustment?.status ?? ""}`
+    .trim()
+    .toUpperCase();
+
+  return REJECTED_VENDOR_ADJUSTMENT_STATUSES.has(latestStatus);
+}
+
+function resolveClientDisplayStatus(node, isModified) {
+  if (isModified) {
+    return "Modified";
+  }
+
+  if (hasRejectedVendorAdjustment(node)) {
+    return "Canceled";
+  }
+
+  return node?.status || "Ready";
 }
 
 function mapListOrder(node) {
@@ -357,7 +384,7 @@ function mapListOrder(node) {
     createdOnRaw: node.createdOn || "",
     person: formatNumber(node.personCount, 1),
     total: formatAmount(resolvedGrandTotal),
-    status: isModified ? "Modified" : node.status || "Ready",
+    status: resolveClientDisplayStatus(node, isModified),
     isModified,
     orderedDate: formatDate(node.createdOn),
     deliveredDate: formatDate(node.dueDate || node.eventDate),
@@ -370,7 +397,7 @@ function mapListOrder(node) {
     orderNotes: node.orderNotes || "",
     eventTime: node.eventTime || "",
     lifecycle: getOrderLifecycle(
-      isModified ? "Modified" : node.status || "Ready",
+      resolveClientDisplayStatus(node, isModified),
       node.eventDate || "",
     ),
     items: mappedItems,
@@ -632,7 +659,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),
           deliveryFee: formatAmount(orderNode.pricing?.deliveryFee || orderNode.deliveryFee),
           tipAmount: formatAmount(orderNode.pricing?.tipAmount || orderNode.tipAmount),
-          status: hasPendingChanges ? "Modified" : orderNode.status || "Pending",
+          status: resolveClientDisplayStatus(orderNode, hasPendingChanges),
           canModify: orderNode.canModify !== false,
           isModified: hasPendingChanges,
           orderedDate: formatDate(orderNode.createdOn),
