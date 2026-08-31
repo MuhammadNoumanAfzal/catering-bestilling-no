@@ -56,6 +56,11 @@ const FETCH_CLIENT_ORDERS_QUERY = `
             previousValue
             newValue
           }
+          hasPendingVendorAdjustment
+          pendingVendorAdjustment {
+            id
+            status
+          }
         }
       }
       pageInfo {
@@ -72,6 +77,7 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
       id
       status
       canModify
+      hasPendingVendorAdjustment
       eventName
       personCount
       pricing {
@@ -137,6 +143,66 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         summary
         previousValue
         newValue
+      }
+      pendingVendorAdjustment {
+        id
+        status
+        vendorNote
+        reason
+        proposedEventDate
+        proposedDeliveryWindowStart
+        proposedDeliveryWindowEnd
+        proposedGuestCount
+        proposedAddressLine1
+        proposedAddressLine2
+        proposedCity
+        proposedPostalCode
+        removedItemsJson
+        addedItemsJson
+        oldTotal
+        newTotal
+        createdOn
+      }
+      latestVendorAdjustment {
+        id
+        status
+        vendorNote
+        reason
+        customerResponse
+        proposedEventDate
+        proposedDeliveryWindowStart
+        proposedDeliveryWindowEnd
+        proposedGuestCount
+        proposedAddressLine1
+        proposedAddressLine2
+        proposedCity
+        proposedPostalCode
+        removedItemsJson
+        addedItemsJson
+        oldTotal
+        newTotal
+        createdOn
+      }
+    }
+  }
+`;
+
+const FETCH_CLIENT_ORDER_LIST_STATUS_QUERY = `
+  query GetClientOrderListStatus($orderId: ID!) {
+    clientOrder(id: $orderId) {
+      id
+      status
+      hasPendingVendorAdjustment
+      pendingVendorAdjustment {
+        id
+        status
+      }
+      latestVendorAdjustment {
+        id
+        status
+      }
+      modifiedItems {
+        id
       }
     }
   }
@@ -218,6 +284,24 @@ const toTitleCase = (value) =>
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+const PENDING_VENDOR_ADJUSTMENT_STATUSES = new Set([
+  "PENDING",
+  "PENDING_CUSTOMER_APPROVAL",
+]);
+
+function hasOpenPendingVendorAdjustment(node) {
+  const backendFlag = node?.hasPendingVendorAdjustment;
+  if (typeof backendFlag === "boolean") {
+    return backendFlag;
+  }
+
+  const adjustmentStatus = `${node?.pendingVendorAdjustment?.status ?? ""}`
+    .trim()
+    .toUpperCase();
+
+  return PENDING_VENDOR_ADJUSTMENT_STATUSES.has(adjustmentStatus);
+}
+
 function mapListOrder(node) {
   const mappedItems = (node.items || []).map((item) => ({
     id: item.id || "",
@@ -260,6 +344,8 @@ function mapListOrder(node) {
 
   const resolvedGrandTotal = resolveOrderGrandTotal(node, addOnsTotal);
   const hasModifiedItems = Array.isArray(node.modifiedItems) && node.modifiedItems.length > 0;
+  const hasPendingVendorAdjustment = hasOpenPendingVendorAdjustment(node);
+  const isModified = hasModifiedItems || hasPendingVendorAdjustment;
 
   return {
     id: formatId(node.id),
@@ -271,8 +357,8 @@ function mapListOrder(node) {
     createdOnRaw: node.createdOn || "",
     person: formatNumber(node.personCount, 1),
     total: formatAmount(resolvedGrandTotal),
-    status: hasModifiedItems ? "Modified" : node.status || "Ready",
-    isModified: hasModifiedItems,
+    status: isModified ? "Modified" : node.status || "Ready",
+    isModified,
     orderedDate: formatDate(node.createdOn),
     deliveredDate: formatDate(node.dueDate || node.eventDate),
     location: node.deliveryAddressStr || "Not provided",
@@ -284,7 +370,7 @@ function mapListOrder(node) {
     orderNotes: node.orderNotes || "",
     eventTime: node.eventTime || "",
     lifecycle: getOrderLifecycle(
-      hasModifiedItems ? "Modified" : node.status || "Ready",
+      isModified ? "Modified" : node.status || "Ready",
       node.eventDate || "",
     ),
     items: mappedItems,
@@ -331,6 +417,62 @@ function mapBackendModifiedItems(modifiedItems, fallbackImage) {
   }));
 }
 
+async function enrichClientOrdersWithAdjustmentState(edges = []) {
+  const safeEdges = Array.isArray(edges) ? edges : [];
+
+  const settledResults = await Promise.allSettled(
+    safeEdges.map(async (edge) => {
+      const node = edge?.node;
+      const orderId = node?.id;
+
+      if (!orderId) {
+        return { edge, detail: null };
+      }
+
+      const detailResponse = await graphqlRequest({
+        query: FETCH_CLIENT_ORDER_LIST_STATUS_QUERY,
+        variables: { orderId },
+      });
+
+      return {
+        edge,
+        detail: detailResponse?.clientOrder || null,
+      };
+    }),
+  );
+
+  return settledResults.map((result, index) => {
+    const fallbackEdge = safeEdges[index];
+
+    if (result.status !== "fulfilled") {
+      return fallbackEdge;
+    }
+
+    const node = result.value?.edge?.node || fallbackEdge?.node || {};
+    const detail = result.value?.detail || {};
+
+    return {
+      ...(result.value?.edge || fallbackEdge),
+      node: {
+        ...node,
+        status: detail?.status || node?.status,
+        hasPendingVendorAdjustment:
+          typeof detail?.hasPendingVendorAdjustment === "boolean"
+            ? detail.hasPendingVendorAdjustment
+            : node?.hasPendingVendorAdjustment,
+        pendingVendorAdjustment:
+          detail?.pendingVendorAdjustment ?? node?.pendingVendorAdjustment ?? null,
+        latestVendorAdjustment:
+          detail?.latestVendorAdjustment ?? node?.latestVendorAdjustment ?? null,
+        modifiedItems:
+          Array.isArray(detail?.modifiedItems) && detail.modifiedItems.length > 0
+            ? detail.modifiedItems
+            : node?.modifiedItems,
+      },
+    };
+  });
+}
+
 export const fetchClientOrders = createAsyncThunk(
   "orders/fetchClientOrders",
   async (_, { rejectWithValue }) => {
@@ -343,7 +485,10 @@ export const fetchClientOrders = createAsyncThunk(
           after: null,
         },
       });
-      const orders = (response.clientOrders?.edges || []).map((edge) =>
+      const enrichedEdges = await enrichClientOrdersWithAdjustmentState(
+        response.clientOrders?.edges || [],
+      );
+      const orders = enrichedEdges.map((edge) =>
         mapListOrder(edge.node),
       );
       const completedCount = orders.filter(
@@ -465,7 +610,11 @@ export const fetchClientOrderDetail = createAsyncThunk(
       const resolvedModifiedItems =
         modifiedItems.length > 0 ? modifiedItems : mapModificationCards(statuses, heroImage);
 
-      const hasPendingChanges = resolvedModifiedItems.length > 0;
+      const pendingVendorAdjustment = orderNode.pendingVendorAdjustment || null;
+      const latestVendorAdjustment = orderNode.latestVendorAdjustment || null;
+      const hasPendingVendorAdjustment = hasOpenPendingVendorAdjustment(orderNode);
+      const hasPendingChanges =
+        resolvedModifiedItems.length > 0 || hasPendingVendorAdjustment;
 
       return {
         orderId: `${orderNode.id}`,
@@ -499,6 +648,8 @@ export const fetchClientOrderDetail = createAsyncThunk(
           image: heroImage,
           items,
           modifiedItems: resolvedModifiedItems,
+          pendingVendorAdjustment,
+          latestVendorAdjustment,
         },
       };
     } catch (error) {
