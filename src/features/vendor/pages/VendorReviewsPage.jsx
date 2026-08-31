@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FiMapPin,
@@ -7,7 +7,7 @@ import {
   FiStar,
   FiTruck,
 } from "react-icons/fi";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useParams } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import BackLinkButton from "../../../components/shared/BackLinkButton";
 import { useVendorProfile } from "../hooks/useVendorProfile";
@@ -187,6 +187,7 @@ function EmptyReviewsState({ onAddReview, canReview }) {
 export default function VendorReviewsPage() {
   const { t } = useTranslation();
   const { vendorSlug } = useParams();
+  const location = useLocation();
   const { vendor, isLoading, error } = useVendorProfile(vendorSlug);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const {
@@ -200,6 +201,12 @@ export default function VendorReviewsPage() {
     createReview,
     pageInfo,
   } = useVendorReviews(vendorSlug);
+  const reviewDraft = location.state?.autoOpenReview
+    ? {
+        orderId: location.state?.reviewOrderId || "",
+        eventDate: location.state?.reviewEventDate || "",
+      }
+    : null;
 
   const featuredReview = reviews[0] ?? null;
   const otherReviews = reviews.slice(1);
@@ -250,6 +257,12 @@ export default function VendorReviewsPage() {
       })),
     [averageRating, reviewCount, scheduleLines, vendor],
   );
+
+  useEffect(() => {
+    if (vendor?.canReview && location.state?.autoOpenReview) {
+      setIsReviewModalOpen(true);
+    }
+  }, [location.state, vendor?.canReview]);
 
   if (isLoading || isReviewsLoading) {
     return (
@@ -414,6 +427,7 @@ export default function VendorReviewsPage() {
 
       {isReviewModalOpen && canReview ? (
         <VendorReviewModal
+          initialValue={reviewDraft}
           vendor={vendor}
           onCancel={() => setIsReviewModalOpen(false)}
           onSubmit={handleReviewSubmit}

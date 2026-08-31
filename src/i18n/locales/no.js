@@ -440,6 +440,7 @@ const no = {
     openForSelectedTime: "Åpen for valgt tidspunkt",
     closedOrUnavailable: "Stengt / ikke tilgjengelig",
     reviewsCount: "({{count}} anmeldelser)",
+    review: "Vurdering",
     share: "Del",
     save: "Lagre",
     saved: "Lagret",
@@ -645,6 +646,10 @@ const no = {
     staySignedIn: "Forbli innlogget",
     orderPlacedTitle: "Bestilling lagt inn",
     orderPlacedText: "Bestillingen din hos GoCatering ble sendt.",
+    reviewDeliveredTitle: "Bestillingen er levert",
+    reviewDeliveredText:
+      "Bestillingen din fra {{vendorName}} er levert. Vil du legge igjen en vurdering nÃ¥?",
+    reviewDeliveredConfirm: "Skriv en vurdering",
     signInRequiredTitle: "Innlogging kreves",
     signInRequiredText:
       "Logg inn eller opprett en konto før du legger inn en bestilling.",

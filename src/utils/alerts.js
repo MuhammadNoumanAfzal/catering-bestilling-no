@@ -109,6 +109,22 @@ export function showOrderPlacedSuccess() {
   );
 }
 
+export function showDeliveredReviewPrompt(vendorName) {
+  return Swal.fire(
+    withBaseOptions({
+      icon: "success",
+      title: i18n.t("alerts.reviewDeliveredTitle"),
+      text: i18n.t("alerts.reviewDeliveredText", {
+        vendorName: vendorName || i18n.t("alerts.thisVendor"),
+      }),
+      showCancelButton: true,
+      confirmButtonText: i18n.t("alerts.reviewDeliveredConfirm"),
+      cancelButtonText: i18n.t("alerts.notNow"),
+      cancelButtonColor: "#d7cec6",
+    }),
+  );
+}
+
 export function promptSignInRequired({
   title = i18n.t("alerts.signInRequiredTitle"),
   text = i18n.t("alerts.signInRequiredText"),

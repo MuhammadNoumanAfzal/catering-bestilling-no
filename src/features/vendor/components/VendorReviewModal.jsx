@@ -31,6 +31,7 @@ function RatingPicker({ value, onChange }) {
 }
 
 export default function VendorReviewModal({
+  initialValue = null,
   vendor,
   onCancel,
   onSubmit,
@@ -38,7 +39,7 @@ export default function VendorReviewModal({
 }) {
   const { t } = useTranslation();
   const [formState, setFormState] = useState(() =>
-    createInitialVendorReviewFormState(),
+    createInitialVendorReviewFormState(initialValue),
   );
 
   const updateField = (key, value) => {
