@@ -1,6 +1,20 @@
 import { writeOrderSummary } from "../../vendor/utils/orderSummaryStorage";
 import { writePlacedOrderDraft } from "./placedOrderDraftStorage";
 
+function resetDerivedOrderSummaryState(orderSummary) {
+  if (!orderSummary) {
+    return orderSummary;
+  }
+
+  return {
+    ...orderSummary,
+    pricing: null,
+    previewItems: [],
+    pricingCurrency: "NOK",
+    availability: null,
+  };
+}
+
 export function buildUpdatedPlacedOrderDraft(placedOrderDraft, nextValues) {
   const nextFormState = {
     ...placedOrderDraft.formState,
@@ -15,13 +29,13 @@ export function buildUpdatedPlacedOrderDraft(placedOrderDraft, nextValues) {
   };
 
   const nextCarts = placedOrderDraft.carts.map((cart) => {
-    const nextOrderSummary = {
+    const nextOrderSummary = resetDerivedOrderSummaryState({
       ...cart.orderSummary,
       deliveryAddress: nextValues.address,
       deliveryDate: nextValues.date,
       deliveryTime: nextValues.time,
       personCount: nextValues.personCount,
-    };
+    });
 
     writeOrderSummary(cart.vendor, nextOrderSummary);
 
@@ -31,10 +45,18 @@ export function buildUpdatedPlacedOrderDraft(placedOrderDraft, nextValues) {
     };
   });
 
+  const nextPlacedOrders = Array.isArray(placedOrderDraft.placedOrders)
+    ? placedOrderDraft.placedOrders.map((order) => ({
+        ...order,
+        orderStatus: nextValues.orderStatus || order.orderStatus || "",
+      }))
+    : [];
+
   return {
     ...placedOrderDraft,
     carts: nextCarts,
     formState: nextFormState,
+    placedOrders: nextPlacedOrders,
   };
 }
 
@@ -56,6 +78,20 @@ export async function savePlacedOrderDraftModificationRequest(
   const nextPlacedOrderDraft = {
     ...placedOrderDraft,
     modificationRequest: request || null,
+  };
+
+  writePlacedOrderDraft(nextPlacedOrderDraft);
+
+  return nextPlacedOrderDraft;
+}
+
+export async function savePlacedOrderDraftDirectUpdate(
+  placedOrderDraft,
+  nextValues,
+) {
+  const nextPlacedOrderDraft = {
+    ...buildUpdatedPlacedOrderDraft(placedOrderDraft, nextValues),
+    modificationRequest: null,
   };
 
   writePlacedOrderDraft(nextPlacedOrderDraft);

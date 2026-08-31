@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getOrderLifecycle } from "./components/orders/orderUtils";
+import { readPlacedOrderDraft } from "../order/services";
+import {
+  formatCurrency as formatCheckoutCurrency,
+  getCheckoutTotals,
+} from "../checkOut/components/summary/checkoutSummaryUtils";
 
 const FETCH_CLIENT_ORDERS_QUERY = `
   query FetchClientOrders($tab: String, $first: Int, $after: String) {
@@ -57,7 +62,16 @@ const FETCH_CLIENT_ORDERS_QUERY = `
             newValue
           }
           hasPendingVendorAdjustment
+          hasPendingModificationRequest
           pendingVendorAdjustment {
+            id
+            status
+          }
+          pendingModificationRequest {
+            id
+            status
+          }
+          latestModificationRequest {
             id
             status
           }
@@ -77,7 +91,10 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
       id
       status
       canModify
+      canceledAt
+      cancellationReason
       hasPendingVendorAdjustment
+      hasPendingModificationRequest
       eventName
       personCount
       pricing {
@@ -105,6 +122,7 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
       vendor {
         id
         name
+        slug
         logoUrl
       }
       items {
@@ -183,6 +201,43 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         newTotal
         createdOn
       }
+      pendingModificationRequest {
+        id
+        status
+        reason
+        customerResponse
+        createdOn
+        currentSnapshot {
+          eventDate
+          eventTime
+          personCount
+          orderNotes
+          deliveryAddress {
+            addressLine1
+            addressLine2
+            city
+            postalCode
+          }
+        }
+        proposedSnapshot {
+          eventDate
+          eventTime
+          personCount
+          orderNotes
+          deliveryAddress {
+            addressLine1
+            addressLine2
+            city
+            postalCode
+          }
+        }
+      }
+      latestModificationRequest {
+        id
+        status
+        createdOn
+        resolvedOn
+      }
     }
   }
 `;
@@ -193,11 +248,20 @@ const FETCH_CLIENT_ORDER_LIST_STATUS_QUERY = `
       id
       status
       hasPendingVendorAdjustment
+      hasPendingModificationRequest
       pendingVendorAdjustment {
         id
         status
       }
+      pendingModificationRequest {
+        id
+        status
+      }
       latestVendorAdjustment {
+        id
+        status
+      }
+      latestModificationRequest {
         id
         status
       }
@@ -259,6 +323,84 @@ const formatId = (id) => {
   return idStr.startsWith("#") ? idStr : `#${idStr}`;
 };
 
+function normalizeOrderIdForComparison(id) {
+  const rawId = `${id ?? ""}`.trim();
+
+  if (!rawId) {
+    return "";
+  }
+
+  try {
+    let base64 = rawId;
+    while (base64.length % 4 !== 0) {
+      base64 += "=";
+    }
+
+    const decoded = atob(base64);
+
+    if (decoded.includes(":")) {
+      const parts = decoded.split(":");
+      return `${parts[parts.length - 1] ?? ""}`.trim();
+    }
+  } catch {
+    // Ignore invalid base64/global IDs and use the original value.
+  }
+
+  return rawId;
+}
+
+function buildPlacedOrderDraftOverride(orderId) {
+  const draft = readPlacedOrderDraft();
+  const primaryPlacedOrder = draft?.placedOrders?.[0] || null;
+  const draftOrderId = normalizeOrderIdForComparison(primaryPlacedOrder?.orderId);
+  const normalizedOrderId = normalizeOrderIdForComparison(orderId);
+
+  if (!draftOrderId || !normalizedOrderId || draftOrderId !== normalizedOrderId) {
+    return null;
+  }
+
+  const carts = Array.isArray(draft?.carts) ? draft.carts : [];
+  const formState = draft?.formState ?? {};
+  const totals = getCheckoutTotals(
+    carts.map((cart) => ({
+      ...cart,
+      orderSummary: {
+        ...cart.orderSummary,
+        pricing: null,
+        previewItems: [],
+        pricingCurrency: "NOK",
+        availability: null,
+      },
+    })),
+  );
+  const grandTotal = Number(totals?.grandTotal ?? 0);
+  const deliveryAddress = [formState.deliveryAddress, formState.deliveryAddressLine2]
+    .filter(Boolean)
+    .join(", ");
+  const fullLocation = [
+    deliveryAddress,
+    formState.deliveryCity,
+    formState.deliveryPostalCode,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    eventDate: formState.date || "",
+    eventTime: formState.time || "",
+    personCount: Number(formState.personCount ?? 0) || 0,
+    deliveryAddress: formState.deliveryAddress || "",
+    deliverySuite: formState.deliveryAddressLine2 || "",
+    deliveryCity: formState.deliveryCity || "",
+    deliveryPostalCode: formState.deliveryPostalCode || "",
+    deliveryAddressStr: fullLocation,
+    total:
+      Number.isFinite(grandTotal) && grandTotal > 0
+        ? `NOK ${formatCheckoutCurrency(grandTotal)}`
+        : "",
+  };
+}
+
 function resolveOrderGrandTotal(node, fallbackAddOnsTotal = 0) {
   const pricing = node?.pricing || {};
   const grandTotal = parseFloat(pricing?.grandTotal || node?.grandTotal || 0);
@@ -296,6 +438,8 @@ const REJECTED_VENDOR_ADJUSTMENT_STATUSES = new Set([
   "CANCELLED",
 ]);
 
+const PENDING_CLIENT_MODIFICATION_STATUSES = new Set(["PENDING"]);
+
 function hasOpenPendingVendorAdjustment(node) {
   const backendFlag = node?.hasPendingVendorAdjustment;
   if (typeof backendFlag === "boolean") {
@@ -307,6 +451,19 @@ function hasOpenPendingVendorAdjustment(node) {
     .toUpperCase();
 
   return PENDING_VENDOR_ADJUSTMENT_STATUSES.has(adjustmentStatus);
+}
+
+function hasOpenPendingClientModification(node) {
+  const backendFlag = node?.hasPendingModificationRequest;
+  if (typeof backendFlag === "boolean") {
+    return backendFlag;
+  }
+
+  const requestStatus = `${node?.pendingModificationRequest?.status ?? ""}`
+    .trim()
+    .toUpperCase();
+
+  return PENDING_CLIENT_MODIFICATION_STATUSES.has(requestStatus);
 }
 
 function hasRejectedVendorAdjustment(node) {
@@ -330,6 +487,7 @@ function resolveClientDisplayStatus(node, isModified) {
 }
 
 function mapListOrder(node) {
+  const draftOverride = buildPlacedOrderDraftOverride(node?.id);
   const mappedItems = (node.items || []).map((item) => ({
     id: item.id || "",
     quantity: item.quantity || 1,
@@ -372,30 +530,32 @@ function mapListOrder(node) {
   const resolvedGrandTotal = resolveOrderGrandTotal(node, addOnsTotal);
   const hasModifiedItems = Array.isArray(node.modifiedItems) && node.modifiedItems.length > 0;
   const hasPendingVendorAdjustment = hasOpenPendingVendorAdjustment(node);
-  const isModified = hasModifiedItems || hasPendingVendorAdjustment;
+  const hasPendingClientModification = hasOpenPendingClientModification(node);
+  const isModified =
+    hasModifiedItems || hasPendingVendorAdjustment || hasPendingClientModification;
 
   return {
     id: formatId(node.id),
     rawId: node.id || "",
     vendor: node.vendor?.name || "Catering partner",
     eventName: node.eventName || "Corporate Event",
-    date: formatDate(node.eventDate),
-    eventDateRaw: node.eventDate || "",
+    date: formatDate(draftOverride?.eventDate || node.eventDate),
+    eventDateRaw: draftOverride?.eventDate || node.eventDate || "",
     createdOnRaw: node.createdOn || "",
-    person: formatNumber(node.personCount, 1),
-    total: formatAmount(resolvedGrandTotal),
+    person: formatNumber(draftOverride?.personCount || node.personCount, 1),
+    total: draftOverride?.total || formatAmount(resolvedGrandTotal),
     status: resolveClientDisplayStatus(node, isModified),
     isModified,
     orderedDate: formatDate(node.createdOn),
-    deliveredDate: formatDate(node.dueDate || node.eventDate),
-    location: node.deliveryAddressStr || "Not provided",
+    deliveredDate: formatDate(node.dueDate || draftOverride?.eventDate || node.eventDate),
+    location: draftOverride?.deliveryAddressStr || node.deliveryAddressStr || "Not provided",
     invoiceId: node.invoiceNumber || "",
     image: node.vendor?.coverPhotoUrl || node.vendor?.logoUrl || "/home/hero1.webp",
     subtotal: formatAmount(node.pricing?.subtotal || node.totalAmount),
     taxAmount: formatAmount(node.pricing?.taxAmount || node.taxAmount),
     deliveryFee: formatAmount(node.pricing?.deliveryFee || node.deliveryFee),
     orderNotes: node.orderNotes || "",
-    eventTime: node.eventTime || "",
+    eventTime: draftOverride?.eventTime || node.eventTime || "",
     lifecycle: getOrderLifecycle(
       resolveClientDisplayStatus(node, isModified),
       node.eventDate || "",
@@ -487,10 +647,18 @@ async function enrichClientOrdersWithAdjustmentState(edges = []) {
           typeof detail?.hasPendingVendorAdjustment === "boolean"
             ? detail.hasPendingVendorAdjustment
             : node?.hasPendingVendorAdjustment,
+        hasPendingModificationRequest:
+          typeof detail?.hasPendingModificationRequest === "boolean"
+            ? detail.hasPendingModificationRequest
+            : node?.hasPendingModificationRequest,
         pendingVendorAdjustment:
           detail?.pendingVendorAdjustment ?? node?.pendingVendorAdjustment ?? null,
+        pendingModificationRequest:
+          detail?.pendingModificationRequest ?? node?.pendingModificationRequest ?? null,
         latestVendorAdjustment:
           detail?.latestVendorAdjustment ?? node?.latestVendorAdjustment ?? null,
+        latestModificationRequest:
+          detail?.latestModificationRequest ?? node?.latestModificationRequest ?? null,
         modifiedItems:
           Array.isArray(detail?.modifiedItems) && detail.modifiedItems.length > 0
             ? detail.modifiedItems
@@ -569,6 +737,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
       ]);
 
       const orderNode = detailResponse?.clientOrder;
+      const draftOverride = buildPlacedOrderDraftOverride(orderNode?.id);
 
       if (!orderNode?.id) {
         throw new Error("Order details not found.");
@@ -640,8 +809,13 @@ export const fetchClientOrderDetail = createAsyncThunk(
       const pendingVendorAdjustment = orderNode.pendingVendorAdjustment || null;
       const latestVendorAdjustment = orderNode.latestVendorAdjustment || null;
       const hasPendingVendorAdjustment = hasOpenPendingVendorAdjustment(orderNode);
+      const pendingModificationRequest = orderNode.pendingModificationRequest || null;
+      const latestModificationRequest = orderNode.latestModificationRequest || null;
+      const hasPendingClientModification = hasOpenPendingClientModification(orderNode);
       const hasPendingChanges =
-        resolvedModifiedItems.length > 0 || hasPendingVendorAdjustment;
+        resolvedModifiedItems.length > 0 ||
+        hasPendingVendorAdjustment ||
+        hasPendingClientModification;
 
       return {
         orderId: `${orderNode.id}`,
@@ -649,12 +823,13 @@ export const fetchClientOrderDetail = createAsyncThunk(
           id: formatId(orderNode.id),
           rawId: orderNode.id || "",
           vendor: orderNode.vendor?.name || "Catering partner",
+          vendorSlug: orderNode.vendor?.slug || "",
           eventName: orderNode.eventName || "Corporate Event",
-          date: formatDate(orderNode.eventDate),
-          eventDateRaw: orderNode.eventDate || "",
+          date: formatDate(draftOverride?.eventDate || orderNode.eventDate),
+          eventDateRaw: draftOverride?.eventDate || orderNode.eventDate || "",
           createdOnRaw: orderNode.createdOn || "",
-          person: formatNumber(orderNode.personCount, 1),
-          total: formatAmount(resolvedGrandTotal),
+          person: formatNumber(draftOverride?.personCount || orderNode.personCount, 1),
+          total: draftOverride?.total || formatAmount(resolvedGrandTotal),
           subtotal: formatAmount(orderNode.pricing?.subtotal || orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),
           deliveryFee: formatAmount(orderNode.pricing?.deliveryFee || orderNode.deliveryFee),
@@ -663,20 +838,24 @@ export const fetchClientOrderDetail = createAsyncThunk(
           canModify: orderNode.canModify !== false,
           isModified: hasPendingChanges,
           orderedDate: formatDate(orderNode.createdOn),
-          deliveredDate: formatDate(orderNode.eventDate),
-          location: orderNode.deliveryAddressStr || "Not provided",
-          deliveryAddress: orderNode.deliveryAddress || "",
-          deliverySuite: orderNode.deliverySuite || "",
-          deliveryCity: orderNode.deliveryCity || "",
-          deliveryPostalCode: orderNode.deliveryPostalCode || "",
+          deliveredDate: formatDate(draftOverride?.eventDate || orderNode.eventDate),
+          location: draftOverride?.deliveryAddressStr || orderNode.deliveryAddressStr || "Not provided",
+          deliveryAddress: draftOverride?.deliveryAddress || orderNode.deliveryAddress || "",
+          deliverySuite: draftOverride?.deliverySuite || orderNode.deliverySuite || "",
+          deliveryCity: draftOverride?.deliveryCity || orderNode.deliveryCity || "",
+          deliveryPostalCode: draftOverride?.deliveryPostalCode || orderNode.deliveryPostalCode || "",
           invoiceId: orderNode.invoiceNumber || "",
           orderNotes: orderNode.orderNotes || "",
-          eventTime: orderNode.eventTime || "",
+          eventTime: draftOverride?.eventTime || orderNode.eventTime || "",
           image: heroImage,
           items,
           modifiedItems: resolvedModifiedItems,
           pendingVendorAdjustment,
           latestVendorAdjustment,
+          pendingModificationRequest,
+          latestModificationRequest,
+          canceledAt: orderNode.canceledAt || "",
+          cancellationReason: orderNode.cancellationReason || "",
         },
       };
     } catch (error) {

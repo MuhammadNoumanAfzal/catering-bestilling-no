@@ -74,6 +74,30 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
   }
 `;
 
+const UPDATE_CLIENT_ORDER_BEFORE_ACCEPTANCE_MUTATION = `
+  mutation UpdateClientOrderBeforeAcceptance($input: UpdateClientOrderBeforeAcceptanceInput!) {
+    updateClientOrderBeforeAcceptance(input: $input) {
+      success
+      message
+      code
+      order {
+        id
+        status
+        eventDate
+        eventTime
+        personCount
+        deliveryAddress
+        deliverySuite
+        deliveryCity
+        deliveryPostalCode
+        orderNotes
+        updatedAt
+        canModify
+      }
+    }
+  }
+`;
+
 const REQUEST_CLIENT_ORDER_MODIFICATION_MUTATION = `
   mutation RequestClientOrderModification($input: RequestClientOrderModificationInput!) {
     requestClientOrderModification(input: $input) {
@@ -142,6 +166,31 @@ const REJECT_VENDOR_ORDER_ADJUSTMENT_MUTATION = `
 
 function buildErrorMessage(result, fallbackMessage) {
   return result?.message || fallbackMessage;
+}
+
+function normalizeStatusToken(value) {
+  return `${value ?? ""}`
+    .trim()
+    .toUpperCase()
+    .replace(/[\s-]+/g, "_");
+}
+
+function canDirectlyUpdateClientOrder(status) {
+  return ["NEW", "PLACED", "PENDING"].includes(normalizeStatusToken(status));
+}
+
+function isGraphqlContractError(error, fieldName) {
+  const message = `${error?.message ?? ""}`.trim().toLowerCase();
+
+  return (
+    message.includes(`cannot query field '${fieldName.toLowerCase()}'`) ||
+    message.includes(`cannot query field "${fieldName.toLowerCase()}"`)
+  );
+}
+
+function isOrderAlreadyAcceptedError(error) {
+  const message = `${error?.message ?? ""}`.trim().toUpperCase();
+  return message.includes("ORDER_ALREADY_ACCEPTED");
 }
 
 function mapModificationRequest(request) {
@@ -220,6 +269,9 @@ export function mapOrderToModifyForm(order) {
     personCount: Number(order.personCount ?? order.person ?? 1) || 1,
     additionalDetails: order.orderNotes || "",
     canModify: order.canModify !== false,
+    status: order.status || "",
+    vendorSlug: order.vendorSlug || order.vendor?.slug || "",
+    vendorName: order.vendorName || order.vendor?.name || order.vendor || "",
   };
 }
 
@@ -246,6 +298,7 @@ export async function fetchOrderModificationDetails(orderId) {
     personCount: Math.max(1, Number(order.personCount ?? 1) || 1),
     additionalDetails: order.orderNotes || "",
     canModify: order.canModify !== false,
+    status: order.status || "",
     pendingModificationRequest: mapModificationRequest(order.pendingModificationRequest),
     latestModificationRequest: mapModificationRequest(order.latestModificationRequest),
     pendingVendorAdjustment: mapVendorAdjustment(order.pendingVendorAdjustment),
@@ -272,6 +325,20 @@ export async function fetchOrderReviewTarget(orderId) {
 }
 
 export async function submitOrderModification(input) {
+  const directUpdateVariables = {
+    input: {
+      orderId: input.orderId,
+      deliveryAddress: `${input.address ?? ""}`.trim(),
+      deliverySuite: `${input.addressLine2 ?? ""}`.trim(),
+      deliveryCity: `${input.city ?? ""}`.trim(),
+      deliveryPostalCode: `${input.postalCode ?? ""}`.trim(),
+      eventDate: input.date || null,
+      eventTime: input.time || null,
+      personCount: Math.max(1, Number(input.personCount ?? 1) || 1),
+      orderNotes: `${input.additionalDetails ?? ""}`.trim(),
+    },
+  };
+
   const variables = {
     input: {
       orderId: input.orderId,
@@ -286,6 +353,36 @@ export async function submitOrderModification(input) {
     },
   };
 
+  if (canDirectlyUpdateClientOrder(input.status || input.orderStatus)) {
+    try {
+      const response = await graphqlRequest({
+        query: UPDATE_CLIENT_ORDER_BEFORE_ACCEPTANCE_MUTATION,
+        variables: directUpdateVariables,
+      });
+      const result = response?.updateClientOrderBeforeAcceptance;
+
+      if (!result?.success) {
+        throw new Error(
+          buildErrorMessage(result, "Unable to update this order right now."),
+        );
+      }
+
+      return {
+        mode: "direct-update",
+        message: result.message || "Order updated successfully.",
+        order: result.order || null,
+        request: null,
+      };
+    } catch (error) {
+      if (
+        !isGraphqlContractError(error, "updateClientOrderBeforeAcceptance") &&
+        !isOrderAlreadyAcceptedError(error)
+      ) {
+        throw error;
+      }
+    }
+  }
+
   const response = await graphqlRequest({
     query: REQUEST_CLIENT_ORDER_MODIFICATION_MUTATION,
     variables,
@@ -297,8 +394,10 @@ export async function submitOrderModification(input) {
   }
 
   return {
+    mode: "modification-request",
     message: result.message || "Change request submitted successfully.",
     request: mapModificationRequest(result.request),
+    order: null,
   };
 }
 

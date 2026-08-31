@@ -267,6 +267,7 @@ export default function VendorOrdersPage() {
     try {
       const result = await submitOrderModification({
         orderId,
+        status: targetOrder?.status || "",
         ...nextValues,
       });
       await Promise.all([

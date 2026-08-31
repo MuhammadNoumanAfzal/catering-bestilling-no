@@ -7,4 +7,5 @@ export {
   buildUpdatedPlacedOrderDraft,
   savePlacedOrderDraftModificationRequest,
   savePlacedOrderDraftChanges,
+  savePlacedOrderDraftDirectUpdate,
 } from "./orderDraftService";
