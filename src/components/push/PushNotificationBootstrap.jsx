@@ -57,9 +57,15 @@ export default function PushNotificationBootstrap() {
     let unsubscribe = () => {};
     let isDisposed = false;
     const storageKey = `gocatering:fcm:customer:${user.id}`;
+    const statusKey = `${storageKey}:status`;
+
+    function setPushStatus(status) {
+      window.localStorage.setItem(statusKey, status);
+    }
 
     async function enablePush() {
       try {
+        setPushStatus("requesting-token");
         const { token, unsubscribe: stopListening } = await startFirebasePush((payload) => {
           const message = getMessage(payload);
           const link = getPushLink(payload);
@@ -88,10 +94,17 @@ export default function PushNotificationBootstrap() {
         });
         unsubscribe = stopListening;
 
-        if (!token || window.localStorage.getItem(storageKey) === token || isDisposed) {
+        if (!token) {
+          setPushStatus("no-token: check browser notification permission");
           return;
         }
 
+        if (window.localStorage.getItem(storageKey) === token || isDisposed) {
+          setPushStatus("registered");
+          return;
+        }
+
+        setPushStatus("registering-with-backend");
         const result = await graphqlRequest({
           query: REGISTER_DEVICE_TOKEN_MUTATION,
           variables: { deviceToken: token, deviceType: "WEB" },
@@ -103,9 +116,13 @@ export default function PushNotificationBootstrap() {
         }
 
         window.localStorage.setItem(storageKey, token);
+        setPushStatus("registered");
+        console.info("Firebase customer push token registered.");
       } catch (error) {
         // Push must never interrupt sign-in when the user declines permission or config is unavailable.
-        console.warn("Firebase push setup was skipped:", error?.message || error);
+        const message = error?.message || String(error);
+        setPushStatus(`error: ${message}`);
+        console.warn("Firebase push setup was skipped:", message);
       }
     }
 
