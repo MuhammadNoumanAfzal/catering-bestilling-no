@@ -17,7 +17,6 @@ import useNavbarCartSummary from "../../../components/shared/navbar/useNavbarCar
 import useUserNotifications from "../../../components/shared/navbar/useUserNotifications";
 import { vendorNavigationItems } from "../../vendorDashboard/data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
-import LanguageSwitcher from "../../../components/shared/LanguageSwitcher";
 
 function getUserAvatarUrl(user) {
   return user?.avatarThumbnailUrl || user?.avatarUrl || "";
@@ -130,8 +129,6 @@ export default function HomeNavbar() {
         </Link>
 
         <nav className="hidden items-center gap-5 md:flex lg:gap-6">
-          <LanguageSwitcher className="mr-1" />
-
           {isLoggedIn ? (
             <>
               <div className="relative" ref={desktopNotificationRef}>
@@ -299,8 +296,6 @@ export default function HomeNavbar() {
       >
         <div className="mx-4 rounded-2xl border border-gray-100 bg-white px-4 py-4 shadow-lg">
           <nav className="flex flex-col gap-3">
-            <LanguageSwitcher className="justify-between" />
-
             <Link
               to="/contact"
               onClick={closeMenu}

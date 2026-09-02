@@ -11,7 +11,6 @@ import { useAuth } from "../../features/auth";
 import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardConfig";
 import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 import { confirmLogout, showSuccessToast } from "../../utils/alerts";
-import LanguageSwitcher from "./LanguageSwitcher";
 
 const DEFAULT_SEARCH_ROUTE = "/vendors/all";
 const DEFAULT_FILTER_ROUTE = "/";
@@ -478,15 +477,6 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
           unreadNotificationCount={unreadNotificationCount}
           user={user}
         />
-        <div className="hidden xl:flex xl:justify-end">
-          <LanguageSwitcher />
-        </div>
-      </div>
-
-      <div className="pt-1 xl:hidden">
-        <div className="rounded-[20px] border border-[#ece2d9] bg-[#fffdf9] px-3 py-2 shadow-[0_8px_22px_rgba(39,24,16,0.05)]">
-          <LanguageSwitcher className="w-full justify-between" />
-        </div>
       </div>
 
     </header>
