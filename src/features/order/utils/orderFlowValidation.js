@@ -248,29 +248,6 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
     return "Please enter the delivery postal code.";
   }
 
-  if (Array.isArray(carts)) {
-    for (const cart of carts) {
-      const items = Array.isArray(cart?.orderSummary?.items)
-        ? cart.orderSummary.items
-        : [];
-
-      for (const item of items) {
-        if (item?.isAddOn) {
-          continue;
-        }
-
-        const menuAvailabilityError = getMenuAvailabilityError(
-          item,
-          formState.date,
-          formState.time,
-        );
-        if (menuAvailabilityError) {
-          return menuAvailabilityError;
-        }
-      }
-    }
-  }
-
   const deliveryPostalCode = `${formState.deliveryPostalCode ?? ""}`.trim();
   if (deliveryPostalCode && Array.isArray(carts)) {
     const normalizedInput = deliveryPostalCode.replace(/\D/g, "");

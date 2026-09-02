@@ -322,23 +322,6 @@ export function adaptApiVendorToProfile(apiVendor) {
         : deliverySlotsLabel
       : "Delivery schedule not set";
 
-  const businessHours = apiVendor.businessSettings?.businessHours || [];
-  const activeBusinessHours = businessHours.filter((hours) => hours.enabled);
-  const businessDayIndexes = activeBusinessHours
-    .map((hours) => DAY_MAP[hours.day.toLowerCase()])
-    .filter((value) => value !== undefined);
-  const takeoutLabel = activeBusinessHours
-    .map((hours) => {
-      const dayName = DAY_NAMES_SHORT[hours.day.toLowerCase()] || hours.day;
-      const slots =
-        hours.openTime && hours.closeTime
-          ? `${hours.openTime} - ${hours.closeTime}`
-          : "";
-      return `${dayName}: ${slots}`;
-    })
-    .filter(Boolean)
-    .join(" | ") || "Closed / Not available";
-
   const availability = {
     delivery: {
       days: deliveryDayIndexes,
@@ -348,8 +331,8 @@ export function adaptApiVendorToProfile(apiVendor) {
       label: deliveryLabel,
     },
     takeout: {
-      days: businessDayIndexes,
-      label: takeoutLabel,
+      days: [],
+      label: "Not offered",
     },
   };
 
