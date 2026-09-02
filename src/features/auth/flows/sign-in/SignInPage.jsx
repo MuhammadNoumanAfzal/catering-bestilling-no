@@ -4,11 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { loginUser } from "../../api";
-import {
-  isFirstCustomerLogin,
-  markCustomerFirstLoginSeen,
-} from "../../../../lib/auth/authSession";
 import { fetchSettingsProfile } from "../../../vendorDashboard/settings/api";
+import { fetchClientSettingsProfile } from "../../../clientSettings/api/clientSettingsService";
+import { fetchCheckoutAutofillProfile } from "../../../checkOut/api";
 import {
   AuthButton,
   AuthCard,
@@ -81,6 +79,39 @@ async function resolveVendorDashboardDestination(user, state) {
   }
 }
 
+function isClientProfileComplete(settings, checkoutProfile) {
+  const hasProfilePhoto = Boolean(
+    `${settings?.avatarUrl ?? settings?.avatarThumbnailUrl ?? ""}`.trim(),
+  );
+  const hasDeliveryAddress = checkoutProfile?.deliveryAddresses?.length > 0;
+  const hasInvoiceAddress = checkoutProfile?.invoiceAddresses?.length > 0;
+
+  return (
+    Number(settings?.profileCompletionPercent ?? 0) >= 100 &&
+    hasProfilePhoto &&
+    hasDeliveryAddress &&
+    hasInvoiceAddress
+  );
+}
+
+async function resolveCustomerDestination(state) {
+  if (state?.from?.pathname) {
+    return resolvePostSignInDestination(state);
+  }
+
+  try {
+    const [settings, checkoutProfile] = await Promise.all([
+      fetchClientSettingsProfile(),
+      fetchCheckoutAutofillProfile(),
+    ]);
+
+    return isClientProfileComplete(settings, checkoutProfile) ? "/" : "/settings";
+  } catch {
+    // Keep incomplete or unverifiable profiles on Settings rather than skipping onboarding.
+    return "/settings";
+  }
+}
+
 export default function SignInPage() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -112,9 +143,6 @@ export default function SignInPage() {
         user: result.user,
       });
 
-      const firstCustomerLogin = isFirstCustomerLogin(result.user);
-      markCustomerFirstLoginSeen(result.user);
-
       await showSuccessToast(
         t("auth.signIn.success", {
           name: result.user.firstName || result.user.email,
@@ -125,12 +153,12 @@ export default function SignInPage() {
         result.user,
         location.state,
       );
+      const customerDestination = vendorDashboardDestination
+        ? null
+        : await resolveCustomerDestination(location.state);
 
       navigate(
-        vendorDashboardDestination ||
-          (firstCustomerLogin
-            ? "/settings"
-            : resolvePostSignInDestination(location.state)),
+        vendorDashboardDestination || customerDestination,
         {
           replace: true,
         },
