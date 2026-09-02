@@ -21,7 +21,7 @@ export default function CheckoutHeader() {
 
           <Link to="/" className="inline-flex cursor-pointer">
             <img
-              src="/home/logo.png"
+              src="/home/logo (2).png"
               alt="GoCatering"
               className="h-16 w-auto object-contain"
             />
