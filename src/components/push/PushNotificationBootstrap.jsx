@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useAuth } from "../../features/auth";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { startFirebasePush } from "../../lib/push/firebasePush";
@@ -20,8 +22,32 @@ function getMessage(payload) {
   };
 }
 
+function getPushLink(payload) {
+  return String(payload?.data?.link || payload?.fcmOptions?.link || "").trim();
+}
+
+function openPushLink(link, navigate) {
+  if (!link) {
+    return;
+  }
+
+  try {
+    const target = new URL(link, window.location.origin);
+
+    if (target.origin === window.location.origin) {
+      navigate(`${target.pathname}${target.search}${target.hash}`);
+      return;
+    }
+
+    window.location.assign(target.href);
+  } catch {
+    navigate(link);
+  }
+}
+
 export default function PushNotificationBootstrap() {
   const { isLoggedIn, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoggedIn || !user?.id) {
@@ -36,7 +62,29 @@ export default function PushNotificationBootstrap() {
       try {
         const { token, unsubscribe: stopListening } = await startFirebasePush((payload) => {
           const message = getMessage(payload);
-          showSuccessToast(`${message.title}: ${message.body}`);
+          const link = getPushLink(payload);
+
+          if (!link) {
+            void showSuccessToast(`${message.title}: ${message.body}`);
+            return;
+          }
+
+          void Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "info",
+            title: message.title,
+            text: message.body,
+            showCancelButton: true,
+            confirmButtonText: "Open order",
+            cancelButtonText: "Dismiss",
+            timer: 7000,
+            timerProgressBar: true,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              openPushLink(link, navigate);
+            }
+          });
         });
         unsubscribe = stopListening;
 
@@ -66,7 +114,7 @@ export default function PushNotificationBootstrap() {
       isDisposed = true;
       unsubscribe();
     };
-  }, [isLoggedIn, user?.id]);
+  }, [isLoggedIn, navigate, user?.id]);
 
   return null;
 }
