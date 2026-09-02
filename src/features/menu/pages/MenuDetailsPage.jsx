@@ -724,6 +724,7 @@ export default function MenuDetailsPage() {
               />
               <MenuDeliveryForm
                 isVendorAvailable={isOrderableForSelection}
+                vendor={vendor}
                 orderSummary={orderSummary}
                 vendorNote={vendorNote}
                 deliverySlots={deliverySlots}

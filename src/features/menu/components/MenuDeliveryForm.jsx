@@ -1,7 +1,9 @@
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 import { formatTimeTo24Hour } from "../../../components/shared/navbar/navbarDateUtils";
+import { getConfiguredDeliverySlotsForDate } from "../../vendor/services/vendorAvailability";
 
 function getSlotStatusTone(slot) {
   if (slot.isFullyBooked) {
@@ -19,8 +21,28 @@ function getSlotStatusTone(slot) {
   return "bg-[#eef6ef] text-[#2f8a4b]";
 }
 
+function formatDateValue(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateLabel(dateValue) {
+  if (!dateValue) {
+    return "Choose an available date";
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(`${dateValue}T00:00:00`));
+}
+
 export default function MenuDeliveryForm({
   minimumPersons = 1,
+  vendor,
   isVendorAvailable = true,
   orderSummary,
   vendorNote,
@@ -36,6 +58,14 @@ export default function MenuDeliveryForm({
   onAddToCart,
 }) {
   const { t } = useTranslation();
+  const [dateAvailabilityError, setDateAvailabilityError] = useState("");
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const selected = orderSummary.deliveryDate
+      ? new Date(`${orderSummary.deliveryDate}T00:00:00`)
+      : new Date();
+    return new Date(selected.getFullYear(), selected.getMonth(), 1);
+  });
   const hasSlots = deliverySlots.length > 0;
   const selectedTime = orderSummary.deliveryTime || "";
   const firstAvailableSlot = deliverySlots.find((slot) => !slot.isFullyBooked) || null;
@@ -90,6 +120,33 @@ export default function MenuDeliveryForm({
     }
   }
 
+  function handleDeliveryDateSelect(nextDate) {
+    if (hasDeliverySchedule && getConfiguredDeliverySlotsForDate(vendor, nextDate).length === 0) {
+      setDateAvailabilityError("Delivery is not available on this date. Please choose a day in the vendor's delivery schedule.");
+      return;
+    }
+
+    setDateAvailabilityError("");
+    onDeliveryDateChange(nextDate);
+    setIsCalendarOpen(false);
+  }
+
+  const calendarDays = Array.from(
+    { length: 42 },
+    (_, index) => {
+      const firstWeekday = calendarMonth.getDay();
+      const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), index - firstWeekday + 1);
+      const value = formatDateValue(date);
+      const isCurrentMonth = date.getMonth() === calendarMonth.getMonth();
+      const isAvailable =
+        isCurrentMonth &&
+        value >= getTodayDateValue() &&
+        (!hasDeliverySchedule || getConfiguredDeliverySlotsForDate(vendor, value).length > 0);
+
+      return { date, value, isCurrentMonth, isAvailable };
+    },
+  );
+
   return (
     <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eadfd5] bg-white shadow-[0_18px_40px_rgba(55,34,19,0.05)]">
       <div className="border-b border-[#efe4da] bg-[linear-gradient(135deg,#fffdfb_0%,#fff5ed_100%)] px-4 py-4 sm:px-5">
@@ -109,14 +166,40 @@ export default function MenuDeliveryForm({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-[176px_minmax(0,1fr)]">
         <label className="block min-w-0">
           <span className="text-[13px] font-medium text-[#3f342b]">{t("menu.date")}</span>
-          <div className="mt-1">
-            <input
-              type="date"
-              value={orderSummary.deliveryDate}
-              onChange={(event) => onDeliveryDateChange(event.target.value)}
-              min={getTodayDateValue()}
-              className="block min-w-0 w-full max-w-full cursor-pointer rounded-[14px] border border-[#d7cdc4] bg-[#fffdfa] px-3 py-3 text-[14px] text-[#1d1713] outline-none transition focus:border-[#cf6e38] sm:px-4"
-            />
+          <div className="relative mt-1">
+            <button
+              aria-expanded={isCalendarOpen}
+              className="flex w-full items-center justify-between rounded-[14px] border border-[#d7cdc4] bg-[#fffdfa] px-3 py-3 text-left text-[14px] text-[#1d1713] outline-none transition hover:border-[#cf6e38] sm:px-4"
+              onClick={() => setIsCalendarOpen((current) => !current)}
+              type="button"
+            >
+              <span>{formatDateLabel(orderSummary.deliveryDate)}</span>
+              <span className="text-[#cf6e38]">&#128197;</span>
+            </button>
+            {isCalendarOpen ? (
+              <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[300px] rounded-[16px] border border-[#dfd4cb] bg-white p-3 shadow-[0_18px_38px_rgba(55,34,19,0.18)]">
+                <div className="mb-3 flex items-center justify-between">
+                  <button className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))} type="button">&#8249;</button>
+                  <strong className="text-[14px] text-[#2b231e]">{calendarMonth.toLocaleString("en-GB", { month: "long", year: "numeric" })}</strong>
+                  <button className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))} type="button">&#8250;</button>
+                </div>
+                <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-[#8c7a6e]">
+                  {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => <span key={day}>{day}</span>)}
+                </div>
+                <div className="mt-2 grid grid-cols-7 gap-1">
+                  {calendarDays.map(({ date, value, isCurrentMonth, isAvailable }) => {
+                    const isSelected = value === orderSummary.deliveryDate;
+                    return <button key={value} disabled={!isAvailable} onClick={() => handleDeliveryDateSelect(value)} type="button" className={`h-9 rounded-[8px] text-[12px] font-semibold transition ${isSelected ? "bg-[#cf6e38] text-white" : isAvailable ? "cursor-pointer text-[#2b231e] hover:bg-[#fff0e8] hover:text-[#cf6e38]" : "cursor-not-allowed text-[#c9beb5] line-through"} ${!isCurrentMonth ? "opacity-40" : ""}`}>{date.getDate()}</button>;
+                  })}
+                </div>
+                <p className="mt-3 border-t border-[#efe4dc] pt-2 text-[11px] leading-4 text-[#8a7161]">Only highlighted dates have delivery availability.</p>
+              </div>
+            ) : null}
+            {dateAvailabilityError ? (
+              <p className="mt-2 text-[12px] font-medium leading-5 text-[#b34d22]">
+                {dateAvailabilityError}
+              </p>
+            ) : null}
           </div>
         </label>
 
