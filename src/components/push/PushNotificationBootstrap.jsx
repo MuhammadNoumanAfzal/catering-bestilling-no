@@ -45,6 +45,27 @@ function openPushLink(link, navigate) {
   }
 }
 
+function showForegroundBrowserNotification(message, link, navigate) {
+  if (Notification.permission !== "granted") {
+    return;
+  }
+
+  try {
+    const notification = new Notification(message.title, {
+      body: message.body,
+      icon: "/favicon.ico",
+    });
+
+    notification.onclick = () => {
+      window.focus();
+      openPushLink(link, navigate);
+      notification.close();
+    };
+  } catch (error) {
+    console.warn("Unable to show foreground browser notification:", error);
+  }
+}
+
 export default function PushNotificationBootstrap() {
   const { isLoggedIn, user } = useAuth();
   const navigate = useNavigate();
@@ -69,6 +90,8 @@ export default function PushNotificationBootstrap() {
         const { token, unsubscribe: stopListening } = await startFirebasePush((payload) => {
           const message = getMessage(payload);
           const link = getPushLink(payload);
+
+          showForegroundBrowserNotification(message, link, navigate);
 
           if (!link) {
             void showSuccessToast(`${message.title}: ${message.body}`);
