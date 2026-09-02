@@ -20,7 +20,6 @@ import {
   confirmRemoveItem,
   promptSignInRequired,
   showAuthErrorAlert,
-  showMenuUnavailableAlert,
   showSuccessToast,
   showVendorClosureAlert,
 } from "../../../utils/alerts";
@@ -38,10 +37,7 @@ import {
 import { useMenuDetails } from "../hooks/useMenuDetails";
 import { useSavedVendorStatus } from "../../vendor/hooks/useSavedVendorStatus";
 import { fetchAvailableDeliverySlots } from "../../checkOut/api";
-import {
-  getMenuAvailabilityError,
-  validateOrderSummaryBasics,
-} from "../../order/utils/orderFlowValidation";
+import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
 
 function resetDerivedOrderSummaryState(summary) {
   if (!summary) {
@@ -86,7 +82,6 @@ export default function MenuDetailsPage() {
   });
   const [showScrollToTop, setShowScrollToTop] = useState(false);
   const addOnsSliderRef = useRef(null);
-  const lastMenuAvailabilityAlertKeyRef = useRef("");
   const lastClosureAlertKeyRef = useRef("");
   const lastSlotAuthPromptKeyRef = useRef("");
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
@@ -450,72 +445,14 @@ export default function MenuDetailsPage() {
     hasDeliverySchedule &&
     !isLoadingSlots &&
     deliverySlots.length === 0;
-  const menuAvailabilityError = getMenuAvailabilityError(
-    menuItem,
-    orderSummary?.deliveryDate,
-    orderSummary?.deliveryTime,
-  );
-  const menuAvailableDaysLabel = useMemo(() => {
-    const labels = {
-      su: "Sunday",
-      mo: "Monday",
-      tu: "Tuesday",
-      we: "Wednesday",
-      th: "Thursday",
-      fr: "Friday",
-      sa: "Saturday",
-    };
-
-    const availableDays = Array.isArray(menuItem?.availableDays)
-      ? menuItem.availableDays
-      : [];
-
-    return availableDays
-      .map((day) => labels[String(day || "").toLowerCase()])
-      .filter(Boolean)
-      .join(", ");
-  }, [menuItem]);
-  const isMenuAvailableForSelection = !menuAvailabilityError;
   const isOrderableForSelection =
     vendorAvailableForSelection &&
-    isMenuAvailableForSelection &&
     !hasNoSlotsForSelectedDate;
   const hasMainDishInCart = Boolean(
     orderSummary?.items?.some(
       (item) => !item?.isAddOn && item?.productId === menuItem?.id,
     ),
   );
-
-  useEffect(() => {
-    const deliveryDate = `${orderSummary?.deliveryDate ?? ""}`.trim();
-
-    if (!deliveryDate || !menuAvailabilityError || vendorAvailableForSelection === false) {
-      lastMenuAvailabilityAlertKeyRef.current = "";
-      return;
-    }
-
-    const nextAlertKey = `${menuItem?.id || "menu"}:${deliveryDate}:${menuAvailabilityError}`;
-
-    if (lastMenuAvailabilityAlertKeyRef.current === nextAlertKey) {
-      return;
-    }
-
-    lastMenuAvailabilityAlertKeyRef.current = nextAlertKey;
-
-    showMenuUnavailableAlert({
-      menuTitle: menuItem?.title || menuItem?.modal?.heading || "This menu",
-      message: menuAvailabilityError,
-      availableDaysLabel: menuAvailableDaysLabel,
-    });
-  }, [
-    menuAvailabilityError,
-    menuAvailableDaysLabel,
-    menuItem?.id,
-    menuItem?.modal?.heading,
-    menuItem?.title,
-    orderSummary?.deliveryDate,
-    vendorAvailableForSelection,
-  ]);
 
   if (loading) {
     return (
@@ -624,14 +561,6 @@ export default function MenuDetailsPage() {
       return;
     }
 
-    if (!isMenuAvailableForSelection) {
-      await showAuthErrorAlert(
-        menuAvailabilityError || t("menu.unavailableForSelectedDate"),
-        "Menu unavailable",
-      );
-      return;
-    }
-
     const validationError = validateOrderSummaryBasics({
       deliveryDate: orderSummary.deliveryDate,
       deliveryTime: orderSummary.deliveryTime,
@@ -685,20 +614,6 @@ export default function MenuDetailsPage() {
       unitPrice: baseItemUnitPrice,
       price: baseItemPricingType === "fixed" ? linePrice : 0,
       pricingType: baseItemPricingType,
-      availableDays: Array.isArray(menuItem.availableDays) ? menuItem.availableDays : [],
-      minLeadTimeHours: Number(menuItem.minLeadTimeHours || 0),
-      minLeadTimeDays: Number(menuItem.minLeadTimeDays || 0),
-      isAvailabilityWindowEnabled: Boolean(menuItem.isAvailabilityWindowEnabled),
-      availableFrom: menuItem.availableFrom || "",
-      availableUntil: menuItem.availableUntil || "",
-      menuAvailability: {
-        availableDays: Array.isArray(menuItem.availableDays) ? menuItem.availableDays : [],
-        minLeadTimeHours: Number(menuItem.minLeadTimeHours || 0),
-        minLeadTimeDays: Number(menuItem.minLeadTimeDays || 0),
-        isAvailabilityWindowEnabled: Boolean(menuItem.isAvailabilityWindowEnabled),
-        availableFrom: menuItem.availableFrom || "",
-        availableUntil: menuItem.availableUntil || "",
-      },
       selectedOptions,
       specialInstructions: normalizedVendorNote,
       details: [
