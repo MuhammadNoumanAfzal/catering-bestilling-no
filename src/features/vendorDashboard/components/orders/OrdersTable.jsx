@@ -3,7 +3,7 @@ import { FiMoreHorizontal, FiStar } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { getOrderStatusClasses } from "./orderUtils";
 
-export default function OrdersTable({ orders, onOpenDetails }) {
+export default function OrdersTable({ orders, onOpenDetails, onViewChangeRequest }) {
   const { t } = useTranslation();
   const [openMenuKey, setOpenMenuKey] = useState(null);
   const menuRef = useRef(null);
@@ -96,6 +96,18 @@ export default function OrdersTable({ orders, onOpenDetails }) {
                       >
                         {t("vendorPanel.orders.details")}
                       </button>
+                      {order.isModified ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onViewChangeRequest(order);
+                            setOpenMenuKey(null);
+                          }}
+                          className="mt-1 w-full cursor-pointer rounded-[10px] border-t border-[#f0e8e1] px-3 py-2 text-left text-sm font-semibold text-[#cf6e38] transition hover:bg-[#fff5ef]"
+                        >
+                          View change request
+                        </button>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
@@ -189,6 +201,15 @@ export default function OrdersTable({ orders, onOpenDetails }) {
                 {t("vendorPanel.orders.viewDetails")}
               </button>
             </div>
+            {order.isModified ? (
+              <button
+                type="button"
+                onClick={() => onViewChangeRequest(order)}
+                className="mt-3 w-full rounded-xl border border-[#f0c9b6] bg-[#fff8f3] px-4 py-2.5 text-sm font-semibold text-[#cf6e38] transition hover:bg-[#ffefe5]"
+              >
+                View change request
+              </button>
+            ) : null}
           </article>
         ))}
       </div>

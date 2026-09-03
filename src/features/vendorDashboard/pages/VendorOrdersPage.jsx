@@ -12,6 +12,7 @@ import {
 } from "../../order/api/orderModificationService";
 import OrderDateFilter from "../components/orders/OrderDateFilter";
 import OrderDetailsModal from "../components/orders/OrderDetailsModal";
+import OrderChangeRequestModal from "../components/orders/OrderChangeRequestModal";
 import OrderStatusSummaryCard from "../components/orders/OrderStatusSummaryCard";
 import OrdersPagination from "../components/orders/OrdersPagination";
 import OrdersTable from "../components/orders/OrdersTable";
@@ -64,6 +65,7 @@ export default function VendorOrdersPage() {
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isChangeRequestOpen, setIsChangeRequestOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [isModifySaving, setIsModifySaving] = useState(false);
   const [isResolvingVendorAdjustment, setIsResolvingVendorAdjustment] = useState(false);
@@ -238,12 +240,20 @@ export default function VendorOrdersPage() {
   }
 
   function handleOpenDetails(order) {
+    setIsChangeRequestOpen(false);
     setSelectedOrder(order);
+    dispatch(fetchClientOrderDetail(order.rawId || order.id));
+  }
+
+  function handleViewChangeRequest(order) {
+    setSelectedOrder(order);
+    setIsChangeRequestOpen(true);
     dispatch(fetchClientOrderDetail(order.rawId || order.id));
   }
 
   function handleCloseDetails() {
     setIsModifyModalOpen(false);
+    setIsChangeRequestOpen(false);
     setModifyError("");
     setSelectedOrder(null);
     dispatch(clearSelectedOrderDetail());
@@ -499,6 +509,7 @@ export default function VendorOrdersPage() {
           <OrdersTable
             orders={visibleOrders}
             onOpenDetails={handleOpenDetails}
+            onViewChangeRequest={handleViewChangeRequest}
           />
 
           <OrdersPagination
@@ -517,7 +528,7 @@ export default function VendorOrdersPage() {
         isLoading={selectedOrderDetailStatus === "loading"}
         isResolvingVendorAdjustment={isResolvingVendorAdjustment}
         error={selectedOrderDetailError}
-        isOpen={Boolean(selectedOrder)}
+        isOpen={Boolean(selectedOrder) && !isChangeRequestOpen}
         onApproveVendorAdjustment={handleApproveVendorChanges}
         onClose={handleCloseDetails}
         onModify={() => {
@@ -525,6 +536,17 @@ export default function VendorOrdersPage() {
           setIsModifyModalOpen(true);
         }}
         onRejectVendorAdjustment={handleRejectVendorChanges}
+      />
+
+      <OrderChangeRequestModal
+        order={selectedOrderDetail || selectedOrder}
+        isOpen={isChangeRequestOpen}
+        isLoading={selectedOrderDetailStatus === "loading"}
+        isResolving={isResolvingVendorAdjustment}
+        error={selectedOrderDetailError}
+        onApprove={handleApproveVendorChanges}
+        onReject={handleRejectVendorChanges}
+        onClose={handleCloseDetails}
       />
 
       {isModifyModalOpen ? (
