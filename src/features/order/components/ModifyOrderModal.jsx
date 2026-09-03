@@ -50,6 +50,13 @@ function getTodayDateValue() {
   return `${year}-${month}-${day}`;
 }
 
+function formatDateValue(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function normalizeTime24h(value) {
   const normalized = `${value ?? ""}`.trim();
   const match = normalized.match(/^(\d{1,2}):(\d{2})$/);
@@ -185,6 +192,13 @@ export default function ModifyOrderModal({
   const [validationError, setValidationError] = useState("");
   const [vendorProfile, setVendorProfile] = useState(null);
   const [isVendorAvailabilityLoading, setIsVendorAvailabilityLoading] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const selectedDate = initialValue?.date
+      ? new Date(`${initialValue.date}T00:00:00`)
+      : new Date();
+    return new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+  });
 
   useEffect(() => {
     setFormState(createInitialModifyOrderFormState(initialValue));
@@ -234,6 +248,39 @@ export default function ModifyOrderModal({
   const normalizedTime = useMemo(
     () => normalizeTime24h(formState.time),
     [formState.time],
+  );
+  const deliverySlots = useMemo(
+    () => getConfiguredDeliverySlotsForDate(vendorProfile, formState.date),
+    [formState.date, vendorProfile],
+  );
+  const selectedDeliverySlot = useMemo(
+    () =>
+      deliverySlots.find(
+        (slot) => normalizedTime >= slot.start && normalizedTime <= slot.end,
+      ) || null,
+    [deliverySlots, normalizedTime],
+  );
+  const editableDeliverySlot = selectedDeliverySlot || deliverySlots[0] || null;
+  const calendarDays = useMemo(
+    () =>
+      Array.from({ length: 42 }, (_, index) => {
+        const firstWeekday = calendarMonth.getDay();
+        const date = new Date(
+          calendarMonth.getFullYear(),
+          calendarMonth.getMonth(),
+          index - firstWeekday + 1,
+        );
+        const value = formatDateValue(date);
+        const isCurrentMonth = date.getMonth() === calendarMonth.getMonth();
+        const isAvailable =
+          isCurrentMonth &&
+          value >= getTodayDateValue() &&
+          Boolean(vendorProfile) &&
+          getConfiguredDeliverySlotsForDate(vendorProfile, value).length > 0;
+
+        return { date, value, isAvailable };
+      }),
+    [calendarMonth, vendorProfile],
   );
   const availabilityState = useMemo(() => {
     if (!vendorProfile) {
@@ -363,6 +410,16 @@ export default function ModifyOrderModal({
     }));
   };
 
+  const handleDeliveryDateSelect = (date) => {
+    if (vendorProfile && getConfiguredDeliverySlotsForDate(vendorProfile, date).length === 0) {
+      return;
+    }
+
+    setValidationError("");
+    setFormState((current) => ({ ...current, date, time: "" }));
+    setIsCalendarOpen(false);
+  };
+
   const handleSubmit = () => {
     const nextValidationError = validateModifyForm(formState, t, vendorProfile);
 
@@ -390,15 +447,18 @@ export default function ModifyOrderModal({
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1a1410]/50 px-3 py-3 backdrop-blur-[2px] sm:px-4 sm:py-4">
-      <div className="flex max-h-[calc(100vh-24px)] w-full max-w-[620px] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_24px_80px_rgba(20,15,10,0.22)] sm:max-h-[calc(100vh-32px)]">
-        <div className="border-b border-[#eee4da] px-5 py-3 sm:px-6">
-          <h2 className="type-h3 text-[#17120f]">{t("modifyOrder.title")}</h2>
-          <p className="mt-0.5 text-[12px] text-[#7a7067]">
+      <div className="flex max-h-[calc(100vh-24px)] w-full max-w-[650px] flex-col overflow-hidden rounded-[24px] border border-white/70 bg-white shadow-[0_24px_80px_rgba(20,15,10,0.22)] sm:max-h-[calc(100vh-32px)]">
+        <div className="border-b border-[#eee4da] bg-[linear-gradient(135deg,#fffdfb_0%,#fff6ef_100%)] px-5 py-4 sm:px-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#c67a4d]">
+            Order update
+          </p>
+          <h2 className="mt-1 type-h3 text-[#17120f]">{t("modifyOrder.title")}</h2>
+          <p className="mt-1 text-[12px] text-[#7a7067]">
             {t("modifyOrder.subtitle")}
           </p>
         </div>
 
-        <div className="space-y-3 overflow-y-auto px-4 py-4 sm:px-6">
+        <div className="space-y-4 overflow-y-auto px-4 py-4 sm:px-6">
           {error || validationError ? (
             <div className="rounded-[14px] border border-[#f1c8bb] bg-[#fff5f1] px-4 py-3 text-sm text-[#8a5642]">
               {validationError || error}
@@ -414,22 +474,76 @@ export default function ModifyOrderModal({
             </div>
           ) : null}
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <section className="rounded-[18px] border border-[#eee4da] bg-[#fffdfa] p-3.5 sm:p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48673]">
+                  Delivery schedule
+                </p>
+                <p className="mt-1 text-[13px] text-[#766b62]">
+                  Choose one of the vendor's available dates and times.
+                </p>
+              </div>
+              {formState.date && normalizedTime ? (
+                <span className="shrink-0 rounded-full bg-[#eaf5ee] px-2.5 py-1 text-[11px] font-semibold text-[#2f7a45]">
+                  Selected
+                </span>
+              ) : null}
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
                 {t("orderConfirmed.date")}
               </span>
-              <input
-                type="date"
-                value={formState.date}
-                onChange={(event) => updateField("date", event.target.value)}
-                disabled={isLoading || isSaving}
-                min={getTodayDateValue()}
-                className="h-10 w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 text-[#26211d] outline-none transition focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
-              />
-              {formattedDate ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  disabled={isLoading || isSaving || isVendorAvailabilityLoading || !vendorProfile}
+                  onClick={() => setIsCalendarOpen((current) => !current)}
+                  className="flex h-10 w-full items-center justify-between rounded-[10px] border border-[#dad1c8] bg-white px-3 text-left text-sm text-[#26211d] outline-none transition hover:border-[#cf6e38] disabled:cursor-not-allowed disabled:bg-[#faf7f4] disabled:text-[#a2978c]"
+                >
+                  <span>{formattedDate || "Choose an available date"}</span>
+                  <span className="text-[#cf6e38]">&#128197;</span>
+                </button>
+                {isCalendarOpen ? (
+                  <div className="absolute left-0 top-[calc(100%+8px)] z-40 w-[300px] rounded-[16px] border border-[#dfd4cb] bg-white p-3 shadow-[0_18px_38px_rgba(55,34,19,0.18)]">
+                    <div className="mb-3 flex items-center justify-between">
+                      <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))} className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]">&#8249;</button>
+                      <strong className="text-[14px] text-[#2b231e]">
+                        {calendarMonth.toLocaleString("en-GB", { month: "long", year: "numeric" })}
+                      </strong>
+                      <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))} className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]">&#8250;</button>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-[#8c7a6e]">
+                      {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => <span key={day}>{day}</span>)}
+                    </div>
+                    <div className="mt-2 grid grid-cols-7 gap-1">
+                      {calendarDays.map(({ date, value, isAvailable }) => {
+                        const isSelected = value === formState.date;
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            disabled={!isAvailable}
+                            onClick={() => handleDeliveryDateSelect(value)}
+                            className={`h-9 rounded-[8px] text-[12px] font-semibold transition ${isSelected ? "bg-[#cf6e38] text-white" : isAvailable ? "cursor-pointer text-[#2b231e] hover:bg-[#fff0e8] hover:text-[#cf6e38]" : "cursor-not-allowed text-[#c9beb5] line-through"}`}
+                          >
+                            {date.getDate()}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="mt-3 border-t border-[#efe4dc] pt-2 text-[11px] leading-4 text-[#8a7161]">
+                      Only highlighted dates have delivery availability.
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+              {!vendorProfile ? (
                 <p className="mt-1 text-[11px] text-[#8b8177]">
-                  {t("modifyOrder.selectedDate", { date: formattedDate })}
+                  {isVendorAvailabilityLoading
+                    ? "Loading vendor availability..."
+                    : "Vendor availability could not be loaded."}
                 </p>
               ) : null}
             </label>
@@ -438,15 +552,63 @@ export default function ModifyOrderModal({
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
                 {t("menu.time")}
               </span>
-              <PreferredTimePicker
-                value={normalizedTime}
-                onChange={(value) => updateField("time", value)}
-                selectedDate={formState.date}
-                placeholder="HH:MM"
-              />
+              {!formState.date ? (
+                <div className="h-10 rounded-[10px] border border-[#dad1c8] bg-[#faf7f4] px-3 py-2.5 text-sm text-[#9b8f84]">
+                  Select an available date first
+                </div>
+              ) : deliverySlots.length === 0 ? (
+                <div className="rounded-[10px] border border-[#f1c8bb] bg-[#fff5f1] px-3 py-2 text-sm text-[#8a5642]">
+                  This vendor has no delivery time available on the selected date.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9a8572]">
+                    Available delivery windows
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {deliverySlots.map((slot) => {
+                      const isSelected = selectedDeliverySlot?.start === slot.start && selectedDeliverySlot?.end === slot.end;
+                      return (
+                        <button
+                          key={`${slot.start}-${slot.end}`}
+                          type="button"
+                          disabled={isLoading || isSaving}
+                          onClick={() => updateField("time", slot.start)}
+                          className={`rounded-[10px] border px-3 py-2 text-xs font-semibold transition ${isSelected ? "border-[#cf6e38] bg-[#fff1e8] text-[#cf6e38] shadow-[0_4px_10px_rgba(207,110,56,0.10)]" : "border-[#e4d8ce] bg-white text-[#6f6258] hover:border-[#cf6e38]/45 hover:bg-[#fffaf6]"}`}
+                        >
+                          {slot.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <PreferredTimePicker
+                    value={normalizedTime}
+                    onChange={(value) => updateField("time", value)}
+                    selectedDate={formState.date}
+                    minTimeValue={editableDeliverySlot?.start || ""}
+                    maxTimeValue={editableDeliverySlot?.end || ""}
+                    placeholder="HH:MM"
+                  />
+                  {editableDeliverySlot ? (
+                    <p className="text-[11px] text-[#8b8177]">
+                      Select a time between {editableDeliverySlot.start} and {editableDeliverySlot.end}.
+                    </p>
+                  ) : null}
+                </div>
+              )}
             </label>
-          </div>
+            </div>
+          </section>
 
+          <section className="rounded-[18px] border border-[#eee4da] bg-white p-3.5 sm:p-4">
+            <div className="mb-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48673]">
+                Delivery details
+              </p>
+              <p className="mt-1 text-[13px] text-[#766b62]">
+                Confirm where the order should be delivered and the guest count.
+              </p>
+            </div>
           <label className="block">
             <span className="type-subpara mb-2 block text-[#2d2d2d]">
               {t("checkout.address")}
@@ -460,7 +622,7 @@ export default function ModifyOrderModal({
             />
           </label>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <label className="block min-w-0">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
                 {t("orderConfirmed.personCount")}
@@ -511,7 +673,7 @@ export default function ModifyOrderModal({
             </label>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
                 {t("checkout.city")}
@@ -540,6 +702,7 @@ export default function ModifyOrderModal({
               />
             </label>
           </div>
+          </section>
 
           {isVendorAvailabilityLoading ? (
             <div className="rounded-[14px] border border-[#efe4da] bg-[#fcf8f4] px-4 py-3 text-sm text-[#6f665d]">
