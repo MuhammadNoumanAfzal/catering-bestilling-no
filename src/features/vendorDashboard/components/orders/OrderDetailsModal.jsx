@@ -75,6 +75,36 @@ function hasOpenPendingVendorAdjustment(adjustment) {
   return PENDING_VENDOR_ADJUSTMENT_STATUSES.has(normalizedStatus);
 }
 
+function splitVendorAdjustmentNote(value) {
+  const requestedDishPrefix = "Requested included-dish changes:";
+  const requestedDishChanges = [];
+  const noteLines = [];
+
+  `${value ?? ""}`
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .forEach((line) => {
+      if (line.startsWith(requestedDishPrefix)) {
+        requestedDishChanges.push(
+          ...line
+            .slice(requestedDishPrefix.length)
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        );
+        return;
+      }
+
+      noteLines.push(line);
+    });
+
+  return {
+    requestedDishChanges,
+    vendorNote: noteLines.join("\n"),
+  };
+}
+
 function adjustmentChangesPrice(adjustment, currentGuestCount) {
   if (!adjustment) {
     return false;
@@ -137,6 +167,7 @@ export default function OrderDetailsModal({
   const visibleVendorAdjustment = hasPendingVendorAdjustment
     ? pendingVendorAdjustment
     : latestVendorAdjustment;
+  const adjustmentNote = splitVendorAdjustmentNote(visibleVendorAdjustment?.vendorNote);
   const shouldShowPriceChange = adjustmentChangesPrice(visibleVendorAdjustment, order?.person);
   const proposedAddress = [
     visibleVendorAdjustment?.proposedAddressLine1,
@@ -390,15 +421,57 @@ export default function OrderDetailsModal({
                         ? "Review the vendor's requested changes"
                         : "Latest vendor adjustment"}
                     </h3>
-                    <p className="mt-1 text-sm text-[#746b63]">
-                      {visibleVendorAdjustment.vendorNote ||
-                        "The vendor proposed updates for this order."}
-                    </p>
+                    {adjustmentNote.vendorNote ? (
+                      <p className="mt-1 text-sm text-[#746b63]">
+                        {adjustmentNote.vendorNote}
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-sm text-[#746b63]">
+                        Review the proposed details before responding.
+                      </p>
+                    )}
                   </div>
                   <span className="inline-flex rounded-full bg-[#fff1e8] px-3 py-1 text-[12px] font-semibold text-[#cf6e38]">
                     {visibleVendorAdjustment.status || "PENDING"}
                   </span>
                 </div>
+
+                {adjustmentNote.requestedDishChanges.length > 0 ? (
+                  <div className="mt-4 rounded-[18px] border border-[#f0dfd3] bg-white p-4 shadow-[0_6px_18px_rgba(31,22,15,0.04)]">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
+                          Requested dish changes
+                        </p>
+                        <p className="mt-1 text-sm text-[#746b63]">
+                          The vendor is requesting changes to these included dishes.
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-[#fff1e8] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
+                        {adjustmentNote.requestedDishChanges.length} requested
+                      </span>
+                    </div>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {adjustmentNote.requestedDishChanges.map((item, index) => {
+                        const separatorIndex = item.indexOf(" - ");
+                        const menuName = separatorIndex >= 0 ? item.slice(0, separatorIndex) : "Included dish";
+                        const dishName = separatorIndex >= 0 ? item.slice(separatorIndex + 3) : item;
+
+                        return (
+                          <div
+                            key={`${item}-${index}`}
+                            className="rounded-[14px] border border-[#f1e8e0] bg-[#fffaf6] px-3 py-2.5"
+                          >
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a08d7d]">
+                              {menuName}
+                            </p>
+                            <p className="mt-1 text-sm font-semibold leading-5 text-[#2b2622]">{dishName}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {visibleVendorAdjustment.proposedEventDate ? (
