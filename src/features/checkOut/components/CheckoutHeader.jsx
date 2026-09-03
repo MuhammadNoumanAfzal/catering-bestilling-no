@@ -23,7 +23,7 @@ export default function CheckoutHeader() {
             <img
               src="/home/logo (2).png"
               alt="GoCatering"
-              className="h-16 w-auto object-contain"
+              className="h-auto w-32 object-contain"
             />
           </Link>
         </div>

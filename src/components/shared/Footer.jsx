@@ -41,7 +41,7 @@ export default function Footer() {
                 <img
                   src="/home/whiteLogo.png"
                   alt="GoCatering"
-                  className="h-12 w-auto object-contain"
+                  className="h-auto w-32 object-contain"
                 />
               </Link>
 
