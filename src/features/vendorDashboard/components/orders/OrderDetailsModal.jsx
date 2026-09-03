@@ -77,7 +77,13 @@ function hasOpenPendingVendorAdjustment(adjustment) {
 
 function splitVendorAdjustmentNote(value) {
   const requestedDishPrefix = "Requested included-dish changes:";
+  const suggestedMenuPrefix = "Suggested menu additions:";
+  const suggestedIncludedDishPrefix = "Suggested included dishes from other menus:";
+  const customAlternativePrefix = "Custom alternative suggestions:";
   const requestedDishChanges = [];
+  const suggestedMenuItems = [];
+  const suggestedIncludedDishes = [];
+  const customAlternativeSuggestions = [];
   const noteLines = [];
 
   `${value ?? ""}`
@@ -96,11 +102,47 @@ function splitVendorAdjustmentNote(value) {
         return;
       }
 
+      if (line.startsWith(suggestedMenuPrefix)) {
+        suggestedMenuItems.push(
+          ...line
+            .slice(suggestedMenuPrefix.length)
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        );
+        return;
+      }
+
+      if (line.startsWith(suggestedIncludedDishPrefix)) {
+        suggestedIncludedDishes.push(
+          ...line
+            .slice(suggestedIncludedDishPrefix.length)
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        );
+        return;
+      }
+
+      if (line.startsWith(customAlternativePrefix)) {
+        customAlternativeSuggestions.push(
+          ...line
+            .slice(customAlternativePrefix.length)
+            .split(";")
+            .map((item) => item.trim())
+            .filter(Boolean),
+        );
+        return;
+      }
+
       noteLines.push(line);
     });
 
   return {
     requestedDishChanges,
+    suggestedMenuItems,
+    suggestedIncludedDishes,
+    customAlternativeSuggestions,
     vendorNote: noteLines.join("\n"),
   };
 }
@@ -168,6 +210,9 @@ export default function OrderDetailsModal({
     ? pendingVendorAdjustment
     : latestVendorAdjustment;
   const adjustmentNote = splitVendorAdjustmentNote(visibleVendorAdjustment?.vendorNote);
+  const includedDishReplacements = Array.isArray(visibleVendorAdjustment?.includedDishReplacements)
+    ? visibleVendorAdjustment.includedDishReplacements
+    : [];
   const shouldShowPriceChange = adjustmentChangesPrice(visibleVendorAdjustment, order?.person);
   const proposedAddress = [
     visibleVendorAdjustment?.proposedAddressLine1,
@@ -436,22 +481,39 @@ export default function OrderDetailsModal({
                   </span>
                 </div>
 
-                {adjustmentNote.requestedDishChanges.length > 0 ? (
+                {includedDishReplacements.length > 0 || adjustmentNote.requestedDishChanges.length > 0 ? (
                   <div className="mt-4 rounded-[18px] border border-[#f0dfd3] bg-white p-4 shadow-[0_6px_18px_rgba(31,22,15,0.04)]">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a8572]">
-                          Requested dish changes
+                          Included dish replacements
                         </p>
                         <p className="mt-1 text-sm text-[#746b63]">
-                          The vendor is requesting changes to these included dishes.
+                          These dishes will be replaced within the existing menu price.
                         </p>
                       </div>
                       <span className="rounded-full bg-[#fff1e8] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
-                        {adjustmentNote.requestedDishChanges.length} requested
+                        {includedDishReplacements.length || adjustmentNote.requestedDishChanges.length} requested
                       </span>
                     </div>
                     <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {includedDishReplacements.map((replacement, index) => (
+                        <div
+                          key={`${replacement.orderItemId}-${replacement.removedMenuItem?.id || index}`}
+                          className="rounded-[14px] border border-[#f1e8e0] bg-[#fffaf6] px-3 py-2.5"
+                        >
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a08d7d]">Replace</p>
+                          <p className="mt-1 text-sm font-semibold leading-5 text-[#6f6258] line-through">
+                            {replacement.removedMenuItem?.title || "Included dish"}
+                          </p>
+                          <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#5d8b68]">
+                            With {replacement.replacementMenu?.name || "Vendor menu"}
+                          </p>
+                          <p className="mt-1 text-sm font-semibold leading-5 text-[#263529]">
+                            {replacement.replacementMenuItem?.title || "Replacement dish"}
+                          </p>
+                        </div>
+                      ))}
                       {adjustmentNote.requestedDishChanges.map((item, index) => {
                         const separatorIndex = item.indexOf(" - ");
                         const menuName = separatorIndex >= 0 ? item.slice(0, separatorIndex) : "Included dish";
@@ -469,6 +531,48 @@ export default function OrderDetailsModal({
                           </div>
                         );
                       })}
+                    </div>
+                  </div>
+                ) : null}
+
+                {adjustmentNote.suggestedMenuItems.length > 0 ||
+                adjustmentNote.suggestedIncludedDishes.length > 0 ||
+                adjustmentNote.customAlternativeSuggestions.length > 0 ? (
+                  <div className="mt-4 rounded-[18px] border border-[#dce9df] bg-[#f9fdf9] p-4 shadow-[0_6px_18px_rgba(31,22,15,0.04)]">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5d8b68]">
+                          Suggested alternatives
+                        </p>
+                        <p className="mt-1 text-sm text-[#617064]">
+                          Review the replacements proposed by the vendor.
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-[#eaf5ee] px-2.5 py-1 text-[11px] font-semibold text-[#2f7a45]">
+                        {adjustmentNote.suggestedMenuItems.length + adjustmentNote.suggestedIncludedDishes.length + adjustmentNote.customAlternativeSuggestions.length} suggested
+                      </span>
+                    </div>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {adjustmentNote.suggestedMenuItems.map((item, index) => (
+                        <div key={`menu-suggestion-${item}-${index}`} className="rounded-[14px] border border-[#dce9df] bg-white px-3 py-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#78a083]">From vendor menu</p>
+                          <p className="mt-1 text-sm font-semibold leading-5 text-[#263529]">{item}</p>
+                        </div>
+                      ))}
+                      {adjustmentNote.suggestedIncludedDishes.map((item, index) => (
+                        <div key={`included-dish-suggestion-${item}-${index}`} className="rounded-[14px] border border-[#eadfd2] bg-[#fffdfa] px-3 py-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a07b5e]">From another menu</p>
+                          <p className="mt-1 text-sm font-semibold leading-5 text-[#352d27]">{item}</p>
+                          <p className="mt-1 text-[11px] text-[#8b8177]">Included in the existing menu price.</p>
+                        </div>
+                      ))}
+                      {adjustmentNote.customAlternativeSuggestions.map((item, index) => (
+                        <div key={`custom-suggestion-${item}-${index}`} className="rounded-[14px] border border-[#eadfd2] bg-[#fffdfa] px-3 py-2.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#a07b5e]">Custom alternative</p>
+                          <p className="mt-1 text-sm font-semibold leading-5 text-[#352d27]">{item}</p>
+                          <p className="mt-1 text-[11px] text-[#8b8177]">Price will be confirmed with you.</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ) : null}

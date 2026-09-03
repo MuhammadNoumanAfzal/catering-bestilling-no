@@ -180,6 +180,23 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         oldTotal
         newTotal
         createdOn
+        includedDishReplacements {
+          orderItemId
+          quantity
+          removedMenuItem {
+            id
+            title
+            description
+            coverImage { fileUrl }
+          }
+          replacementMenu { id name }
+          replacementMenuItem {
+            id
+            title
+            description
+            coverImage { fileUrl }
+          }
+        }
       }
       latestVendorAdjustment {
         id
@@ -200,6 +217,23 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         oldTotal
         newTotal
         createdOn
+        includedDishReplacements {
+          orderItemId
+          quantity
+          removedMenuItem {
+            id
+            title
+            description
+            coverImage { fileUrl }
+          }
+          replacementMenu { id name }
+          replacementMenuItem {
+            id
+            title
+            description
+            coverImage { fileUrl }
+          }
+        }
       }
       pendingModificationRequest {
         id
