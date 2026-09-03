@@ -124,7 +124,7 @@ export default function HomeNavbar() {
           <img
             src="/home/logo (2).png"
             alt="GoCatering"
-            className="h-22 w-auto object-contain sm:h-12 md:h-34"
+            className="h-auto w-32 object-contain"
           />
         </Link>
 
