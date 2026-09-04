@@ -12,13 +12,12 @@ export default function CheckoutAddressControls({
   const hasSavedAddresses = Array.isArray(savedAddresses) && savedAddresses.length > 0;
 
   return (
-    <div className="flex flex-col gap-2 sm:items-end">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <div className="flex flex-wrap items-center gap-2">
         {hasSavedAddresses ? (
           <select
             value={selectedAddressId}
             onChange={(event) => onSelectAddress(event.target.value)}
-            className="type-subpara min-w-[170px] rounded-full border border-[#d8d0c7] bg-[#fcfaf8] px-3 py-2 text-[#37322f] outline-none"
+            className="min-w-[150px] rounded-full border border-[#ded6ce] bg-[#fffdfa] px-3 py-1.5 text-[12px] text-[#37322f] outline-none"
           >
             {savedAddresses.map((address) => (
               <option key={address.id} value={address.id}>
@@ -31,16 +30,10 @@ export default function CheckoutAddressControls({
         <button
           type="button"
           onClick={onToggleEditing}
-          className="rounded-full border border-[#efcdb7] bg-[#fff5ee] px-3.5 py-2 text-sm font-semibold text-[#c86434] transition hover:bg-[#fff0e6]"
+          className="rounded-full border border-[#efcdb7] bg-[#fff5ee] px-3 py-1.5 text-[12px] font-semibold text-[#c86434] transition hover:bg-[#fff0e6]"
         >
           {isEditing ? t("checkout.hideEditor") : title}
         </button>
-      </div>
-      <p className="text-[12px] text-[#8b8177]">
-        {hasSavedAddresses
-          ? t("checkout.savedAddressHint")
-          : t("checkout.noSavedAddressHint")}
-      </p>
     </div>
   );
 }
