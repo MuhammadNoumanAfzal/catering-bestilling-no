@@ -126,7 +126,6 @@ function IncludedMenuDetailsModal({ includedMenuItems, isOpen, onClose }) {
 }
 
 export default function MenuIncludedSection({
-  menuItem,
   includedMenuItems,
 }) {
   const { t } = useTranslation();
@@ -137,7 +136,7 @@ export default function MenuIncludedSection({
   }
 
   return (
-    <div className="mt-6 rounded-[28px] border border-[#eadfd5] bg-white p-4 shadow-[0_18px_40px_rgba(55,34,19,0.05)] sm:p-5">
+    <div id="menu-included-details" className="mt-6 scroll-mt-6 rounded-[28px] border border-[#eadfd5] bg-white p-4 shadow-[0_18px_40px_rgba(55,34,19,0.05)] sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
@@ -173,29 +172,6 @@ export default function MenuIncludedSection({
               label={includedItem.label}
             />
           ))}
-        </div>
-      </div>
-
-      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="rounded-[20px] border border-[#efe4da] bg-[linear-gradient(180deg,#fffdfb_0%,#fff6ee_100%)] p-4">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#8d7768]">
-            {t("menu.orderingNote")}
-          </p>
-          <p className="mt-2 text-[14px] leading-7 text-[#4d433c]">
-            {t("menu.orderingNoteText")}
-          </p>
-        </div>
-
-        <div className="rounded-[20px] border border-[#eddccf] bg-[#fff4ea] p-4">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#9e6b4f]">
-            {t("menu.minimumOrder")}
-          </p>
-          <p className="mt-2 text-[24px] font-semibold tracking-[-0.04em] text-[#1c1713]">
-            {t("menu.persons", { count: menuItem.serves })}
-          </p>
-          <p className="mt-2 text-[14px] leading-6 text-[#5e5046]">
-            {t("menu.minimumOrderText")}
-          </p>
         </div>
       </div>
 
