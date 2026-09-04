@@ -148,36 +148,36 @@ export default function MenuDeliveryForm({
   );
 
   return (
-    <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eadfd5] bg-white shadow-[0_18px_40px_rgba(55,34,19,0.05)]">
-      <div className="border-b border-[#efe4da] bg-[linear-gradient(135deg,#fffdfb_0%,#fff5ed_100%)] px-4 py-4 sm:px-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
+    <div className="mt-4 overflow-hidden rounded-[22px] border border-[#eadfd5] bg-white shadow-[0_12px_28px_rgba(55,34,19,0.04)]">
+      <div className="border-b border-[#efe4da] bg-[linear-gradient(135deg,#fffdfb_0%,#fff5ed_100%)] px-3 py-3 sm:px-4">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#b37a59]">
           {t("menu.bookingSetup")}
         </p>
-        <h2 className="mt-2 text-[22px] font-semibold text-[#1c1713]">
+        <h2 className="mt-1 text-[19px] font-semibold text-[#1c1713]">
           {t("menu.deliveryDateTime")}
         </h2>
-        <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
+        <p className="mt-1 max-w-2xl text-[12px] leading-5 text-[#6b5d53]">
           {t("menu.bookingIntro")}
         </p>
       </div>
 
-      <div className="p-4 sm:p-5">
+      <div className="p-3 sm:p-4">
 
-      <div className="rounded-[22px] border border-[#efe5dc] bg-[linear-gradient(180deg,#fffdfa_0%,#fff8f2_100%)] p-3 sm:p-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="rounded-[18px] border border-[#efe5dc] bg-[linear-gradient(180deg,#fffdfa_0%,#fff8f2_100%)] p-2.5 sm:p-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-[320px_minmax(0,1fr)]">
         <label className="block min-w-0">
-          <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8f6850]">{t("menu.date")}</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8f6850]">{t("menu.date")}</span>
           <div className="relative mt-1">
             <button
               aria-expanded={isCalendarOpen}
-              className="flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[18px] border border-[#d7cdc4] bg-white px-3 py-3 text-left text-[15px] text-[#1d1713] outline-none transition hover:border-[#cf6e38] hover:shadow-[0_12px_24px_rgba(207,110,56,0.08)] sm:px-4"
+              className="flex min-h-[50px] w-full items-center justify-between gap-2.5 rounded-[15px] border border-[#d7cdc4] bg-white px-3 py-2 text-left text-[14px] text-[#1d1713] outline-none transition hover:border-[#cf6e38] hover:shadow-[0_10px_20px_rgba(207,110,56,0.07)]"
               onClick={() => setIsCalendarOpen((current) => !current)}
               type="button"
             >
               <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium">
                 {formatDateLabel(orderSummary.deliveryDate)}
               </span>
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fff3ea] text-[16px] text-[#cf6e38]">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff3ea] text-[14px] text-[#cf6e38]">
                 &#128197;
               </span>
             </button>
@@ -209,19 +209,19 @@ export default function MenuDeliveryForm({
         </label>
 
         <label className="block min-w-0">
-          <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8f6850]">{t("menu.time")}</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8f6850]">{t("menu.time")}</span>
           <div className="mt-1">
             {!orderSummary.deliveryDate ? (
-              <p className="flex min-h-[56px] min-w-0 items-center rounded-[18px] border border-[#e3d8ce] bg-white px-3 py-3 text-[13px] text-[#9b8f84] sm:px-4">
+              <p className="flex min-h-[50px] min-w-0 items-center rounded-[15px] border border-[#e3d8ce] bg-white px-3 py-2 text-[12px] text-[#9b8f84]">
                 {t("menu.selectDateFirst")}
               </p>
             ) : isLoadingSlots ? (
-              <div className="flex min-h-[56px] min-w-0 items-center gap-2 rounded-[18px] border border-[#e3d8ce] bg-white px-3 py-3 sm:px-4">
+              <div className="flex min-h-[50px] min-w-0 items-center gap-2 rounded-[15px] border border-[#e3d8ce] bg-white px-3 py-2">
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
-                <span className="text-[13px] text-[#9b8f84]">{t("menu.checkingSlots")}</span>
+                <span className="text-[12px] text-[#9b8f84]">{t("menu.checkingSlots")}</span>
               </div>
             ) : slotAccessRequiresAuth ? (
-              <p className="flex min-h-[56px] items-center rounded-[18px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-3 text-[13px] text-[#8a5a3a] sm:px-4">
+              <p className="flex min-h-[50px] items-center rounded-[15px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-2 text-[12px] text-[#8a5a3a]">
                 {slotAccessMessage || t("menu.signInForSlots")}
               </p>
             ) : hasSlots ? (
@@ -343,20 +343,20 @@ export default function MenuDeliveryForm({
       </div>
       </div>
 
-      <div className="mt-6 rounded-[22px] border border-[#efe4da] bg-[#fffdfa] p-4 sm:p-5">
-        <h3 className="text-[18px] font-semibold text-[#1c1713]">
+      <div className="mt-3 rounded-[16px] border border-[#efe4da] bg-[#fffdfa] p-2.5">
+        <h3 className="text-[15px] font-semibold text-[#1c1713]">
           {t("menu.eventDetails")}
         </h3>
-        <p className="mt-2 text-[14px] leading-6 text-[#6b5d53]">
+        <p className="mt-0.5 text-[11px] leading-4 text-[#6b5d53]">
           {t("menu.guestCountIntro")}
         </p>
 
-        <div className="mt-3 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <span className="text-[15px] text-[#1d1713]">{t("menu.personsLabel")}</span>
+        <div className="mt-1.5 flex flex-col items-start gap-1.5 sm:flex-row sm:items-center">
+          <span className="text-[12px] text-[#1d1713]">{t("menu.personsLabel")}</span>
           <select
             value={orderSummary.personCount}
             onChange={(event) => onPersonCountChange(Number(event.target.value))}
-            className="cursor-pointer rounded-[12px] border border-[#d7cdc4] bg-white px-3 py-2 text-[14px] font-medium text-[#1d1713] outline-none transition focus:border-[#cf6e38]"
+            className="cursor-pointer rounded-[9px] border border-[#d7cdc4] bg-white px-2 py-1 text-[12px] font-medium text-[#1d1713] outline-none transition focus:border-[#cf6e38]"
           >
             {Array.from(
               { length: Math.max(50, minimumPersons) - minimumPersons + 1 },
@@ -367,23 +367,23 @@ export default function MenuDeliveryForm({
               </option>
             ))}
           </select>
-          <span className="text-[13px] text-[#7e7469]">
+          <span className="text-[11px] text-[#7e7469]">
             {t("menu.minimumLabel", { count: minimumPersons })}
           </span>
         </div>
 
       </div>
 
-      <div className="mt-6 border-t border-[#ece4dc] pt-5">
-        <p className="text-[16px] font-semibold text-[#1d1713]">{t("menu.addVendorNote")}</p>
-        <p className="mt-1 text-[13px] leading-5 text-[#7e7469]">
+      <div className="mt-4 border-t border-[#ece4dc] pt-3">
+        <p className="text-[14px] font-semibold text-[#1d1713]">{t("menu.addVendorNote")}</p>
+        <p className="mt-0.5 text-[12px] leading-4 text-[#7e7469]">
           {t("menu.addVendorNoteDesc")}
         </p>
         <textarea
           value={vendorNote}
           onChange={(event) => onVendorNoteChange(event.target.value)}
           placeholder={t("menu.addNotePlaceholder")}
-          className="mt-3 h-28 w-full rounded-[16px] border border-[#d7cdc4] bg-[#fffdfa] px-4 py-3 text-[14px] text-[#3f342b] outline-none transition focus:border-[#cf6e38]"
+          className="mt-2 h-20 w-full rounded-[14px] border border-[#d7cdc4] bg-[#fffdfa] px-3 py-2 text-[13px] text-[#3f342b] outline-none transition focus:border-[#cf6e38]"
         />
       </div>
 
@@ -391,7 +391,7 @@ export default function MenuDeliveryForm({
           type="button"
           onClick={onAddToCart}
           disabled={!isVendorAvailable}
-          className={`mt-6 block w-full rounded-[16px] px-4 py-3.5 text-center text-[15px] font-semibold text-white shadow-[0_16px_30px_rgba(207,110,56,0.18)] transition ${
+          className={`mt-4 block w-full rounded-[14px] px-4 py-2.5 text-center text-[14px] font-semibold text-white shadow-[0_12px_24px_rgba(207,110,56,0.16)] transition ${
             isVendorAvailable
               ? "cursor-pointer bg-[#cf6e38] hover:bg-[#bb602d]"
               : "cursor-not-allowed bg-[#d7c5b9] shadow-none"
