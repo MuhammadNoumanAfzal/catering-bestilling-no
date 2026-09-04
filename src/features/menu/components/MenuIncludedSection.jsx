@@ -24,13 +24,13 @@ function IncludedMenuRow({ allergens, description, image, label }) {
     <button
       type="button"
       onClick={() => setIsOpen((current) => !current)}
-      className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-[18px] border border-transparent px-3 py-3 text-left transition hover:border-[#ece1d7] hover:bg-[#fff9f4]"
+      className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-[14px] border border-transparent px-2.5 py-1.5 text-left transition hover:border-[#ece1d7] hover:bg-[#fff9f4]"
     >
-      <div className="flex min-w-0 flex-1 items-start gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
         <img
           src={image}
           alt={label}
-          className="h-12 w-16 rounded-[10px] object-cover shadow-[0_8px_18px_rgba(55,34,19,0.08)]"
+          className="h-9 w-12 rounded-[8px] object-cover shadow-[0_6px_12px_rgba(55,34,19,0.07)]"
         />
         <div className="min-w-0 flex-1">
           <span className="block text-[15px] font-semibold text-[#1b1713]">
@@ -136,33 +136,33 @@ export default function MenuIncludedSection({
   }
 
   return (
-    <div id="menu-included-details" className="mt-6 scroll-mt-6 rounded-[28px] border border-[#eadfd5] bg-white p-4 shadow-[0_18px_40px_rgba(55,34,19,0.05)] sm:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div id="menu-included-details" className="mt-4 scroll-mt-6 rounded-[22px] border border-[#eadfd5] bg-white p-3 shadow-[0_12px_28px_rgba(55,34,19,0.04)] sm:p-3.5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b37a59]">
             {t("menu.includedInOrder")}
           </p>
-          <h2 className="mt-2 text-[22px] font-semibold text-[#1c1713]">
+          <h2 className="mt-1 text-[22px] font-semibold text-[#1c1713]">
             {t("menu.whatsIncludedTitle")}
           </h2>
-          <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
+          <p className="mt-1 max-w-2xl text-[14px] leading-6 text-[#6b5d53]">
             {t("menu.includedIntro")}
           </p>
         </div>
         <button
           type="button"
           onClick={() => setIsDetailsModalOpen(true)}
-          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-[#e1d4c8] bg-[#fff8f2] px-4 py-2 text-[14px] font-semibold text-[#2b221d] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
+          className="inline-flex cursor-pointer items-center justify-center rounded-full border border-[#e1d4c8] bg-[#fff8f2] px-3 py-1.5 text-[14px] font-semibold text-[#2b221d] transition hover:border-[#cf6e38] hover:text-[#cf6e38]"
         >
           {t("menu.viewFullMenu")}
         </button>
       </div>
 
-      <div className="mt-5 rounded-[22px] border border-[#efe4da] bg-[#fffdfa] p-3 sm:p-4">
+      <div className="mt-3 rounded-[18px] border border-[#efe4da] bg-[#fffdfa] p-2.5 sm:p-3">
         <h3 className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#8d7768]">
           {t("menu.quickPreview")}
         </h3>
-        <div className="mt-3 border-t border-[#ece4dc] pt-2">
+        <div className="mt-2 border-t border-[#ece4dc] pt-1">
           {includedMenuItems.map((includedItem) => (
             <IncludedMenuRow
               key={includedItem.label}
