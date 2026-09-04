@@ -163,21 +163,26 @@ export default function MenuDeliveryForm({
 
       <div className="p-4 sm:p-5">
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-[176px_minmax(0,1fr)]">
+      <div className="rounded-[22px] border border-[#efe5dc] bg-[linear-gradient(180deg,#fffdfa_0%,#fff8f2_100%)] p-3 sm:p-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[320px_minmax(0,1fr)]">
         <label className="block min-w-0">
-          <span className="text-[13px] font-medium text-[#3f342b]">{t("menu.date")}</span>
+          <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8f6850]">{t("menu.date")}</span>
           <div className="relative mt-1">
             <button
               aria-expanded={isCalendarOpen}
-              className="flex w-full items-center justify-between rounded-[14px] border border-[#d7cdc4] bg-[#fffdfa] px-3 py-3 text-left text-[14px] text-[#1d1713] outline-none transition hover:border-[#cf6e38] sm:px-4"
+              className="flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[18px] border border-[#d7cdc4] bg-white px-3 py-3 text-left text-[15px] text-[#1d1713] outline-none transition hover:border-[#cf6e38] hover:shadow-[0_12px_24px_rgba(207,110,56,0.08)] sm:px-4"
               onClick={() => setIsCalendarOpen((current) => !current)}
               type="button"
             >
-              <span>{formatDateLabel(orderSummary.deliveryDate)}</span>
-              <span className="text-[#cf6e38]">&#128197;</span>
+              <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium">
+                {formatDateLabel(orderSummary.deliveryDate)}
+              </span>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#fff3ea] text-[16px] text-[#cf6e38]">
+                &#128197;
+              </span>
             </button>
             {isCalendarOpen ? (
-              <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[300px] rounded-[16px] border border-[#dfd4cb] bg-white p-3 shadow-[0_18px_38px_rgba(55,34,19,0.18)]">
+              <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[320px] rounded-[16px] border border-[#dfd4cb] bg-white p-3 shadow-[0_18px_38px_rgba(55,34,19,0.18)]">
                 <div className="mb-3 flex items-center justify-between">
                   <button className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))} type="button">&#8249;</button>
                   <strong className="text-[14px] text-[#2b231e]">{calendarMonth.toLocaleString("en-GB", { month: "long", year: "numeric" })}</strong>
@@ -204,19 +209,19 @@ export default function MenuDeliveryForm({
         </label>
 
         <label className="block min-w-0">
-          <span className="text-[13px] font-medium text-[#3f342b]">{t("menu.time")}</span>
+          <span className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8f6850]">{t("menu.time")}</span>
           <div className="mt-1">
             {!orderSummary.deliveryDate ? (
-              <p className="min-w-0 rounded-[14px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-3 text-[13px] text-[#9b8f84]">
+              <p className="flex min-h-[56px] min-w-0 items-center rounded-[18px] border border-[#e3d8ce] bg-white px-3 py-3 text-[13px] text-[#9b8f84] sm:px-4">
                 {t("menu.selectDateFirst")}
               </p>
             ) : isLoadingSlots ? (
-              <div className="flex min-w-0 items-center gap-2 rounded-[14px] border border-[#d9d1c7] bg-[#faf7f4] px-3 py-3">
+              <div className="flex min-h-[56px] min-w-0 items-center gap-2 rounded-[18px] border border-[#e3d8ce] bg-white px-3 py-3 sm:px-4">
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#cf6e38]/30 border-t-[#cf6e38]" />
                 <span className="text-[13px] text-[#9b8f84]">{t("menu.checkingSlots")}</span>
               </div>
             ) : slotAccessRequiresAuth ? (
-              <p className="rounded-[14px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-3 text-[13px] text-[#8a5a3a]">
+              <p className="flex min-h-[56px] items-center rounded-[18px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-3 text-[13px] text-[#8a5a3a] sm:px-4">
                 {slotAccessMessage || t("menu.signInForSlots")}
               </p>
             ) : hasSlots ? (
@@ -335,6 +340,7 @@ export default function MenuDeliveryForm({
             )}
           </div>
         </label>
+      </div>
       </div>
 
       <div className="mt-6 rounded-[22px] border border-[#efe4da] bg-[#fffdfa] p-4 sm:p-5">

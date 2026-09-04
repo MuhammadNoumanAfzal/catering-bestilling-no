@@ -356,10 +356,10 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
   };
 
   const headerClasses =
-    `sticky top-0 z-40 bg-white px-3 py-2 sm:px-4 md:px-6 lg:px-10 ${className}`.trim();
+    `sticky top-0 z-40 bg-white px-3 py-1 sm:px-4 md:px-6 lg:px-10 ${className}`.trim();
   const innerClasses = hideLogo
-    ? "flex w-full items-center justify-between gap-2 py-1.5 sm:gap-3 sm:py-2 lg:grid lg:grid-cols-[1fr_auto]"
-    : "flex w-full items-center justify-between gap-2 py-1.5 sm:gap-3 sm:py-2 lg:grid lg:grid-cols-[auto_1fr_auto]";
+    ? "flex w-full items-center justify-between gap-2 py-1 sm:gap-3 lg:grid lg:grid-cols-[1fr_auto]"
+    : "flex w-full items-center justify-between gap-2 py-1 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto]";
 
   return (
     <header className={headerClasses}>
@@ -369,7 +369,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
             <img
               src="/home/logo (2).png"
               alt="GoCatering"
-              className="h-auto w-32 object-contain"
+              className="h-22 w-28 object-contain"
             />
           </Link>
         ) : null}

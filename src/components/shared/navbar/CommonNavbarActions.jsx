@@ -59,7 +59,7 @@ export default function CommonNavbarActions({
           <button
             type="button"
             onClick={onNotificationToggle}
-            className={`relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-11 sm:w-11 ${
+            className={`relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-9 sm:w-9 ${
               hasFreshNotification
                 ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
                 : "border-[#e6ddd5]"
@@ -92,7 +92,7 @@ export default function CommonNavbarActions({
         <button
           type="button"
           onClick={onCheckoutClick}
-          className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-11 sm:w-11"
+          className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-9 sm:w-9"
           aria-label={t("nav.goToCheckoutCart")}
         >
           <FiShoppingCart className="text-[16px] sm:text-[18px]" />
