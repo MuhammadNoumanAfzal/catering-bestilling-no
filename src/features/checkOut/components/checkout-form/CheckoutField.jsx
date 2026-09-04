@@ -8,14 +8,14 @@ export default function CheckoutField({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="type-h5 mb-3 block text-[#2d2d2d]">{label}</span>
+      <span className="mb-1.5 block text-[13px] font-medium text-[#2d2d2d]">{label}</span>
       <input
         {...props}
         placeholder={placeholder}
-        className={`type-para h-8 w-full rounded-[2px] border border-[#d9d1c7] bg-white px-2 text-[#2d2d2d] outline-none placeholder:text-[#a49b92] ${inputClassName}`}
+        className={`h-9 w-full rounded-[8px] border border-[#ded6ce] bg-[#fffdfa] px-3 text-[13px] text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#cf6e38]/10 placeholder:text-[#a49b92] ${inputClassName}`}
       />
       {helperText ? (
-        <span className="mt-2 block text-[12px] leading-5 text-[#8b8177]">
+        <span className="mt-1 block text-[11px] leading-4 text-[#8b8177]">
           {helperText}
         </span>
       ) : null}

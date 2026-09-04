@@ -10,13 +10,13 @@ export default function OrderItemCard({
   onRemoveItem,
 }) {
   return (
-    <div className="rounded-[12px] border border-[#eee7df] bg-[#fffdfa] p-3">
+    <div className="rounded-[10px] bg-[#fffdfa] p-2.5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="type-para font-semibold text-[#2c2c2c]">
+          <p className="text-[13px] font-semibold text-[#2c2c2c]">
             {item.quantity} x {item.name}
           </p>
-          <p className="mt-1 type-para text-[#8b8580]">
+          <p className="mt-0.5 text-[12px] text-[#8b8580]">
             {item.isAddOn
               ? `Qty ${item.quantity}`
               : `Serves ${getItemServes(item, personCount)}`}
@@ -24,7 +24,7 @@ export default function OrderItemCard({
         </div>
 
         <div className="text-right">
-          <p className="type-para font-semibold text-[#252525]">
+          <p className="text-[13px] font-semibold text-[#252525]">
             NOK {formatCurrency(item.effectivePrice)}
           </p>
           <button
@@ -38,7 +38,7 @@ export default function OrderItemCard({
       </div>
 
       {(item.details ?? []).length > 0 ? (
-        <ul className="mt-2 space-y-1 text-[14px] leading-4 text-[#8b8580]">
+        <ul className="mt-1.5 space-y-0.5 text-[12px] leading-4 text-[#8b8580]">
           {item.details.map((detail) => (
             <li key={detail}>- {detail}</li>
           ))}

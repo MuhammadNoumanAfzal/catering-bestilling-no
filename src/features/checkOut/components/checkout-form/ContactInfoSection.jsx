@@ -14,7 +14,7 @@ export default function ContactInfoSection({
   return (
     <CheckoutSection title={t("checkout.contactInfo")}>
       {mode === "corporate" ? (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2.5 sm:grid-cols-2">
           <CheckoutField
             label={t("checkout.companyName")}
             value={formState.companyName}
@@ -54,7 +54,7 @@ export default function ContactInfoSection({
           />
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2.5 sm:grid-cols-2">
           <CheckoutField
             label={t("checkout.firstName")}
             value={formState.firstName}

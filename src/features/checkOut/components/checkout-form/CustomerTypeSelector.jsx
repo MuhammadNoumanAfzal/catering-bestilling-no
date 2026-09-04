@@ -11,13 +11,13 @@ export default function CustomerTypeSelector({
 }) {
   const { t } = useTranslation();
   return (
-    <section className="rounded-[10px] border border-[#e6dfd7] bg-white p-3 shadow-[0_2px_10px_rgba(26,18,10,0.08)]">
+    <section className="border-b border-[#eee7e0] pb-4">
       <div className="flex items-center gap-2 text-[#222222]">
         <FiUser className="type-h3 text-[#d46331]" />
         <p className="type-h3 font-semibold leading-none">{t("checkout.customerType")}</p>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-4 type-h5">
+      <div className="mt-3 grid grid-cols-2 gap-2">
         {VALID_CHECKOUT_TYPES.map((type) => {
           const isActive = normalizedType === type;
           const Icon = type === "corporate" ? FiBriefcase : FiUser;
@@ -27,7 +27,7 @@ export default function CustomerTypeSelector({
               key={type}
               type="button"
               onClick={() => onTypeChange(type)}
-              className={`flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[4px] border text-[14px] font-medium transition ${
+              className={`flex h-9 cursor-pointer items-center justify-center gap-2 rounded-[10px] border text-[13px] font-medium transition ${
                 isActive
                   ? "border-[#f08a61] bg-[#fff3ee] text-[#d46331]"
                   : "border-[#c9c4bd] bg-white text-[#6b655f]"

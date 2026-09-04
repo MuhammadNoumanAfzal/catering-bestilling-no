@@ -54,19 +54,19 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-[#faf8f5]">
       <CheckoutHeader />
 
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="overflow-hidden border border-[#d8d2ca]">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_380px]">
-            <section className="min-w-0 p-3 sm:p-4">
+      <main className="mx-auto max-w-9xl px-4 py-4 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-[24px] border border-[#e8e1da] bg-white shadow-[0_16px_38px_rgba(55,34,19,0.05)]">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_360px]">
+            <section className="min-w-0 p-4 sm:p-5">
               <CustomerTypeSelector
                 normalizedType={normalizedType}
                 onTypeChange={handleTypeChange}
               />
 
-              <div className="mt-3 space-y-3">
+              <div className="mt-4 space-y-4">
                 {checkoutErrorMessage ? (
                   <div className="rounded-[12px] border border-[#f2d8cb] bg-[#fff7f2] px-3 py-3 text-[13px] text-[#9a5838]">
                     {checkoutErrorMessage}
