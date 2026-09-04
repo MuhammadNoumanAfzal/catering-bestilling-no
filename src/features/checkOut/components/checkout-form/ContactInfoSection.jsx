@@ -9,8 +9,6 @@ export default function ContactInfoSection({
   updateField,
 }) {
   const { t } = useTranslation();
-  const invoiceReferenceHelper =
-    "Optional: add a PO number, department name, or internal billing reference if your company uses one.";
   return (
     <CheckoutSection title={t("checkout.contactInfo")}>
       {mode === "corporate" ? (
@@ -37,7 +35,6 @@ export default function ContactInfoSection({
               updateField("invoiceReference", event.target.value)
             }
             placeholder={CHECKOUT_PLACEHOLDERS.invoiceReference}
-            helperText={invoiceReferenceHelper}
           />
           <CheckoutField
             label={t("checkout.email")}
@@ -74,7 +71,6 @@ export default function ContactInfoSection({
               updateField("invoiceReference", event.target.value)
             }
             placeholder={CHECKOUT_PLACEHOLDERS.invoiceReference}
-            helperText={invoiceReferenceHelper}
           />
           <CheckoutField
             label={t("checkout.phone")}

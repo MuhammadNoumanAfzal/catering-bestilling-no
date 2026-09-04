@@ -91,13 +91,12 @@ export default function EventDetailsSection({
 
   return (
     <CheckoutSection title={t("menu.eventDetails")}>
-      <div className="grid gap-2.5 sm:grid-cols-2">
+      <div className="grid gap-2.5 sm:grid-cols-[minmax(0,1fr)_220px_180px]">
         <CheckoutField
           label={eventLabel}
           value={formState[eventKey]}
           onChange={(event) => updateField(eventKey, event.target.value)}
           placeholder={eventPlaceholder}
-          className="sm:col-span-2"
         />
         <CheckoutField
           label={t("menu.date")}
@@ -116,8 +115,36 @@ export default function EventDetailsSection({
           inputClassName="cursor-pointer"
         />
 
+        <div>
+          <span className="mb-1.5 block text-[13px] font-medium text-[#2d2d2d]">
+            {t("nav.numberOfAttendees")}
+          </span>
+          <div className="inline-flex h-9 items-center rounded-[8px] border border-[#ded6ce] bg-[#fffdfa]">
+            <button
+              type="button"
+              onClick={() => adjustPersonCount(-1)}
+              className="h-full w-8 cursor-pointer border-r border-[#ded6ce] text-[14px] text-[#2d2d2d]"
+            >
+              -
+            </button>
+            <span className="inline-flex min-w-[48px] justify-center text-[13px] text-[#2d2d2d]">
+              {formState.personCount}
+            </span>
+            <button
+              type="button"
+              onClick={() => adjustPersonCount(1)}
+              className="h-full w-8 cursor-pointer border-l border-[#ded6ce] text-[14px] text-[#2d2d2d]"
+            >
+              +
+            </button>
+          </div>
+          <p className="mt-1 text-[11px] text-[#7e7469]">
+            {t("menu.minimumLabel", { count: minimumPersonCount })}
+          </p>
+        </div>
+
         {/* Time / Slot Picker */}
-        <div className="flex flex-col">
+        <div className="flex flex-col sm:col-span-3">
           <span className="mb-1 block text-[13px] font-medium text-[#2d2d2d]">{t("menu.time")}</span>
 
           {!formState.date ? (
@@ -130,7 +157,7 @@ export default function EventDetailsSection({
               <span className="text-[13px] text-[#9b8f84]">{t("menu.checkingSlots")}</span>
             </div>
           ) : hasSlots ? (
-            <div className="flex flex-col gap-2.5">
+            <div className="grid gap-2.5 md:grid-cols-2">
               <div className="rounded-[12px] bg-[#fffaf6] p-2.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -243,33 +270,6 @@ export default function EventDetailsSection({
         </div>
       </div>
 
-      <div className="mt-2.5">
-        <span className="mb-1 block text-[13px] font-medium text-[#2d2d2d]">
-          {t("nav.numberOfAttendees")}
-        </span>
-        <div className="inline-flex items-center border border-[#d9d1c7] bg-white">
-          <button
-            type="button"
-            onClick={() => adjustPersonCount(-1)}
-            className="type-subpara h-8 w-8 cursor-pointer border-r border-[#d9d1c7] text-[#2d2d2d]"
-          >
-            -
-          </button>
-          <span className="type-subpara inline-flex min-w-[56px] justify-center px-3 text-[#2d2d2d]">
-            {formState.personCount}
-          </span>
-          <button
-            type="button"
-            onClick={() => adjustPersonCount(1)}
-            className="type-subpara h-8 w-8 cursor-pointer border-l border-[#d9d1c7] text-[#2d2d2d]"
-          >
-            +
-          </button>
-        </div>
-        <p className="mt-1 text-[11px] text-[#7e7469]">
-          {t("menu.minimumLabel", { count: minimumPersonCount })}
-        </p>
-      </div>
     </CheckoutSection>
   );
 }

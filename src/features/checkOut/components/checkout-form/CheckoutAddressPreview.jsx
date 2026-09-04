@@ -4,11 +4,11 @@ export default function CheckoutAddressPreview({ formState, prefix, emptyText, t
   const preview = formatCheckoutAddressPreview(formState, prefix);
 
   return (
-    <div className="rounded-[12px] border border-[#eadfd5] bg-[#fffaf6] px-3 py-3">
-      <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#a77b60]">
+    <div className="rounded-[10px] bg-[#faf6f1] px-3 py-2">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#a77b60]">
         {title}
       </p>
-      <p className="mt-1 text-[14px] text-[#4a443f]">{preview || emptyText}</p>
+      <p className="mt-0.5 text-[12px] text-[#4a443f]">{preview || emptyText}</p>
     </div>
   );
 }
