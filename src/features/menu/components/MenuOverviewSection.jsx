@@ -1,7 +1,6 @@
 import {
   FiClock,
   FiMapPin,
-  FiPackage,
   FiStar,
   FiTruck,
 } from "react-icons/fi";
@@ -243,20 +242,6 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         <TimingPanel entries={timingEntries} />
       </div>
 
-      <div className="mt-5 rounded-[24px] border border-[#efe4da] bg-white p-5 shadow-[0_14px_28px_rgba(55,34,19,0.04)] sm:p-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#f8f1eb] px-3.5 py-2 text-[13px] font-semibold text-[#2b221d]">
-            <FiPackage className="text-[#cf6e38]" />
-            {t("menu.preparedMenu")}
-          </span>
-          <span className="inline-flex rounded-full border border-[#e7dacf] px-3.5 py-2 text-[13px] font-medium text-[#6c5d52]">
-            {t("menu.vendorPrefix", { name: vendor.name })}
-          </span>
-        </div>
-        <p className="mt-4 max-w-3xl text-[14px] leading-7 text-[#4e443c] sm:text-[15px] sm:leading-8">
-          {t("menu.overviewNote")}
-        </p>
-      </div>
     </>
   );
 }
