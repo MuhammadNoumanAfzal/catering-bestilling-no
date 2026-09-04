@@ -32,42 +32,42 @@ export default function VendorSummaryCard({
   } = getVendorTotals(cart);
 
   return (
-    <section className="rounded-[18px] border border-[#e7dfd7] bg-white p-4 shadow-[0_10px_30px_rgba(45,31,20,0.08)]">
-      <div className="rounded-[14px] bg-[linear-gradient(135deg,#fdf7f1_0%,#f6efe8_100%)] p-4">
+    <section className="border-t border-[#eee7e0] pt-3 first:border-t-0 first:pt-0">
+      <div className="rounded-[12px] bg-[#faf4ee] p-3">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="type-h4 font-semibold uppercase tracking-[0.16em] text-[#b77a57]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#b77a57]">
               {t("checkout.vendor")}
             </p>
-            <p className="mt-1 type-h4 font-semibold leading-tight text-[#2c2c2c]">
+            <p className="mt-0.5 text-[17px] font-semibold leading-tight text-[#2c2c2c]">
               {cart.vendor.name}
             </p>
           </div>
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#d46331] shadow-[0_6px_14px_rgba(212,99,49,0.14)]">
-            <FiShoppingBag className="text-[18px]" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#d46331]">
+            <FiShoppingBag className="text-[16px]" />
           </div>
         </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-3">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="type-h5 font-semibold text-[#2c2c2c]">{t("checkout.orderItems")}</p>
-            <p className="mt-1 text-[12px] text-[#8b8580]">
+            <p className="text-[14px] font-semibold text-[#2c2c2c]">{t("checkout.orderItems")}</p>
+            <p className="mt-0.5 text-[11px] text-[#8b8580]">
               {t("checkout.reviewBeforePlace")}
             </p>
           </div>
 
           <Link
             to={`/vendor/${cart.vendor.slug}`}
-            className="cursor-pointer text-[14px] font-semibold text-[#cf6e38]"
+            className="cursor-pointer text-[12px] font-semibold text-[#cf6e38]"
           >
             {t("checkout.editCart")}
           </Link>
         </div>
 
-        <div className="mt-4 space-y-3">
+        <div className="mt-2.5 space-y-2">
           {items.map((item) => (
             <OrderItemCard
               key={item.id}

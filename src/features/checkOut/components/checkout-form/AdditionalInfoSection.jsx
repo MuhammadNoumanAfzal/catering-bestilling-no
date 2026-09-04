@@ -14,7 +14,7 @@ export default function AdditionalInfoSection({ value, onChange }) {
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder={CHECKOUT_PLACEHOLDERS.additionalInfo}
-          className="type-subpara min-h-[76px] w-full rounded-[2px] border border-[#d9d1c7] bg-white px-2 py-2 text-[#2d2d2d] outline-none placeholder:text-[#a49b92]"
+          className="min-h-[64px] w-full rounded-[10px] border border-[#ded6ce] bg-[#fffdfa] px-3 py-2 text-[13px] text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#cf6e38]/10 placeholder:text-[#a49b92]"
         />
       </label>
     </CheckoutSection>
