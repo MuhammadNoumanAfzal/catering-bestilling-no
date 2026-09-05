@@ -103,11 +103,6 @@ const GET_INVOICE_DETAIL_QUERY = `
       customerPhone
       orderId
       orderNumber
-      order {
-        id
-        status
-        acceptedAt
-      }
       vendorId
       vendorName
       canViewInvoice
@@ -214,6 +209,69 @@ const GET_INVOICE_DETAIL_QUERY = `
     }
   }
 `;
+
+// Older invoices can reference legacy delivery-area records that the API cannot
+// serialize. This lightweight query keeps the invoice usable in that case.
+const GET_INVOICE_DETAIL_COMPATIBILITY_QUERY = `
+  query GetInvoiceDetailCompatibility($invoiceId: ID!) {
+    invoice(id: $invoiceId) {
+      id
+      invoiceNumber
+      paymentStatus
+      paymentMethod
+      paymentReference
+      dueDate
+      issuedAt
+      paidAt
+      customerName
+      customerEmail
+      customerPhone
+      orderId
+      orderNumber
+      vendorId
+      vendorName
+      canViewInvoice
+      canPayInvoice
+      canReportPayment
+      payableAfterVendorAcceptance
+      subtotal {
+        amount
+        currency
+        formatted
+      }
+      taxAmount {
+        amount
+        currency
+        formatted
+      }
+      deliveryFee {
+        amount
+        currency
+        formatted
+      }
+      grandTotal {
+        amount
+        currency
+        formatted
+      }
+      amountPaid {
+        amount
+        currency
+        formatted
+      }
+      amountDue {
+        amount
+        currency
+        formatted
+      }
+    }
+  }
+`;
+
+function isLegacyDeliveryAreaError(error) {
+  const message = String(error?.message || "").toLowerCase();
+  return message.includes("deliveryarea") && message.includes("attribute 'name'");
+}
 
 const GET_INVOICE_ORDER_FALLBACK_QUERY = `
   query GetInvoiceOrderFallback($orderId: ID!) {
@@ -901,10 +959,23 @@ export const fetchInvoiceDetail = createAsyncThunk(
   "invoices/fetchInvoiceDetail",
   async (invoiceId, { rejectWithValue }) => {
     try {
-      const response = await graphqlRequest({
-        query: GET_INVOICE_DETAIL_QUERY,
-        variables: { invoiceId },
-      });
+      let response;
+
+      try {
+        response = await graphqlRequest({
+          query: GET_INVOICE_DETAIL_QUERY,
+          variables: { invoiceId },
+        });
+      } catch (error) {
+        if (!isLegacyDeliveryAreaError(error)) {
+          throw error;
+        }
+
+        response = await graphqlRequest({
+          query: GET_INVOICE_DETAIL_COMPATIBILITY_QUERY,
+          variables: { invoiceId },
+        });
+      }
 
       if (!response.invoice?.id) {
         throw new Error("Invoice details not found.");
