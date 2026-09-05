@@ -21,6 +21,11 @@ const TYPE_STYLES = {
     dot: "bg-[#2d6fa3]",
     labelKey: "nav.notificationTypes.delivery",
   },
+  support: {
+    badge: "from-[#f4f0ff] to-[#e8ddff] text-[#6d4bb5] border-[#d8c5f4]",
+    dot: "bg-[#6d4bb5]",
+    labelKey: "nav.notificationTypes.support",
+  },
   menu: {
     badge: "from-[#f6f1ff] to-[#ece1ff] text-[#7a56c2] border-[#dac7ff]",
     dot: "bg-[#7a56c2]",
