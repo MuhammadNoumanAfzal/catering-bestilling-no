@@ -22,6 +22,7 @@ const en = {
       payment: "Payment",
       review: "Review",
       delivery: "Delivery",
+      support: "Support",
       menu: "Menu",
     },
     cart: "Cart",

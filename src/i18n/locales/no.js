@@ -22,6 +22,7 @@ const no = {
       payment: "Betaling",
       review: "Vurdering",
       delivery: "Levering",
+      support: "Brukerstotte",
       menu: "Meny",
     },
     cart: "Handlekurv",
