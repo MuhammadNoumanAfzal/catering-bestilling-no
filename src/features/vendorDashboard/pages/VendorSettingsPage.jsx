@@ -8,6 +8,7 @@ import PasswordSettingsSection from "../components/settings/PasswordSettingsSect
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
 import SettingsActions from "../components/settings/SettingsActions";
 import VendorProfilePhotoSection from "../components/settings/VendorProfilePhotoSection";
+import DashboardLoadingState from "../components/DashboardLoadingState";
 import { useVendorSettingsPage } from "../settings/hooks/useVendorSettingsPage";
 
 const VENDOR_ONBOARDING_NOTICE_KEY = "vendor-dashboard-onboarding-guide-pending";
@@ -28,6 +29,7 @@ export default function VendorSettingsPage() {
     isSaving,
     isUploadingAvatar,
     loadWarning,
+    startPasswordChange,
     updateField,
   } = useVendorSettingsPage();
 
@@ -50,11 +52,7 @@ export default function VendorSettingsPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
-      </div>
-    );
+    return <DashboardLoadingState title="Loading settings" description="Retrieving your profile, notification, and account preferences." rows={4} columns={2} />;
   }
 
   return (
@@ -140,6 +138,7 @@ export default function VendorSettingsPage() {
         />
         <PasswordSettingsSection
           formState={formState}
+          onPasswordFocus={startPasswordChange}
           updateField={updateField}
         />
         <SettingsActions

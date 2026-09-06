@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FiGrid, FiHome, FiSettings } from "react-icons/fi";
+import { FiGrid, FiHome, FiSearch } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import CommonNavbarActions from "./navbar/CommonNavbarActions";
 import CommonNavbarFilters from "./navbar/CommonNavbarFilters";
@@ -8,6 +8,7 @@ import { formatNavbarDate, isPastDate } from "./navbar/navbarDateUtils";
 import useUserNotifications from "./navbar/useUserNotifications";
 import useNavbarCartSummary from "./navbar/useNavbarCartSummary";
 import { useAuth } from "../../features/auth";
+import { fetchVendorProfiles } from "../../features/vendor/api/vendorService";
 import { vendorNavigationItems } from "../../features/vendorDashboard/data/vendorDashboardConfig";
 import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 import { confirmLogout, showSuccessToast } from "../../utils/alerts";
@@ -129,6 +130,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const pathname = location.pathname;
   const { isLoggedIn, user, signOut } = useAuth();
   const {
     attendeeCount,
@@ -167,6 +169,9 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
   const [draftEventName, setDraftEventName] = useState("");
   const [draftLocation, setDraftLocation] = useState(locationValue);
   const [draftSearch, setDraftSearch] = useState(searchQuery);
+  const [dashboardSearchResults, setDashboardSearchResults] = useState([]);
+  const [isDashboardSearching, setIsDashboardSearching] = useState(false);
+  const [isDashboardSearchFocused, setIsDashboardSearchFocused] = useState(false);
 
   useEffect(() => {
     setDraftLocation(locationValue);
@@ -179,6 +184,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
   const dropdownRef = useRef(null);
   const actionMenuRef = useRef(null);
   const notificationRef = useRef(null);
+  const dashboardSearchRef = useRef(null);
 
   const toggleDropdown = (key) => {
     setOpenDropdown((current) => {
@@ -219,6 +225,10 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
       if (!notificationRef.current?.contains(event.target)) {
         setIsNotificationOpen(false);
       }
+
+      if (!dashboardSearchRef.current?.contains(event.target)) {
+        setIsDashboardSearchFocused(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -238,7 +248,6 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
   const hasEventSelection = Boolean(attendeeCount > 0 || eventName.trim());
   const commonProfileMenuItems = [
     { label: t("nav.home"), to: "/", icon: FiHome },
-    { label: t("nav.settings"), to: "/settings", icon: FiSettings },
     { label: t("nav.dashboard"), to: "/vendor-dashboard", icon: FiGrid },
     ...vendorNavigationItems
       .filter(
@@ -355,11 +364,73 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
     await showSuccessToast("Logged out successfully");
   };
 
+  const isDashboardHeader = isVendorDashboardRoute(pathname);
+  const shouldShowDashboardSearchResults =
+    isDashboardHeader && isDashboardSearchFocused && draftSearch.trim().length > 0;
+
+  useEffect(() => {
+    const query = draftSearch.trim().toLowerCase();
+
+    if (!isDashboardHeader || !query) {
+      setDashboardSearchResults([]);
+      setIsDashboardSearching(false);
+      return undefined;
+    }
+
+    let isCancelled = false;
+    const timeoutId = window.setTimeout(async () => {
+      setIsDashboardSearching(true);
+
+      try {
+        const vendors = await fetchVendorProfiles();
+        if (isCancelled) return;
+
+        const vendorResults = vendors
+          .filter((vendor) => [vendor.name, vendor.cuisine, vendor.city].filter(Boolean).join(" ").toLowerCase().includes(query))
+          .slice(0, 4)
+          .map((vendor) => ({
+            id: `vendor-${vendor.slug}`,
+            label: vendor.name,
+            description: ["Vendor", vendor.cuisine, vendor.city].filter(Boolean).join(" • "),
+            to: `/vendor/${encodeURIComponent(vendor.slug)}`,
+          }));
+        const menuResults = vendors
+          .flatMap((vendor) =>
+            (vendor.menuSections || []).flatMap((section) =>
+              (section.items || section.menuItems || []).map((item) => ({ vendor, item })),
+            ),
+          )
+          .filter(({ item }) => [item.name, item.title, item.description].filter(Boolean).join(" ").toLowerCase().includes(query))
+          .slice(0, 4)
+          .map(({ vendor, item }) => ({
+            id: `menu-${vendor.slug}-${item.id}`,
+            label: item.name || item.title || "Menu item",
+            description: ["Menu", vendor.name].filter(Boolean).join(" • "),
+            to: `/vendor/${encodeURIComponent(vendor.slug)}/menu/${encodeURIComponent(item.id)}`,
+          }));
+
+        setDashboardSearchResults([...vendorResults, ...menuResults]);
+      } catch {
+        if (!isCancelled) setDashboardSearchResults([]);
+      } finally {
+        if (!isCancelled) setIsDashboardSearching(false);
+      }
+    }, 250);
+
+    return () => {
+      isCancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [draftSearch, isDashboardHeader]);
   const headerClasses =
-    `sticky top-0 z-40 bg-white px-3 py-1 sm:px-4 md:px-6 lg:px-10 ${className}`.trim();
-  const innerClasses = hideLogo
-    ? "flex w-full items-center justify-between gap-2 py-1 sm:gap-3 lg:grid lg:grid-cols-[1fr_auto]"
-    : "flex w-full items-center justify-between gap-2 py-1 sm:gap-3 lg:grid lg:grid-cols-[auto_1fr_auto]";
+    `sticky top-0 z-40 border-b border-[#ebe4de] bg-white/92 backdrop-blur-xl ${
+      isDashboardHeader ? "" : "px-4 py-2 sm:px-6 lg:px-5"
+    } ${isDashboardHeader ? "lg:h-[69px]" : ""} ${className}`.trim();
+  const innerClasses = isDashboardHeader
+    ? "flex w-full flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:flex-nowrap lg:px-5"
+    : hideLogo
+      ? "flex w-full items-center justify-between gap-3 lg:grid lg:grid-cols-[1fr_auto]"
+    : "flex w-full items-center justify-between gap-4 lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto]";
 
   return (
     <header className={headerClasses}>
@@ -369,77 +440,130 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
             <img
               src="/home/logo (2).png"
               alt="GoCatering"
-              className="h-22 w-28 object-contain"
+              className="h-10 w-28 object-contain"
             />
           </Link>
         ) : null}
 
-        <div className="hidden min-w-0 flex-1 items-center justify-self-center lg:flex">
-          <div ref={dropdownRef}>
-            <CommonNavbarFilters
-              calendarMonth={calendarMonth}
-              deliveryLabel={deliveryLabel}
-              draftAttendeeCount={draftAttendeeCount}
-              draftAttendeeInput={draftAttendeeInput}
-              draftDate={draftDate}
-              draftEventName={draftEventName}
-              draftTime={draftTime}
-              eventLabel={eventLabel}
-              hasDeliverySelection={hasDeliverySelection}
-              hasEventSelection={hasEventSelection}
-              locationValue={draftLocation}
-              onApplyDelivery={applyDeliverySelection}
-              onApplyEvent={applyEventDetails}
-              onClearDelivery={clearDeliverySelection}
-              onClearEvent={clearEventDetails}
-              onAttendeeChange={(change) =>
-                setDraftAttendeeCount((current) => {
-                  const nextValue = Math.max(0, current + change);
-                  setDraftAttendeeInput(formatAttendeeInputValue(nextValue));
-                  return nextValue;
-                })
-              }
-              onAttendeeInputChange={(value) => {
-                setDraftAttendeeInput(value);
-                setDraftAttendeeCount(normalizeAttendeeCount(value));
+        <div
+          className={`hidden min-w-0 flex-1 items-center lg:flex ${
+            isDashboardHeader ? "" : "justify-self-center"
+          }`}
+        >
+          {isDashboardHeader ? (
+            <form
+              className="relative order-4 w-full lg:order-none lg:max-w-[520px] lg:flex-1"
+              ref={dashboardSearchRef}
+              onSubmit={(event) => {
+                event.preventDefault();
+                handleSearchSubmit();
               }}
-              onDateSelect={setDraftDate}
-              onEventNameChange={setDraftEventName}
-              onLocationChange={setDraftLocation}
-              onLocationClear={() => {
-                setDraftLocation("");
-                setLocationValue("");
-              }}
-              onMonthChange={(direction) =>
-                setCalendarMonth(
-                  (current) =>
-                    new Date(
-                      current.getFullYear(),
-                      current.getMonth() + direction,
-                      1,
-                    ),
-                )
-              }
-              onSearchChange={setDraftSearch}
-              onSearchSubmit={handleSearchSubmit}
-              onTimeSelect={setDraftTime}
-              openDropdown={openDropdown}
-              searchValue={draftSearch}
-              setSearchValue={(val) => {
-                setDraftSearch(val);
-                if (val === "") {
-                  setSearchQuery("");
+            >
+              <FiSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[15px] text-[#a9afba]" />
+              <input
+                aria-label="Search"
+                className="h-11 w-full rounded-full border border-transparent bg-[#f1f4f8] py-2 pl-11 pr-4 text-[12px] font-medium text-[#231913] outline-none transition placeholder:text-[#a9afba] focus:border-[#ebddd1] focus:bg-white focus:shadow-[0_0_0_4px_rgba(206,105,56,0.11)]"
+                onChange={(event) => setDraftSearch(event.target.value)}
+                onFocus={() => setIsDashboardSearchFocused(true)}
+                placeholder="Search orders, vendors, menus, or IDs..."
+                type="search"
+                value={draftSearch}
+              />
+              {shouldShowDashboardSearchResults ? (
+                <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-50 overflow-hidden rounded-[18px] border border-[#e8dfd8] bg-white shadow-[0_24px_60px_rgba(45,28,16,0.14)]">
+                  {isDashboardSearching ? (
+                    <p className="px-4 py-5 text-[12px] text-[#8c7f75]">Searching vendors and menus...</p>
+                  ) : dashboardSearchResults.length ? (
+                    <div className="max-h-[320px] overflow-y-auto p-2">
+                      {dashboardSearchResults.map((result) => (
+                        <button
+                          className="flex w-full items-center gap-3 rounded-[12px] px-3 py-3 text-left transition hover:bg-[#faf4ee]"
+                          key={result.id}
+                          onClick={() => {
+                            setIsDashboardSearchFocused(false);
+                            navigate(result.to);
+                          }}
+                          type="button"
+                        >
+                          <span className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#fff1e8] text-[#cf6e38]"><FiSearch /></span>
+                          <span className="min-w-0 flex-1"><span className="block truncate text-[13px] font-bold text-[#231913]">{result.label}</span><span className="block truncate text-[12px] text-[#7b6f66]">{result.description}</span></span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="px-4 py-5 text-[12px] text-[#8c7f75]">No matching vendors or menus found.</p>
+                  )}
+                </div>
+              ) : null}
+            </form>
+          ) : (
+            <div ref={dropdownRef}>
+              <CommonNavbarFilters
+                calendarMonth={calendarMonth}
+                deliveryLabel={deliveryLabel}
+                draftAttendeeCount={draftAttendeeCount}
+                draftAttendeeInput={draftAttendeeInput}
+                draftDate={draftDate}
+                draftEventName={draftEventName}
+                draftTime={draftTime}
+                eventLabel={eventLabel}
+                hasDeliverySelection={hasDeliverySelection}
+                hasEventSelection={hasEventSelection}
+                locationValue={draftLocation}
+                onApplyDelivery={applyDeliverySelection}
+                onApplyEvent={applyEventDetails}
+                onClearDelivery={clearDeliverySelection}
+                onClearEvent={clearEventDetails}
+                onAttendeeChange={(change) =>
+                  setDraftAttendeeCount((current) => {
+                    const nextValue = Math.max(0, current + change);
+                    setDraftAttendeeInput(formatAttendeeInputValue(nextValue));
+                    return nextValue;
+                  })
                 }
-              }}
-              toggleDropdown={toggleDropdown}
-            />
-          </div>
+                onAttendeeInputChange={(value) => {
+                  setDraftAttendeeInput(value);
+                  setDraftAttendeeCount(normalizeAttendeeCount(value));
+                }}
+                onDateSelect={setDraftDate}
+                onEventNameChange={setDraftEventName}
+                onLocationChange={setDraftLocation}
+                onLocationClear={() => {
+                  setDraftLocation("");
+                  setLocationValue("");
+                }}
+                onMonthChange={(direction) =>
+                  setCalendarMonth(
+                    (current) =>
+                      new Date(
+                        current.getFullYear(),
+                        current.getMonth() + direction,
+                        1,
+                      ),
+                  )
+                }
+                onSearchChange={setDraftSearch}
+                onSearchSubmit={handleSearchSubmit}
+                onTimeSelect={setDraftTime}
+                openDropdown={openDropdown}
+                searchValue={draftSearch}
+                setSearchValue={(val) => {
+                  setDraftSearch(val);
+                  if (val === "") {
+                    setSearchQuery("");
+                  }
+                }}
+                toggleDropdown={toggleDropdown}
+              />
+            </div>
+          )}
         </div>
 
         <CommonNavbarActions
           actionMenuRef={actionMenuRef}
           cartItemCount={cartItemCount}
           hasFreshNotification={hasFreshNotification}
+          isAdminStyle={isDashboardHeader}
           isActionMenuOpen={isActionMenuOpen}
           isLoggedIn={isLoggedIn}
           isNotificationOpen={isNotificationOpen}

@@ -8,6 +8,7 @@ import InvoiceOverviewCard from "../components/invoices/InvoiceOverviewCard";
 import InvoicePagination from "../components/invoices/InvoicePagination";
 import InvoiceTable from "../components/invoices/InvoiceTable";
 import InvoiceTotalCard from "../components/invoices/InvoiceTotalCard";
+import DashboardLoadingState from "../components/DashboardLoadingState";
 import { fetchInvoices } from "../invoicesSlice";
 import {
   DATE_OPTIONS,
@@ -81,7 +82,7 @@ export default function VendorInvoicesPage() {
         search: debouncedSearchValue || null,
         dateFrom,
         dateTo,
-        first: 100,
+        first: 25,
         after: null,
       }),
     );
@@ -90,7 +91,6 @@ export default function VendorInvoicesPage() {
     debouncedSearchValue,
     dispatch,
     selectedDateRange,
-    selectedStatus,
   ]);
 
   useEffect(() => {
@@ -130,12 +130,8 @@ export default function VendorInvoicesPage() {
     filteredRecords.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
   const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, filteredRecords.length);
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
-      </div>
-    );
+  if (isLoading && records.length === 0) {
+    return <DashboardLoadingState title="Loading invoice activity" description="Gathering your invoice, payment, and due-date records." rows={5} columns={7} />;
   }
 
   if (error) {
@@ -147,7 +143,12 @@ export default function VendorInvoicesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      {isLoading ? (
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-1 overflow-hidden rounded-full bg-[#f5e6dc]">
+          <div className="h-full w-1/3 animate-pulse rounded-full bg-[#cf6e38]" />
+        </div>
+      ) : null}
       <section>
         <h1 className="type-h2">{t("vendorPanel.invoices.title")}</h1>
         <p className="mt-2 type-para">{t("vendorPanel.invoices.description")}</p>

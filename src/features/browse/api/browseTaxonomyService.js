@@ -25,6 +25,20 @@ const DAY_MAP = {
   saturday: 6,
 };
 
+function slugify(text) {
+  return String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
+function resolvePublicVendorSlug(vendor) {
+  const apiSlug = `${vendor?.slug ?? ""}`.trim();
+
+  // Avoid exposing a numeric database ID in public vendor URLs.
+  return apiSlug && !/^\d+$/.test(apiSlug) ? apiSlug : slugify(vendor?.name);
+}
+
 const GET_FOOD_TYPES_QUERY = `
   query GetFoodTypes {
     foodTypes {
@@ -360,7 +374,7 @@ function mapBrowseVendor(vendor) {
 
   return {
     id: vendor.id || "",
-    slug: vendor.slug || "",
+    slug: resolvePublicVendorSlug(vendor),
     name: vendor.name || "Catering partner",
     rating: formatRating(vendor.rating),
     reviewCount: Number(vendor.reviewsCount || 0),
@@ -432,7 +446,7 @@ function mapProductNode(node, mode) {
     description: node?.description || "",
     vendor: vendor.name || "Catering partner",
     vendorName: vendor.name || "Catering partner",
-    vendorSlug: vendor.slug || "",
+    vendorSlug: mappedVendor?.slug || "",
     vendorData: mappedVendor,
     image: node?.coverImage?.fileUrl || vendor.logoUrl || "/home/hero1.webp",
     rating: formatRating(node?.averageRating || vendor?.rating),

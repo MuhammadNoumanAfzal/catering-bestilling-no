@@ -3,17 +3,22 @@ import { useTranslation } from "react-i18next";
 import { FiArrowUpRight, FiMail, FiPhone } from "react-icons/fi";
 import { MdFacebook } from "react-icons/md";
 import { PiInstagramLogoFill } from "react-icons/pi";
-import { RiWhatsappFill } from "react-icons/ri";
+import {
+  COMPANY_EMAIL,
+  COMPANY_PHONE_DISPLAY,
+  COMPANY_PHONE_LINK,
+  COMPANY_SOCIAL_LINKS,
+} from "../../constants/companyContact";
 
-const socialLinks = [
-  { label: "Facebook", href: "https://www.facebook.com/", icon: MdFacebook },
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/",
-    icon: PiInstagramLogoFill,
-  },
-  { label: "WhatsApp", href: "https://wa.me/", icon: RiWhatsappFill },
-];
+const socialIcons = {
+  Facebook: MdFacebook,
+  Instagram: PiInstagramLogoFill,
+};
+
+const socialLinks = COMPANY_SOCIAL_LINKS.map((link) => ({
+  ...link,
+  icon: socialIcons[link.label],
+}));
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -73,19 +78,19 @@ export default function Footer() {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-5">
                 <a
-                  href="mailto:hello@cateringbestilling.no"
+                  href={`mailto:${COMPANY_EMAIL}`}
                   className="inline-flex items-center gap-2 text-[13px] font-medium text-[#ffe9db] transition hover:text-white"
                 >
                   <FiMail className="text-[14px]" />
-                  <span>hello@cateringbestilling.no</span>
+                  <span>{COMPANY_EMAIL}</span>
                 </a>
 
                 <a
-                  href="tel:+4700000000"
+                  href={`tel:${COMPANY_PHONE_LINK}`}
                   className="inline-flex items-center gap-2 text-[13px] font-medium text-[#ffe9db] transition hover:text-white"
                 >
                   <FiPhone className="text-[14px]" />
-                  <span>+47 00 00 00 00</span>
+                  <span>{COMPANY_PHONE_DISPLAY}</span>
                 </a>
               </div>
 

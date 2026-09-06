@@ -13,7 +13,7 @@ const NOTIFICATIONS_POLL_INTERVAL_MS = 10000;
 const FRESH_NOTIFICATION_HIGHLIGHT_MS = 12000;
 const LAST_ACKNOWLEDGED_NOTIFICATION_KEY = "last-acknowledged-notification-id";
 const LAST_SEEN_NOTIFICATION_KEY = "last-seen-notification-id";
-const REVIEW_PROMPTED_NOTIFICATIONS_KEY = "review-prompted-notification-ids";
+const REVIEW_PROMPTED_ORDER_IDS_KEY = "review-prompted-order-ids";
 
 function readLastAcknowledgedNotificationId() {
   if (typeof window === "undefined") {
@@ -50,13 +50,13 @@ function writeLastSeenNotificationId(notificationId) {
   window.localStorage.setItem(LAST_SEEN_NOTIFICATION_KEY, notificationId);
 }
 
-function readReviewPromptedNotificationIds() {
+function readReviewPromptedOrderIds() {
   if (typeof window === "undefined") {
     return [];
   }
 
   try {
-    const rawValue = window.localStorage.getItem(REVIEW_PROMPTED_NOTIFICATIONS_KEY);
+    const rawValue = window.localStorage.getItem(REVIEW_PROMPTED_ORDER_IDS_KEY);
     const parsedValue = rawValue ? JSON.parse(rawValue) : [];
     return Array.isArray(parsedValue) ? parsedValue : [];
   } catch {
@@ -64,19 +64,19 @@ function readReviewPromptedNotificationIds() {
   }
 }
 
-function writeReviewPromptedNotificationId(notificationId) {
-  if (typeof window === "undefined" || !notificationId) {
+function writeReviewPromptedOrderId(orderId) {
+  if (typeof window === "undefined" || !orderId) {
     return;
   }
 
-  const existingIds = readReviewPromptedNotificationIds();
-  if (existingIds.includes(notificationId)) {
+  const existingIds = readReviewPromptedOrderIds();
+  if (existingIds.includes(orderId)) {
     return;
   }
 
   window.localStorage.setItem(
-    REVIEW_PROMPTED_NOTIFICATIONS_KEY,
-    JSON.stringify([...existingIds, notificationId].slice(-50)),
+    REVIEW_PROMPTED_ORDER_IDS_KEY,
+    JSON.stringify([...existingIds, orderId].slice(-100)),
   );
 }
 
@@ -169,11 +169,13 @@ export default function useUserNotifications() {
           const deliveredReviewNotification = nextNotifications.find(
             (item) =>
               isDeliveredOrderNotification(item) &&
-              !readReviewPromptedNotificationIds().includes(item.id),
+              !readReviewPromptedOrderIds().includes(item.orderId),
           );
 
           if (deliveredReviewNotification && !isReviewPromptOpenRef.current) {
             isReviewPromptOpenRef.current = true;
+            // Record the order before opening the dialog so polling cannot show it twice.
+            writeReviewPromptedOrderId(deliveredReviewNotification.orderId);
 
             try {
               const reviewTarget = await fetchOrderReviewTarget(
@@ -182,8 +184,6 @@ export default function useUserNotifications() {
               const promptResult = await showDeliveredReviewPrompt(
                 reviewTarget.vendorName,
               );
-              writeReviewPromptedNotificationId(deliveredReviewNotification.id);
-
               if (promptResult.isConfirmed) {
                 navigate(reviewTarget.reviewPath, {
                   state: {

@@ -29,6 +29,10 @@ const CLIENT_ORDER_NOTIFICATIONS_QUERY = `
           status
           createdOn
           eventDate
+          statuses {
+            status
+            createdOn
+          }
           vendor {
             name
           }
@@ -274,6 +278,17 @@ function mapOrderNotifications(edges, state) {
 
   return edges.map((edge) => {
     const order = edge?.node || {};
+    const normalizedStatus = `${order.status || "updated"}`.trim().toUpperCase();
+    const statusEvents = Array.isArray(order.statuses) ? order.statuses : [];
+    const latestStatusEvent = statusEvents
+      .filter(
+        (event) => `${event?.status || ""}`.trim().toUpperCase() === normalizedStatus,
+      )
+      .sort(
+        (left, right) =>
+          new Date(right?.createdOn || 0).getTime() - new Date(left?.createdOn || 0).getTime(),
+      )[0];
+    const statusChangedAt = latestStatusEvent?.createdOn || order.createdOn || order.eventDate || "";
     const reference = order.invoiceNumber ? `Order ${order.invoiceNumber}` : "Your order";
     const vendorName = order.vendor?.name ? ` from ${order.vendor.name}` : "";
     const hasChange = order.hasPendingVendorAdjustment || order.hasPendingModificationRequest;
@@ -285,10 +300,10 @@ function mapOrderNotifications(edges, state) {
 
     return createLocalNotification(
       {
-        id: `order-${order.id}`,
+        id: `order-${order.id}-${normalizedStatus}-${statusChangedAt}`,
         title,
         message,
-        createdAt: order.createdOn || order.eventDate || "",
+        createdAt: statusChangedAt,
         type: "order-update",
         actionUrl: "/vendor-dashboard/orders",
         orderId: order.id || "",

@@ -11,64 +11,10 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import VendorSectionCard from "../components/VendorSectionCard";
+import DashboardLoadingState from "../components/DashboardLoadingState";
 import { fetchDashboardData } from "../dashboardSlice";
-
-function getStatusClasses(status) {
-  const normalizedStatus = `${status ?? ""}`
-    .toLowerCase()
-    .replace(/[_-]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  if (
-    normalizedStatus === "completed" ||
-    normalizedStatus === "delivered"
-  ) {
-    return "border border-[#bfe7c8] bg-[#edf9f0] text-[#227a43]";
-  }
-
-  if (normalizedStatus === "confirmed" || normalizedStatus === "ready") {
-    return "border border-[#bfd6ff] bg-[#edf3ff] text-[#315fc2]";
-  }
-
-  if (normalizedStatus === "preparing" || normalizedStatus === "accepted") {
-    return "border border-[#b7e6da] bg-[#ecfbf6] text-[#177c71]";
-  }
-
-  if (normalizedStatus === "scheduled") {
-    return "border border-[#c7d9fd] bg-[#eef4ff] text-[#315fbc]";
-  }
-
-  if (normalizedStatus === "placed") {
-    return "border border-[#d8ccff] bg-[#f5f0ff] text-[#6b46c1]";
-  }
-
-  if (normalizedStatus === "out for delivery") {
-    return "border border-[#f6d0b6] bg-[#fff3ea] text-[#cb6b2f]";
-  }
-
-  if (normalizedStatus === "pending" || normalizedStatus === "unpaid" || normalizedStatus === "new") {
-    return "border border-[#f2d7a8] bg-[#fff7e8] text-[#b57612]";
-  }
-
-  if (normalizedStatus === "draft") {
-    return "border border-[#e6ddd4] bg-[#f7f3ef] text-[#7a6f66]";
-  }
-
-  if (normalizedStatus === "paid") {
-    return "border border-[#bfe7c8] bg-[#edf9f0] text-[#227a43]";
-  }
-
-  if (normalizedStatus === "overdue" || normalizedStatus === "canceled" || normalizedStatus === "cancelled") {
-    return "border border-[#efc4bc] bg-[#fff1ee] text-[#c05445]";
-  }
-
-  if (normalizedStatus === "modified") {
-    return "border border-[#f5cfb6] bg-[#fff4ea] text-[#cb6b2f]";
-  }
-
-  return "border border-[#ddd9d4] bg-[#f5f4f2] text-[#6c655f]";
-}
+import { getOrderStatusClasses } from "../components/orders/orderUtils";
+import { getInvoiceStatusClasses } from "../components/invoices/invoiceUtils";
 
 function translateDashboardStatus(t, status) {
   const normalizedStatus = `${status ?? ""}`
@@ -190,11 +136,7 @@ export default function VendorDashboardHomePage() {
   const normalizedInvoices = Array.isArray(recentInvoices) ? recentInvoices : [];
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
-      </div>
-    );
+    return <DashboardLoadingState title="Loading dashboard" description="Gathering your latest orders, invoices, and account activity." rows={4} columns={4} />;
   }
 
   if (error) {
@@ -209,7 +151,9 @@ export default function VendorDashboardHomePage() {
   return (
     <div className="space-y-6">
       <section>
-        <h1 className="type-h2 text-[#191919]">{t("vendorPanel.dashboard.title")}</h1>
+        <h1 className="text-[34px] font-bold tracking-[-0.04em] text-[#18120f]">
+          {t("vendorPanel.dashboard.title")}
+        </h1>
         <p className="mt-2 type-para text-[#5f5a54]">
           {t("vendorPanel.dashboard.welcomeBack", { name: userDisplayName })}
         </p>
@@ -241,7 +185,7 @@ export default function VendorDashboardHomePage() {
                       <span className="text-sm text-[#8d857d]">{order.date}</span>
                     </div>
                     <span
-                      className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getStatusClasses(order.status)}`}
+                      className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getOrderStatusClasses(order.status)}`}
                     >
                       {translateDashboardStatus(t, order.status)}
                     </span>
@@ -295,7 +239,7 @@ export default function VendorDashboardHomePage() {
                     </div>
                     <div className="flex items-center gap-6">
                       <span
-                        className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getStatusClasses(invoice.status)}`}
+                        className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${getInvoiceStatusClasses(invoice.status)}`}
                       >
                         {translateDashboardStatus(t, invoice.status)}
                       </span>

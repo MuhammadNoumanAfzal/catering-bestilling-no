@@ -24,7 +24,7 @@ export default function AuthInput({
   return (
     <label className="block">
       {label ? (
-        <span className="mb-2.5 block text-[13px] font-semibold uppercase tracking-[0.08em] text-[#6d6259]">
+        <span className="mb-1.5 block text-[13px] font-semibold uppercase tracking-[0.08em] text-[#6d6259]">
           {label}
         </span>
       ) : (
@@ -41,7 +41,7 @@ export default function AuthInput({
           onChange={onChange}
           readOnly={readOnly}
           required={required}
-          className={`type-para h-13 w-full rounded-[18px] border bg-[#fffdfa] px-4 text-[#1d1a17] outline-none transition placeholder:text-[#b4aba2] focus:bg-white focus:ring-4 ${
+          className={`type-para h-12 w-full rounded-[18px] border bg-[#fffdfa] px-4 text-[#1d1a17] outline-none transition placeholder:text-[#b4aba2] focus:bg-white focus:ring-4 ${
             errorText
               ? "border-[#d76a4a] focus:border-[#d76a4a] focus:ring-[#d76a4a]/10"
               : "border-[#ddd3ca] focus:border-[#c85f33] focus:ring-[#c85f33]/10"

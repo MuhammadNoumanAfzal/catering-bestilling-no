@@ -74,6 +74,13 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, "");
 }
 
+function resolvePublicVendorSlug(vendor) {
+  const apiSlug = `${vendor?.slug ?? ""}`.trim();
+
+  // Numeric database IDs are not suitable for a customer-facing URL.
+  return apiSlug && !/^\d+$/.test(apiSlug) ? apiSlug : slugify(vendor?.name);
+}
+
 function normalizeTags(tags, fallback = []) {
   if (!Array.isArray(tags) || tags.length === 0) {
     return fallback;
@@ -264,7 +271,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     return null;
   }
 
-  const slug = apiVendor.slug || slugify(apiVendor.name);
+  const slug = resolvePublicVendorSlug(apiVendor);
   const fee = apiVendor.deliverySettings?.baseDeliveryFee ?? "0";
   const freeDeliveryOver = apiVendor.deliverySettings?.freeDeliveryOver ?? "";
   const pickupAddress = apiVendor.deliverySettings?.pickupAddress || "";

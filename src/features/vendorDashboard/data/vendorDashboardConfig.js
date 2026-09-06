@@ -1,69 +1,69 @@
 import {
-  FiBell,
-  FiCreditCard,
-  FiEdit3,
-  FiGrid,
-  FiHeadphones,
-  FiMapPin,
-  FiPackage,
-  FiSettings,
-  FiShield,
-  FiShoppingBag,
-} from "react-icons/fi";
+  Bell,
+  FileText,
+  Grid2x2,
+  LifeBuoy,
+  MapPin,
+  Settings,
+  ShieldCheck,
+  ShoppingBag,
+  Store,
+  UserRoundPen,
+} from "lucide-react";
 
 export const vendorNavigationItems = [
   {
     labelKey: "vendorPanel.nav.dashboard",
     to: "/vendor-dashboard",
     end: true,
-    icon: FiGrid,
+    icon: Grid2x2,
   },
   {
     labelKey: "vendorPanel.nav.orders",
     to: "/vendor-dashboard/orders",
-    icon: FiShoppingBag,
+    icon: ShoppingBag,
   },
   {
     labelKey: "vendorPanel.nav.restaurants",
     to: "/vendor-dashboard/restaurants",
-    icon: FiPackage,
+    icon: Store,
   },
   {
     labelKey: "vendorPanel.nav.invoices",
     to: "/vendor-dashboard/invoices",
-    icon: FiCreditCard,
+    icon: FileText,
   },
   {
     labelKey: "vendorPanel.nav.notifications",
     to: "/vendor-dashboard/notifications",
-    icon: FiBell,
+    icon: Bell,
   },
   {
     labelKey: "vendorPanel.nav.support",
     to: "/vendor-dashboard/support",
-    icon: FiHeadphones,
+    icon: LifeBuoy,
   },
   {
     labelKey: "vendorPanel.nav.address",
     to: "/vendor-dashboard/address",
-    icon: FiMapPin,
+    icon: MapPin,
   },
   {
     labelKey: "vendorPanel.nav.settings",
     to: "/vendor-dashboard/settings",
-    icon: FiSettings,
+    icon: Settings,
   },
 ];
 
 export const vendorSettingsLinks = [
   {
     labelKey: "vendorPanel.settingsLinks.editProfile",
-    icon: FiEdit3,
+    icon: UserRoundPen,
     to: "/vendor-dashboard/settings#profile",
   },
   {
     labelKey: "vendorPanel.settingsLinks.notification",
-    icon: FiShield,
+    icon: ShieldCheck,
     to: "/vendor-dashboard/settings#notifications",
   },
 ];

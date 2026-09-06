@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import { fetchSavedVendors, removeSavedVendor } from "../../vendor/api";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
+import DashboardLoadingState from "../components/DashboardLoadingState";
 
 function normalizeSavedRestaurant(vendor) {
   if (!vendor) {
@@ -134,11 +135,7 @@ export default function VendorRestaurantsPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
-      </div>
-    );
+    return <DashboardLoadingState title="Loading saved restaurants" description="Retrieving your saved catering partners." rows={4} columns={3} />;
   }
 
   return (

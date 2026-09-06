@@ -3,6 +3,7 @@ import AddressPageActions from "../address/components/AddressPageActions";
 import { translateAddress } from "../address/addressI18n";
 import { useVendorAddressPage } from "../address/hooks/useVendorAddressPage";
 import { useTranslation } from "react-i18next";
+import DashboardLoadingState from "../components/DashboardLoadingState";
 
 export default function VendorAddressPage() {
   const { t, i18n } = useTranslation();
@@ -27,11 +28,7 @@ export default function VendorAddressPage() {
   } = useVendorAddressPage();
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
-      </div>
-    );
+    return <DashboardLoadingState title="Loading addresses" description="Retrieving your delivery and invoice addresses." rows={3} columns={3} />;
   }
 
   return (

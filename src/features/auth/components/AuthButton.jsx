@@ -15,7 +15,7 @@ export default function AuthButton({
     <button
       type={type}
       disabled={disabled}
-      className={`w-full rounded-full px-5 py-3.5 text-[15px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${variantClassName} ${className}`}
+      className={`w-full rounded-full px-5 py-3 text-[15px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${variantClassName} ${className}`}
       {...props}
     >
       {children}

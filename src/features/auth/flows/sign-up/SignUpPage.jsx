@@ -203,8 +203,8 @@ export default function SignUpPage() {
       }
     >
       {signupStep === SIGNUP_STEP.FORM ? (
-        <form className="space-y-5" onSubmit={handleSendOtp}>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <form className="space-y-3" onSubmit={handleSendOtp}>
+          <div className="grid gap-3 sm:grid-cols-2">
             <AuthInput
               autoComplete="given-name"
               label={t("auth.signUp.firstName")}
@@ -225,7 +225,7 @@ export default function SignUpPage() {
             />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <AuthInput
               autoComplete="email"
               label={t("auth.common.email")}
@@ -307,7 +307,7 @@ export default function SignUpPage() {
           </p>
         </form>
       ) : (
-        <form className="space-y-5" onSubmit={handleVerifyOtp}>
+        <form className="space-y-3" onSubmit={handleVerifyOtp}>
           <div className="rounded-[26px] border border-[#ecd8ca] bg-[linear-gradient(180deg,#fffaf5_0%,#fff3ea_100%)] p-5 shadow-[0_16px_34px_rgba(200,95,51,0.08)]">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>

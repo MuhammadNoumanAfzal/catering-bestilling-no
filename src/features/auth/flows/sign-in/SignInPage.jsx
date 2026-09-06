@@ -189,7 +189,7 @@ export default function SignInPage() {
         />
       }
     >
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-2" onSubmit={handleSubmit}>
         <AuthInput
           autoComplete="email"
           label={t("auth.common.email")}

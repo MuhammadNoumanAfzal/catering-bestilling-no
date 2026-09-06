@@ -101,10 +101,8 @@ export default function MenuDetailsPage() {
 
     setOrderSummary({
       ...storedSummary,
-      personCount: Math.max(
-        minimumPersons,
-        Number(storedSummary.personCount ?? minimumPersons),
-      ),
+      // Each menu starts at its own serving minimum, not a previous menu's guest count.
+      personCount: minimumPersons,
     });
     setVendorNote(`${storedSummary.vendorNote ?? ""}`);
     setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");

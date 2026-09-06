@@ -45,29 +45,58 @@ export function getInvoiceDateFilterLabel(selectedRange, customDateRange, t) {
 }
 
 export function getInvoiceStatusClasses(status) {
-  const normalizedStatus = `${status ?? ""}`.toLowerCase();
+  const normalizedStatus = `${status ?? ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
-  if (normalizedStatus === "paid") {
-    return "bg-[#dff6dd] text-[#2d9b42]";
+  if (
+    normalizedStatus === "paid" ||
+    normalizedStatus === "delivered" ||
+    normalizedStatus === "completed"
+  ) {
+    return "border border-[#bfe7c8] bg-[#edf9f0] text-[#227a43]";
   }
 
-  if (normalizedStatus === "pending") {
-    return "bg-[#fff4d6] text-[#cf8b19]";
+  if (normalizedStatus === "pending" || normalizedStatus === "unpaid") {
+    return "border border-[#f2d7a8] bg-[#fff7e8] text-[#b57612]";
   }
 
   if (normalizedStatus === "reported") {
-    return "bg-[#e8f0ff] text-[#2c76ff]";
+    return "border border-[#c7d9fd] bg-[#eef4ff] text-[#315fbc]";
+  }
+
+  if (normalizedStatus === "confirmed") {
+    return "border border-[#bfd6ff] bg-[#edf3ff] text-[#315fc2]";
+  }
+
+  if (normalizedStatus === "accepted") {
+    return "border border-[#f2d7a8] bg-[#fff7e8] text-[#b57612]";
+  }
+
+  if (normalizedStatus === "preparing" || normalizedStatus === "modified") {
+    return "border border-[#f5cfb6] bg-[#fff4ea] text-[#cb6b2f]";
+  }
+
+  if (normalizedStatus === "ready" || normalizedStatus === "ready to deliver") {
+    return "border border-[#b7e6da] bg-[#ecfbf6] text-[#177c71]";
   }
 
   if (normalizedStatus === "overdue") {
-    return "bg-[#fde2d9] text-[#d06036]";
+    return "border border-[#f5cfb6] bg-[#fff4ea] text-[#cb6b2f]";
   }
 
-  if (normalizedStatus === "rejected") {
-    return "bg-[#fde8e8] text-[#c34242]";
+  if (
+    normalizedStatus === "rejected" ||
+    normalizedStatus === "cancelled" ||
+    normalizedStatus === "canceled" ||
+    normalizedStatus === "failed"
+  ) {
+    return "border border-[#efc4bc] bg-[#fff1ee] text-[#c05445]";
   }
 
-  return "bg-[#eef3fc] text-[#2c76ff]";
+  return "border border-[#ddd9d4] bg-[#f5f4f2] text-[#6c655f]";
 }
 
 export function getInvoiceQueryDateRange(selectedRange, customDateRange = {}) {

@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  FiBell,
   FiHelpCircle,
   FiLogOut,
   FiMenu,
   FiShoppingCart,
   FiUser,
 } from "react-icons/fi";
+import { Bell } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import NotificationPopover from "./NotificationPopover";
 
@@ -32,6 +32,7 @@ export default function CommonNavbarActions({
   actionMenuRef,
   cartItemCount,
   hasFreshNotification,
+  isAdminStyle = false,
   isActionMenuOpen,
   isLoggedIn,
   isNotificationOpen,
@@ -53,30 +54,20 @@ export default function CommonNavbarActions({
   const userInitials = getUserInitials(user);
 
   return (
-    <div className="ml-auto shrink-0" ref={actionMenuRef}>
+    <div className="ml-auto shrink-0 lg:border-l lg:border-[#ebe4de] lg:pl-3" ref={actionMenuRef}>
       <div className="flex items-center gap-1.5 sm:gap-2">
         <div className="relative" ref={notificationRef}>
           <button
             type="button"
             onClick={onNotificationToggle}
-            className={`relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-9 sm:w-9 ${
-              hasFreshNotification
-                ? "border-[#cf6e38] text-[#c85f33] shadow-[0_0_0_4px_rgba(207,110,56,0.12)]"
-                : "border-[#e6ddd5]"
-            }`}
+            className="relative inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-[#2f241c] transition hover:bg-[#f5f1ed]"
             aria-label={t("nav.notifications")}
             aria-expanded={isNotificationOpen}
           >
-            <FiBell className="text-[16px] sm:text-[18px]" />
-            {hasFreshNotification ? (
-              <span className="absolute -right-1 -top-1 z-20 flex h-3.5 w-3.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#cf6e38] opacity-60" />
-                <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-white bg-[#cf6e38]" />
-              </span>
-            ) : null}
+          <Bell size={16} />
             {unreadNotificationCount > 0 ? (
-              <span className="absolute right-1 top-1 z-10 flex h-4 min-w-4 items-center justify-center rounded-full border border-white bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white shadow-[0_4px_10px_rgba(200,95,51,0.28)]">
-                {unreadNotificationCount}
+              <span className="absolute right-1.5 top-1.5 inline-flex min-w-[18px] items-center justify-center rounded-full bg-[#cf6e38] px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                {unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}
               </span>
             ) : null}
           </button>
@@ -89,29 +80,39 @@ export default function CommonNavbarActions({
           ) : null}
         </div>
 
-        <button
-          type="button"
-          onClick={onCheckoutClick}
-          className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-9 sm:w-9"
-          aria-label={t("nav.goToCheckoutCart")}
-        >
-          <FiShoppingCart className="text-[16px] sm:text-[18px]" />
-          {cartItemCount > 0 ? (
-            <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
-              {cartItemCount}
-            </span>
-          ) : null}
-        </button>
+        {!isAdminStyle ? (
+          <button
+            type="button"
+            onClick={onCheckoutClick}
+            className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[#e6ddd5] bg-white text-[#2f2f2f] shadow-sm transition hover:border-[#d9c7ba] hover:text-[#c85f33] sm:h-9 sm:w-9"
+            aria-label={t("nav.goToCheckoutCart")}
+          >
+            <FiShoppingCart className="text-[16px] sm:text-[18px]" />
+            {cartItemCount > 0 ? (
+              <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
+                {cartItemCount}
+              </span>
+            ) : null}
+          </button>
+        ) : null}
 
         <div className="relative">
           <button
             type="button"
             onClick={onToggleActionMenu}
-            className="flex cursor-pointer items-center gap-2 rounded-full border border-[#e6ddd5] bg-white px-1.5 py-1.5 shadow-sm transition hover:border-[#d9c7ba] sm:gap-3 sm:px-2"
+            className={`flex cursor-pointer items-center gap-2 transition ${
+              isAdminStyle
+                ? "rounded-[14px] bg-white px-2 py-1 hover:bg-[#faf6f2] sm:gap-3"
+                : "rounded-full border border-[#e6ddd5] bg-white px-1.5 py-1.5 shadow-sm hover:border-[#d9c7ba] sm:gap-3 sm:px-2"
+            }`}
             aria-label={t("nav.openMenu")}
             aria-expanded={isActionMenuOpen}
           >
-            <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-[#fff1e9] text-[10px] font-bold text-[#c85f33] sm:h-8 sm:w-8 sm:text-[11px]">
+            <div
+              className={`flex items-center justify-center overflow-hidden rounded-full bg-[#fff1e9] font-bold text-[#c85f33] ${
+                isAdminStyle ? "h-10 w-10 text-[13px]" : "h-7 w-7 text-[10px] sm:h-8 sm:w-8 sm:text-[11px]"
+              }`}
+            >
               {avatarUrl ? (
                 <img
                   alt={user?.name || "User"}
@@ -123,8 +124,15 @@ export default function CommonNavbarActions({
               )}
             </div>
             {isLoggedIn ? (
-              <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
-                {user?.name}
+              <span className={isAdminStyle ? "hidden min-w-0 text-left sm:block" : "type-h6 hidden text-[#2f2f2f] sm:inline"}>
+                {isAdminStyle ? (
+                  <>
+                    <span className="block truncate text-[12px] font-bold text-[#1f1711]">{user?.name}</span>
+                    <span className="block truncate text-[11px] text-[#7f746d]">Customer</span>
+                  </>
+                ) : (
+                  user?.name
+                )}
               </span>
             ) : (
               <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
@@ -135,7 +143,7 @@ export default function CommonNavbarActions({
           </button>
 
           {isActionMenuOpen ? (
-            <div className="absolute right-0 top-[calc(100%+10px)] z-50 max-h-[min(70vh,calc(100vh-96px))] min-w-[220px] overflow-y-auto rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)]">
+            <div className="absolute right-0 top-[calc(100%+10px)] z-50 max-h-[min(70vh,calc(100vh-96px))] min-w-[220px] overflow-y-auto rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <div className="space-y-1">
                 {menuItems.map((item) => {
                   const Icon = item.icon;
