@@ -10,6 +10,7 @@ import {
 import NotificationSection from "../components/notification/NotificationSection";
 import NotificationDateFilter from "../components/notification/NotificationDateFilter";
 import NotificationTabs from "../components/notification/NotificationTabs";
+import DashboardLoadingState from "../components/DashboardLoadingState";
 import { localizeNotification } from "../components/notification/notificationContent";
 import { translateNotification } from "../components/notification/notificationI18n";
 import {
@@ -205,11 +206,7 @@ export default function VendorNotificationsPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
-      </div>
-    );
+    return <DashboardLoadingState title="Loading notifications" description="Retrieving your latest updates and order activity." rows={5} columns={4} />;
   }
 
   if (error) {

@@ -61,6 +61,7 @@ export function useVendorSettingsPage() {
   }));
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPasswordChangeStarted, setIsPasswordChangeStarted] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [loadWarning, setLoadWarning] = useState("");
 
@@ -130,8 +131,11 @@ export function useVendorSettingsPage() {
   const isDirty = useMemo(() => {
     const currentComparable = JSON.stringify(stripPasswordFields(formState));
     const savedComparable = JSON.stringify(savedFormState);
-    return currentComparable !== savedComparable || hasPasswordValues(formState);
-  }, [formState, savedFormState]);
+    return (
+      currentComparable !== savedComparable ||
+      (isPasswordChangeStarted && hasPasswordValues(formState))
+    );
+  }, [formState, isPasswordChangeStarted, savedFormState]);
 
   const updateField = (key, value) => {
     setFormState((current) => ({
@@ -141,6 +145,7 @@ export function useVendorSettingsPage() {
   };
 
   const handleReset = () => {
+    setIsPasswordChangeStarted(false);
     setFormState({
       ...savedFormState,
       ...getPasswordFields(),
@@ -154,7 +159,8 @@ export function useVendorSettingsPage() {
       const profileHasChanged =
         JSON.stringify(stripPasswordFields(formState)) !==
         JSON.stringify(savedFormState);
-      const passwordHasChanged = hasPasswordValues(formState);
+      const passwordHasChanged =
+        isPasswordChangeStarted && hasPasswordValues(formState);
       const successMessages = [];
 
       if (profileHasChanged) {
@@ -169,6 +175,7 @@ export function useVendorSettingsPage() {
           newPassword: current.newPassword,
           confirmNewPassword: current.confirmNewPassword,
         }));
+        setIsPasswordChangeStarted(false);
         setLoadWarning("");
         successMessages.push(result.message);
       }
@@ -206,6 +213,7 @@ export function useVendorSettingsPage() {
           ...current,
           ...getPasswordFields(),
         }));
+        setIsPasswordChangeStarted(false);
         successMessages.push(
           passwordResult.message || st("passwordChangedSuccess"),
         );
@@ -289,6 +297,7 @@ export function useVendorSettingsPage() {
     isSaving,
     isUploadingAvatar,
     loadWarning,
+    startPasswordChange: () => setIsPasswordChangeStarted(true),
     updateField,
   };
 }

@@ -13,6 +13,7 @@ import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { getInvoiceStatusClasses } from "../components/invoices/invoiceUtils";
+import DashboardLoadingState from "../components/DashboardLoadingState";
 import {
   translateInvoiceDetails,
   translateInvoiceStatus,
@@ -35,26 +36,26 @@ const ALLOWED_RECEIPT_TYPES = new Set([
 
 function DetailRow({ label, value, valueClassName = "" }) {
   return (
-    <div className="group rounded-[22px] border border-[#eadccf] bg-[linear-gradient(180deg,#fffdfa_0%,#fff8f2_100%)] px-4 py-4 shadow-[0_10px_24px_rgba(53,33,20,0.04)] transition duration-200 hover:-translate-y-[1px] hover:border-[#e5c9b5] hover:shadow-[0_16px_32px_rgba(53,33,20,0.08)] sm:px-5">
+    <div className="rounded-[12px] border border-[#eadfd7] bg-white px-3 py-2.5 sm:px-4">
       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ab8f7f]">
         {label}
       </p>
-      <p className={`mt-2 text-[15px] font-semibold leading-6 text-[#201815] sm:text-[17px] ${valueClassName}`.trim()}>
+      <p className={`mt-1.5 text-[15px] font-semibold leading-6 text-[#201815] sm:text-[17px] ${valueClassName}`.trim()}>
         {value}
       </p>
     </div>
   );
 }
 
-function DetailSection({ title, children }) {
+function DetailSection({ title, children, className = "" }) {
   return (
-    <section className="overflow-hidden rounded-[30px] border border-[#eadccf] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f0_100%)] shadow-[0_18px_40px_rgba(52,31,18,0.06)]">
-      <div className="border-b border-[#efe4db] bg-[linear-gradient(90deg,rgba(207,110,56,0.09)_0%,rgba(255,255,255,0.92)_55%)] px-5 py-4 sm:px-6">
+    <section className={`overflow-hidden rounded-[18px] border border-[#e6d9cf] bg-white ${className}`}>
+      <div className="border-b border-[#efe4db] bg-[#fffaf6] px-4 py-3 sm:px-5">
         <h3 className="text-[12px] font-bold uppercase tracking-[0.24em] text-[#9c7b68]">
           {title}
         </h3>
       </div>
-      <div className="p-5 sm:p-6">{children}</div>
+      <div className="p-4 sm:p-5">{children}</div>
     </section>
   );
 }
@@ -66,9 +67,30 @@ function SummaryChip({ label, value, tone = "default" }) {
       : "border-[#eadfd5] bg-white/85 text-[#65574d]";
 
   return (
-    <div className={`rounded-[20px] border px-4 py-3 shadow-[0_10px_24px_rgba(46,28,17,0.04)] ${toneClasses}`}>
+    <div className={`rounded-[12px] border px-3 py-2.5 ${toneClasses}`}>
       <p className="text-[10px] font-bold uppercase tracking-[0.2em]">{label}</p>
-      <p className="mt-2 text-[15px] font-semibold leading-6 text-[#1d1713]">{value}</p>
+      <p className="mt-1.5 text-[15px] font-semibold leading-6 text-[#1d1713]">{value}</p>
+    </div>
+  );
+}
+
+function InvoiceInlineDetail({ label, value, emphasis = false }) {
+  return (
+    <div
+      className={`min-w-0 px-3 py-1 ${
+        emphasis ? "sm:text-right" : ""
+      }`}
+    >
+      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ab8f7f]">
+        {label}
+      </p>
+      <p
+        className={`mt-1 whitespace-nowrap text-[15px] font-semibold leading-6 text-[#201815] ${
+          emphasis ? "text-[#c75d2d]" : ""
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }
@@ -188,11 +210,7 @@ export default function VendorInvoiceDetailsPage() {
   }, [decodedInvoiceId, dispatch]);
 
   if (selectedInvoiceDetailStatus === "loading") {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
-      </div>
-    );
+    return <DashboardLoadingState title="Loading invoice details" description="Preparing the invoice, order, and payment information." rows={4} columns={4} />;
   }
 
   if (selectedInvoiceDetailStatus === "failed") {
@@ -263,8 +281,6 @@ export default function VendorInvoiceDetailsPage() {
               : !canReportPayment
                 ? invoiceDetailsT("paymentUnavailableNotice")
                 : "";
-  const transactionReferenceLabel =
-    invoice.transactionReference || invoiceDetailsT("notAvailable");
   const eventNameLabel = localizedOrderLabel;
   const eventMetaLabel = [
     invoice.order.eventDate,
@@ -360,8 +376,8 @@ export default function VendorInvoiceDetailsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
             to="/vendor-dashboard/invoices"
@@ -370,7 +386,7 @@ export default function VendorInvoiceDetailsPage() {
             <FiArrowLeft className="text-[15px]" />
             {invoiceDetailsT("back")}
           </Link>
-          <h1 className="mt-4 text-[34px] font-semibold tracking-[-0.05em] text-[#181311] sm:text-[42px]">
+          <h1 className="mt-3 text-[34px] font-semibold tracking-[-0.05em] text-[#181311] sm:text-[42px]">
             {invoiceDetailsT("title")}
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#655a52] sm:text-[16px]">
@@ -466,62 +482,48 @@ export default function VendorInvoiceDetailsPage() {
         </section>
       ) : null}
 
-      <section className="relative overflow-hidden rounded-[34px] border border-[#e2d5ca] bg-[linear-gradient(135deg,#fffdfa_0%,#fff7f0_52%,#fff2e6_100%)] p-5 shadow-[0_22px_48px_rgba(31,20,12,0.08)] md:p-7">
-        <div className="absolute -right-14 top-0 h-40 w-40 rounded-full bg-[#ffd9c6]/55 blur-3xl" aria-hidden="true" />
-        <div className="absolute bottom-0 left-0 h-32 w-32 rounded-full bg-[#fff2d6]/55 blur-3xl" aria-hidden="true" />
+      <section className="relative overflow-hidden rounded-[20px] border border-[#e2d5ca] bg-[#fffdfa] p-4 shadow-[0_12px_28px_rgba(31,20,12,0.06)] md:p-5">
 
-        <div className="relative flex flex-col gap-5 border-b border-[#ebded3] pb-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[22px] border border-[#f0d1bc] bg-[linear-gradient(135deg,#fff2e8_0%,#ffe6d7_100%)] text-[#cf6e38] shadow-[0_12px_24px_rgba(207,110,56,0.16)]">
-              <FiFileText className="text-[24px]" />
+        <div className="relative flex flex-col gap-3 border-b border-[#ebded3] pb-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] border border-[#f0d1bc] bg-[#fff2e8] text-[#cf6e38]">
+              <FiFileText className="text-[21px]" />
             </div>
-
             <div>
-              <span className={`inline-flex rounded-full px-3.5 py-1.5 text-xs font-semibold shadow-sm ${getInvoiceStatusClasses(invoice.status)}`}>
+              <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getInvoiceStatusClasses(invoice.status)}`}>
                 {localizedStatus}
               </span>
-              <h2 className="mt-3 text-[28px] font-semibold tracking-[-0.05em] text-[#1c1714] sm:text-[34px]">
+              <h2 className="mt-1 text-[28px] font-semibold tracking-[-0.05em] text-[#1c1714] sm:text-[34px]">
                 {invoice.invoiceNumber}
               </h2>
-              <p className="mt-2 max-w-2xl text-[15px] leading-7 text-[#675b53]">
-                {invoiceHeading}
-              </p>
             </div>
           </div>
-
-          <div className="min-w-[240px] rounded-[24px] border border-[#efcdbb] bg-[linear-gradient(135deg,#fff6ef_0%,#ffe7d8_100%)] px-5 py-5 text-left shadow-[0_16px_34px_rgba(207,110,56,0.12)] sm:text-right">
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#b17859]">
+          <div className="sm:text-right">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#ab8f7f]">
               {invoiceDetailsT("summaryTitle")}
             </p>
-            <p className="mt-3 text-[30px] font-semibold tracking-[-0.05em] text-[#c75d2d] sm:text-[36px]">
+            <p className="mt-1 text-[30px] font-semibold tracking-[-0.05em] text-[#c75d2d] sm:text-[36px]">
               {invoice.totalAmount}
-            </p>
-            <p className="mt-2 text-[13px] font-medium text-[#876b5b]">
-              {invoiceDetailsT("paymentType")}: {paymentTypeLabel}
             </p>
           </div>
         </div>
 
-        <div className="relative mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <DetailRow
+        <div className="relative mt-3 grid grid-cols-2 gap-x-2 gap-y-3 sm:grid-cols-3 xl:grid-cols-5">
+          <InvoiceInlineDetail
             label={invoiceDetailsT("vendor")}
             value={invoice.vendor.name || invoiceDetailsT("vendorFallback")}
           />
-          <DetailRow label={invoiceDetailsT("event")} value={eventNameLabel} />
-          <DetailRow label={invoiceDetailsT("issuedOn")} value={invoice.issuedOn} />
-          <DetailRow label={invoiceDetailsT("dueOn")} value={invoice.dueOn} />
-        </div>
-
-        <div className="relative mt-7 border-t border-[#ebded3] pt-6">
-          <h3 className="mb-4 text-[12px] font-bold uppercase tracking-[0.24em] text-[#9c7b68]">
-            {invoiceDetailsT("amountBreakdown")}
-          </h3>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <SummaryChip label={invoiceDetailsT("subtotal")} value={invoice.subtotal} />
-            <SummaryChip label={invoiceDetailsT("deliveryFee")} value={invoice.deliveryFee} />
-            <SummaryChip label={invoiceDetailsT("tax")} value={invoice.taxAmount} />
-            <SummaryChip label={invoiceDetailsT("tip")} value={invoice.tipAmount} tone="accent" />
-          </div>
+          <InvoiceInlineDetail label={invoiceDetailsT("event")} value={eventNameLabel} />
+          <InvoiceInlineDetail label={invoiceDetailsT("issuedOn")} value={invoice.issuedOn} />
+          <InvoiceInlineDetail label={invoiceDetailsT("dueOn")} value={invoice.dueOn} />
+          <InvoiceInlineDetail label={invoiceDetailsT("subtotal")} value={invoice.subtotal} />
+          <InvoiceInlineDetail label={invoiceDetailsT("deliveryFee")} value={invoice.deliveryFee} />
+          <InvoiceInlineDetail label={invoiceDetailsT("tax")} value={invoice.taxAmount} />
+          <InvoiceInlineDetail label={invoiceDetailsT("tip")} value={invoice.tipAmount} />
+          <InvoiceInlineDetail
+            label={invoiceDetailsT("paymentType")}
+            value={paymentTypeLabel}
+          />
         </div>
       </section>
 
@@ -531,37 +533,37 @@ export default function VendorInvoiceDetailsPage() {
         </div>
       ) : null}
 
-      <section className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
-        <div className="space-y-6">
-          <DetailSection title={invoiceDetailsT("lineItems")}>
+      <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
+        <div className="contents">
+          <DetailSection className="xl:order-3 xl:col-span-2" title="Order & billing">
+            <div className="overflow-x-auto">
+              <div className="min-w-[580px]">
+              <div className="mb-1 grid grid-cols-[minmax(0,1fr)_74px_110px_120px] border-b border-[#eee3db] pb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">
+                <span>Menu name</span>
+                <span className="text-center">Quantity</span>
+                <span className="text-right">Unit price</span>
+                <span className="text-right">Total</span>
+              </div>
             {invoice.lineItems.length > 0 ? (
-              <div className="space-y-3">
+              <div>
                 {invoice.lineItems.map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-[24px] border border-[#ede0d5] bg-[linear-gradient(180deg,#ffffff_0%,#fffaf6_100%)] px-5 py-5 shadow-[0_12px_28px_rgba(42,26,15,0.05)] transition duration-200 hover:-translate-y-[1px] hover:border-[#e0c2ad]"
+                    className="grid grid-cols-[minmax(0,1fr)_74px_110px_120px] items-start border-b border-[#eee3db] py-3 last:border-b-0"
                   >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <p className="text-[17px] font-semibold text-[#1f1f1f]">
-                          {item.label}
+                    <div className="min-w-0 pr-3">
+                      <p className="text-[17px] font-semibold text-[#1f1f1f]">
+                        {item.label || "Menu"}
+                      </p>
+                      {item.description ? (
+                        <p className="mt-1 text-sm leading-6 text-[#6f665f]">
+                          {item.description}
                         </p>
-                        {item.description ? (
-                          <p className="mt-1 text-sm leading-6 text-[#6f665f]">
-                            {item.description}
-                          </p>
-                        ) : null}
-                      </div>
-
-                      <div className="rounded-[18px] border border-[#f0e5dd] bg-[#fff8f3] px-4 py-3 text-left sm:min-w-[160px] sm:text-right">
-                        <p className="text-sm font-semibold text-[#1f1f1f]">
-                          {item.totalPrice}
-                        </p>
-                        <p className="mt-1 text-xs font-medium text-[#8b827b]">
-                          {item.quantity} x {item.unitPrice}
-                        </p>
-                      </div>
+                      ) : null}
                     </div>
+                    <p className="pt-1 text-center text-sm font-medium text-[#4b463f]">{item.quantity}</p>
+                    <p className="pt-1 text-right text-sm font-medium text-[#4b463f]">{item.unitPrice}</p>
+                    <p className="pt-1 text-right text-sm font-semibold text-[#1f1f1f]">{item.totalPrice}</p>
                   </article>
                 ))}
               </div>
@@ -575,65 +577,60 @@ export default function VendorInvoiceDetailsPage() {
                 </p>
               </div>
             )}
-          </DetailSection>
-
-          <DetailSection title={invoiceDetailsT("eventAndBilling")}>
-            <div className="grid gap-4 md:grid-cols-2 text-sm text-[#4b463f]">
-              <div className="rounded-[20px] border border-[#eee1d6] bg-white/80 px-4 py-4 shadow-[0_10px_22px_rgba(45,27,16,0.04)]">
-                <div className="flex items-start gap-3">
-                  <FiCalendar className="mt-0.5 text-[#cf6e38]" />
-                  <div>
-                    <p className="font-semibold text-[#1f1f1f]">
-                      {eventNameLabel}
-                    </p>
-                    {eventMetaLabel ? <p className="mt-1">{eventMetaLabel}</p> : null}
-                  </div>
-                </div>
               </div>
-
-              <div className="rounded-[20px] border border-[#eee1d6] bg-white/80 px-4 py-4 shadow-[0_10px_22px_rgba(45,27,16,0.04)]">
-                <div className="flex items-start gap-3">
-                  <FiMapPin className="mt-0.5 text-[#cf6e38]" />
-                  <div>
-                    <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("deliveryInfo")}</p>
-                    <p className="mt-1">{deliveryAddressLabel}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[20px] border border-[#eee1d6] bg-white/80 px-4 py-4 shadow-[0_10px_22px_rgba(45,27,16,0.04)]">
-                <div className="flex items-start gap-3">
-                  <FiUser className="mt-0.5 text-[#cf6e38]" />
-                  <div>
-                    <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("billingContact")}</p>
-                    <p className="mt-1">{invoice.customer.name || billingContactLabel}</p>
-                    <p>{invoice.customer.phone || invoice.billingAddress.phone || invoiceDetailsT("noPhoneAdded")}</p>
-                    <p>{invoice.customer.email || invoiceDetailsT("notProvided")}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[20px] border border-[#eee1d6] bg-white/80 px-4 py-4 shadow-[0_10px_22px_rgba(45,27,16,0.04)]">
-                <div className="flex items-start gap-3">
-                  <FiCreditCard className="mt-0.5 text-[#cf6e38]" />
-                  <div>
-                    <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("billingAddress")}</p>
-                    <p className="mt-1">{billingAddressLabel}</p>
-                  </div>
-                </div>
-              </div>
-
-              {invoice.note ? (
-                <div className="md:col-span-2 rounded-[20px] border border-[#f1dfd2] bg-[linear-gradient(135deg,#fff9f4_0%,#fff1e5_100%)] px-5 py-4 shadow-[0_10px_24px_rgba(52,31,18,0.05)]">
-                  <p className="font-semibold text-[#1f1f1f]">{invoiceDetailsT("note")}</p>
-                  <p className="mt-2 text-sm leading-7 text-[#6d645c]">{invoice.note}</p>
-                </div>
-              ) : null}
             </div>
+
+          <section className="mt-5 border-t border-[#e6d9cf] pt-4">
+            <h3 className="text-[12px] font-bold uppercase tracking-[0.24em] text-[#9c7b68]">
+              {invoiceDetailsT("eventAndBilling")}
+            </h3>
+            <div className="mt-3 grid md:grid-cols-2 md:divide-x md:divide-[#eee3db]">
+              <div className="divide-y divide-[#eee3db] md:pr-6">
+                <div className="flex items-start gap-3 py-3">
+                  <FiCalendar className="mt-0.5 shrink-0 text-[#cf6e38]" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">Event</p>
+                    <p className="mt-1 font-semibold text-[#1f1f1f]">{eventNameLabel}</p>
+                    {eventMetaLabel ? <p className="mt-1 leading-6 text-[#625a53]">{eventMetaLabel}</p> : null}
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 py-3">
+                  <FiMapPin className="mt-0.5 shrink-0 text-[#cf6e38]" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">{invoiceDetailsT("deliveryInfo")}</p>
+                    <p className="mt-1 leading-6 text-[#4b463f]">{deliveryAddressLabel}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="divide-y divide-[#eee3db] md:pl-6">
+                <div className="flex items-start gap-3 py-3">
+                  <FiUser className="mt-0.5 shrink-0 text-[#cf6e38]" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">{invoiceDetailsT("billingContact")}</p>
+                    <p className="mt-1 leading-6 text-[#4b463f]">{invoice.customer.name || billingContactLabel}<br />{invoice.customer.phone || invoice.billingAddress.phone || invoiceDetailsT("noPhoneAdded")}<br />{invoice.customer.email || invoiceDetailsT("notProvided")}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 py-3">
+                  <FiCreditCard className="mt-0.5 shrink-0 text-[#cf6e38]" />
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">{invoiceDetailsT("billingAddress")}</p>
+                    <p className="mt-1 leading-6 text-[#4b463f]">{billingAddressLabel}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {invoice.note ? (
+              <div className="mt-1 border-t border-[#eee3db] pt-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#a78772]">{invoiceDetailsT("note")}</p>
+                <p className="mt-1 text-sm leading-7 text-[#6d645c]">{invoice.note}</p>
+              </div>
+            ) : null}
+          </section>
           </DetailSection>
 
           {invoice.paymentHistory?.length ? (
-            <DetailSection title={invoiceDetailsT("paymentHistory")}>
+            <DetailSection className="xl:order-4" title={invoiceDetailsT("paymentHistory")}>
               <div className="space-y-3">
                 {invoice.paymentHistory.map((item) => (
                   (() => {
@@ -716,91 +713,11 @@ export default function VendorInvoiceDetailsPage() {
             </DetailSection>
           ) : null}
 
-          {invoice.settlement ? (
-            <DetailSection title={invoiceDetailsT("settlementAndCommission")}>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <DetailRow
-                  label={invoiceDetailsT("settlementNumber")}
-                  value={invoice.settlement.settlementNumber || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("settlementStatus")}
-                  value={invoice.settlement.status || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("vendorPayable")}
-                  value={invoice.settlement.vendorPayable || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("fundedAt")}
-                  value={invoice.settlement.fundedAt || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("readyForPayoutAt")}
-                  value={invoice.settlement.readyForPayoutAt || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("settledAt")}
-                  value={invoice.settlement.settledAt || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("commissionStatus")}
-                  value={invoice.settlement.commission?.status || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("commissionModel")}
-                  value={invoice.settlement.commission?.model || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("commissionRate")}
-                  value={invoice.settlement.commission?.ratePercent || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("grossCommission")}
-                  value={invoice.settlement.commission?.grossCommission || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("platformCommission")}
-                  value={invoice.settlement.commission?.totalCommission || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("fixedFee")}
-                  value={invoice.settlement.commission?.fixedFee || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("vatOnCommission")}
-                  value={invoice.settlement.commission?.vatOnCommission || invoiceDetailsT("notAvailable")}
-                />
-                <DetailRow
-                  label={invoiceDetailsT("commissionLockedAt")}
-                  value={invoice.settlement.commission?.lockedAt || invoiceDetailsT("notAvailable")}
-                />
-              </div>
-            </DetailSection>
-          ) : null}
         </div>
 
-        <div className="space-y-6 xl:sticky xl:top-6">
-          <DetailSection title={invoiceDetailsT("invoiceMeta")}>
-            <div className="grid grid-cols-2 gap-3">
-              <DetailRow label={invoiceDetailsT("paidOn")} value={invoice.paidOn || invoiceDetailsT("notPaidYet")} />
-              <DetailRow
-                label={invoiceDetailsT("paymentType")}
-                value={paymentTypeLabel}
-              />
-              <DetailRow
-                label={invoiceDetailsT("transactionReference")}
-                value={transactionReferenceLabel}
-              />
-              <DetailRow label={invoiceDetailsT("paidAmount")} value={invoice.paidAmount} />
-              <DetailRow label={invoiceDetailsT("dueAmount")} value={invoice.dueAmount} />
-              <DetailRow label={invoiceDetailsT("verifiedAt")} value={invoice.verifiedAt || invoiceDetailsT("notAvailable")} />
-              <DetailRow label={invoiceDetailsT("rejectedAt")} value={invoice.rejectedAt || invoiceDetailsT("notAvailable")} />
-            </div>
-          </DetailSection>
-
+        <div className="contents">
           {canReportPayment ? (
-            <DetailSection title={invoiceDetailsT("reportBankTransferPayment")}>
+            <DetailSection className="h-full xl:order-2" title={invoiceDetailsT("reportBankTransferPayment")}>
               <form className="space-y-4" onSubmit={handleSubmitPaymentReport}>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <label className="flex flex-col gap-1 text-sm text-[#4b463f]">
@@ -865,8 +782,14 @@ export default function VendorInvoiceDetailsPage() {
             </DetailSection>
           ) : null}
 
-          {isBankTransfer ? (
-            <DetailSection title={invoiceDetailsT("bankTransferDetails")}>
+          {isBankTransfer && (
+            invoice.bankTransferInstructions ||
+            invoice.bankAccountName ||
+            invoice.bankAccountNumber ||
+            invoice.bankName ||
+            invoice.invoiceNumber
+          ) ? (
+            <DetailSection className="h-full xl:order-1" title={invoiceDetailsT("bankTransferDetails")}>
               <div className="space-y-4">
                 {invoice.bankTransferInstructions ? (
                   <div className="rounded-[22px] border border-[#f0ddd1] bg-[linear-gradient(135deg,#fff8f2_0%,#fff1e6_100%)] px-5 py-4 shadow-[0_10px_24px_rgba(53,33,20,0.05)]">
@@ -875,19 +798,25 @@ export default function VendorInvoiceDetailsPage() {
                 ) : null}
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <DetailRow label={invoiceDetailsT("accountName")} value={invoice.bankAccountName || invoiceDetailsT("notProvided")} />
-                  <DetailRow label={invoiceDetailsT("accountNumber")} value={invoice.bankAccountNumber || invoiceDetailsT("notProvided")} />
-                  <DetailRow label={invoiceDetailsT("bankName")} value={invoice.bankName || invoiceDetailsT("notProvided")} />
-                  <DetailRow label="IBAN" value={invoice.iban || invoiceDetailsT("notProvided")} />
-                  <DetailRow label="SWIFT / BIC" value={invoice.swiftCode || invoiceDetailsT("notProvided")} />
-                  <DetailRow label={invoiceDetailsT("referenceKid")} value={invoice.invoiceNumber || invoiceDetailsT("notAvailable")} />
+                  {invoice.bankAccountName ? (
+                    <DetailRow label={invoiceDetailsT("accountName")} value={invoice.bankAccountName} />
+                  ) : null}
+                  {invoice.bankAccountNumber ? (
+                    <DetailRow label={invoiceDetailsT("accountNumber")} value={invoice.bankAccountNumber} />
+                  ) : null}
+                  {invoice.bankName ? (
+                    <DetailRow label={invoiceDetailsT("bankName")} value={invoice.bankName} />
+                  ) : null}
+                  {invoice.invoiceNumber ? (
+                    <DetailRow label={invoiceDetailsT("referenceKid")} value={invoice.invoiceNumber} />
+                  ) : null}
                 </div>
               </div>
             </DetailSection>
           ) : null}
 
           {invoice.paymentReport ? (
-            <DetailSection title={invoiceDetailsT("reportedPaymentDetails")}>
+            <DetailSection className="xl:order-5" title={invoiceDetailsT("reportedPaymentDetails")}>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <DetailRow label={invoiceDetailsT("paymentDate")} value={invoice.paymentReport.paymentDate || invoiceDetailsT("notAvailable")} />
                 <DetailRow label={invoiceDetailsT("reportedAt")} value={invoice.paymentReport.reportedAtLabel || invoiceDetailsT("notAvailable")} />

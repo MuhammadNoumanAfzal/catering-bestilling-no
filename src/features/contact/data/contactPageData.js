@@ -3,11 +3,16 @@ import {
   FiMapPin,
   FiPhoneCall,
 } from "react-icons/fi";
+import {
+  COMPANY_EMAIL,
+  COMPANY_PHONE_DISPLAY,
+  COMPANY_SOCIAL_LINKS,
+} from "../../../constants/companyContact";
 
 export const contactCards = [
   {
     title: "General support",
-    value: "dev@gocatering.com",
+    value: COMPANY_EMAIL,
     description:
       "Help with catering bookings, delivery details, account questions, and order updates.",
     icon: FiMail,
@@ -15,19 +20,20 @@ export const contactCards = [
   },
   {
     title: "Call our team",
-    value: "+47 22 40 88 10",
+    value: COMPANY_PHONE_DISPLAY,
     description:
       "Best for urgent event changes, delivery coordination, and kitchen timing questions.",
     icon: FiPhoneCall,
     accent: "from-[#fff6ec] to-[#fffdf8]",
   },
   {
-    title: "Visit the kitchen desk",
-    value: "Bryggen 14, Bergen",
+    title: "Follow Go Catering",
+    value: "Facebook and Instagram",
     description:
-      "Meet the team for partnership conversations, menu tastings, and full event planning support.",
+      "Follow us for catering inspiration, service updates, and the latest Go Catering news.",
     icon: FiMapPin,
     accent: "from-[#fff3ed] to-[#fffaf7]",
+    links: COMPANY_SOCIAL_LINKS,
   },
 ];
 

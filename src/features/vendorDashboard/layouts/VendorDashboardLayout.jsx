@@ -12,9 +12,9 @@ export default function VendorDashboardLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f5efe8_0%,#fbf9f6_32%,#f6f1eb_100%)]">
-      <div className="mx-auto flex min-h-screen flex-col lg:flex-row">
-        <div className="px-3 pt-3 sm:px-4 lg:px-0 lg:pt-0 lg:sticky lg:top-0 lg:h-screen lg:self-start">
+    <div className="min-h-screen bg-[#f4f1ee]">
+      <div className="mx-auto min-h-screen max-w-[1440px] overflow-x-clip lg:grid lg:grid-cols-[236px_minmax(0,1fr)]">
+        <div className="px-3 pt-3 sm:px-4 lg:sticky lg:top-0 lg:h-screen lg:px-0 lg:pt-0 lg:self-start">
           <VendorSidebar />
         </div>
 

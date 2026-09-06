@@ -22,6 +22,21 @@ export default function ContactInfoCards({ cards }) {
               <p className="mt-3 max-w-sm text-[15px] leading-7 text-[#5d554f]">
                 {card.description}
               </p>
+              {card.links?.length ? (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {card.links.map((link) => (
+                    <a
+                      key={link.label}
+                      className="rounded-full border border-[#dfc8b9] bg-white px-3 py-1.5 text-[13px] font-semibold text-[#b5542b] transition hover:border-[#c86135] hover:bg-[#fff7f1]"
+                      href={link.href}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </article>
           );
         })}

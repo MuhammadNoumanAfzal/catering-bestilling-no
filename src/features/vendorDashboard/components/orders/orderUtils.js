@@ -121,6 +121,14 @@ export function getOrderStatusClasses(status) {
     return "border border-[#bfd6ff] bg-[#edf3ff] text-[#315fc2]";
   }
 
+  if (normalizedStatus === "processing") {
+    return "border border-[#ded9d1] bg-[#f7f5f2] text-[#766d64]";
+  }
+
+  if (normalizedStatus === "ready to deliver" || normalizedStatus === "ready") {
+    return "border border-[#b7e6da] bg-[#ecfbf6] text-[#177c71]";
+  }
+
   if (normalizedStatus === "placed") {
     return "border border-[#d8ccff] bg-[#f5f0ff] text-[#6b46c1]";
   }
@@ -137,8 +145,12 @@ export function getOrderStatusClasses(status) {
     return "border border-[#f2d7a8] bg-[#fff7e8] text-[#b57612]";
   }
 
-  if (normalizedStatus === "preparing" || normalizedStatus === "accepted") {
-    return "border border-[#b7e6da] bg-[#ecfbf6] text-[#177c71]";
+  if (normalizedStatus === "accepted") {
+    return "border border-[#f2d7a8] bg-[#fff7e8] text-[#b57612]";
+  }
+
+  if (normalizedStatus === "preparing") {
+    return "border border-[#f5cfb6] bg-[#fff4ea] text-[#cb6b2f]";
   }
 
   if (normalizedStatus === "canceled" || normalizedStatus === "cancelled") {

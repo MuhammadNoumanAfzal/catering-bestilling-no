@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   dietaryOptions,
@@ -27,7 +27,7 @@ export default function BrowseFilterBar({
   const { t } = useTranslation();
   const [activeFilters, setActiveFilters] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [showAppliedState, setShowAppliedState] = useState(false);
+  const hasObservedFilterChange = useRef(false);
   const {
     clearBrowseFilters,
     otherFilters,
@@ -44,6 +44,14 @@ export default function BrowseFilterBar({
     setSelectedSort,
   } = useBrowseFilters();
   const styles = FILTER_BAR_VARIANTS[variant] ?? FILTER_BAR_VARIANTS.default;
+  const filterStateKey = JSON.stringify({
+    otherFilters,
+    selectedDietary,
+    selectedOffers,
+    selectedPricing,
+    selectedRating,
+    selectedSort,
+  });
 
   const otherFilterCount = useMemo(
     () =>
@@ -213,47 +221,15 @@ export default function BrowseFilterBar({
     toggleFilter(chipKey);
   };
 
-  const handleApplyClick = () => {
-    setOpenDropdown(null);
-    setShowAppliedState(true);
-    onControlInteract?.();
-    onApply?.();
-
-    if (!resultsAnchorId) {
+  useEffect(() => {
+    if (!hasObservedFilterChange.current) {
+      hasObservedFilterChange.current = true;
       return;
     }
 
-    requestAnimationFrame(() => {
-      const element = document.getElementById(resultsAnchorId);
-
-      if (!element) {
-        return;
-      }
-
-      const topOffset = 104;
-      const nextScrollTop =
-        element.getBoundingClientRect().top + window.scrollY - topOffset;
-
-      window.scrollTo({
-        top: Math.max(0, nextScrollTop),
-        behavior: "smooth",
-      });
-    });
-  };
-
-  useEffect(() => {
-    if (!showAppliedState) {
-      return undefined;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setShowAppliedState(false);
-    }, 1400);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [showAppliedState]);
+    onControlInteract?.();
+    onApply?.();
+  }, [filterStateKey]);
 
   return (
     <>
@@ -283,17 +259,6 @@ export default function BrowseFilterBar({
             pricingOptions={pricingOptions}
           />
 
-          <button
-            type="button"
-            onClick={handleApplyClick}
-            className={`${styles.applyButtonClassName} ${
-              showAppliedState
-                ? "!border-[#d88c5d] !bg-[linear-gradient(135deg,#b95f2d_0%,#cf6e38_100%)]"
-                : ""
-            }`}
-          >
-            {showAppliedState ? t("browse.applied") : t("browse.apply")}
-          </button>
         </div>
 
         <SelectedFilterChipsRow

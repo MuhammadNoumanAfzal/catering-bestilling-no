@@ -71,6 +71,10 @@ const FETCH_CLIENT_ORDERS_QUERY = `
             id
             status
           }
+          latestVendorAdjustment {
+            id
+            status
+          }
           latestModificationRequest {
             id
             status
@@ -271,36 +275,6 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         status
         createdOn
         resolvedOn
-      }
-    }
-  }
-`;
-
-const FETCH_CLIENT_ORDER_LIST_STATUS_QUERY = `
-  query GetClientOrderListStatus($orderId: ID!) {
-    clientOrder(id: $orderId) {
-      id
-      status
-      hasPendingVendorAdjustment
-      hasPendingModificationRequest
-      pendingVendorAdjustment {
-        id
-        status
-      }
-      pendingModificationRequest {
-        id
-        status
-      }
-      latestVendorAdjustment {
-        id
-        status
-      }
-      latestModificationRequest {
-        id
-        status
-      }
-      modifiedItems {
-        id
       }
     }
   }
@@ -638,70 +612,6 @@ function mapBackendModifiedItems(modifiedItems, fallbackImage) {
   }));
 }
 
-async function enrichClientOrdersWithAdjustmentState(edges = []) {
-  const safeEdges = Array.isArray(edges) ? edges : [];
-
-  const settledResults = await Promise.allSettled(
-    safeEdges.map(async (edge) => {
-      const node = edge?.node;
-      const orderId = node?.id;
-
-      if (!orderId) {
-        return { edge, detail: null };
-      }
-
-      const detailResponse = await graphqlRequest({
-        query: FETCH_CLIENT_ORDER_LIST_STATUS_QUERY,
-        variables: { orderId },
-      });
-
-      return {
-        edge,
-        detail: detailResponse?.clientOrder || null,
-      };
-    }),
-  );
-
-  return settledResults.map((result, index) => {
-    const fallbackEdge = safeEdges[index];
-
-    if (result.status !== "fulfilled") {
-      return fallbackEdge;
-    }
-
-    const node = result.value?.edge?.node || fallbackEdge?.node || {};
-    const detail = result.value?.detail || {};
-
-    return {
-      ...(result.value?.edge || fallbackEdge),
-      node: {
-        ...node,
-        status: detail?.status || node?.status,
-        hasPendingVendorAdjustment:
-          typeof detail?.hasPendingVendorAdjustment === "boolean"
-            ? detail.hasPendingVendorAdjustment
-            : node?.hasPendingVendorAdjustment,
-        hasPendingModificationRequest:
-          typeof detail?.hasPendingModificationRequest === "boolean"
-            ? detail.hasPendingModificationRequest
-            : node?.hasPendingModificationRequest,
-        pendingVendorAdjustment:
-          detail?.pendingVendorAdjustment ?? node?.pendingVendorAdjustment ?? null,
-        pendingModificationRequest:
-          detail?.pendingModificationRequest ?? node?.pendingModificationRequest ?? null,
-        latestVendorAdjustment:
-          detail?.latestVendorAdjustment ?? node?.latestVendorAdjustment ?? null,
-        latestModificationRequest:
-          detail?.latestModificationRequest ?? node?.latestModificationRequest ?? null,
-        modifiedItems:
-          Array.isArray(detail?.modifiedItems) && detail.modifiedItems.length > 0
-            ? detail.modifiedItems
-            : node?.modifiedItems,
-      },
-    };
-  });
-}
-
 export const fetchClientOrders = createAsyncThunk(
   "orders/fetchClientOrders",
   async (_, { rejectWithValue }) => {
@@ -714,11 +624,8 @@ export const fetchClientOrders = createAsyncThunk(
           after: null,
         },
       });
-      const enrichedEdges = await enrichClientOrdersWithAdjustmentState(
-        response.clientOrders?.edges || [],
-      );
-      const orders = enrichedEdges.map((edge) =>
-        mapListOrder(edge.node),
+      const orders = (response.clientOrders?.edges || []).map((edge) =>
+        mapListOrder(edge.node || {}),
       );
       const completedCount = orders.filter(
         (order) => order.lifecycle === "completed",

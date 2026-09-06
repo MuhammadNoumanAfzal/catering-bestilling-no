@@ -68,6 +68,9 @@ export default function MenuDeliveryForm({
   });
   const hasSlots = deliverySlots.length > 0;
   const selectedTime = orderSummary.deliveryTime || "";
+  const personCount = Math.max(minimumPersons, Number(orderSummary.personCount) || minimumPersons);
+  const quickGuestCounts = Array.from({ length: 5 }, (_, index) => minimumPersons + index * 5);
+  const guestCountOptions = [...new Set([personCount, ...quickGuestCounts])].sort((left, right) => left - right);
   const firstAvailableSlot = deliverySlots.find((slot) => !slot.isFullyBooked) || null;
 
   function isTimeInSlot(time, slot) {
@@ -353,20 +356,35 @@ export default function MenuDeliveryForm({
 
         <div className="mt-1.5 flex flex-col items-start gap-1.5 sm:flex-row sm:items-center">
           <span className="text-[12px] text-[#1d1713]">{t("menu.personsLabel")}</span>
-          <select
-            value={orderSummary.personCount}
-            onChange={(event) => onPersonCountChange(Number(event.target.value))}
-            className="cursor-pointer rounded-[9px] border border-[#d7cdc4] bg-white px-2 py-1 text-[12px] font-medium text-[#1d1713] outline-none transition focus:border-[#cf6e38]"
-          >
-            {Array.from(
-              { length: Math.max(50, minimumPersons) - minimumPersons + 1 },
-              (_, index) => minimumPersons + index,
-            ).map((count) => (
-              <option key={count} value={count}>
-                {count}
-              </option>
-            ))}
-          </select>
+          <div className="inline-flex overflow-hidden rounded-[9px] border border-[#d7cdc4] bg-white">
+            <button
+              aria-label="Decrease guest count"
+              className="h-8 w-8 border-r border-[#e5ddd6] text-[16px] font-semibold text-[#6b5d53] transition hover:bg-[#fff5ef] disabled:cursor-not-allowed disabled:text-[#c9beb5]"
+              disabled={personCount <= minimumPersons}
+              onClick={() => onPersonCountChange(Math.max(minimumPersons, personCount - 1))}
+              type="button"
+            >
+              -
+            </button>
+            <select
+              aria-label="Guest count"
+              className="h-8 min-w-14 cursor-pointer appearance-none bg-white px-2 text-center text-[12px] font-semibold text-[#1d1713] outline-none focus:bg-[#fffaf6]"
+              onChange={(event) => onPersonCountChange(Math.max(minimumPersons, Number(event.target.value)))}
+              value={personCount}
+            >
+              {guestCountOptions.map((count) => (
+                <option key={count} value={count}>{count}</option>
+              ))}
+            </select>
+            <button
+              aria-label="Increase guest count"
+              className="h-8 w-8 border-l border-[#e5ddd6] text-[16px] font-semibold text-[#6b5d53] transition hover:bg-[#fff5ef]"
+              onClick={() => onPersonCountChange(personCount + 1)}
+              type="button"
+            >
+              +
+            </button>
+          </div>
           <span className="text-[11px] text-[#7e7469]">
             {t("menu.minimumLabel", { count: minimumPersons })}
           </span>

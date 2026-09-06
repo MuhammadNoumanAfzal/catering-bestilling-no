@@ -4,7 +4,6 @@ import {
   FiGrid,
   FiHome,
   FiMenu,
-  FiSettings,
   FiShoppingCart,
   FiUser,
   FiX,
@@ -103,7 +102,6 @@ export default function HomeNavbar() {
 
   const homeProfileMenuItems = [
     { label: t("nav.home"), to: "/", icon: FiHome },
-    { label: t("nav.settings"), to: "/settings", icon: FiSettings },
     { label: t("nav.dashboard"), to: "/vendor-dashboard", icon: FiGrid },
     ...vendorNavigationItems
       .filter(

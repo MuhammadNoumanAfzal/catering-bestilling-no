@@ -16,6 +16,7 @@ import OrderChangeRequestModal from "../components/orders/OrderChangeRequestModa
 import OrderStatusSummaryCard from "../components/orders/OrderStatusSummaryCard";
 import OrdersPagination from "../components/orders/OrdersPagination";
 import OrdersTable from "../components/orders/OrdersTable";
+import OrdersLoadingState from "../components/orders/OrdersLoadingState";
 import {
   clearSelectedOrderDetail,
   fetchClientOrderDetail,
@@ -358,11 +359,9 @@ export default function VendorOrdersPage() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading && normalizedOrders.length === 0) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#cf5c2f] border-t-transparent"></div>
-      </div>
+      <OrdersLoadingState rows={5} columns={7} />
     );
   }
 

@@ -162,7 +162,7 @@ export default function OtherFiltersModal({
               onClick={onClose}
               className="type-para cursor-pointer rounded-[6px] bg-[#CF3A00] px-2 py-1 text-white"
             >
-              {t("browse.applyFilter")}
+              Close
             </button>
           </div>
         </div>
