@@ -10,6 +10,7 @@ import {
 
 const PAGE_SIZE = 10;
 const URL_PATTERN = /(https?:\/\/[^\s]+)/giu;
+const CUSTOMER_SENDER_ROLES = new Set(["vendor", "client", "customer", "user"]);
 
 function formatStatusLabel(value) {
   return `${value ?? ""}`
@@ -54,7 +55,8 @@ function parseMessageContent(message) {
 function MessageBubble({ item }) {
   const normalizedSide = `${item.side ?? ""}`.trim().toLowerCase();
   const normalizedRole = `${item.author?.role ?? ""}`.trim().toLowerCase();
-  const isOwnReply = normalizedSide === "vendor" || normalizedRole === "vendor";
+  const isOwnReply =
+    CUSTOMER_SENDER_ROLES.has(normalizedSide) || CUSTOMER_SENDER_ROLES.has(normalizedRole);
   const { text, urls } = parseMessageContent(item.message);
 
   return (
