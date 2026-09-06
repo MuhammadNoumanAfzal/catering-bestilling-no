@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import {
   getMySupportTicket,
@@ -9,6 +10,7 @@ import {
 } from "../support/api";
 
 const PAGE_SIZE = 10;
+const SUPPORT_REFRESH_INTERVAL_MS = 10000;
 const URL_PATTERN = /(https?:\/\/[^\s]+)/giu;
 const CUSTOMER_SENDER_ROLES = new Set(["vendor", "client", "customer", "user"]);
 
@@ -142,9 +144,12 @@ export default function VendorSupportResponsesPage() {
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [listError, setListError] = useState("");
   const [detailError, setDetailError] = useState("");
+  const observedConversationRef = useRef({ ticketId: "", messageIds: new Set() });
 
-  async function loadTickets(targetPage = currentPage) {
-    setIsLoadingList(true);
+  async function loadTickets(targetPage = currentPage, { silent = false } = {}) {
+    if (!silent) {
+      setIsLoadingList(true);
+    }
     setListError("");
 
     try {
@@ -161,18 +166,22 @@ export default function VendorSupportResponsesPage() {
     } catch (error) {
       setListError(error instanceof Error ? error.message : "Unable to load your support tickets.");
     } finally {
-      setIsLoadingList(false);
+      if (!silent) {
+        setIsLoadingList(false);
+      }
     }
   }
 
-  async function loadTicketDetail(ticketId) {
+  async function loadTicketDetail(ticketId, { silent = false } = {}) {
     if (!ticketId) {
       setSelectedTicket(null);
       setDetailError("");
       return;
     }
 
-    setIsLoadingDetail(true);
+    if (!silent) {
+      setIsLoadingDetail(true);
+    }
     setDetailError("");
 
     try {
@@ -182,7 +191,9 @@ export default function VendorSupportResponsesPage() {
       setDetailError(error instanceof Error ? error.message : "Unable to load this support ticket.");
       setSelectedTicket(null);
     } finally {
-      setIsLoadingDetail(false);
+      if (!silent) {
+        setIsLoadingDetail(false);
+      }
     }
   }
 
@@ -193,6 +204,66 @@ export default function VendorSupportResponsesPage() {
   useEffect(() => {
     loadTicketDetail(selectedTicketId);
   }, [selectedTicketId]);
+
+  useEffect(() => {
+    if (!selectedTicket) {
+      return;
+    }
+
+    const conversation = selectedTicket.conversation || [];
+    const messageIds = new Set(conversation.map((message) => message.id).filter(Boolean));
+    const observed = observedConversationRef.current;
+
+    if (observed.ticketId !== selectedTicket.id) {
+      observedConversationRef.current = { ticketId: selectedTicket.id, messageIds };
+      return;
+    }
+
+    const latestAdminReply = conversation
+      .filter((message) => message.id && !observed.messageIds.has(message.id))
+      .filter((message) => `${message.side || ""}`.toLowerCase() === "admin")
+      .at(-1);
+
+    observedConversationRef.current = { ticketId: selectedTicket.id, messageIds };
+
+    if (latestAdminReply) {
+      void Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "info",
+        title: "New support reply",
+        text: "Support has replied to your ticket.",
+        showConfirmButton: false,
+        timer: 4500,
+        timerProgressBar: true,
+      });
+    }
+  }, [selectedTicket]);
+
+  useEffect(() => {
+    if (!selectedTicketId) {
+      return undefined;
+    }
+
+    const refreshSupport = () => {
+      if (document.visibilityState === "visible") {
+        void Promise.all([
+          loadTickets(currentPage, { silent: true }),
+          loadTicketDetail(selectedTicketId, { silent: true }),
+        ]);
+      }
+    };
+
+    const intervalId = window.setInterval(refreshSupport, SUPPORT_REFRESH_INTERVAL_MS);
+    window.addEventListener("focus", refreshSupport);
+    document.addEventListener("visibilitychange", refreshSupport);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshSupport);
+      document.removeEventListener("visibilitychange", refreshSupport);
+    };
+  }, [currentPage, selectedTicketId]);
 
   async function handleReplySubmit() {
     const message = draftReply.trim();
