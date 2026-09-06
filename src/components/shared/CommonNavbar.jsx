@@ -62,6 +62,7 @@ function shouldPreserveSearchParams(pathname) {
 function shouldNavigateForNavbarFilters(pathname) {
   return (
     pathname === "/" ||
+    pathname === "/contact" ||
     isVendorDashboardRoute(pathname) ||
     pathname.startsWith("/browse/food-type") ||
     pathname.startsWith("/browse/occasion") ||
@@ -74,6 +75,10 @@ function shouldNavigateForNavbarFilters(pathname) {
 
 function resolveNavbarFilterRoute(pathname) {
   if (isVendorDashboardRoute(pathname)) {
+    return DEFAULT_SEARCH_ROUTE;
+  }
+
+  if (pathname === "/contact") {
     return DEFAULT_SEARCH_ROUTE;
   }
 
