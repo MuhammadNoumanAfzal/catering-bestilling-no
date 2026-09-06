@@ -386,8 +386,8 @@ export default function VendorOrdersPage() {
       <section>
         <h2 className="type-h3 font-extrabold text-[#121212]">{t("vendorPanel.orders.quickStatus")}</h2>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-          {normalizedStatusSummary.map((item) => (
-            <OrderStatusSummaryCard key={item.label} {...item} />
+          {normalizedStatusSummary.map((item, index) => (
+            <OrderStatusSummaryCard key={`${item.label}-${index}`} {...item} />
           ))}
         </div>
       </section>

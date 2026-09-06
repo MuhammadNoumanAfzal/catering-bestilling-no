@@ -61,9 +61,7 @@ function showForegroundBrowserNotification(message, link, navigate) {
       openPushLink(link, navigate);
       notification.close();
     };
-  } catch (error) {
-    console.warn("Unable to show foreground browser notification:", error);
-  }
+  } catch {}
 }
 
 export default function PushNotificationBootstrap() {
@@ -140,12 +138,10 @@ export default function PushNotificationBootstrap() {
 
         window.localStorage.setItem(storageKey, token);
         setPushStatus("registered");
-        console.info("Firebase customer push token registered.");
       } catch (error) {
         // Push must never interrupt sign-in when the user declines permission or config is unavailable.
         const message = error?.message || String(error);
         setPushStatus(`error: ${message}`);
-        console.warn("Firebase push setup was skipped:", message);
       }
     }
 
