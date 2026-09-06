@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Bell, CreditCard, MessageCircle, PackageCheck, Star, Utensils } from "lucide-react";
 
 const TYPE_STYLES = {
   "order-update": {
@@ -31,6 +32,15 @@ const TYPE_STYLES = {
     dot: "bg-[#7a56c2]",
     labelKey: "nav.notificationTypes.menu",
   },
+};
+
+const TYPE_ICONS = {
+  "order-update": PackageCheck,
+  payment: CreditCard,
+  review: Star,
+  delivery: PackageCheck,
+  support: MessageCircle,
+  menu: Utensils,
 };
 
 function getNotificationStyle(type) {
@@ -74,6 +84,7 @@ export default function NotificationPopover({
         {notifications.map((notification, index) => (
           (() => {
             const style = getNotificationStyle(notification.type);
+            const NotificationIcon = TYPE_ICONS[notification.type] || Bell;
 
             return (
               <article
@@ -91,11 +102,7 @@ export default function NotificationPopover({
                 <div
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border bg-gradient-to-br ${style.badge}`}
                 >
-                  <img
-                    src="/home/logo.png"
-                    alt=""
-                    className="h-7 w-7 object-contain"
-                  />
+                  <NotificationIcon aria-hidden="true" size={21} strokeWidth={2} />
                 </div>
 
                 <div className="min-w-0 flex-1">
