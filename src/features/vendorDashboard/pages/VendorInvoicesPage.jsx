@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FiDownload, FiSearch } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -17,29 +17,6 @@ import {
   PAGE_SIZE,
   STATUS_OPTIONS,
 } from "../components/invoices/invoiceUtils";
-
-function buildInvoiceCsv(invoices) {
-  const rows = [
-    ["Invoice", "Vendor", "Event", "Issued On", "Due On", "Amount", "Status"],
-    ...invoices.map((invoice) => [
-      invoice.invoiceNumberShort,
-      invoice.vendor,
-      invoice.event,
-      invoice.issuedOn,
-      invoice.dueOn,
-      invoice.amount,
-      invoice.status,
-    ]),
-  ];
-
-  return rows
-    .map((row) =>
-      row
-        .map((value) => `"${`${value ?? ""}`.replaceAll('"', '""')}"`)
-        .join(","),
-    )
-    .join("\n");
-}
 
 export default function VendorInvoicesPage() {
   const { t } = useTranslation();
@@ -221,35 +198,6 @@ export default function VendorInvoicesPage() {
               }}
               menuRef={statusMenuRef}
             />
-
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window === "undefined" || records.length === 0) {
-                  return;
-                }
-
-                if (filteredRecords.length === 0) {
-                  return;
-                }
-
-                const blob = new Blob([buildInvoiceCsv(filteredRecords)], {
-                  type: "text/csv;charset=utf-8",
-                });
-                const url = window.URL.createObjectURL(blob);
-                const anchor = document.createElement("a");
-                anchor.href = url;
-                anchor.download = "invoices.csv";
-                document.body.appendChild(anchor);
-                anchor.click();
-                anchor.remove();
-                window.URL.revokeObjectURL(url);
-              }}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#e3d8ce] bg-white px-4 py-3 text-sm font-semibold text-[#2d2d2d] shadow-[0_6px_16px_rgba(32,22,16,0.04)] transition hover:bg-[#faf7f3] sm:w-auto"
-            >
-              <FiDownload className="text-[15px]" />
-              <span>{t("vendorPanel.invoices.export")}</span>
-            </button>
 
             <InvoiceFilterMenu
               defaultValue="all"
