@@ -13,7 +13,7 @@ const NOTIFICATIONS_POLL_INTERVAL_MS = 10000;
 const FRESH_NOTIFICATION_HIGHLIGHT_MS = 12000;
 const LAST_ACKNOWLEDGED_NOTIFICATION_KEY = "last-acknowledged-notification-id";
 const LAST_SEEN_NOTIFICATION_KEY = "last-seen-notification-id";
-const REVIEW_PROMPTED_ORDER_IDS_KEY = "review-prompted-order-ids";
+const REVIEW_PROMPTED_ORDER_IDS_KEY_PREFIX = "review-prompted-order-ids";
 
 function readLastAcknowledgedNotificationId() {
   if (typeof window === "undefined") {
@@ -50,34 +50,56 @@ function writeLastSeenNotificationId(notificationId) {
   window.localStorage.setItem(LAST_SEEN_NOTIFICATION_KEY, notificationId);
 }
 
-function readReviewPromptedOrderIds() {
+function normalizeOrderId(orderId) {
+  return `${orderId ?? ""}`.trim();
+}
+
+function getReviewPromptedOrderIdsKey(user) {
+  const userId = `${user?.id ?? ""}`.trim();
+  const email = `${user?.email ?? ""}`.trim().toLowerCase();
+  const identifier = userId || email;
+
+  return identifier
+    ? `${REVIEW_PROMPTED_ORDER_IDS_KEY_PREFIX}:${identifier}`
+    : REVIEW_PROMPTED_ORDER_IDS_KEY_PREFIX;
+}
+
+function readReviewPromptedOrderIds(user) {
   if (typeof window === "undefined") {
     return [];
   }
 
   try {
-    const rawValue = window.localStorage.getItem(REVIEW_PROMPTED_ORDER_IDS_KEY);
+    const rawValue = window.localStorage.getItem(getReviewPromptedOrderIdsKey(user));
     const parsedValue = rawValue ? JSON.parse(rawValue) : [];
-    return Array.isArray(parsedValue) ? parsedValue : [];
+    return Array.isArray(parsedValue)
+      ? parsedValue.map(normalizeOrderId).filter(Boolean)
+      : [];
   } catch {
     return [];
   }
 }
 
-function writeReviewPromptedOrderId(orderId) {
-  if (typeof window === "undefined" || !orderId) {
+function writeReviewPromptedOrderId(user, orderId) {
+  const normalizedOrderId = normalizeOrderId(orderId);
+
+  if (typeof window === "undefined" || !normalizedOrderId) {
     return;
   }
 
-  const existingIds = readReviewPromptedOrderIds();
-  if (existingIds.includes(orderId)) {
+  const existingIds = readReviewPromptedOrderIds(user);
+  if (existingIds.includes(normalizedOrderId)) {
     return;
   }
 
-  window.localStorage.setItem(
-    REVIEW_PROMPTED_ORDER_IDS_KEY,
-    JSON.stringify([...existingIds, orderId].slice(-100)),
-  );
+  try {
+    window.localStorage.setItem(
+      getReviewPromptedOrderIdsKey(user),
+      JSON.stringify([...existingIds, normalizedOrderId].slice(-100)),
+    );
+  } catch {
+    // The in-memory guard still prevents repeats for this signed-in session.
+  }
 }
 
 function isDeliveredOrderNotification(notification) {
@@ -86,7 +108,9 @@ function isDeliveredOrderNotification(notification) {
     .toLowerCase();
   const normalizedTitle = `${notification?.title || ""}`.trim().toLowerCase();
   const normalizedMessage = `${notification?.message || ""}`.trim().toLowerCase();
-  const statusKeywords = ["delivered", "delivery", "completed", "complete"];
+  const isCompleted = /\b(delivered|completed|complete)\b/.test(
+    `${normalizedTitle} ${normalizedMessage}`,
+  );
 
   if (!notification?.orderId) {
     return false;
@@ -94,20 +118,18 @@ function isDeliveredOrderNotification(notification) {
 
   return (
     (normalizedType.includes("order") || normalizedType.includes("delivery")) &&
-    statusKeywords.some(
-      (keyword) =>
-        normalizedTitle.includes(keyword) || normalizedMessage.includes(keyword),
-    )
+    isCompleted
   );
 }
 
-export default function useUserNotifications() {
+export default function useUserNotifications({ enableReviewPrompt = false } = {}) {
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [hasFreshNotification, setHasFreshNotification] = useState(false);
   const isReviewPromptOpenRef = useRef(false);
+  const promptedOrderIdsRef = useRef(new Set());
 
   useEffect(() => {
     let isMounted = true;
@@ -118,8 +140,11 @@ export default function useUserNotifications() {
       setNotifications([]);
       setUnreadNotificationCount(0);
       setHasFreshNotification(false);
+      promptedOrderIdsRef.current = new Set();
       return undefined;
     }
+
+    promptedOrderIdsRef.current = new Set(readReviewPromptedOrderIds(user));
 
     const loadNotifications = async () => {
       try {
@@ -166,16 +191,27 @@ export default function useUserNotifications() {
               nextNotifications.filter((item) => item.unread).length,
           );
 
-          const deliveredReviewNotification = nextNotifications.find(
-            (item) =>
-              isDeliveredOrderNotification(item) &&
-              !readReviewPromptedOrderIds().includes(item.orderId),
-          );
+          const deliveredReviewNotification = nextNotifications.find((item) => {
+            const orderId = normalizeOrderId(item.orderId);
 
-          if (deliveredReviewNotification && !isReviewPromptOpenRef.current) {
+            return (
+              isDeliveredOrderNotification(item) &&
+              orderId &&
+              !promptedOrderIdsRef.current.has(orderId) &&
+              !readReviewPromptedOrderIds(user).includes(orderId)
+            );
+          });
+
+          if (
+            enableReviewPrompt &&
+            deliveredReviewNotification &&
+            !isReviewPromptOpenRef.current
+          ) {
+            const orderId = normalizeOrderId(deliveredReviewNotification.orderId);
             isReviewPromptOpenRef.current = true;
             // Record the order before opening the dialog so polling cannot show it twice.
-            writeReviewPromptedOrderId(deliveredReviewNotification.orderId);
+            promptedOrderIdsRef.current.add(orderId);
+            writeReviewPromptedOrderId(user, orderId);
 
             try {
               const reviewTarget = await fetchOrderReviewTarget(
@@ -240,7 +276,7 @@ export default function useUserNotifications() {
       window.removeEventListener("focus", handleRefreshNotifications);
       document.removeEventListener("visibilitychange", handleRefreshNotifications);
     };
-  }, [isLoggedIn]);
+  }, [enableReviewPrompt, isLoggedIn, user?.email, user?.id]);
 
   const acknowledgeFreshNotifications = () => {
     const topNotificationId = notifications[0]?.id || null;

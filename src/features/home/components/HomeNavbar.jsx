@@ -49,7 +49,7 @@ export default function HomeNavbar() {
     notifications,
     openNotification,
     unreadNotificationCount,
-  } = useUserNotifications();
+  } = useUserNotifications({ enableReviewPrompt: true });
   const desktopNotificationRef = useRef(null);
   const mobileNotificationRef = useRef(null);
   const profileMenuRef = useRef(null);
