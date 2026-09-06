@@ -3,7 +3,9 @@ import {
   FiCheckCircle,
   FiCreditCard,
   FiGift,
+  FiMessageCircle,
   FiPackage,
+  FiStar,
 } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { translateNotification } from "./notificationI18n";
@@ -13,8 +15,10 @@ const ICON_BY_TYPE = {
   confirmation: FiCheckCircle,
   payment: FiCreditCard,
   offer: FiGift,
+  review: FiStar,
   delivery: FiCheckCircle,
   menu: FiBell,
+  support: FiMessageCircle,
 };
 
 export default function NotificationListItem({ notification, onOpen, sequenceNumber = null }) {
@@ -29,7 +33,7 @@ export default function NotificationListItem({ notification, onOpen, sequenceNum
       className={[
         "grid w-full gap-3 rounded-[22px] border px-4 py-4 text-left transition sm:grid-cols-[auto_1fr_auto] sm:items-start",
         notification.category === "unread"
-          ? "border-[#f0b79e] bg-[#fff7f2]"
+          ? "border-[#f0b79e] bg-[linear-gradient(180deg,#fffaf6_0%,#fff3eb_100%)] shadow-[0_8px_24px_rgba(44,29,19,0.05)]"
           : "border-[#ece3db] bg-white",
         onOpen ? "cursor-pointer hover:border-[#cf6e38]" : "",
       ].join(" ")}
