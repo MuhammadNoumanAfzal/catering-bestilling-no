@@ -130,6 +130,8 @@ export default function useUserNotifications({ enableReviewPrompt = false } = {}
   const [hasFreshNotification, setHasFreshNotification] = useState(false);
   const isReviewPromptOpenRef = useRef(false);
   const promptedOrderIdsRef = useRef(new Set());
+  const enableReviewPromptRef = useRef(enableReviewPrompt);
+  enableReviewPromptRef.current = enableReviewPrompt;
 
   useEffect(() => {
     let isMounted = true;
@@ -203,7 +205,7 @@ export default function useUserNotifications({ enableReviewPrompt = false } = {}
           });
 
           if (
-            enableReviewPrompt &&
+            enableReviewPromptRef.current &&
             deliveredReviewNotification &&
             !isReviewPromptOpenRef.current
           ) {
@@ -276,7 +278,7 @@ export default function useUserNotifications({ enableReviewPrompt = false } = {}
       window.removeEventListener("focus", handleRefreshNotifications);
       document.removeEventListener("visibilitychange", handleRefreshNotifications);
     };
-  }, [enableReviewPrompt, isLoggedIn, user?.email, user?.id]);
+  }, [isLoggedIn, user?.email, user?.id]);
 
   const acknowledgeFreshNotifications = () => {
     const topNotificationId = notifications[0]?.id || null;
