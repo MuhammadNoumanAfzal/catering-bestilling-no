@@ -4,7 +4,6 @@ import {
   FiArrowLeft,
   FiCalendar,
   FiCreditCard,
-  FiDownload,
   FiFileText,
   FiMapPin,
   FiUser,
@@ -19,10 +18,8 @@ import {
   translateInvoiceStatus,
 } from "../components/invoices/invoiceDetailsI18n";
 import {
-  clearInvoiceDownloadState,
   clearSelectedInvoiceDetail,
   fetchInvoiceDetail,
-  fetchInvoiceDownloadUrl,
   reportInvoicePayment,
 } from "../invoicesSlice";
 
@@ -194,8 +191,6 @@ export default function VendorInvoiceDetailsPage() {
     selectedInvoiceDetailStatus,
     selectedInvoiceDetailError,
     reportPaymentStatus,
-    downloadStatus,
-    downloadError,
   } = useSelector((state) => state.invoices);
 
   useEffect(() => {
@@ -205,7 +200,6 @@ export default function VendorInvoiceDetailsPage() {
 
     return () => {
       dispatch(clearSelectedInvoiceDetail());
-      dispatch(clearInvoiceDownloadState());
     };
   }, [decodedInvoiceId, dispatch]);
 
@@ -394,30 +388,6 @@ export default function VendorInvoiceDetailsPage() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={async () => {
-            const result = await dispatch(fetchInvoiceDownloadUrl(invoice.id));
-
-            if (
-              fetchInvoiceDownloadUrl.fulfilled.match(result) &&
-              typeof window !== "undefined"
-            ) {
-              window.open(
-                result.payload.downloadUrl,
-                "_blank",
-                "noopener,noreferrer",
-              );
-            }
-          }}
-          disabled={downloadStatus === "loading"}
-          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#d77542_0%,#c95f30_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_32px_rgba(201,95,48,0.24)] transition hover:-translate-y-[1px] hover:shadow-[0_18px_38px_rgba(201,95,48,0.3)] disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          <FiDownload className="text-[15px]" />
-          {downloadStatus === "loading"
-            ? invoiceDetailsT("preparingPdf")
-            : invoiceDetailsT("exportPdf")}
-        </button>
       </div>
 
       {paymentStateMessage ? (
@@ -526,12 +496,6 @@ export default function VendorInvoiceDetailsPage() {
           />
         </div>
       </section>
-
-      {downloadError ? (
-        <div className="rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          {downloadError}
-        </div>
-      ) : null}
 
       <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(360px,0.9fr)]">
         <div className="contents">

@@ -341,15 +341,6 @@ const REPORT_INVOICE_PAYMENT_MUTATION = `
   }
 `;
 
-const GET_INVOICE_DOWNLOAD_URL_QUERY = `
-  query GetInvoiceDownloadUrl($invoiceId: ID!) {
-    invoiceDownloadUrl(invoiceId: $invoiceId) {
-      downloadUrl
-      expiresAt
-    }
-  }
-`;
-
 function formatDate(value) {
   if (!value) {
     return "";
@@ -1068,28 +1059,6 @@ export const reportInvoicePayment = createAsyncThunk(
   },
 );
 
-export const fetchInvoiceDownloadUrl = createAsyncThunk(
-  "invoices/fetchInvoiceDownloadUrl",
-  async (invoiceId, { rejectWithValue }) => {
-    try {
-      const response = await graphqlRequest({
-        query: GET_INVOICE_DOWNLOAD_URL_QUERY,
-        variables: { invoiceId },
-      });
-
-      if (!response.invoiceDownloadUrl?.downloadUrl) {
-        throw new Error("Invoice download link is not available.");
-      }
-
-      return response.invoiceDownloadUrl;
-    } catch (error) {
-      return rejectWithValue(
-        error.message || "Failed to get invoice download link.",
-      );
-    }
-  },
-);
-
 const initialState = {
   records: [],
   overview: buildOverview(),
@@ -1102,8 +1071,6 @@ const initialState = {
   selectedInvoiceDetailError: null,
   reportPaymentStatus: "idle",
   reportPaymentError: null,
-  downloadStatus: "idle",
-  downloadError: null,
 };
 
 const invoicesSlice = createSlice({
@@ -1116,10 +1083,6 @@ const invoicesSlice = createSlice({
       state.selectedInvoiceDetailError = null;
       state.reportPaymentStatus = "idle";
       state.reportPaymentError = null;
-    },
-    clearInvoiceDownloadState(state) {
-      state.downloadStatus = "idle";
-      state.downloadError = null;
     },
   },
   extraReducers: (builder) => {
@@ -1164,23 +1127,10 @@ const invoicesSlice = createSlice({
         state.reportPaymentStatus = "failed";
         state.reportPaymentError =
           action.payload || "Unable to report this invoice payment.";
-      })
-      .addCase(fetchInvoiceDownloadUrl.pending, (state) => {
-        state.downloadStatus = "loading";
-        state.downloadError = null;
-      })
-      .addCase(fetchInvoiceDownloadUrl.fulfilled, (state) => {
-        state.downloadStatus = "succeeded";
-      })
-      .addCase(fetchInvoiceDownloadUrl.rejected, (state, action) => {
-        state.downloadStatus = "failed";
-        state.downloadError =
-          action.payload || "Failed to get invoice download link.";
       });
   },
 });
 
-export const { clearSelectedInvoiceDetail, clearInvoiceDownloadState } =
-  invoicesSlice.actions;
+export const { clearSelectedInvoiceDetail } = invoicesSlice.actions;
 
 export default invoicesSlice.reducer;
