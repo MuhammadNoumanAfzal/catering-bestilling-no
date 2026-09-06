@@ -154,7 +154,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
     openNotification,
     readAllNotifications,
     unreadNotificationCount,
-  } = useUserNotifications();
+  } = useUserNotifications({ enableReviewPrompt: true });
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
