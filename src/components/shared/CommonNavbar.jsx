@@ -445,7 +445,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
             <img
               src="/home/logo (2).png"
               alt="GoCatering"
-              className="h-10 w-28 object-contain"
+              className="h-20 w-28 object-contain"
             />
           </Link>
         ) : null}
