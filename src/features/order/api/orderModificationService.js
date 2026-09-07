@@ -180,7 +180,7 @@ function canDirectlyUpdateClientOrder(status) {
 }
 
 function isGraphqlContractError(error, fieldName) {
-  const message = `${error?.message ?? ""}`.trim().toLowerCase();
+  const message = `${error?.technicalMessage ?? error?.message ?? ""}`.trim().toLowerCase();
 
   return (
     message.includes(`cannot query field '${fieldName.toLowerCase()}'`) ||
@@ -189,7 +189,7 @@ function isGraphqlContractError(error, fieldName) {
 }
 
 function isOrderAlreadyAcceptedError(error) {
-  const message = `${error?.message ?? ""}`.trim().toUpperCase();
+  const message = `${error?.technicalMessage ?? error?.message ?? ""}`.trim().toUpperCase();
   return message.includes("ORDER_ALREADY_ACCEPTED");
 }
 

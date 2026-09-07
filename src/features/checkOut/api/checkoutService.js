@@ -46,7 +46,7 @@ function translateBankInstructions(value) {
 }
 
 function isAuthAvailabilityError(error) {
-  const message = `${error?.message ?? ""}`.toLowerCase();
+  const message = `${error?.technicalMessage ?? error?.message ?? ""}`.toLowerCase();
 
   return [
     "sign in",

@@ -13,7 +13,7 @@ export default function VendorDashboardLayout() {
 
   return (
     <div className="min-h-screen bg-[#f4f1ee]">
-      <div className="mx-auto min-h-screen max-w-[1440px] overflow-x-clip lg:grid lg:grid-cols-[236px_minmax(0,1fr)]">
+      <div className="min-h-screen w-full overflow-x-clip lg:grid lg:grid-cols-[236px_minmax(0,1fr)]">
         <div className="px-3 pt-3 sm:px-4 lg:sticky lg:top-0 lg:h-screen lg:px-0 lg:pt-0 lg:self-start">
           <VendorSidebar />
         </div>
