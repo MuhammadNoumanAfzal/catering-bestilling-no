@@ -1,0 +1,3 @@
+.order-confirmed button:enabled, .order-confirmed a { cursor: pointer; }
+.order-confirmed a:focus-visible, .order-confirmed button:focus-visible { outline: 2px solid #cf6e38; outline-offset: 3px; }
+.confirmation-status p + p { margin-top: 5px; font-size: 13px; overflow-wrap: anywhere; }

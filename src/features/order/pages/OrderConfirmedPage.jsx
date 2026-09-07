@@ -8,6 +8,7 @@ import {
   OrderStatusSummary,
 } from "../components";
 import { useOrderConfirmedPage } from "../hooks/useOrderConfirmedPage";
+import "./OrderConfirmedPage.css";
 
 export default function OrderConfirmedPage() {
   const { t } = useTranslation();
@@ -48,20 +49,21 @@ export default function OrderConfirmedPage() {
   const modifyDisabled = hasPendingModificationRequest || hasPendingVendorAdjustment;
 
   return (
-    <section className="min-h-[calc(100vh-120px)] bg-[linear-gradient(180deg,#faf6f1_0%,#fffdf9_100%)] px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl">
+    <section className="order-confirmed min-h-dvh bg-[radial-gradient(ellipse_at_top_left,#f4dfcf_0%,#faf6f1_45%,#fffdf9_100%)] px-3 py-4 sm:px-6">
+      <div className="mx-auto max-w-[680px]">
         <div className="rounded-[28px] border border-[#e7ddd3] bg-white shadow-[0_24px_60px_rgba(48,31,17,0.08)]">
-          <div className="border-b border-[#f0e5db] px-6 py-5 sm:px-8">
+          <div className="flex items-center justify-between border-b border-[#f0e5db] px-5 py-3">
             <Link to="/" className="inline-flex cursor-pointer">
               <img
                 src="/home/logo (2).png"
                 alt={t("orderConfirmed.logoAlt")}
-                className="h-26 w-auto object-contain"
+                className="h-20 w-auto object-contain"
               />
             </Link>
+            <Link to="/" className="text-[12px] font-semibold text-[#79685b] hover:text-[#cf6e38]">{t("orderConfirmed.backToHome")}</Link>
           </div>
 
-          <div className="px-6 py-10 text-center sm:px-8 sm:py-12">
+          <div className="px-5 py-5 text-center sm:px-6">
             <OrderConfirmationHero />
             <OrderStatusSummary
               primaryOrderId={primaryOrderId}

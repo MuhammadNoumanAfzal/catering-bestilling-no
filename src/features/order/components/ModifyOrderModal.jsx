@@ -447,18 +447,15 @@ export default function ModifyOrderModal({
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1a1410]/50 px-3 py-3 backdrop-blur-[2px] sm:px-4 sm:py-4">
-      <div className="flex max-h-[calc(100vh-24px)] w-full max-w-[650px] flex-col overflow-hidden rounded-[24px] border border-white/70 bg-white shadow-[0_24px_80px_rgba(20,15,10,0.22)] sm:max-h-[calc(100vh-32px)]">
+      <div role="dialog" aria-modal="true" aria-labelledby="modify-order-title" className="flex max-h-[calc(100dvh-24px)] w-full max-w-[620px] flex-col overflow-hidden rounded-[22px] border border-[#e7d9ce] bg-[#fffdfb] shadow-[0_24px_80px_rgba(20,15,10,0.22)] [&_button:enabled]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_input]:text-[13px] [&_textarea]:text-[13px] [&_.type-subpara]:mb-1 [&_.type-subpara]:text-[12px]">
         <div className="border-b border-[#eee4da] bg-[linear-gradient(135deg,#fffdfb_0%,#fff6ef_100%)] px-5 py-4 sm:px-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#c67a4d]">
-            Order update
-          </p>
-          <h2 className="mt-1 type-h3 text-[#17120f]">{t("modifyOrder.title")}</h2>
+          <h2 id="modify-order-title" className="text-[22px] font-semibold tracking-tight text-[#17120f]">{t("modifyOrder.title")}</h2>
           <p className="mt-1 text-[12px] text-[#7a7067]">
             {t("modifyOrder.subtitle")}
           </p>
         </div>
 
-        <div className="space-y-4 overflow-y-auto px-4 py-4 sm:px-6">
+        <div className="min-h-0 space-y-3 overflow-y-auto px-4 py-3 sm:px-6">
           {error || validationError ? (
             <div className="rounded-[14px] border border-[#f1c8bb] bg-[#fff5f1] px-4 py-3 text-sm text-[#8a5642]">
               {validationError || error}
@@ -474,14 +471,11 @@ export default function ModifyOrderModal({
             </div>
           ) : null}
 
-          <section className="rounded-[18px] border border-[#eee4da] bg-[#fffdfa] p-3.5 sm:p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
+          <section className="rounded-[14px] border border-[#eee4da] bg-white p-3">
+            <div className="mb-2 flex items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48673]">
                   Delivery schedule
-                </p>
-                <p className="mt-1 text-[13px] text-[#766b62]">
-                  Choose one of the vendor's available dates and times.
                 </p>
               </div>
               {formState.date && normalizedTime ? (
@@ -562,9 +556,14 @@ export default function ModifyOrderModal({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9a8572]">
-                    Available delivery windows
-                  </p>
+                  <PreferredTimePicker
+                    value={normalizedTime}
+                    onChange={(value) => updateField("time", value)}
+                    selectedDate={formState.date}
+                    minTimeValue={editableDeliverySlot?.start || ""}
+                    maxTimeValue={editableDeliverySlot?.end || ""}
+                    placeholder="HH:MM"
+                  />
                   <div className="flex flex-wrap gap-2">
                     {deliverySlots.map((slot) => {
                       const isSelected = selectedDeliverySlot?.start === slot.start && selectedDeliverySlot?.end === slot.end;
@@ -574,39 +573,23 @@ export default function ModifyOrderModal({
                           type="button"
                           disabled={isLoading || isSaving}
                           onClick={() => updateField("time", slot.start)}
-                          className={`rounded-[10px] border px-3 py-2 text-xs font-semibold transition ${isSelected ? "border-[#cf6e38] bg-[#fff1e8] text-[#cf6e38] shadow-[0_4px_10px_rgba(207,110,56,0.10)]" : "border-[#e4d8ce] bg-white text-[#6f6258] hover:border-[#cf6e38]/45 hover:bg-[#fffaf6]"}`}
+                          className={`rounded-full border px-2 py-1 text-[11px] font-medium transition ${isSelected ? "border-[#cf6e38] bg-[#fff1e8] text-[#cf6e38]" : "border-[#e4d8ce] bg-white text-[#6f6258] hover:border-[#cf6e38]/45 hover:bg-[#fffaf6]"}`}
                         >
                           {slot.label}
                         </button>
                       );
                     })}
                   </div>
-                  <PreferredTimePicker
-                    value={normalizedTime}
-                    onChange={(value) => updateField("time", value)}
-                    selectedDate={formState.date}
-                    minTimeValue={editableDeliverySlot?.start || ""}
-                    maxTimeValue={editableDeliverySlot?.end || ""}
-                    placeholder="HH:MM"
-                  />
-                  {editableDeliverySlot ? (
-                    <p className="text-[11px] text-[#8b8177]">
-                      Select a time between {editableDeliverySlot.start} and {editableDeliverySlot.end}.
-                    </p>
-                  ) : null}
                 </div>
               )}
             </label>
             </div>
           </section>
 
-          <section className="rounded-[18px] border border-[#eee4da] bg-white p-3.5 sm:p-4">
-            <div className="mb-3">
+          <section className="rounded-[14px] border border-[#eee4da] bg-white p-3">
+            <div className="mb-2">
               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48673]">
                 Delivery details
-              </p>
-              <p className="mt-1 text-[13px] text-[#766b62]">
-                Confirm where the order should be delivered and the guest count.
               </p>
             </div>
           <label className="block">
@@ -708,7 +691,7 @@ export default function ModifyOrderModal({
             <div className="rounded-[14px] border border-[#efe4da] bg-[#fcf8f4] px-4 py-3 text-sm text-[#6f665d]">
               {t("modifyOrder.checkingAvailability")}
             </div>
-          ) : availabilityState ? (
+          ) : availabilityState && availabilityState.tone !== "success" ? (
             <div
               className={`rounded-[14px] border px-4 py-3 text-sm ${
                 availabilityState.tone === "success"
@@ -733,11 +716,11 @@ export default function ModifyOrderModal({
           ) : null}
 
           {estimatedTotal ? (
-            <div className="rounded-[14px] border border-[#efe4da] bg-[#fcf8f4] px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-[12px] border border-[#efe4da] bg-[#fcf8f4] px-3 py-2">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
                 {t("orderConfirmed.proposedTotal")}
               </p>
-              <p className="mt-2 text-[16px] font-semibold text-[#201b17]">
+              <p className="text-[16px] font-semibold text-[#201b17]">
                 {estimatedTotal}
               </p>
             </div>
@@ -754,12 +737,13 @@ export default function ModifyOrderModal({
               }
               placeholder={MODIFY_ORDER_PLACEHOLDERS.additionalDetails}
               disabled={isLoading || isSaving}
-              className="min-h-[88px] w-full rounded-[10px] border border-[#dad1c8] bg-white px-3 py-2.5 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
+              rows={2}
+              className="min-h-[56px] w-full resize-y rounded-[10px] border border-[#dad1c8] bg-white px-3 py-2 text-[#26211d] outline-none transition placeholder:text-[#a2978c] focus:border-[#cf6e38] focus:shadow-[0_0_0_3px_rgba(207,110,56,0.12)]"
             />
           </label>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-[#eee4da] px-4 py-3 sm:flex-row sm:justify-end sm:px-6">
+        <div className="flex shrink-0 justify-end gap-2 border-t border-[#eee4da] bg-white px-4 py-3 sm:px-6">
           <button
             type="button"
             onClick={onCancel}
