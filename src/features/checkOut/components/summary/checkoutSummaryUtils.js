@@ -119,7 +119,11 @@ export function getVendorTotals(cart) {
   const addOnsGrossTotal = cart.orderSummary.items
     .filter((item) => item?.isAddOn)
     .reduce((sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount), 0);
-  const deliveryFee = extractAmount(cart.vendor.deliveryFee);
+  const freeDeliveryOver = extractAmount(cart.vendor.freeDeliveryOver);
+  // This is only an estimate; submitted orders still use backend pricing.
+  const deliveryFee = freeDeliveryOver > 0 && subtotal >= freeDeliveryOver
+    ? 0
+    : extractAmount(cart.vendor.deliveryFee);
   const subtotalExVat = mainItemsGrossTotal / (1 + SALES_TAX_RATE);
   const addOnsExVat = addOnsGrossTotal / (1 + SALES_TAX_RATE);
   const salesTax = subtotal - subtotalExVat - addOnsExVat;

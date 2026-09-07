@@ -5,19 +5,16 @@ export default function OrderConfirmationHero() {
   const { t } = useTranslation();
   return (
     <>
-      <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#fff1ea]">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#cf6e38] text-white shadow-[0_10px_24px_rgba(207,110,56,0.28)]">
-          <FaCheck className="text-[26px]" />
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#edf7ef]">
+        <div className="flex items-center justify-center text-[#27834a]">
+          <FaCheck className="text-[22px]" />
         </div>
       </div>
 
-      <p className="mt-6 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#b77754]">
+      <h1 className="mt-3 text-[24px] font-semibold leading-tight tracking-tight text-[#201b17] sm:text-[28px]">
         {t("orderConfirmed.placedSuccessfully")}
-      </p>
-      <h1 className="mt-3 text-[34px] font-semibold leading-tight text-[#201b17] sm:text-[42px]">
-        {t("orderConfirmed.heroTitle")}
       </h1>
-      <p className="mx-auto mt-4 max-w-2xl text-[17px] leading-7 text-[#5f5a55]">
+      <p className="mx-auto mt-2 max-w-lg text-[13px] leading-5 text-[#5f5a55]">
         {t("orderConfirmed.heroDescription")}
       </p>
     </>
