@@ -17,6 +17,10 @@ const FETCH_CLIENT_ORDERS_QUERY = `
           id
           invoiceNumber
           status
+          statuses {
+            status
+            createdOn
+          }
           pricing {
             subtotal
             taxAmount
@@ -94,6 +98,10 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
     clientOrder(id: $orderId) {
       id
       status
+      statuses {
+        status
+        createdOn
+      }
       canModify
       canceledAt
       cancellationReason
@@ -491,7 +499,21 @@ function resolveClientDisplayStatus(node, isModified) {
     return "Canceled";
   }
 
-  return node?.status || "Ready";
+  const aliases = {
+    CONFIRMED: "Accepted", ACCEPTED: "Accepted",
+    PREPARING: "Preparing", PROCESSING: "Preparing",
+    READY: "Ready", FOOD_READY: "Ready", READY_TO_DELIVER: "Ready",
+    OUT_FOR_DELIVERY: "Out for delivery", IN_TRANSIT: "Out for delivery",
+    DELIVERED: "Delivered", COMPLETED: "Delivered",
+    CANCELED: "Canceled", CANCELLED: "Canceled",
+    PLACED: "Placed", PENDING: "Placed", NEW: "Placed",
+  };
+  const stages = ["Placed", "Accepted", "Preparing", "Ready", "Out for delivery", "Delivered", "Canceled"];
+  const values = [node?.status, ...(node?.statuses || []).map((entry) => entry.status)];
+  return values.reduce((current, value) => {
+    const candidate = aliases[`${value || ""}`.trim().toUpperCase().replace(/[ -]+/g, "_")];
+    return candidate && stages.indexOf(candidate) > stages.indexOf(current) ? candidate : current;
+  }, aliases[`${node?.status || ""}`.toUpperCase()] || node?.status || "Placed");
 }
 
 function mapListOrder(node) {
@@ -834,8 +856,8 @@ const ordersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchClientOrders.pending, (state) => {
-        state.isLoading = true;
+      .addCase(fetchClientOrders.pending, (state, action) => {
+        state.isLoading = !action.meta.arg?.silent;
         state.error = null;
       })
       .addCase(fetchClientOrders.fulfilled, (state, action) => {
@@ -845,6 +867,7 @@ const ordersSlice = createSlice({
       })
       .addCase(fetchClientOrders.rejected, (state, action) => {
         state.isLoading = false;
+        if (action.meta.aborted || action.meta.arg?.silent) return;
         state.error = action.payload || "Failed to load orders data.";
       })
       .addCase(fetchClientOrderDetail.pending, (state) => {
