@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../lib/auth/authSession";
 import i18n from "../../i18n";
+import { customerInvoiceHistory } from "./customerInvoiceHistory.js";
 
 const DEFAULT_RECEIPT_UPLOAD_ENDPOINT =
   "https://api.gocatering.no/api/upload-receipt/";
@@ -165,46 +166,6 @@ const GET_INVOICE_DETAIL_QUERY = `
         toStatus
         note
         createdAt
-      }
-      settlement {
-        id
-        settlementNumber
-        status
-        fundedAt
-        readyForPayoutAt
-        settledAt
-        vendorPayable {
-          amount
-          currency
-          formatted
-        }
-        commissionRecord {
-          id
-          status
-          commissionModel
-          ratePercent
-          grossCommission {
-            amount
-            currency
-            formatted
-          }
-          totalCommission {
-            amount
-            currency
-            formatted
-          }
-          fixedFee {
-            amount
-            currency
-            formatted
-          }
-          vatOnCommission {
-            amount
-            currency
-            formatted
-          }
-          lockedAt
-        }
       }
     }
   }
@@ -767,7 +728,7 @@ function mapInvoiceDetail(node, orderFallback = null) {
         }
       : null,
     paymentHistory: Array.isArray(node.paymentHistory)
-      ? node.paymentHistory.map((item) => ({
+      ? customerInvoiceHistory(node.paymentHistory).map((item) => ({
           id: item?.id || "",
           action: item?.action || "",
           actorType: item?.actorType || "",
