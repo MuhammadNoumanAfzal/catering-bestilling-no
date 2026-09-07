@@ -89,7 +89,24 @@ export default function VendorOrdersPage() {
     : [];
 
   useEffect(() => {
-    dispatch(fetchClientOrders());
+    let request = dispatch(fetchClientOrders());
+    let pending = true;
+    request.finally(() => { pending = false; });
+    const refresh = () => {
+      if (pending || document.visibilityState !== "visible") return;
+      pending = true;
+      request = dispatch(fetchClientOrders({ silent: true }));
+      request.finally(() => { pending = false; });
+    };
+    const timer = window.setInterval(refresh, 10000);
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+      request.abort();
+    };
   }, [dispatch]);
 
   useEffect(() => {
