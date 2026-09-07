@@ -1,4 +1,5 @@
 import { getStoredAccessToken } from "../auth/authSession";
+import { customerErrorMessage } from "../../utils/customerErrorMessage.js";
 
 const DEFAULT_GRAPHQL_ENDPOINT =
   "https://api.gocatering.no/graphql/";
@@ -148,7 +149,7 @@ function translateGraphqlContractError(message) {
   return matchedTranslation?.message ?? message;
 }
 
-export async function graphqlRequest({ query, variables = {}, signal }) {
+async function executeGraphqlRequest({ query, variables = {}, signal }) {
   const headers = {
     "Content-Type": "application/json",
     "Accept-Language": "en",
@@ -206,5 +207,22 @@ export async function graphqlRequest({ query, variables = {}, signal }) {
   }
 
   return payload.data;
+}
+
+export async function graphqlRequest(options) {
+  try {
+    return await executeGraphqlRequest(options);
+  } catch (error) {
+    // Keep intentional request cancellation and compatibility checks intact.
+    if (error?.name === "AbortError") throw error;
+    const friendlyError = new Error(customerErrorMessage(error), { cause: error });
+    friendlyError.technicalMessage = error?.message || "";
+    friendlyError.fieldErrors = error?.fieldErrors
+      ? Object.fromEntries(Object.entries(error.fieldErrors).map(([field, messages]) => [
+          field, messages.map((message) => customerErrorMessage(message)),
+        ]))
+      : null;
+    throw friendlyError;
+  }
 }
 

@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import i18n from "../i18n";
+import { customerErrorMessage } from "./customerErrorMessage.js";
 
 const BRAND_ORANGE = "#cf6e38";
 const POPUP_BACKGROUND = "#fffaf6";
@@ -12,6 +13,7 @@ export function withBaseOptions(options) {
     confirmButtonColor: BRAND_ORANGE,
     reverseButtons: true,
     ...options,
+    ...(options.icon === "error" && options.text ? { text: customerErrorMessage(options.text) } : {}),
   };
 }
 

@@ -230,7 +230,7 @@ const GET_INVOICE_DETAIL_COMPATIBILITY_QUERY = `
 `;
 
 function isLegacyDeliveryAreaError(error) {
-  const message = String(error?.message || "").toLowerCase();
+  const message = String(error?.technicalMessage || error?.message || "").toLowerCase();
   return message.includes("deliveryarea") && message.includes("attribute 'name'");
 }
 
