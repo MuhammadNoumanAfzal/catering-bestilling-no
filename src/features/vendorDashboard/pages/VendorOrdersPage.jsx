@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
@@ -55,6 +56,8 @@ function OrdersErrorState({ message, onRetry }) {
 
 export default function VendorOrdersPage() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const fromOrderConfirmation = Boolean(location.state?.fromOrderConfirmation);
   const [activeView, setActiveView] = useState("active");
   const [selectedTabs, setSelectedTabs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -70,6 +73,7 @@ export default function VendorOrdersPage() {
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [isModifySaving, setIsModifySaving] = useState(false);
   const [isResolvingVendorAdjustment, setIsResolvingVendorAdjustment] = useState(false);
+  const [isPrimingCompletedOrder, setIsPrimingCompletedOrder] = useState(fromOrderConfirmation);
   const [modifyError, setModifyError] = useState("");
   const dateMenuRef = useRef(null);
 
@@ -89,25 +93,66 @@ export default function VendorOrdersPage() {
     : [];
 
   useEffect(() => {
-    let request = dispatch(fetchClientOrders());
-    let pending = true;
-    request.finally(() => { pending = false; });
+    const requests = [];
+    let isMounted = true;
+    let pending = false;
+
+    const wait = (milliseconds) =>
+      new Promise((resolve) => {
+        window.setTimeout(resolve, milliseconds);
+      });
+
+    const loadOrders = (options) => {
+      const request = dispatch(fetchClientOrders(options));
+      requests.push(request);
+      return request;
+    };
+
+    const initialLoad = async () => {
+      pending = true;
+      if (fromOrderConfirmation) {
+        setIsPrimingCompletedOrder(true);
+      }
+
+      try {
+        let action = await loadOrders();
+        const shouldRetryFreshOrder =
+          fromOrderConfirmation &&
+          fetchClientOrders.fulfilled.match(action) &&
+          (action.payload?.orders?.length ?? 0) === 0;
+
+        if (shouldRetryFreshOrder) {
+          await wait(700);
+          if (!isMounted) return;
+          action = await loadOrders();
+        }
+      } finally {
+        pending = false;
+        if (isMounted) {
+          setIsPrimingCompletedOrder(false);
+        }
+      }
+    };
+
+    initialLoad();
+
     const refresh = () => {
       if (pending || document.visibilityState !== "visible") return;
       pending = true;
-      request = dispatch(fetchClientOrders({ silent: true }));
+      const request = loadOrders({ silent: true });
       request.finally(() => { pending = false; });
     };
     const timer = window.setInterval(refresh, 10000);
     window.addEventListener("focus", refresh);
     document.addEventListener("visibilitychange", refresh);
     return () => {
+      isMounted = false;
       window.clearInterval(timer);
       window.removeEventListener("focus", refresh);
       document.removeEventListener("visibilitychange", refresh);
-      request.abort();
+      requests.forEach((request) => request.abort());
     };
-  }, [dispatch]);
+  }, [dispatch, fromOrderConfirmation]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -376,7 +421,7 @@ export default function VendorOrdersPage() {
     }
   }
 
-  if (isLoading && normalizedOrders.length === 0) {
+  if ((isLoading || isPrimingCompletedOrder) && normalizedOrders.length === 0) {
     return (
       <OrdersLoadingState rows={5} columns={7} />
     );

@@ -173,6 +173,7 @@ export default function OrderConfirmedPage() {
 
             <OrderConfirmationActions
               canModify={Boolean(placedOrderDraft)}
+              orderId={placedOrderDraft?.placedOrders?.[0]?.orderId || primaryOrderId}
               modifyButtonLabel={modifyButtonLabel}
               modifyDisabled={modifyDisabled}
               onModify={() => setIsModifyModalOpen(true)}
