@@ -419,15 +419,15 @@ function buildPlacedOrderDraftOverride(orderId) {
 
 function resolveOrderGrandTotal(node, fallbackAddOnsTotal = 0) {
   const pricing = node?.pricing || {};
-  const grandTotal = parseFloat(pricing?.grandTotal || node?.grandTotal || 0);
+  const grandTotal = parseFloat(pricing?.grandTotal ?? node?.grandTotal ?? 0);
   if (Number.isFinite(grandTotal) && grandTotal > 0) {
     return grandTotal;
   }
 
-  const totalAmount = parseFloat(pricing?.subtotal || node?.totalAmount || 0);
-  const deliveryFee = parseFloat(pricing?.deliveryFee || node?.deliveryFee || 0);
-  const tipAmount = parseFloat(pricing?.tipAmount || node?.tipAmount || 0);
-  const taxAmount = parseFloat(pricing?.taxAmount || node?.taxAmount || 0);
+  const totalAmount = parseFloat(pricing?.subtotal ?? node?.totalAmount ?? 0);
+  const deliveryFee = parseFloat(pricing?.deliveryFee ?? node?.deliveryFee ?? 0);
+  const tipAmount = parseFloat(pricing?.tipAmount ?? node?.tipAmount ?? 0);
+  const taxAmount = parseFloat(pricing?.taxAmount ?? node?.taxAmount ?? 0);
 
   if (Number.isFinite(totalAmount) && totalAmount > 0) {
     return totalAmount + deliveryFee + tipAmount + taxAmount + fallbackAddOnsTotal;
@@ -581,9 +581,9 @@ function mapListOrder(node) {
     location: draftOverride?.deliveryAddressStr || node.deliveryAddressStr || "Not provided",
     invoiceId: node.invoiceNumber || "",
     image: node.vendor?.coverPhotoUrl || node.vendor?.logoUrl || "/home/hero1.webp",
-    subtotal: formatAmount(node.pricing?.subtotal || node.totalAmount),
-    taxAmount: formatAmount(node.pricing?.taxAmount || node.taxAmount),
-    deliveryFee: formatAmount(node.pricing?.deliveryFee || node.deliveryFee),
+    subtotal: formatAmount(node.pricing?.subtotal ?? node.totalAmount),
+    taxAmount: formatAmount(node.pricing?.taxAmount ?? node.taxAmount),
+    deliveryFee: formatAmount(node.pricing?.deliveryFee ?? node.deliveryFee),
     orderNotes: node.orderNotes || "",
     eventTime: draftOverride?.eventTime || node.eventTime || "",
     lifecycle: getOrderLifecycle(
@@ -795,7 +795,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           total: draftOverride?.total || formatAmount(resolvedGrandTotal),
           subtotal: formatAmount(orderNode.pricing?.subtotal || orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),
-          deliveryFee: formatAmount(orderNode.pricing?.deliveryFee || orderNode.deliveryFee),
+          deliveryFee: formatAmount(orderNode.pricing?.deliveryFee ?? orderNode.deliveryFee),
           tipAmount: formatAmount(orderNode.pricing?.tipAmount || orderNode.tipAmount),
           status: resolveClientDisplayStatus(orderNode, hasPendingChanges),
           canModify: orderNode.canModify !== false,

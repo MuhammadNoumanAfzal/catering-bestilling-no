@@ -15,8 +15,19 @@ export function formatCurrency(value) {
 }
 
 export function extractAmount(value) {
-  const matched = `${value ?? ""}`.match(/(\d+(?:\.\d+)?)/);
-  return matched ? Number(matched[1]) : 0;
+  return parseBackendAmount(value);
+}
+
+function firstPositiveAmount(...values) {
+  for (const value of values) {
+    const amount = parseBackendAmount(value);
+
+    if (amount > 0) {
+      return amount;
+    }
+  }
+
+  return 0;
 }
 
 export function parseBackendAmount(value) {
@@ -24,7 +35,36 @@ export function parseBackendAmount(value) {
     return Number.isFinite(value) ? value : 0;
   }
 
-  const normalized = `${value ?? ""}`.replace(/[^0-9.-]/g, "");
+  const rawValue = `${value ?? ""}`.trim();
+
+  if (!rawValue) {
+    return 0;
+  }
+
+  const numericValue = rawValue
+    .replace(/[^\d,.-]/g, "")
+    .replace(/\s+/g, "");
+  const hasComma = numericValue.includes(",");
+  const hasDot = numericValue.includes(".");
+  const lastCommaIndex = numericValue.lastIndexOf(",");
+  const lastDotIndex = numericValue.lastIndexOf(".");
+  const commaDecimalDigits = hasComma ? numericValue.length - lastCommaIndex - 1 : 0;
+  const dotDecimalDigits = hasDot ? numericValue.length - lastDotIndex - 1 : 0;
+  const decimalSeparator =
+    hasComma && hasDot
+      ? lastCommaIndex > lastDotIndex
+        ? ","
+        : "."
+      : hasComma && commaDecimalDigits !== 3
+        ? ","
+        : hasDot && dotDecimalDigits !== 3
+          ? "."
+          : "";
+  const normalized = decimalSeparator
+    ? numericValue
+        .replace(new RegExp(`[^\\d${decimalSeparator}-]`, "g"), "")
+        .replace(decimalSeparator, ".")
+    : numericValue.replace(/[^\d-]/g, "");
   const parsed = Number.parseFloat(normalized);
   return Number.isFinite(parsed) ? parsed : 0;
 }
@@ -109,25 +149,30 @@ export function getVendorTotals(cart) {
     };
   }
 
-  const subtotal = cart.orderSummary.items.reduce(
-    (sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount),
-    0,
-  );
   const mainItemsGrossTotal = cart.orderSummary.items
     .filter((item) => !item?.isAddOn)
     .reduce((sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount), 0);
   const addOnsGrossTotal = cart.orderSummary.items
     .filter((item) => item?.isAddOn)
     .reduce((sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount), 0);
-  const freeDeliveryOver = extractAmount(cart.vendor.freeDeliveryOver);
+  const qualifyingAmount = mainItemsGrossTotal + addOnsGrossTotal;
+  const freeDeliveryOver = firstPositiveAmount(
+    cart.vendor.freeDeliveryOverAmount,
+    cart.vendor.deliverySettings?.freeDeliveryOver,
+    cart.vendor.freeDeliveryOver,
+  );
   // This is only an estimate; submitted orders still use backend pricing.
-  const deliveryFee = freeDeliveryOver > 0 && subtotal >= freeDeliveryOver
+  const deliveryFee = freeDeliveryOver > 0 && qualifyingAmount >= freeDeliveryOver
     ? 0
-    : extractAmount(cart.vendor.deliveryFee);
+    : firstPositiveAmount(
+        cart.vendor.deliveryFeeAmount,
+        cart.vendor.deliverySettings?.baseDeliveryFee,
+        cart.vendor.deliveryFee,
+      );
   const subtotalExVat = mainItemsGrossTotal / (1 + SALES_TAX_RATE);
   const addOnsExVat = addOnsGrossTotal / (1 + SALES_TAX_RATE);
-  const salesTax = subtotal - subtotalExVat - addOnsExVat;
-  const tipValue = getTipValue(cart.orderSummary, subtotal);
+  const salesTax = qualifyingAmount - subtotalExVat - addOnsExVat;
+  const tipValue = getTipValue(cart.orderSummary, qualifyingAmount);
   const grandTotal = subtotalExVat + addOnsExVat + salesTax + deliveryFee + tipValue;
 
   return {

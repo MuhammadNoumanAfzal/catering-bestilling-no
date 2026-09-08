@@ -39,9 +39,25 @@ function listStorageKeys() {
 
 function buildStoredPayload(orderSummary, vendorSnapshot) {
   return {
-    orderSummary,
+    orderSummary: stripDerivedOrderSummaryState(orderSummary),
     vendor: vendorSnapshot ?? null,
   };
+}
+
+function stripDerivedOrderSummaryState(orderSummary) {
+  if (!orderSummary || typeof orderSummary !== "object") {
+    return orderSummary;
+  }
+
+  const {
+    availability,
+    previewItems,
+    pricing,
+    pricingCurrency,
+    ...stableOrderSummary
+  } = orderSummary;
+
+  return stableOrderSummary;
 }
 
 function parseStoredPayload(storedValue) {
@@ -85,7 +101,10 @@ function toVendorSnapshot(vendor) {
     servicePostalCodes: Array.isArray(vendor.servicePostalCodes)
       ? vendor.servicePostalCodes
       : [],
+    deliveryFeeAmount: vendor.deliveryFeeAmount ?? null,
+    freeDeliveryOverAmount: vendor.freeDeliveryOverAmount ?? null,
     deliveryFee: vendor.deliveryFee || "",
+    freeDeliveryOver: vendor.freeDeliveryOver || "",
     availability: vendor.availability || null,
     categories: Array.isArray(vendor.categories) ? vendor.categories : [],
     categoryTags: Array.isArray(vendor.categoryTags) ? vendor.categoryTags : [],
@@ -122,6 +141,10 @@ export function readOrderSummary(vendor) {
       ...fallback,
       ...orderSummary,
       items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
+      pricing: null,
+      previewItems: [],
+      pricingCurrency: "NOK",
+      availability: null,
     };
   } catch {
     return fallback;
@@ -192,6 +215,10 @@ export function readAllStoredOrderSummaries() {
             ...createInitialOrderSummary(vendor),
             ...orderSummary,
             items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
+            pricing: null,
+            previewItems: [],
+            pricingCurrency: "NOK",
+            availability: null,
           },
         };
       } catch {
