@@ -99,11 +99,13 @@ export default function MenuDetailsPage() {
 
     const storedSummary = readOrderSummary(vendor);
 
-    setOrderSummary({
-      ...storedSummary,
-      // Each menu starts at its own serving minimum, not a previous menu's guest count.
-      personCount: minimumPersons,
-    });
+    setOrderSummary(
+      resetDerivedOrderSummaryState({
+        ...storedSummary,
+        // Each menu starts at its own serving minimum, not a previous menu's guest count.
+        personCount: minimumPersons,
+      }),
+    );
     setVendorNote(`${storedSummary.vendorNote ?? ""}`);
     setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");
     setSelectedRequired(menuItem.modal.requiredSelection?.options?.[0] ?? "");

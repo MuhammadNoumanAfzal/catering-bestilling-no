@@ -414,6 +414,8 @@ export function adaptApiVendorToProfile(apiVendor) {
     serviceAreas,
     servicePostalCodes,
     specialClosures,
+    deliveryFeeAmount: Number.parseFloat(fee || 0) || 0,
+    freeDeliveryOverAmount: Number.parseFloat(freeDeliveryOver || 0) || 0,
     deliveryFee: `NOK ${parseFloat(fee).toFixed(0)} Delivery fee`,
     freeDeliveryOver: freeDeliveryOver ? `NOK ${parseFloat(freeDeliveryOver).toFixed(0)}` : "",
     availability,

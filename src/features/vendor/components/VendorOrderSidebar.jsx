@@ -75,7 +75,10 @@ export default function VendorOrderSidebar({
     grandTotal,
   } = getVendorTotals({
     vendor,
-    orderSummary,
+    orderSummary: {
+      ...orderSummary,
+      pricing: null,
+    },
   });
   const hasItems = items.length > 0;
   const formattedDateTime = formatDateTime(

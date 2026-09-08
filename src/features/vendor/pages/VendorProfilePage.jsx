@@ -58,6 +58,20 @@ function VendorPageStatus({ message, onRetry }) {
   );
 }
 
+function resetDerivedOrderSummaryState(summary) {
+  if (!summary) {
+    return summary;
+  }
+
+  return {
+    ...summary,
+    pricing: null,
+    previewItems: [],
+    pricingCurrency: "NOK",
+    availability: null,
+  };
+}
+
 export default function VendorProfilePage() {
   const { t } = useTranslation();
   const CATEGORY_BAR_TOP_OFFSET = 78;
@@ -85,7 +99,7 @@ export default function VendorProfilePage() {
       return;
     }
 
-    setOrderSummary(readOrderSummary(vendor));
+    setOrderSummary(resetDerivedOrderSummaryState(readOrderSummary(vendor)));
     setActiveCategory(vendor.categories?.[0] || "All - in - One Order");
     setIsAvailabilityPopupDismissed(false);
   }, [vendor]);
