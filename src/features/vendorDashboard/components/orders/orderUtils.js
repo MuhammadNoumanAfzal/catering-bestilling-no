@@ -12,6 +12,7 @@ export const ORDER_TABS = [
 
 export const ORDER_DATE_OPTIONS = [
   { labelKey: "vendorPanel.notifications.date.allTime", value: "all-time" },
+  { labelKey: "vendorPanel.notifications.date.last7Days", value: "last-7-days" },
   { labelKey: "vendorPanel.notifications.date.lastMonth", value: "last-month" },
   { labelKey: "vendorPanel.notifications.date.last3Months", value: "last-3-months" },
   { labelKey: "vendorPanel.notifications.date.last6Months", value: "last-6-months" },
@@ -167,6 +168,10 @@ export function isOrderDateValid(dateValue) {
 export function getRangeDays(rangeValue) {
   if (rangeValue === "all-time") {
     return null;
+  }
+
+  if (rangeValue === "last-7-days") {
+    return 7;
   }
 
   if (rangeValue === "last-month") {

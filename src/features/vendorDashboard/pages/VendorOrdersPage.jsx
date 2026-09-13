@@ -35,6 +35,10 @@ import {
   parseOrderDate,
 } from "../components/orders/orderUtils";
 
+function normalizeRouteOrderId(value) {
+  return `${value ?? ""}`.replace(/^#/, "");
+}
+
 function OrdersErrorState({ message, onRetry }) {
   const { t } = useTranslation();
   return (
@@ -58,6 +62,7 @@ export default function VendorOrdersPage() {
   const { t } = useTranslation();
   const location = useLocation();
   const fromOrderConfirmation = Boolean(location.state?.fromOrderConfirmation);
+  const openOrderId = location.state?.openOrderId;
   const [activeView, setActiveView] = useState("active");
   const [selectedTabs, setSelectedTabs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -76,11 +81,11 @@ export default function VendorOrdersPage() {
   const [isPrimingCompletedOrder, setIsPrimingCompletedOrder] = useState(fromOrderConfirmation);
   const [modifyError, setModifyError] = useState("");
   const dateMenuRef = useRef(null);
+  const openedRouteOrderRef = useRef(null);
 
   const dispatch = useDispatch();
   const {
     orders,
-    statusSummary,
     isLoading,
     error,
     selectedOrderDetail,
@@ -88,9 +93,30 @@ export default function VendorOrdersPage() {
     selectedOrderDetailError,
   } = useSelector((state) => state.orders);
   const normalizedOrders = Array.isArray(orders) ? orders : [];
-  const normalizedStatusSummary = Array.isArray(statusSummary)
-    ? statusSummary
-    : [];
+
+  useEffect(() => {
+    if (!openOrderId || normalizedOrders.length === 0 || selectedOrder) {
+      return;
+    }
+
+    const normalizedOpenOrderId = normalizeRouteOrderId(openOrderId);
+
+    if (openedRouteOrderRef.current === normalizedOpenOrderId) {
+      return;
+    }
+    const matchingOrder = normalizedOrders.find(
+      (order) => normalizeRouteOrderId(order.rawId || order.id) === normalizedOpenOrderId,
+    );
+
+    if (!matchingOrder) {
+      return;
+    }
+
+    openedRouteOrderRef.current = normalizedOpenOrderId;
+    setIsChangeRequestOpen(false);
+    setSelectedOrder(matchingOrder);
+    dispatch(fetchClientOrderDetail(matchingOrder.rawId || matchingOrder.id));
+  }, [dispatch, normalizedOrders, openOrderId, selectedOrder]);
 
   useEffect(() => {
     const requests = [];
@@ -181,27 +207,13 @@ export default function VendorOrdersPage() {
     return new Date(Math.max(...validDates));
   }, [normalizedOrders]);
 
-  const filteredOrders = useMemo(() => {
-    const query = searchValue.trim().toLowerCase();
+  const dateFilteredOrders = useMemo(() => {
     const rangeDays = getRangeDays(selectedRange);
 
     return normalizedOrders.filter((order) => {
       const orderDateSource = order.eventDateRaw || order.createdOnRaw || order.date;
       const orderDate = parseOrderDate(orderDateSource);
       const hasValidOrderDate = !Number.isNaN(orderDate.getTime());
-      const orderLifecycle =
-        order.lifecycle ||
-        getOrderLifecycle(order.status, order.eventDateRaw || orderDateSource);
-      const matchesView =
-        activeView === "active"
-          ? isActiveOrder(order.status, order.eventDateRaw || orderDateSource)
-          : true;
-      const matchesTab =
-        selectedTabs.length === 0 || selectedTabs.includes("all")
-          ? true
-          : selectedTabs.includes(orderLifecycle) ||
-            selectedTabs.includes(normalizeOrderStatus(order.status));
-
       let matchesRange = true;
 
       if (selectedRange === "this-year" && hasValidOrderDate) {
@@ -220,15 +232,24 @@ export default function VendorOrdersPage() {
         matchesRange = diffInDays >= 0 && diffInDays <= rangeDays;
       }
 
-      if (!matchesView || !matchesTab || !matchesRange) {
-        return false;
-      }
+      return matchesRange;
+    });
+  }, [
+    customDateRange,
+    normalizedOrders,
+    referenceDate,
+    selectedRange,
+  ]);
 
-      if (!query) {
-        return true;
-      }
+  const searchedOrders = useMemo(() => {
+    const query = searchValue.trim().toLowerCase();
 
-      return [
+    if (!query) {
+      return dateFilteredOrders;
+    }
+
+    return dateFilteredOrders.filter((order) =>
+      [
         order.id,
         order.vendor,
         order.eventName,
@@ -238,18 +259,57 @@ export default function VendorOrdersPage() {
       ]
         .join(" ")
         .toLowerCase()
-        .includes(query);
-    });
-  }, [
-    activeView,
-    customDateRange,
-    normalizedOrders,
-    referenceDate,
-    searchValue,
-    selectedTabs,
-    selectedRange,
-  ]);
+        .includes(query),
+    );
+  }, [dateFilteredOrders, searchValue]);
 
+  const filteredStatusSummary = useMemo(() => {
+    const getLifecycle = (order) =>
+      getOrderLifecycle(
+        order.status,
+        order.eventDateRaw || order.createdOnRaw || order.date,
+      );
+
+    return [
+      {
+        labelKey: "vendorPanel.dashboard.totalOrders",
+        value: searchedOrders.length,
+      },
+      {
+        labelKey: "vendorPanel.orders.completed",
+        value: searchedOrders.filter((order) => getLifecycle(order) === "completed").length,
+      },
+      {
+        labelKey: "vendorPanel.orders.scheduled",
+        value: searchedOrders.filter((order) => getLifecycle(order) === "scheduled").length,
+      },
+      {
+        labelKey: "vendorPanel.orders.drafts",
+        value: searchedOrders.filter((order) => getLifecycle(order) === "draft").length,
+      },
+    ];
+  }, [searchedOrders]);
+
+  const filteredOrders = useMemo(
+    () => searchedOrders.filter((order) => {
+      const orderDateSource = order.eventDateRaw || order.createdOnRaw || order.date;
+      const orderLifecycle =
+        order.lifecycle ||
+        getOrderLifecycle(order.status, order.eventDateRaw || orderDateSource);
+      const matchesView =
+        activeView === "active"
+          ? isActiveOrder(order.status, order.eventDateRaw || orderDateSource)
+          : true;
+      const matchesTab =
+        selectedTabs.length === 0 || selectedTabs.includes("all")
+          ? true
+          : selectedTabs.includes(orderLifecycle) ||
+            selectedTabs.includes(normalizeOrderStatus(order.status));
+
+      return matchesView && matchesTab;
+    }),
+    [activeView, searchedOrders, selectedTabs],
+  );
   const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const visibleOrders = filteredOrders.slice(
@@ -259,9 +319,15 @@ export default function VendorOrdersPage() {
   const startIndex =
     filteredOrders.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
   const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, filteredOrders.length);
-  const activeOrdersCount = normalizedOrders.filter((order) =>
+  const activeOrdersCount = searchedOrders.filter((order) =>
     isActiveOrder(order.status, order.eventDateRaw || order.createdOnRaw || order.date),
   ).length;
+  const recentOrdersCount = searchedOrders.length;
+  const hasActiveFilters =
+    searchValue.trim() !== "" ||
+    selectedRange !== "all-time" ||
+    selectedTabs.length > 0 ||
+    activeView !== "recent";
 
   useEffect(() => {
     if (currentPage !== safeCurrentPage) {
@@ -299,6 +365,16 @@ export default function VendorOrdersPage() {
 
   function handleSearchChange(event) {
     setSearchValue(event.target.value);
+    setCurrentPage(1);
+  }
+
+  function handleResetFilters() {
+    setActiveView("recent");
+    setSelectedTabs([]);
+    setSearchValue("");
+    setSelectedRange("all-time");
+    setCustomDateRange({ from: "", to: "" });
+    setIsDateMenuOpen(false);
     setCurrentPage(1);
   }
 
@@ -448,8 +524,8 @@ export default function VendorOrdersPage() {
       <section>
         <h2 className="type-h3 font-extrabold text-[#121212]">{t("vendorPanel.orders.quickStatus")}</h2>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-          {normalizedStatusSummary.map((item, index) => (
-            <OrderStatusSummaryCard key={`${item.label}-${index}`} {...item} />
+          {filteredStatusSummary.map((item, index) => (
+            <OrderStatusSummaryCard key={`${item.labelKey}-${index}`} {...item} />
           ))}
         </div>
       </section>
@@ -464,7 +540,7 @@ export default function VendorOrdersPage() {
                   const count =
                     tab.value === "active"
                       ? activeOrdersCount
-                      : normalizedOrders.length;
+                      : recentOrdersCount;
 
                   return (
                     <button
@@ -536,7 +612,7 @@ export default function VendorOrdersPage() {
                 />
               </label>
 
-              <div className="flex w-full justify-stretch sm:justify-end">
+              <div className="flex w-full flex-col gap-2 sm:flex-row sm:justify-end">
                 <OrderDateFilter
                   customDateRange={customDateRange}
                   defaultRange="all-time"
@@ -559,10 +635,20 @@ export default function VendorOrdersPage() {
                     setCurrentPage(1);
                     setIsDateMenuOpen(false);
                   }}
+                  onReset={handleResetFilters}
                   onToggle={() => setIsDateMenuOpen((open) => !open)}
                   referenceDate={referenceDate}
                   selectedRange={selectedRange}
                 />
+                {hasActiveFilters ? (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full border border-[#e5d8cd] bg-white px-4 py-2.5 text-sm font-semibold text-[#cf5c2f] transition hover:bg-[#fff4ec]"
+                  >
+                    Clear filters
+                  </button>
+                ) : null}
               </div>
             </div>
           </div>
