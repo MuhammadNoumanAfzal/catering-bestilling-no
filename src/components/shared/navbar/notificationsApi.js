@@ -313,13 +313,46 @@ function mapOrderNotifications(edges, state) {
   });
 }
 
+const SUPPORT_READ_KEY = "bestilling-client-support-read-v1";
+
+function readSupportReadState() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(SUPPORT_READ_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function getComparableTime(value) {
+  const time = new Date(value || 0).getTime();
+  return Number.isNaN(time) ? 0 : time;
+}
+
+function isSupportTicketReadLocally(ticketId, lastActivityAt = "") {
+  const seenAt = readSupportReadState()[String(ticketId || "").trim()];
+
+  if (!seenAt) {
+    return false;
+  }
+
+  const lastActivityTime = getComparableTime(lastActivityAt);
+  return lastActivityTime === 0 || getComparableTime(seenAt) >= lastActivityTime;
+}
 function mapSupportNotifications(items, state) {
   if (!Array.isArray(items)) {
     return [];
   }
 
   return items
-    .filter((ticket) => Number(ticket?.unreadCount ?? 0) > 0)
+    .filter((ticket) => {
+      const lastActivityAt = ticket?.lastMessageAt || ticket?.createdAt || "";
+      return Number(ticket?.unreadCount ?? 0) > 0 && !isSupportTicketReadLocally(ticket?.id, lastActivityAt);
+    })
     .map((ticket) =>
       createLocalNotification(
         {

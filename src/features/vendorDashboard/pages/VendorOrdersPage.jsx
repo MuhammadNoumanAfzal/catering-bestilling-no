@@ -263,33 +263,6 @@ export default function VendorOrdersPage() {
     );
   }, [dateFilteredOrders, searchValue]);
 
-  const filteredStatusSummary = useMemo(() => {
-    const getLifecycle = (order) =>
-      getOrderLifecycle(
-        order.status,
-        order.eventDateRaw || order.createdOnRaw || order.date,
-      );
-
-    return [
-      {
-        labelKey: "vendorPanel.dashboard.totalOrders",
-        value: searchedOrders.length,
-      },
-      {
-        labelKey: "vendorPanel.orders.completed",
-        value: searchedOrders.filter((order) => getLifecycle(order) === "completed").length,
-      },
-      {
-        labelKey: "vendorPanel.orders.scheduled",
-        value: searchedOrders.filter((order) => getLifecycle(order) === "scheduled").length,
-      },
-      {
-        labelKey: "vendorPanel.orders.drafts",
-        value: searchedOrders.filter((order) => getLifecycle(order) === "draft").length,
-      },
-    ];
-  }, [searchedOrders]);
-
   const filteredOrders = useMemo(
     () => searchedOrders.filter((order) => {
       const orderDateSource = order.eventDateRaw || order.createdOnRaw || order.date;
@@ -310,6 +283,32 @@ export default function VendorOrdersPage() {
     }),
     [activeView, searchedOrders, selectedTabs],
   );
+  const filteredStatusSummary = useMemo(() => {
+    const getLifecycle = (order) =>
+      getOrderLifecycle(
+        order.status,
+        order.eventDateRaw || order.createdOnRaw || order.date,
+      );
+
+    return [
+      {
+        labelKey: "vendorPanel.dashboard.totalOrders",
+        value: filteredOrders.length,
+      },
+      {
+        labelKey: "vendorPanel.orders.completed",
+        value: filteredOrders.filter((order) => getLifecycle(order) === "completed").length,
+      },
+      {
+        labelKey: "vendorPanel.orders.scheduled",
+        value: filteredOrders.filter((order) => getLifecycle(order) === "scheduled").length,
+      },
+      {
+        labelKey: "vendorPanel.orders.drafts",
+        value: filteredOrders.filter((order) => getLifecycle(order) === "draft").length,
+      },
+    ];
+  }, [filteredOrders]);
   const totalPages = Math.max(1, Math.ceil(filteredOrders.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const visibleOrders = filteredOrders.slice(
