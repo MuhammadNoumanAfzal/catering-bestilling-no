@@ -1,6 +1,7 @@
 import { FiChevronDown, FiClock } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { getDateFilterLabel, ORDER_DATE_OPTIONS } from "./orderUtils";
+import LocalizedDatePicker from "../../../../components/LocalizedDatePicker";
 
 export default function OrderDateFilter({
   customDateRange,
@@ -68,7 +69,7 @@ export default function OrderDateFilter({
             onClick={onReset}
             className="mt-2 flex w-full cursor-pointer items-center rounded-[8px] border-t border-[#f0e4da] px-3 py-2.5 text-left text-sm font-semibold text-[#cf5c2f] transition hover:bg-[#fff6ef]"
           >
-            Clear filters
+            {t("vendorPanel.dateFilters.clear", { defaultValue: "Clear filters" })}
           </button>
 
           {selectedRange === "custom-date" ? (
@@ -87,30 +88,14 @@ export default function OrderDateFilter({
                   <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a6d53]">
                     {t("vendorPanel.notifications.date.from")}
                   </span>
-                  <input
-                    type="date"
-                    value={customDateRange.from}
-                    max={customDateRange.to || undefined}
-                    onChange={(event) =>
-                      onCustomDateChange("from", event.target.value)
-                    }
-                    className="w-full cursor-pointer rounded-[14px] border border-[#e8d6c8] bg-white px-3 py-2.5 text-sm text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#ffd8c6]"
-                  />
+                  <LocalizedDatePicker label={t("vendorPanel.dateFilters.from", { defaultValue: "From" })} max={customDateRange.to || undefined} onChange={(value) => onCustomDateChange("from", value)} value={customDateRange.from} />
                 </label>
 
                 <label className="block">
                   <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#9a6d53]">
                     {t("vendorPanel.notifications.date.to")}
                   </span>
-                  <input
-                    type="date"
-                    value={customDateRange.to}
-                    min={customDateRange.from || undefined}
-                    onChange={(event) =>
-                      onCustomDateChange("to", event.target.value)
-                    }
-                    className="w-full cursor-pointer rounded-[14px] border border-[#e8d6c8] bg-white px-3 py-2.5 text-sm text-[#2d2d2d] outline-none transition focus:border-[#cf6e38] focus:ring-2 focus:ring-[#ffd8c6]"
-                  />
+                  <LocalizedDatePicker label={t("vendorPanel.dateFilters.to", { defaultValue: "To" })} min={customDateRange.from || undefined} onChange={(value) => onCustomDateChange("to", value)} value={customDateRange.to} />
                 </label>
               </div>
 
