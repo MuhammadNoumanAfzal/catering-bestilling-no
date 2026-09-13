@@ -10,6 +10,7 @@ export default function OrderDateFilter({
   onSelect,
   onCustomDateChange,
   onApplyCustomDate,
+  onReset,
   onToggle,
   referenceDate,
   selectedRange,
@@ -61,6 +62,14 @@ export default function OrderDateFilter({
               </button>
             );
           })}
+
+          <button
+            type="button"
+            onClick={onReset}
+            className="mt-2 flex w-full cursor-pointer items-center rounded-[8px] border-t border-[#f0e4da] px-3 py-2.5 text-left text-sm font-semibold text-[#cf5c2f] transition hover:bg-[#fff6ef]"
+          >
+            Clear filters
+          </button>
 
           {selectedRange === "custom-date" ? (
             <div className="mt-2 rounded-[18px] border border-[#f0ded2] bg-[linear-gradient(180deg,#fff7f2_0%,#fffaf7_100%)] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">

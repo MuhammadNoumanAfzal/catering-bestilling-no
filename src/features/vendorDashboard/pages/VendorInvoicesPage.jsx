@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,11 +18,61 @@ import {
   STATUS_OPTIONS,
 } from "../components/invoices/invoiceUtils";
 
+function parseMoneyValue(value) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  const normalized = `${value ?? ""}`
+    .replace(/NOK/gi, "")
+    .replace(/\s/g, "")
+    .replace(/,/g, "");
+  const parsed = Number.parseFloat(normalized);
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatMoneyValue(value, currency = "NOK") {
+  return `${currency} ${Number(value || 0).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function isInvoicePaid(invoice) {
+  const status = `${invoice.statusKey || invoice.status || ""}`.toLowerCase();
+  return status === "paid" || status === "completed" || status === "delivered";
+}
+
+function isInvoiceOverdue(invoice) {
+  const status = `${invoice.statusKey || invoice.status || ""}`.toLowerCase();
+  return status === "overdue";
+}
+
+function isInvoicePending(invoice) {
+  const status = `${invoice.statusKey || invoice.status || ""}`.toLowerCase();
+  return status === "pending" || status === "unpaid" || status === "reported" || status === "overdue";
+}
+
+function isCurrentMonth(dateValue) {
+  if (!dateValue) {
+    return false;
+  }
+
+  const parsedDate = new Date(dateValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return false;
+  }
+
+  const today = new Date();
+  return parsedDate.getFullYear() === today.getFullYear() && parsedDate.getMonth() === today.getMonth();
+}
 export default function VendorInvoicesPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { records, overview, totals, totalCount, isLoading, error } =
+  const { records, isLoading, error } =
     useSelector((state) => state.invoices);
 
   const [searchValue, setSearchValue] = useState("");
@@ -107,6 +157,62 @@ export default function VendorInvoicesPage() {
     filteredRecords.length === 0 ? 0 : (safeCurrentPage - 1) * PAGE_SIZE + 1;
   const endIndex = Math.min(safeCurrentPage * PAGE_SIZE, filteredRecords.length);
 
+  const filteredOverview = useMemo(
+    () => [
+      {
+        labelKey: "vendorPanel.invoices.overview.totalInvoices",
+        value: filteredRecords.length,
+      },
+      {
+        labelKey: "vendorPanel.invoices.overview.paidInvoices",
+        value: filteredRecords.filter(isInvoicePaid).length,
+      },
+      {
+        labelKey: "vendorPanel.invoices.overview.unpaidInvoices",
+        value: filteredRecords.filter((invoice) => !isInvoicePaid(invoice)).length,
+      },
+      {
+        labelKey: "vendorPanel.invoices.overview.overdueInvoices",
+        value: filteredRecords.filter(isInvoiceOverdue).length,
+      },
+    ],
+    [filteredRecords],
+  );
+  const filteredTotals = useMemo(() => {
+    const getAmount = (invoice) => parseMoneyValue(invoice.amountRaw ?? invoice.amount);
+    const getDueAmount = (invoice) => parseMoneyValue(invoice.dueAmountRaw ?? invoice.dueAmount ?? invoice.amountRaw ?? invoice.amount);
+    const currency = filteredRecords.find((invoice) => invoice.currency)?.currency || "NOK";
+    const totalSpent = filteredRecords.reduce((sum, invoice) => sum + getAmount(invoice), 0);
+    const thisMonthSpent = filteredRecords
+      .filter((invoice) => isCurrentMonth(invoice.issuedOnRaw || invoice.dueDateRaw || invoice.eventDateRaw))
+      .reduce((sum, invoice) => sum + getAmount(invoice), 0);
+    const pendingAmount = filteredRecords
+      .filter(isInvoicePending)
+      .reduce((sum, invoice) => sum + getDueAmount(invoice), 0);
+    const overdueAmount = filteredRecords
+      .filter(isInvoiceOverdue)
+      .reduce((sum, invoice) => sum + getDueAmount(invoice), 0);
+
+    return [
+      {
+        labelKey: "vendorPanel.invoices.overview.totalSpent",
+        value: formatMoneyValue(totalSpent, currency),
+      },
+      {
+        labelKey: "vendorPanel.invoices.overview.thisMonth",
+        value: formatMoneyValue(thisMonthSpent, currency),
+      },
+      {
+        labelKey: "vendorPanel.invoices.overview.pendingAmount",
+        value: formatMoneyValue(pendingAmount, currency),
+      },
+      {
+        labelKey: "vendorPanel.invoices.overview.overdueAmount",
+        value: formatMoneyValue(overdueAmount, currency),
+      },
+    ];
+  }, [filteredRecords]);
+
   if (isLoading && records.length === 0) {
     return <DashboardLoadingState title="Loading invoice activity" description="Gathering your invoice, payment, and due-date records." rows={5} columns={7} />;
   }
@@ -132,7 +238,7 @@ export default function VendorInvoicesPage() {
       </section>
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        {overview.map((item) => (
+        {filteredOverview.map((item) => (
           <InvoiceOverviewCard key={item.label} {...item} />
         ))}
       </section>
@@ -160,7 +266,7 @@ export default function VendorInvoicesPage() {
 
         <div className="px-4 py-4 md:px-5">
         <div className="grid grid-cols-2 gap-3 border-b border-[#ece4dc] pb-4 xl:grid-cols-4">
-          {totals.map((item) => (
+          {filteredTotals.map((item) => (
             <InvoiceTotalCard key={item.label} {...item} />
           ))}
         </div>

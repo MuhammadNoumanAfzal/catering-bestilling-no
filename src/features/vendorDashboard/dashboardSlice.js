@@ -56,16 +56,21 @@ export const fetchDashboardData = createAsyncThunk(
       
       const recentOrders = (data.recentOrders || []).map((order) => ({
         id: formatId(order.id),
+        rawId: order.id || "",
         eventName: order.eventName || "",
         date: formatDate(order.eventDate),
+        eventDate: order.eventDate || "",
         status: order.status || "Pending",
         amount: formatAmount(order.grandTotal),
       }));
 
       const recentInvoices = (data.recentInvoices || []).map((invoice) => ({
         id: formatId(invoice.id),
+        rawId: invoice.id || "",
+        orderId: invoice.id || "",
         eventName: invoice.eventName || "",
         date: formatDate(invoice.eventDate),
+        eventDate: invoice.eventDate || "",
         status: invoice.status || "Pending",
         amount: formatAmount(invoice.grandTotal),
       }));
