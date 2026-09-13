@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin, Sparkles, X } from "lucide-react";
 import { translateSettings } from "../components/settings/settingsI18n";
+import ClientLanguageSettingsSection from "../../clientSettings/components/ClientLanguageSettingsSection";
 import NotificationSettingsSection from "../components/settings/NotificationSettingsSection";
 import PasswordSettingsSection from "../components/settings/PasswordSettingsSection";
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
@@ -125,6 +126,7 @@ export default function VendorSettingsPage() {
             {loadWarning}
           </div>
         ) : null}
+        <ClientLanguageSettingsSection />
         <VendorProfilePhotoSection
           formState={formState}
           isUploading={isUploadingAvatar}
