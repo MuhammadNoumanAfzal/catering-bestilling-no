@@ -873,6 +873,7 @@ const en = {
     },
   },
   vendorPanel: {
+    dateFilters: { filterByDate: "Filter by date", allTime: "All time", last7Days: "Last 7 days", lastMonth: "Last month", last3Months: "Last 3 months", last6Months: "Last 6 months", thisYear: "This year", customDate: "Custom date", clear: "Clear filters", from: "From", to: "To", apply: "Apply" },
     logoAlt: "GoCatering",
     defaultUser: "Vendor User",
     manageSubtitle: "Manage your restaurants and operations",

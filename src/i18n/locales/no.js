@@ -1296,6 +1296,7 @@ const no = {
     },
   },
   vendorPanel: {
+    dateFilters: { filterByDate: "Filtrer etter dato", allTime: "Hele perioden", last7Days: "Siste 7 dager", lastMonth: "Siste måned", last3Months: "Siste 3 måneder", last6Months: "Siste 6 måneder", thisYear: "I år", customDate: "Egendefinert dato", clear: "Tøm filter", from: "Fra", to: "Til", apply: "Bruk" },
     logoAlt: "GoCatering",
     defaultUser: "Leverandørbruker",
     manageSubtitle: "Administrer restaurantene og driften din",
