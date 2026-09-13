@@ -39,6 +39,17 @@ function resolvePublicVendorSlug(vendor) {
   return apiSlug && !/^\d+$/.test(apiSlug) ? apiSlug : slugify(vendor?.name);
 }
 
+function resolveIconUrl(value) {
+  const url = String(value || "").trim();
+  if (!url || /^(?:data:|blob:)/i.test(url)) return url;
+
+  const apiUrl = import.meta.env.VITE_GRAPHQL_API_URL ?? import.meta.env.VITE_GRAPHQL_URL ?? "https://api.gocatering.no/graphql/";
+  const parsedUrl = new URL(url, apiUrl);
+  return parsedUrl.pathname.startsWith("/media/")
+    ? new URL(`${parsedUrl.pathname}${parsedUrl.search}`, apiUrl).toString()
+    : parsedUrl.toString();
+}
+
 const GET_FOOD_TYPES_QUERY = `
   query GetFoodTypes {
     foodTypes {
@@ -485,12 +496,16 @@ function mapConnectionPayload(connection, mode) {
 
 export async function fetchFoodTypes() {
   const data = await graphqlRequest({ query: GET_FOOD_TYPES_QUERY });
-  return Array.isArray(data?.foodTypes) ? data.foodTypes : [];
+  return Array.isArray(data?.foodTypes)
+    ? data.foodTypes.map((item) => ({ ...item, iconUrl: resolveIconUrl(item?.iconUrl) }))
+    : [];
 }
 
 export async function fetchOccasions() {
   const data = await graphqlRequest({ query: GET_OCCASIONS_QUERY });
-  return Array.isArray(data?.occasions) ? data.occasions : [];
+  return Array.isArray(data?.occasions)
+    ? data.occasions.map((item) => ({ ...item, iconUrl: resolveIconUrl(item?.iconUrl) }))
+    : [];
 }
 
 export async function browseProductsByFoodType(variables) {
