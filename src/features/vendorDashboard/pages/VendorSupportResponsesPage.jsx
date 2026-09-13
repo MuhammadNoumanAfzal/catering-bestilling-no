@@ -6,6 +6,7 @@ import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import {
   getMySupportTicket,
   getMySupportTickets,
+  markSupportTicketReadLocally,
   replyToOwnSupportTicket,
 } from "../support/api";
 
@@ -186,7 +187,25 @@ export default function VendorSupportResponsesPage() {
 
     try {
       const result = await getMySupportTicket(ticketId);
+      const latestMessage = result.conversation?.[result.conversation.length - 1];
+      const lastActivityAt = latestMessage?.createdAt || result.updatedAt || result.createdAt;
+
+      markSupportTicketReadLocally(ticketId, lastActivityAt);
       setSelectedTicket(result);
+      setTickets((current) =>
+        current.map((ticket) =>
+          ticket.id === ticketId
+            ? {
+                ...ticket,
+                unreadCount: 0,
+                lastMessageAt: result.updatedAt || ticket.lastMessageAt,
+                lastMessageAtLabel: result.updatedAtLabel || ticket.lastMessageAtLabel,
+                updatedAt: result.updatedAt || ticket.updatedAt,
+                updatedAtLabel: result.updatedAtLabel || ticket.updatedAtLabel,
+              }
+            : ticket,
+        ),
+      );
     } catch (error) {
       setDetailError(error instanceof Error ? error.message : "Unable to load this support ticket.");
       setSelectedTicket(null);
@@ -372,7 +391,11 @@ export default function VendorSupportResponsesPage() {
                         "flex w-full cursor-pointer flex-col gap-2 border-b border-[#f2e9e2] px-5 py-4 text-left transition",
                         isActive ? "bg-[#fff4ec]" : "bg-white hover:bg-[#fffaf6]",
                       ].join(" ")}
-                      onClick={() => setSelectedTicketId(ticket.id)}
+                      onClick={() => {
+                        markSupportTicketReadLocally(ticket.id, ticket.lastMessageAt || ticket.updatedAt || ticket.createdAt);
+                        setTickets((current) => current.map((item) => (item.id === ticket.id ? { ...item, unreadCount: 0 } : item)));
+                        setSelectedTicketId(ticket.id);
+                      }}
                       type="button"
                     >
                       <div className="flex items-start justify-between gap-3">

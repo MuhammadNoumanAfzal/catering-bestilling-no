@@ -1249,6 +1249,7 @@ const en = {
       },
       date: {
         allTime: "All Time",
+        last7Days: "Last 7 days",
         lastMonth: "Last Month",
         last3Months: "Last 3 Months",
         last6Months: "Last 6 Months",

@@ -42,7 +42,78 @@ function normalizeConversationItem(message) {
   };
 }
 
+const SUPPORT_READ_KEY = "bestilling-client-support-read-v1";
+
+function readSupportReadState() {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(SUPPORT_READ_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeSupportReadState(state) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(SUPPORT_READ_KEY, JSON.stringify(state));
+  } catch {
+    // Local read markers are best-effort UI state.
+  }
+}
+
+function getComparableTime(value) {
+  const time = new Date(value || 0).getTime();
+  return Number.isNaN(time) ? 0 : time;
+}
+
+export function markSupportTicketReadLocally(ticketId, lastActivityAt = "") {
+  const id = String(ticketId || "").trim();
+
+  if (!id) {
+    return;
+  }
+
+  const state = readSupportReadState();
+  const nextSeenAt = lastActivityAt || new Date().toISOString();
+  const currentTime = getComparableTime(state[id]);
+  const nextTime = getComparableTime(nextSeenAt);
+
+  state[id] = nextTime >= currentTime ? nextSeenAt : state[id];
+  writeSupportReadState(state);
+}
+
+function isSupportTicketReadLocally(ticketId, lastActivityAt = "") {
+  const id = String(ticketId || "").trim();
+
+  if (!id) {
+    return false;
+  }
+
+  const state = readSupportReadState();
+  const seenAt = state[id];
+
+  if (!seenAt) {
+    return false;
+  }
+
+  const lastActivityTime = getComparableTime(lastActivityAt);
+  return lastActivityTime === 0 || getComparableTime(seenAt) >= lastActivityTime;
+}
+
 function normalizeTicketListItem(item) {
+  const lastActivityAt = item?.lastMessageAt || item?.createdAt || "";
+  const unreadCount = isSupportTicketReadLocally(item?.id, lastActivityAt)
+    ? 0
+    : Number(item?.unreadCount ?? 0) || 0;
+
   return {
     id: item?.id ?? "",
     ticketNo: item?.ticketNo ?? "",
@@ -55,7 +126,7 @@ function normalizeTicketListItem(item) {
     updatedAtLabel: formatDisplayDate(item?.lastMessageAt || item?.createdAt),
     lastMessageAt: item?.lastMessageAt ?? "",
     lastMessageAtLabel: formatDisplayDate(item?.lastMessageAt),
-    unreadCount: Number(item?.unreadCount ?? 0),
+    unreadCount,
     orderReference: item?.ticketNo ?? "",
   };
 }

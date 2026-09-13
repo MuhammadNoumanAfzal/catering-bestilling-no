@@ -15,7 +15,6 @@ import {
   getInvoiceDateFilterLabel,
   getInvoiceQueryDateRange,
   PAGE_SIZE,
-  STATUS_OPTIONS,
 } from "../components/invoices/invoiceUtils";
 
 function parseMoneyValue(value) {
@@ -77,16 +76,13 @@ export default function VendorInvoicesPage() {
 
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearchValue, setDebouncedSearchValue] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedDateRange, setSelectedDateRange] = useState("all");
   const [customDateRange, setCustomDateRange] = useState({
     from: "",
     to: "",
   });
-  const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isDateMenuOpen, setIsDateMenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const statusMenuRef = useRef(null);
   const dateMenuRef = useRef(null);
 
   useEffect(() => {
@@ -122,14 +118,10 @@ export default function VendorInvoicesPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchValue, selectedDateRange, selectedStatus, customDateRange]);
+  }, [debouncedSearchValue, selectedDateRange, customDateRange]);
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (statusMenuRef.current && !statusMenuRef.current.contains(event.target)) {
-        setIsStatusMenuOpen(false);
-      }
-
       if (dateMenuRef.current && !dateMenuRef.current.contains(event.target)) {
         setIsDateMenuOpen(false);
       }
@@ -141,12 +133,9 @@ export default function VendorInvoicesPage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const filteredRecords = records;
 
-  const totalPages = Math.max(1, Math.ceil(records.length / PAGE_SIZE));
-  const filteredRecords =
-    selectedStatus === "all"
-      ? records
-      : records.filter((invoice) => invoice.statusKey === selectedStatus);
   const filteredTotalPages = Math.max(1, Math.ceil(filteredRecords.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, filteredTotalPages);
   const visibleInvoices = filteredRecords.slice(
@@ -285,28 +274,6 @@ export default function VendorInvoicesPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <InvoiceFilterMenu
               defaultValue="all"
-              isOpen={isStatusMenuOpen}
-              label={
-                t(
-                  STATUS_OPTIONS.find((option) => option.value === selectedStatus)
-                    ?.labelKey ?? "vendorPanel.invoices.allStatus",
-                )
-              }
-              onToggle={() => {
-                setIsStatusMenuOpen((open) => !open);
-                setIsDateMenuOpen(false);
-              }}
-              options={STATUS_OPTIONS}
-              selectedValue={selectedStatus}
-              onSelect={(value) => {
-                setSelectedStatus(value);
-                setIsStatusMenuOpen(false);
-              }}
-              menuRef={statusMenuRef}
-            />
-
-            <InvoiceFilterMenu
-              defaultValue="all"
               isOpen={isDateMenuOpen}
               label={getInvoiceDateFilterLabel(
                 selectedDateRange,
@@ -315,7 +282,6 @@ export default function VendorInvoicesPage() {
               )}
               onToggle={() => {
                 setIsDateMenuOpen((open) => !open);
-                setIsStatusMenuOpen(false);
               }}
               options={DATE_OPTIONS}
               selectedValue={selectedDateRange}
@@ -344,7 +310,7 @@ export default function VendorInvoicesPage() {
                             setIsDateMenuOpen(false);
                           }
                         }}
-                    className={[
+                        className={[
                           "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm transition",
                           isSelected
                             ? "bg-[#fff1e8] font-semibold text-[#c85f33]"
