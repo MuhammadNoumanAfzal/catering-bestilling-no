@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
+import i18n from "../../i18n";
 import { getOrderLifecycle } from "./components/orders/orderUtils";
 import { readPlacedOrderDraft } from "../order/services";
 import {
@@ -316,8 +317,11 @@ const formatDate = (dateStr) => {
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return `${String(d.getDate()).padStart(2, "0")} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    return new Intl.DateTimeFormat(i18n.language?.startsWith("no") ? "nb-NO" : "en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }).format(d);
   } catch {
     return dateStr;
   }

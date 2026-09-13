@@ -577,6 +577,9 @@ const en = {
     bookingIntro:
       "Choose your delivery day, lock in an available service window, and set the guest count before adding this menu to the cart.",
     date: "Date",
+    chooseAvailableDate: "Choose an available date",
+    availableDatesNote: "Only highlighted dates have delivery availability.",
+    dateUnavailable: "Delivery is not available on this date. Please choose a day in the vendor's delivery schedule.",
     time: "Time",
     selectDateFirst: "Select a date first",
     checkingSlots: "Checking available delivery slots...",

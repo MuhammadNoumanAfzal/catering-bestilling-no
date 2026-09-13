@@ -583,6 +583,9 @@ const no = {
     bookingIntro:
       "Velg leveringsdag, lås et tilgjengelig servicevindu og angi antall gjester før du legger menyen i handlekurven.",
     date: "Dato",
+    chooseAvailableDate: "Velg en tilgjengelig dato",
+    availableDatesNote: "Bare uthevede datoer har leveringstilgjengelighet.",
+    dateUnavailable: "Levering er ikke tilgjengelig denne datoen. Velg en dag i leverandørens leveringsplan.",
     time: "Tid",
     selectDateFirst: "Velg en dato først",
     checkingSlots: "Sjekker tilgjengelige leveringstider...",
@@ -1449,6 +1452,9 @@ const no = {
         event: "Arrangement",
         guests: "Gjester",
       },
+    },
+    orderDetails: {
+      closeAria: "Lukk ordredetaljer", overview: "Ordreoversikt", title: "Ordredetaljer", loading: "Laster ordredetaljer...", loadErrorTitle: "Kunne ikke laste inn fullstendige ordredetaljer", changeRequested: "Endring forespurt", vendor: "Leverandør", orderId: "Ordre-ID", event: "Arrangement", guests: "Gjester", total: "Total", items: "Varer", itemCount: "{{count}} vare", itemCount_other: "{{count}} varer", description: "Beskrivelse", vendorNote: "Notat til leverandør", selectedOptions: "Valgte alternativer", addOns: "Tillegg", includedItems: "Inkluderte varer", noItems: "Varedetaljer er ikke tilgjengelige i gjeldende API-svar.", modifiedItems: "Endrede varer", modifiedDescription: "Dette er ventende endringer foreslått av leverandøren. Den opprinnelige bestillingen forblir aktiv til du godkjenner og bruker dem.", changeCount: "{{count}} endring", changeCount_other: "{{count}} endringer", previous: "Tidligere", updated: "Oppdatert", orderInformation: "Ordreinformasjon", invoiceNumber: "Fakturanummer", orderPlacedOn: "Bestilt den", eventDate: "Arrangementsdato", eventTime: "Arrangementstid", guestCount: "Antall gjester", deliveryFee: "Leveringsgebyr", deliveryAddress: "Leveringsadresse", orderNotes: "Ordrenotater", notAvailable: "Ikke tilgjengelig", grandTotal: "Totalsum", grandTotalHint: "Inkluderer hele ordrebeløpet", modificationClosed: "Endring stengt", modifyOrder: "Endre bestilling"
     },
     invoices: {
       title: "Fakturaer",
