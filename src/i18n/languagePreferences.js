@@ -1,7 +1,7 @@
 const LANGUAGE_STORAGE_KEY = "customer-language-preference";
 
 export const SUPPORTED_LANGUAGES = ["en", "no"];
-export const DEFAULT_LANGUAGE = "en";
+export const DEFAULT_LANGUAGE = "no";
 
 export function normalizeLanguage(value) {
   if (SUPPORTED_LANGUAGES.includes(value)) {
