@@ -264,7 +264,7 @@ export default function ModifyOrderModal({
   const calendarDays = useMemo(
     () =>
       Array.from({ length: 42 }, (_, index) => {
-        const firstWeekday = calendarMonth.getDay();
+        const firstWeekday = (calendarMonth.getDay() + 6) % 7;
         const date = new Date(
           calendarMonth.getFullYear(),
           calendarMonth.getMonth(),
@@ -509,7 +509,7 @@ export default function ModifyOrderModal({
                       <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))} className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]">&#8250;</button>
                     </div>
                     <div className="grid grid-cols-7 gap-1 text-center text-[11px] font-bold text-[#8c7a6e]">
-                      {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => <span key={day}>{day}</span>)}
+                      {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((day) => <span key={day}>{day}</span>)}
                     </div>
                     <div className="mt-2 grid grid-cols-7 gap-1">
                       {calendarDays.map(({ date, value, isAvailable }) => {

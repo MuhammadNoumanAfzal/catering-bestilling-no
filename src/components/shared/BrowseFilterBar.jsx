@@ -20,6 +20,7 @@ import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 
 export default function BrowseFilterBar({
   variant = "default",
+  dietaryOptions: apiDietaryOptions = [],
   onControlInteract,
   onApply,
   resultsAnchorId,
@@ -44,6 +45,8 @@ export default function BrowseFilterBar({
     setSelectedSort,
   } = useBrowseFilters();
   const styles = FILTER_BAR_VARIANTS[variant] ?? FILTER_BAR_VARIANTS.default;
+  const resolvedDietaryOptions = apiDietaryOptions.length ? apiDietaryOptions : dietaryOptions;
+  const dietaryLabelBySlug = useMemo(() => new Map(resolvedDietaryOptions.map((option) => [option?.slug || option?.value || option, option?.name || option])), [resolvedDietaryOptions]);
   const filterStateKey = JSON.stringify({
     otherFilters,
     selectedDietary,
@@ -254,7 +257,7 @@ export default function BrowseFilterBar({
             setSelectedPricing={setSelectedPricing}
             sortByOptions={sortByOptions}
             ratingOptions={ratingOptions}
-            dietaryOptions={dietaryOptions}
+            dietaryOptions={resolvedDietaryOptions}
             offerOptions={offerOptions}
             pricingOptions={pricingOptions}
           />
