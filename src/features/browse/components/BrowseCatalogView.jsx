@@ -250,6 +250,18 @@ export default function BrowseCatalogView({
         activeCategoryLabel={activeCategoryLabel}
       />
 
+      {hasNextPage ? (
+        <div className="mx-auto mt-6 flex w-full max-w-7xl justify-center">
+          <button
+            type="button"
+            onClick={loadMore}
+            disabled={isLoadingMore}
+            className="rounded-full border border-[#d7cec3] px-5 py-2.5 text-sm font-semibold text-[#2b2b2b] transition hover:border-[#c85f33] hover:text-[#c85f33] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoadingMore ? t("browse.updatingResults") : t("browse.seeAll", { defaultValue: "Load more" })}
+          </button>
+        </div>
+      ) : null}
       {totalPages > 1 ? (
         <div className="mx-auto mt-6 flex w-full max-w-7xl flex-wrap items-center justify-center gap-2 sm:mt-8">
           <button

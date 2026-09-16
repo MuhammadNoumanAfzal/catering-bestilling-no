@@ -4,6 +4,7 @@ import { CHECKOUT_PLACEHOLDERS } from "../../constants/checkoutForm";
 import { getTodayDateValue } from "../../../order/utils/orderFlowValidation";
 import { formatTimeTo24Hour } from "../../../../components/shared/navbar/navbarDateUtils";
 import PreferredTimePicker from "../../../../components/shared/PreferredTimePicker";
+import LocalizedDatePicker from "../../../../components/LocalizedDatePicker";
 import { useTranslation } from "react-i18next";
 
 function getSlotStatusTone(slot) {
@@ -98,22 +99,26 @@ export default function EventDetailsSection({
           onChange={(event) => updateField(eventKey, event.target.value)}
           placeholder={eventPlaceholder}
         />
-        <CheckoutField
-          label={t("menu.date")}
-          type="date"
-          value={formState.date}
-          min={getTodayDateValue()}
-          onChange={(event) => {
-            if (onDateChange) {
-              onDateChange(event.target.value);
-              return;
-            }
+        <div>
+          <span className="mb-1.5 block text-[13px] font-medium text-[#2d2d2d]">
+            {t("menu.date")}
+          </span>
+          <LocalizedDatePicker
+            className="w-full"
+            label={t("menu.date")}
+            min={getTodayDateValue()}
+            onChange={(nextDate) => {
+              if (onDateChange) {
+                onDateChange(nextDate);
+                return;
+              }
 
-            updateField("date", event.target.value);
-            updateCartField("deliveryDate", event.target.value);
-          }}
-          inputClassName="cursor-pointer"
-        />
+              updateField("date", nextDate);
+              updateCartField("deliveryDate", nextDate);
+            }}
+            value={formState.date}
+          />
+        </div>
 
         <div>
           <span className="mb-1.5 block text-[13px] font-medium text-[#2d2d2d]">

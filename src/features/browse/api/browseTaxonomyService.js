@@ -91,15 +91,38 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
     $areaName: String
     $search: String
     $sortBy: String
+    $priceMin: Float
+    $priceMax: Float
+    $minRating: Float
+    $dietaryTagSlugs: [String!]
+    $freeDelivery: Boolean
+    $deliveryFeeMin: Float
+    $deliveryFeeMax: Float
     $first: Int
     $after: String
   ) {
+    dietaryTags {
+      id
+      name
+      slug
+      isActive
+      sortOrder
+    }
     products(
       foodTypeSlug: $foodTypeSlug
       postCode: $postCode
       areaName: $areaName
       search: $search
+      productType: "menu"
+      menuStatus: "published"
       sortBy: $sortBy
+      priceMin: $priceMin
+      priceMax: $priceMax
+      minRating: $minRating
+      dietaryTagSlugs: $dietaryTagSlugs
+      freeDelivery: $freeDelivery
+      deliveryFeeMin: $deliveryFeeMin
+      deliveryFeeMax: $deliveryFeeMax
       first: $first
       after: $after
     ) {
@@ -120,6 +143,7 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
           isPopular
           isFeatured
           minimumGuests
+          createdOn
           coverImage {
             id
             fileUrl
@@ -197,15 +221,38 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
     $areaName: String
     $search: String
     $sortBy: String
+    $priceMin: Float
+    $priceMax: Float
+    $minRating: Float
+    $dietaryTagSlugs: [String!]
+    $freeDelivery: Boolean
+    $deliveryFeeMin: Float
+    $deliveryFeeMax: Float
     $first: Int
     $after: String
   ) {
+    dietaryTags {
+      id
+      name
+      slug
+      isActive
+      sortOrder
+    }
     products(
       occasionSlug: $occasionSlug
       postCode: $postCode
       areaName: $areaName
       search: $search
+      productType: "menu"
+      menuStatus: "published"
       sortBy: $sortBy
+      priceMin: $priceMin
+      priceMax: $priceMax
+      minRating: $minRating
+      dietaryTagSlugs: $dietaryTagSlugs
+      freeDelivery: $freeDelivery
+      deliveryFeeMin: $deliveryFeeMin
+      deliveryFeeMax: $deliveryFeeMax
       first: $first
       after: $after
     ) {
@@ -224,6 +271,7 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
           ordersCount
           badge
           minimumGuests
+          createdOn
           coverImage {
             id
             fileUrl
@@ -483,7 +531,7 @@ function mapConnectionPayload(connection, mode) {
   );
 
   return {
-    totalCount: filteredEdges.length,
+    totalCount: Number(connection?.totalCount ?? filteredEdges.length),
     items: filteredEdges.map((edge) =>
       mapProductNode(edge.node, mode),
     ),
@@ -515,6 +563,7 @@ export async function browseProductsByFoodType(variables) {
   });
 
   const payload = mapConnectionPayload(data?.products, "food-type");
+  payload.dietaryTags = Array.isArray(data?.dietaryTags) ? data.dietaryTags.filter((tag) => tag?.isActive !== false) : [];
   payload.items = await hydrateRatingsForItems(payload.items);
   return payload;
 }
@@ -526,6 +575,7 @@ export async function browseProductsByOccasion(variables) {
   });
 
   const payload = mapConnectionPayload(data?.products, "occasion");
+  payload.dietaryTags = Array.isArray(data?.dietaryTags) ? data.dietaryTags.filter((tag) => tag?.isActive !== false) : [];
   payload.items = await hydrateRatingsForItems(payload.items);
   return payload;
 }

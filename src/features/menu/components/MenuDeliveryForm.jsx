@@ -60,7 +60,7 @@ export default function MenuDeliveryForm({
   const { t, i18n } = useTranslation();
   const locale = i18n.language?.startsWith("no") ? "nb-NO" : "en-GB";
   const weekdayLabels = Array.from({ length: 7 }, (_, index) =>
-    new Intl.DateTimeFormat(locale, { weekday: "short" }).format(new Date(2024, 5, 2 + index)),
+    new Intl.DateTimeFormat(locale, { weekday: "short" }).format(new Date(2024, 5, 3 + index)),
   );
   const [dateAvailabilityError, setDateAvailabilityError] = useState("");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -141,7 +141,7 @@ export default function MenuDeliveryForm({
   const calendarDays = Array.from(
     { length: 42 },
     (_, index) => {
-      const firstWeekday = calendarMonth.getDay();
+      const firstWeekday = (calendarMonth.getDay() + 6) % 7;
       const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), index - firstWeekday + 1);
       const value = formatDateValue(date);
       const isCurrentMonth = date.getMonth() === calendarMonth.getMonth();

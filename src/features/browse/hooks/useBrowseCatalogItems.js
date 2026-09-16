@@ -11,233 +11,155 @@ import {
 } from "../api/browseTaxonomyService";
 import { parseCategoryParamValue } from "../utils/categoryFilters";
 
+const PAGE_SIZE = 24;
+
 function slugify(value) {
-  return `${value ?? ""}`
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
+  return `${value ?? ""}`.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
 }
 
 function buildCategoryItem(item) {
-  return {
-    id: item?.id || "",
-    name: item?.name || "Category",
-    value: item?.slug || slugify(item?.name),
-    slug: item?.slug || slugify(item?.name),
-    icon: item?.iconUrl || getBrowseFallbackIcon(item?.slug || item?.name),
-    description: item?.description || "",
-    productsCount: Number(item?.productsCount ?? 0),
-    vendorsCount: Number(item?.vendorsCount ?? 0),
-  };
+  return { id: item?.id || "", name: item?.name || "Category", value: item?.slug || slugify(item?.name), slug: item?.slug || slugify(item?.name), icon: item?.iconUrl || getBrowseFallbackIcon(item?.slug || item?.name), description: item?.description || "", productsCount: Number(item?.productsCount ?? 0), vendorsCount: Number(item?.vendorsCount ?? 0) };
 }
 
-function resolveLocationFilters(locationValue) {
-  const trimmedValue = `${locationValue ?? ""}`.trim();
-
-  if (!trimmedValue) {
-    return { postCode: null, areaName: null };
-  }
-
+function resolveLocationFilters(value) {
+  const trimmedValue = `${value ?? ""}`.trim();
+  if (!trimmedValue) return { postCode: null, areaName: null };
   const digits = trimmedValue.replace(/\D/g, "");
-
-  if (
-    (digits.length === 4 || digits.length === 5) &&
-    digits === trimmedValue.replace(/\s+/g, "")
-  ) {
-    return { postCode: digits, areaName: null };
-  }
-
-  return { postCode: null, areaName: trimmedValue };
+  return (digits.length === 4 || digits.length === 5) && digits === trimmedValue.replace(/\s+/g, "")
+    ? { postCode: digits, areaName: null }
+    : { postCode: null, areaName: trimmedValue };
 }
 
-function mapSortToApiValue(selectedSort) {
-  switch (selectedSort) {
-    case "Most Popular":
-      return "popular";
-    case "Highest Rated":
-      return "rating";
-    case "Price: Low to High":
-      return "price-low-high";
-    case "Price: High to Low":
-      return "price-high-low";
-    case "Newest":
-      return "newest";
-    default:
-      if (selectedSort === FILTER_DEFAULTS.sort) {
-        return null;
-      }
-      return null;
+function mapSortToApiValue(value) {
+  return { Recommended: "recommended", "Most Popular": "most-popular", "Highest Rated": "highest-rated", "Price: Low to High": "price-low-high", "Price: High to Low": "price-high-low", Newest: "newest" }[value] || "recommended";
+}
+
+function mapMinimumRating(value) {
+  const rating = Number.parseFloat(`${value || ""}`);
+  return Number.isFinite(rating) ? rating : null;
+}
+
+function mapPriceRange(value) {
+  switch (value) {
+    case "Under NOK 250": return { priceMin: 0, priceMax: 250 };
+    case "NOK 250 - NOK 500": return { priceMin: 250, priceMax: 500 };
+    case "NOK 500+": return { priceMin: 500, priceMax: null };
+    default: return { priceMin: null, priceMax: null };
   }
 }
 
 function resolveSelectedSlug(selection, categories) {
-  if (!selection) {
-    return null;
-  }
-
   const rawValue = Array.isArray(selection) ? selection[0] : selection;
   const normalizedValue = `${rawValue ?? ""}`.trim();
-
-  if (!normalizedValue) {
-    return null;
-  }
-
-  const matchedCategory = categories.find(
-    (item) =>
-      item.value === normalizedValue ||
-      item.slug === normalizedValue ||
-      item.name.toLowerCase() === normalizedValue.toLowerCase() ||
-      slugify(item.name) === slugify(normalizedValue),
-  );
-
-  return matchedCategory?.value ?? slugify(normalizedValue);
+  if (!normalizedValue) return null;
+  const match = categories.find((item) => item.value === normalizedValue || item.slug === normalizedValue || item.name.toLowerCase() === normalizedValue.toLowerCase() || slugify(item.name) === slugify(normalizedValue));
+  return match?.value ?? slugify(normalizedValue);
 }
 
 export function useBrowseCatalogItems(mode = "food-type") {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { locationValue, searchQuery, selectedSort } = useBrowseFilters();
+  const { locationValue, searchQuery, selectedSort, selectedRating, selectedDietary, selectedOffers, otherFilters } = useBrowseFilters();
   const [categories, setCategories] = useState([]);
+  const [dietaryOptions, setDietaryOptions] = useState([]);
   const [items, setItems] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [pageInfo, setPageInfo] = useState({ hasNextPage: false, endCursor: null });
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isTaxonomyLoading, setIsTaxonomyLoading] = useState(true);
-
   const categoryParam = searchParams.get("category");
 
   useEffect(() => {
     let isMounted = true;
-
     async function loadTaxonomy() {
       setIsTaxonomyLoading(true);
-      setError("");
-
       try {
-        const taxonomyItems =
-          mode === "occasion" ? await fetchOccasions() : await fetchFoodTypes();
-        const nextCategories = taxonomyItems
-          .filter((item) => Number(item?.productsCount ?? 0) > 0)
-          .map(buildCategoryItem);
-
-        if (!isMounted) {
-          return;
-        }
-
+        const taxonomyItems = mode === "occasion" ? await fetchOccasions() : await fetchFoodTypes();
+        const nextCategories = taxonomyItems.filter((item) => Number(item?.productsCount ?? 0) > 0).map(buildCategoryItem);
+        if (!isMounted) return;
         setCategories(nextCategories);
-
-        const currentSelection = parseCategoryParamValue(categoryParam);
-        const resolvedSlug = resolveSelectedSlug(currentSelection, nextCategories);
-
-        if (resolvedSlug && resolvedSlug !== currentSelection) {
+        const selected = parseCategoryParamValue(categoryParam);
+        const resolvedSlug = resolveSelectedSlug(selected, nextCategories);
+        if (resolvedSlug && resolvedSlug !== selected) {
           const nextParams = new URLSearchParams(searchParams);
           nextParams.set("category", resolvedSlug);
           setSearchParams(nextParams, { replace: true });
         }
       } catch (loadError) {
-        if (isMounted) {
-          setCategories([]);
-          setError(loadError?.message || "Unable to load categories right now.");
-        }
+        if (isMounted) setError(loadError?.message || "Unable to load categories right now.");
       } finally {
-        if (isMounted) {
-          setIsTaxonomyLoading(false);
-        }
+        if (isMounted) setIsTaxonomyLoading(false);
       }
     }
-
     loadTaxonomy();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [categoryParam, mode, searchParams, setSearchParams]);
 
-  const selectedCategory = parseCategoryParamValue(categoryParam);
-  const selectedSlug = useMemo(
-    () => resolveSelectedSlug(selectedCategory, categories),
-    [categories, selectedCategory],
-  );
+  const selectedSlug = useMemo(() => resolveSelectedSlug(parseCategoryParamValue(categoryParam), categories), [categories, categoryParam]);
 
   useEffect(() => {
     let isMounted = true;
-
     async function loadItems() {
       setIsLoading(true);
       setError("");
-
       try {
         const { postCode, areaName } = resolveLocationFilters(locationValue);
-        const payload =
-          mode === "occasion"
-            ? await browseProductsByOccasion({
-                occasionSlug: selectedSlug,
-                postCode,
-                areaName,
-                search: null,
-                sortBy: mapSortToApiValue(selectedSort),
-                first: 100,
-                after: null,
-              })
-            : await browseProductsByFoodType({
-                foodTypeSlug: selectedSlug,
-                postCode,
-                areaName,
-                search: null,
-                sortBy: mapSortToApiValue(selectedSort),
-                first: 100,
-                after: null,
-              });
-
-        if (isMounted) {
-          setItems(payload.items);
-          setTotalCount(payload.totalCount);
-        }
+        const priceRange = mapPriceRange(otherFilters?.orderMinimum);
+        const variables = {
+          postCode, areaName, search: searchQuery.trim() || null,
+          sortBy: mapSortToApiValue(selectedSort),
+          minRating: mapMinimumRating(selectedRating),
+          dietaryTagSlugs: selectedDietary,
+          freeDelivery: selectedOffers.includes("Free Delivery") ? true : null,
+          deliveryFeeMin: null, deliveryFeeMax: null,
+          ...priceRange, first: PAGE_SIZE, after: null,
+        };
+        const payload = mode === "occasion"
+          ? await browseProductsByOccasion({ ...variables, occasionSlug: selectedSlug })
+          : await browseProductsByFoodType({ ...variables, foodTypeSlug: selectedSlug });
+        if (!isMounted) return;
+        setItems(payload.items);
+        setTotalCount(payload.totalCount);
+        setDietaryOptions(payload.dietaryTags || []);
       } catch (loadError) {
-        if (isMounted) {
-          setItems([]);
-          setTotalCount(0);
-          setError(loadError?.message || "Unable to load menu items right now.");
-        }
+        if (!isMounted) return;
+        setItems([]); setTotalCount(0); setPageInfo({ hasNextPage: false, endCursor: null });
+        setError(loadError?.message || "Unable to load menu items right now.");
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     }
-
     loadItems();
+    return () => { isMounted = false; };
+  }, [locationValue, mode, otherFilters?.orderMinimum, searchQuery, selectedDietary, selectedOffers, selectedRating, selectedSlug, selectedSort]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [locationValue, mode, searchQuery, selectedSlug, selectedSort]);
-
-  const primaryCategories = useMemo(() => {
-    if (categories.length <= 8) {
-      return categories;
+  const loadMore = async () => {
+    if (isLoadingMore || !pageInfo.hasNextPage || !pageInfo.endCursor) return;
+    setIsLoadingMore(true);
+    try {
+      const { postCode, areaName } = resolveLocationFilters(locationValue);
+      const priceRange = mapPriceRange(otherFilters?.orderMinimum);
+      const variables = {
+        postCode, areaName, search: searchQuery.trim() || null,
+        sortBy: mapSortToApiValue(selectedSort), minRating: mapMinimumRating(selectedRating),
+        dietaryTagSlugs: selectedDietary, freeDelivery: selectedOffers.includes("Free Delivery") ? true : null,
+        deliveryFeeMin: null, deliveryFeeMax: null, ...priceRange, first: PAGE_SIZE, after: pageInfo.endCursor,
+      };
+      const payload = mode === "occasion"
+        ? await browseProductsByOccasion({ ...variables, occasionSlug: selectedSlug })
+        : await browseProductsByFoodType({ ...variables, foodTypeSlug: selectedSlug });
+      setItems((current) => [...current, ...payload.items]);
+      setPageInfo(payload.pageInfo || { hasNextPage: false, endCursor: null });
+    } catch (loadError) {
+      setError(loadError?.message || "Unable to load more menu items right now.");
+    } finally {
+      setIsLoadingMore(false);
     }
-
-    return [...categories.slice(0, 8), { name: "More", value: "__more__" }];
-  }, [categories]);
-
-  const moreOptions = useMemo(
-    () => (categories.length > 8 ? categories.slice(8) : []),
-    [categories],
-  );
-  const hasMenuContent = items.length > 0 || totalCount > 0;
-  const isInitialLoading =
-    isTaxonomyLoading || (isLoading && !hasMenuContent && !error);
-  const isRefreshing =
-    !isInitialLoading && (isLoading || isTaxonomyLoading) && !error;
-
-  return {
-    categories: primaryCategories,
-    moreOptions,
-    items,
-    totalCount,
-    error,
-    isLoading: isInitialLoading,
-    isRefreshing,
   };
+  const primaryCategories = useMemo(() => categories.length <= 8 ? categories : [...categories.slice(0, 8), { name: "More", value: "__more__" }], [categories]);
+  const moreOptions = useMemo(() => categories.length > 8 ? categories.slice(8) : [], [categories]);
+  const hasMenuContent = items.length > 0 || totalCount > 0;
+
+  return { categories: primaryCategories, moreOptions, dietaryOptions, items, totalCount, error, loadMore, hasNextPage: pageInfo.hasNextPage, isLoadingMore, isLoading: isTaxonomyLoading || (isLoading && !hasMenuContent && !error), isRefreshing: !isTaxonomyLoading && isLoading && hasMenuContent && !error };
 }

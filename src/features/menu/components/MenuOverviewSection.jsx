@@ -38,6 +38,8 @@ const DAY_LABELS = {
   saturday: "Sat",
 };
 
+const DELIVERY_DAY_ORDER = { mo: 0, mon: 0, monday: 0, 1: 0, tu: 1, tue: 1, tuesday: 1, 2: 1, we: 2, wed: 2, wednesday: 2, 3: 2, th: 3, thu: 3, thursday: 3, 4: 3, fr: 4, fri: 4, friday: 4, 5: 4, sa: 5, sat: 5, saturday: 5, 6: 5, su: 6, sun: 6, sunday: 6, 0: 6 };
+
 function normalizeTimingEntries(vendor) {
   const rawSlots = Array.isArray(vendor?.availability?.delivery?.slots)
     ? vendor.availability.delivery.slots
@@ -54,12 +56,17 @@ function normalizeTimingEntries(vendor) {
         return null;
       }
 
-      return `${dayLabel} ${start}-${end}`;
+      return {
+        label: `${dayLabel} ${start}-${end}`,
+        order: DELIVERY_DAY_ORDER[dayKey] ?? Number.MAX_SAFE_INTEGER,
+      };
     })
     .filter(Boolean);
 
   if (slotEntries.length > 0) {
-    return [...new Set(slotEntries)];
+    return [...new Map(slotEntries.map((entry) => [entry.label, entry])).values()]
+      .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label))
+      .map((entry) => entry.label);
   }
 
   const fallbackLabel = `${vendor?.availability?.delivery?.label ?? ""}`.trim();

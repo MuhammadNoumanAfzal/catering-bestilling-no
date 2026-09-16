@@ -1,4 +1,4 @@
-export const weekdayLabels = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+export const weekdayLabels = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 export function getTodayStart() {
   const today = new Date();
@@ -28,7 +28,7 @@ export function isBeforeCurrentMonth(date) {
 export function getMonthDays(viewDate) {
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
-  const firstDayIndex = new Date(year, month, 1).getDay();
+  const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const calendarDays = [];
 
