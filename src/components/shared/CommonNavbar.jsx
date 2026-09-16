@@ -466,18 +466,18 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
             >
               <FiSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[15px] text-[#a9afba]" />
               <input
-                aria-label="Search"
+                aria-label={t("vendorPanel.searchAria")}
                 className="h-11 w-full rounded-full border border-transparent bg-[#f1f4f8] py-2 pl-11 pr-4 text-[12px] font-medium text-[#231913] outline-none transition placeholder:text-[#a9afba] focus:border-[#ebddd1] focus:bg-white focus:shadow-[0_0_0_4px_rgba(206,105,56,0.11)]"
                 onChange={(event) => setDraftSearch(event.target.value)}
                 onFocus={() => setIsDashboardSearchFocused(true)}
-                placeholder="Search orders, vendors, menus, or IDs..."
+                placeholder={t("vendorPanel.searchPlaceholder")}
                 type="search"
                 value={draftSearch}
               />
               {shouldShowDashboardSearchResults ? (
                 <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-50 overflow-hidden rounded-[18px] border border-[#e8dfd8] bg-white shadow-[0_24px_60px_rgba(45,28,16,0.14)]">
                   {isDashboardSearching ? (
-                    <p className="px-4 py-5 text-[12px] text-[#8c7f75]">Searching vendors and menus...</p>
+                    <p className="px-4 py-5 text-[12px] text-[#8c7f75]">{t("vendorPanel.searching")}</p>
                   ) : dashboardSearchResults.length ? (
                     <div className="max-h-[320px] overflow-y-auto p-2">
                       {dashboardSearchResults.map((result) => (

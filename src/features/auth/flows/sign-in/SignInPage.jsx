@@ -165,7 +165,7 @@ export default function SignInPage() {
       );
     } catch (error) {
       await showAuthErrorAlert(
-        error instanceof Error ? error.message : t("auth.signIn.errorMessage"),
+        t("auth.signIn.invalidCredentials"),
         t("auth.signIn.errorTitle"),
       );
     } finally {

@@ -39,7 +39,7 @@ export default function VendorSidebar() {
           alt={t("vendorPanel.logoAlt")}
           className="h-12 w-auto object-contain sm:h-14 lg:h-auto lg:w-32"
         />
-        <p className="hidden type-subpara mt-3 text-white/75 lg:block">Client dashboard</p>
+        <p className="hidden type-subpara mt-3 text-white/75 lg:block">{t("nav.clientDashboard")}</p>
       </div>
 
       <div className="mt-3 rounded-[22px] border border-white/15 bg-white/10 px-4 py-3 lg:hidden">

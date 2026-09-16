@@ -128,7 +128,7 @@ export default function CommonNavbarActions({
                 {isAdminStyle ? (
                   <>
                     <span className="block truncate text-[12px] font-bold text-[#1f1711]">{user?.name}</span>
-                    <span className="block truncate text-[11px] text-[#7f746d]">Customer</span>
+                    <span className="block truncate text-[11px] text-[#7f746d]">{t("nav.customer")}</span>
                   </>
                 ) : (
                   user?.name

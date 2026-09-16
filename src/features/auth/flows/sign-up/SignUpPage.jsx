@@ -27,6 +27,33 @@ const SIGNUP_STEP = {
   VERIFY: "verify",
 };
 
+const NORWAY_COUNTRY_CODE = "+47";
+
+function extractNorwegianLocalPhone(phone) {
+  const compactPhone = `${phone ?? ""}`.trim().replace(/[\s()-]/g, "");
+
+  if (compactPhone.startsWith("0047")) {
+    return compactPhone.slice(4).replace(/\D/g, "").slice(0, 8);
+  }
+
+  if (compactPhone.startsWith(NORWAY_COUNTRY_CODE)) {
+    return compactPhone
+      .slice(NORWAY_COUNTRY_CODE.length)
+      .replace(/\D/g, "")
+      .slice(0, 8);
+  }
+
+  return compactPhone.replace(/\D/g, "").slice(0, 8);
+}
+
+function normalizeNorwegianPhoneNumber(phone) {
+  return `${NORWAY_COUNTRY_CODE}${extractNorwegianLocalPhone(phone)}`;
+}
+
+function isValidNorwegianPhone(phone) {
+  return /^[2-9]\d{7}$/.test(extractNorwegianLocalPhone(phone));
+}
+
 export default function SignUpPage() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -43,7 +70,9 @@ export default function SignUpPage() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormState((current) => ({ ...current, [name]: value }));
+    const nextValue =
+      name === "phone" ? extractNorwegianLocalPhone(value) : value;
+    setFormState((current) => ({ ...current, [name]: nextValue }));
     setFormErrors((current) => ({ ...current, [name]: "" }));
 
     if (name === "email" && signupStep === SIGNUP_STEP.VERIFY) {
@@ -56,11 +85,18 @@ export default function SignUpPage() {
   const handleSendOtp = async (event) => {
     event.preventDefault();
     setFormErrors({});
+
+    if (!isValidNorwegianPhone(formState.phone)) {
+      setFormErrors({ phone: t("auth.signUp.invalidPhone") });
+      return;
+    }
+
     setIsSendingOtp(true);
 
     try {
       const result = await sendSignupOtp({
         ...formState,
+        phone: normalizeNorwegianPhoneNumber(formState.phone),
         role: AUTH_ROLE,
       });
 
@@ -108,6 +144,7 @@ export default function SignUpPage() {
         otp: otpCode,
         ...formState,
         email: normalizedEmail,
+        phone: normalizeNorwegianPhoneNumber(formState.phone),
         role: AUTH_ROLE,
       });
 
@@ -254,14 +291,18 @@ export default function SignUpPage() {
 
           <AuthInput
             autoComplete="tel"
-            inputMode="tel"
+            inputMode="numeric"
             label={t("auth.signUp.phone")}
+            maxLength={8}
             name="phone"
+            pattern="[0-9]{8}"
+            prefixText={NORWAY_COUNTRY_CODE}
             type="tel"
-            placeholder={t("auth.signUp.phonePlaceholder")}
+            placeholder="98765432"
             value={formState.phone}
             onChange={handleChange}
             errorText={formErrors.phone}
+            helperText={t("auth.signUp.phoneHelper")}
             required
           />
 

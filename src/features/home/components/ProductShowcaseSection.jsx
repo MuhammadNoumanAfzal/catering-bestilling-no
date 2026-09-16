@@ -12,6 +12,7 @@ export function ProductItem({
   discount,
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <article
@@ -38,7 +39,7 @@ export function ProductItem({
       {deliveryFee ? (
         <div className="type-subpara mt-1 flex items-center gap-1.5 text-[#666]">
           <LiaBicycleSolid className="text-[11px] text-[#888]" />
-          <span>{deliveryFee}</span>
+          <span>{deliveryFee.replace(/delivery fee/gi, t("browse.deliveryFee"))}</span>
         </div>
       ) : null}
 
@@ -55,7 +56,7 @@ export default function ProductShowcaseSection({
   title,
   products,
   emptyMessage,
-  seeAllLabel = "See all",
+  seeAllLabel,
   onSeeAllClick,
 }) {
   const { t } = useTranslation();

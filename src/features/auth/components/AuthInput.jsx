@@ -10,6 +10,9 @@ export default function AuthInput({
   value,
   onChange,
   name,
+  maxLength,
+  pattern,
+  prefixText = "",
   readOnly = false,
   className = "",
   required = false,
@@ -36,12 +39,14 @@ export default function AuthInput({
           inputMode={inputMode}
           type={resolvedType}
           name={name}
+          maxLength={maxLength}
+          pattern={pattern}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           readOnly={readOnly}
           required={required}
-          className={`type-para h-12 w-full rounded-[18px] border bg-[#fffdfa] px-4 text-[#1d1a17] outline-none transition placeholder:text-[#b4aba2] focus:bg-white focus:ring-4 ${
+          className={`type-para h-12 w-full rounded-[18px] border bg-[#fffdfa] text-[#1d1a17] ${prefixText ? "pl-14 pr-4" : "px-4"} outline-none transition placeholder:text-[#b4aba2] focus:bg-white focus:ring-4 ${
             errorText
               ? "border-[#d76a4a] focus:border-[#d76a4a] focus:ring-[#d76a4a]/10"
               : "border-[#ddd3ca] focus:border-[#c85f33] focus:ring-[#c85f33]/10"
@@ -49,6 +54,11 @@ export default function AuthInput({
             isPasswordField ? "pr-12" : ""
           } ${className}`}
         />
+        {prefixText ? (
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[14px] font-semibold text-[#6d6259]">
+            {prefixText}
+          </span>
+        ) : null}
         {isPasswordField ? (
           <button
             type="button"

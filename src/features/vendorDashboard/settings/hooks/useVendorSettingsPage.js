@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { translateSettings } from "../../components/settings/settingsI18n";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../../../auth/hooks/useAuth";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { changePassword } from "../../../auth/api";
 import {
@@ -50,6 +51,7 @@ export function useVendorSettingsPage() {
   const { t, i18n } = useTranslation();
   const st = (key, options) => translateSettings(t, i18n, key, options);
   const location = useLocation();
+  const { accessToken, setAuthSession, user } = useAuth();
   const [savedFormState, setSavedFormState] = useState(() => ({
     ...vendorSettingsInitialState,
     ...readSavedSettings(),
@@ -90,6 +92,7 @@ export function useVendorSettingsPage() {
         }
 
         writeSavedSettings(nextSavedState);
+        syncAuthenticatedUser(nextSavedState);
         setSavedFormState(nextSavedState);
         setFormState({
           ...nextSavedState,
@@ -107,6 +110,7 @@ export function useVendorSettingsPage() {
         };
 
         setSavedFormState(localState);
+        syncAuthenticatedUser(localState);
         setFormState({
           ...localState,
           ...getPasswordFields(),
@@ -136,6 +140,25 @@ export function useVendorSettingsPage() {
       (isPasswordChangeStarted && hasPasswordValues(formState))
     );
   }, [formState, isPasswordChangeStarted, savedFormState]);
+
+  const syncAuthenticatedUser = (nextState) => {
+    if (!accessToken || !user) {
+      return;
+    }
+
+    setAuthSession({
+      accessToken,
+      user: {
+        ...user,
+        firstName: nextState.firstName || user.firstName,
+        lastName: nextState.lastName || user.lastName,
+        email: nextState.primaryEmail || user.email,
+        phone: nextState.mobilePhone || user.phone,
+        avatarUrl: nextState.avatarUrl || "",
+        avatarThumbnailUrl: nextState.avatarThumbnailUrl || "",
+      },
+    });
+  };
 
   const updateField = (key, value) => {
     setFormState((current) => ({
@@ -249,6 +272,7 @@ export function useVendorSettingsPage() {
         newPassword: current.newPassword,
         confirmNewPassword: current.confirmNewPassword,
       }));
+      syncAuthenticatedUser(result.formState);
       await showSuccessToast(result.message);
     } catch (error) {
       await showAuthErrorAlert(
@@ -275,6 +299,7 @@ export function useVendorSettingsPage() {
         newPassword: current.newPassword,
         confirmNewPassword: current.confirmNewPassword,
       }));
+      syncAuthenticatedUser(result.formState);
       await showSuccessToast(result.message);
     } catch (error) {
       await showAuthErrorAlert(
