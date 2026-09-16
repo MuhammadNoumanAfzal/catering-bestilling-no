@@ -11,8 +11,27 @@ import SettingsActions from "../components/settings/SettingsActions";
 import VendorProfilePhotoSection from "../components/settings/VendorProfilePhotoSection";
 import DashboardLoadingState from "../components/DashboardLoadingState";
 import { useVendorSettingsPage } from "../settings/hooks/useVendorSettingsPage";
+import { fetchAddressBook } from "../address/api";
 
 const VENDOR_ONBOARDING_NOTICE_KEY = "vendor-dashboard-onboarding-guide-pending";
+
+function hasSavedAddress(addresses) {
+  return (addresses || []).some((address) =>
+    `${address?.addressLine1 ?? ""}`.trim(),
+  );
+}
+
+function hasCompletedVendorSetup(formState, addressBook) {
+  const hasProfilePhoto = Boolean(
+    `${formState?.avatarThumbnailUrl ?? formState?.avatarUrl ?? ""}`.trim(),
+  );
+
+  return (
+    hasProfilePhoto &&
+    hasSavedAddress(addressBook?.delivery) &&
+    hasSavedAddress(addressBook?.invoice)
+  );
+}
 
 export default function VendorSettingsPage() {
   const navigate = useNavigate();
@@ -35,14 +54,48 @@ export default function VendorSettingsPage() {
   } = useVendorSettingsPage();
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
+    let isMounted = true;
+
+    async function resolveOnboardingGuide() {
+      if (
+        typeof window === "undefined" ||
+        window.sessionStorage.getItem(VENDOR_ONBOARDING_NOTICE_KEY) !== "true"
+      ) {
+        if (isMounted) {
+          setShowOnboardingGuide(false);
+        }
+        return;
+      }
+
+      try {
+        const addressBook = await fetchAddressBook();
+
+        if (!isMounted) {
+          return;
+        }
+
+        if (hasCompletedVendorSetup(formState, addressBook)) {
+          window.sessionStorage.removeItem(VENDOR_ONBOARDING_NOTICE_KEY);
+          setShowOnboardingGuide(false);
+          return;
+        }
+      } catch {
+        // Keep the setup reminder visible when the completion state cannot be checked.
+      }
+
+      if (isMounted) {
+        setShowOnboardingGuide(true);
+      }
     }
 
-    if (window.sessionStorage.getItem(VENDOR_ONBOARDING_NOTICE_KEY) === "true") {
-      setShowOnboardingGuide(true);
+    if (!isLoading) {
+      resolveOnboardingGuide();
     }
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [formState.avatarThumbnailUrl, formState.avatarUrl, isLoading]);
 
   function handleDismissOnboardingGuide() {
     if (typeof window !== "undefined") {
@@ -71,22 +124,22 @@ export default function VendorSettingsPage() {
               </span>
               <div className="max-w-[760px]">
                 <p className="text-[12px] font-extrabold uppercase tracking-[0.16em] text-[#b96537]">
-                  New Vendor Setup
+                  {st("onboardingBadge")}
                 </p>
                 <h2 className="mt-1 text-[24px] font-extrabold tracking-[-0.03em] text-[#1e1712]">
-                  Complete your store setup
+                  {st("onboardingTitle")}
                 </h2>
                 <p className="mt-2 text-[14px] leading-7 text-[#6d5f56]">
-                  Complete your information on this <span className="font-bold text-[#2a1f19]">Settings</span> page, including your profile photo, business details, and other store information. Then go to the <span className="font-bold text-[#2a1f19]">Addresses</span> page to add your delivery and invoice address details.
+                  {st("onboardingDescription")}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#edd7c8] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#614f43]">
                     <Sparkles size={13} />
-                    Add photo and store details
+                    {st("onboardingPhotoStep")}
                   </span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#edd7c8] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#614f43]">
                     <MapPin size={13} />
-                    Fill address information
+                    {st("onboardingAddressStep")}
                   </span>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -95,7 +148,7 @@ export default function VendorSettingsPage() {
                     onClick={() => navigate("/vendor-dashboard/address")}
                     type="button"
                   >
-                    Go to Addresses
+                    {st("onboardingAddressAction")}
                     <ArrowRight size={15} />
                   </button>
                   <button
@@ -103,7 +156,7 @@ export default function VendorSettingsPage() {
                     onClick={handleDismissOnboardingGuide}
                     type="button"
                   >
-                    I will do this later
+                    {st("onboardingLaterAction")}
                   </button>
                 </div>
               </div>

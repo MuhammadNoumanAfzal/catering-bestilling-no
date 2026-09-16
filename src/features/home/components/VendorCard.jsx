@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FiStar } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_VENDOR_IMAGE = "/home/hero1.webp";
 
@@ -16,6 +17,7 @@ export default function VendorCard({
   publicActiveMenuCount,
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [displayImage, setDisplayImage] = useState(image || DEFAULT_VENDOR_IMAGE);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function VendorCard({
       {deliveryFee ? (
         <div className="type-subpara mt-1 flex items-center gap-1.5 text-[#666]">
           <LiaBicycleSolid className="text-[12px] text-[#888]" />
-          <span>{deliveryFee}</span>
+          <span>{deliveryFee.replace(/delivery fee/gi, t("browse.deliveryFee"))}</span>
         </div>
       ) : null}
 
@@ -64,11 +66,11 @@ export default function VendorCard({
 
       {hasPublicActiveMenus ? (
         <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#edf8ef] px-2 py-1 text-[#2c8b52]">
-          {publicActiveMenuCount} Menus Available
+          {t("browse.menusAvailable", { count: publicActiveMenuCount })}
         </div>
       ) : (
         <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#fff6e8] px-2 py-1 text-[#b36a1e]">
-          No Active Menus Currently
+          {t("browse.noActiveMenus")}
         </div>
       )}
     </article>

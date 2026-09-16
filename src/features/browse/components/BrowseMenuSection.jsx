@@ -22,7 +22,7 @@ export default function BrowseMenuSection({
   items,
   totalItems,
   activeCategoryLabel,
-  seeAllLabel = "See all",
+  seeAllLabel,
   onSeeAllClick,
 }) {
   const { t } = useTranslation();

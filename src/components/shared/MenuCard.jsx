@@ -1,6 +1,7 @@
 import { FiStar } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function MenuCard({
   image,
@@ -11,6 +12,7 @@ export default function MenuCard({
   price,
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <article
@@ -41,7 +43,7 @@ export default function MenuCard({
       </div>
 
       <div className="type-subpara mt-2 inline-flex items-center rounded-full bg-[#fff1eb] px-2.5 py-1 text-[#ff6a3d]">
-        Available Now
+        {t("browse.availableNow")}
       </div>
     </article>
   );

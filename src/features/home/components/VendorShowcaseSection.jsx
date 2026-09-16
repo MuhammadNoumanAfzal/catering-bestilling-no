@@ -5,7 +5,7 @@ export default function VendorShowcaseSection({
   title,
   vendors,
   emptyMessage,
-  seeAllLabel = "See all",
+  seeAllLabel,
   onSeeAllClick,
   limit = 3,
 }) {
