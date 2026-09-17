@@ -58,6 +58,7 @@ export const GET_CHECKOUT_PREVIEW_QUERY = `
         subtotal
         taxRate
         taxAmount
+        pricesIncludeVat
         deliveryFee
         addOnsTotal
         tipAmount

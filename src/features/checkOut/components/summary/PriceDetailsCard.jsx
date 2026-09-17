@@ -6,6 +6,7 @@ export default function PriceDetailsCard({
   subtotal,
   deliveryFee,
   salesTax,
+  pricesIncludeVat = true,
   addOnsTotal,
   tipValue,
   discountAmount,
@@ -21,7 +22,7 @@ export default function PriceDetailsCard({
 
       <div className="mt-2 space-y-1.5 text-[12px] text-[#2c2c2c]">
         <div className="flex items-center justify-between gap-3">
-          <span>{t("checkout.subtotal")}</span>
+          <span>{pricesIncludeVat ? t("checkout.subtotalVatIncluded", { defaultValue: "Subtotal (VAT included)" }) : t("checkout.subtotal")}</span>
           <span className="font-semibold">NOK {formatCurrency(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
@@ -35,7 +36,7 @@ export default function PriceDetailsCard({
           </div>
         ) : null}
         <div className="flex items-center justify-between gap-3">
-          <span>{t("checkout.vat")}</span>
+          <span>{t("checkout.vatIncluded", { defaultValue: "VAT (included)" })}</span>
           <span className="font-semibold">NOK {formatCurrency(salesTax)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">

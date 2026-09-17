@@ -4,10 +4,8 @@ import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { FILTER_DEFAULTS } from "../../../components/shared/browseFilters/browseFilterConfig";
 import { getBrowseFallbackIcon } from "../data/browseData";
 import {
-  browseProductsByFoodType,
-  browseProductsByOccasion,
-  fetchFoodTypes,
-  fetchOccasions,
+  browseMenus,
+  fetchBrowseFilterOptions,
 } from "../api/browseTaxonomyService";
 import { parseCategoryParamValue } from "../utils/categoryFilters";
 
@@ -31,7 +29,7 @@ function resolveLocationFilters(value) {
 }
 
 function mapSortToApiValue(value) {
-  return { Recommended: "recommended", "Most Popular": "most-popular", "Highest Rated": "highest-rated", "Price: Low to High": "price-low-high", "Price: High to Low": "price-high-low", Newest: "newest" }[value] || "recommended";
+  return { Recommended: "RECOMMENDED", "Most Popular": "MOST_POPULAR", "Highest Rated": "HIGHEST_RATED", "Price: Low to High": "PRICE_LOW_TO_HIGH", "Price: High to Low": "PRICE_HIGH_TO_LOW", Newest: "NEWEST" }[value] || "RECOMMENDED";
 }
 
 function mapMinimumRating(value) {
@@ -39,14 +37,7 @@ function mapMinimumRating(value) {
   return Number.isFinite(rating) ? rating : null;
 }
 
-function mapPriceRange(value) {
-  switch (value) {
-    case "Under NOK 250": return { priceMin: 0, priceMax: 250 };
-    case "NOK 250 - NOK 500": return { priceMin: 250, priceMax: 500 };
-    case "NOK 500+": return { priceMin: 500, priceMax: null };
-    default: return { priceMin: null, priceMax: null };
-  }
-}
+function mapPriceRange(value) { return { "Under NOK 500": "UNDER_500", "NOK 500 - NOK 1000": "BETWEEN_500_AND_1000", "NOK 1000 - NOK 2000": "BETWEEN_1000_AND_2000", "NOK 2000 - NOK 5000": "BETWEEN_2000_AND_5000", "NOK 5000+": "OVER_5000" }[value] || null; }
 
 function resolveSelectedSlug(selection, categories) {
   const rawValue = Array.isArray(selection) ? selection[0] : selection;
@@ -75,10 +66,14 @@ export function useBrowseCatalogItems(mode = "food-type") {
     async function loadTaxonomy() {
       setIsTaxonomyLoading(true);
       try {
-        const taxonomyItems = mode === "occasion" ? await fetchOccasions() : await fetchFoodTypes();
-        const nextCategories = taxonomyItems.filter((item) => Number(item?.productsCount ?? 0) > 0).map(buildCategoryItem);
+        const filterOptions = await fetchBrowseFilterOptions();
+        const taxonomyItems = mode === "occasion"
+          ? filterOptions.occasions
+          : filterOptions.foodTypes;
+        const nextCategories = taxonomyItems.map(buildCategoryItem);
         if (!isMounted) return;
         setCategories(nextCategories);
+        setDietaryOptions(filterOptions.dietaryOptions);
         const selected = parseCategoryParamValue(categoryParam);
         const resolvedSlug = resolveSelectedSlug(selected, nextCategories);
         if (resolvedSlug && resolvedSlug !== selected) {
@@ -104,24 +99,21 @@ export function useBrowseCatalogItems(mode = "food-type") {
       setIsLoading(true);
       setError("");
       try {
-        const { postCode, areaName } = resolveLocationFilters(locationValue);
-        const priceRange = mapPriceRange(otherFilters?.orderMinimum);
         const variables = {
-          postCode, areaName, search: searchQuery.trim() || null,
-          sortBy: mapSortToApiValue(selectedSort),
+          foodTypeSlug: mode === "food-type" ? selectedSlug : null,
+          occasionSlug: mode === "occasion" ? selectedSlug : null,
+          sort: mapSortToApiValue(selectedSort),
+          priceRange: mapPriceRange(otherFilters?.orderMinimum),
           minRating: mapMinimumRating(selectedRating),
-          dietaryTagSlugs: selectedDietary,
-          freeDelivery: selectedOffers.includes("Free Delivery") ? true : null,
-          deliveryFeeMin: null, deliveryFeeMax: null,
-          ...priceRange, first: PAGE_SIZE, after: null,
+          dietaryOptionIds: selectedDietary.map((value) => dietaryOptions.find((option) => option.id === value || option.slug === value || option.name === value)?.id || value),
+          deliveryFilter: selectedOffers.includes("Free Delivery") ? "FREE_DELIVERY" : null,
+          first: PAGE_SIZE, after: null,
         };
-        const payload = mode === "occasion"
-          ? await browseProductsByOccasion({ ...variables, occasionSlug: selectedSlug })
-          : await browseProductsByFoodType({ ...variables, foodTypeSlug: selectedSlug });
+        const payload = await browseMenus(variables, mode);
         if (!isMounted) return;
         setItems(payload.items);
         setTotalCount(payload.totalCount);
-        setDietaryOptions(payload.dietaryTags || []);
+        setPageInfo(payload.pageInfo || { hasNextPage: false, endCursor: null });
       } catch (loadError) {
         if (!isMounted) return;
         setItems([]); setTotalCount(0); setPageInfo({ hasNextPage: false, endCursor: null });
@@ -132,23 +124,24 @@ export function useBrowseCatalogItems(mode = "food-type") {
     }
     loadItems();
     return () => { isMounted = false; };
-  }, [locationValue, mode, otherFilters?.orderMinimum, searchQuery, selectedDietary, selectedOffers, selectedRating, selectedSlug, selectedSort]);
+  }, [dietaryOptions, locationValue, mode, otherFilters?.orderMinimum, searchQuery, selectedDietary, selectedOffers, selectedRating, selectedSlug, selectedSort]);
 
   const loadMore = async () => {
     if (isLoadingMore || !pageInfo.hasNextPage || !pageInfo.endCursor) return;
     setIsLoadingMore(true);
     try {
-      const { postCode, areaName } = resolveLocationFilters(locationValue);
-      const priceRange = mapPriceRange(otherFilters?.orderMinimum);
       const variables = {
-        postCode, areaName, search: searchQuery.trim() || null,
-        sortBy: mapSortToApiValue(selectedSort), minRating: mapMinimumRating(selectedRating),
-        dietaryTagSlugs: selectedDietary, freeDelivery: selectedOffers.includes("Free Delivery") ? true : null,
-        deliveryFeeMin: null, deliveryFeeMax: null, ...priceRange, first: PAGE_SIZE, after: pageInfo.endCursor,
+        foodTypeSlug: mode === "food-type" ? selectedSlug : null,
+        occasionSlug: mode === "occasion" ? selectedSlug : null,
+        sort: mapSortToApiValue(selectedSort),
+        priceRange: mapPriceRange(otherFilters?.orderMinimum),
+        minRating: mapMinimumRating(selectedRating),
+        dietaryOptionIds: selectedDietary.map((value) => dietaryOptions.find((option) => option.id === value || option.slug === value || option.name === value)?.id || value),
+        deliveryFilter: selectedOffers.includes("Free Delivery") ? "FREE_DELIVERY" : null,
+        first: PAGE_SIZE,
+        after: pageInfo.endCursor,
       };
-      const payload = mode === "occasion"
-        ? await browseProductsByOccasion({ ...variables, occasionSlug: selectedSlug })
-        : await browseProductsByFoodType({ ...variables, foodTypeSlug: selectedSlug });
+      const payload = await browseMenus(variables, mode);
       setItems((current) => [...current, ...payload.items]);
       setPageInfo(payload.pageInfo || { hasNextPage: false, endCursor: null });
     } catch (loadError) {

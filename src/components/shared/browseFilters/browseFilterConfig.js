@@ -61,9 +61,11 @@ export const PRICING_OPTION_KEYS = {
 
 export const ORDER_MINIMUM_OPTION_KEYS = {
   "Any price": "browse.filterOptions.orderMinimum.anyPrice",
-  "Under NOK 250": "browse.filterOptions.orderMinimum.under250",
-  "NOK 250 - NOK 500": "browse.filterOptions.orderMinimum.range250To500",
-  "NOK 500+": "browse.filterOptions.orderMinimum.over500",
+  "Under NOK 500": "browse.filterOptions.orderMinimum.under500",
+  "NOK 500 - NOK 1000": "browse.filterOptions.orderMinimum.range500To1000",
+  "NOK 1000 - NOK 2000": "browse.filterOptions.orderMinimum.range1000To2000",
+  "NOK 2000 - NOK 5000": "browse.filterOptions.orderMinimum.range2000To5000",
+  "NOK 5000+": "browse.filterOptions.orderMinimum.over5000",
 };
 
 export const DISTANCE_OPTION_KEYS = {

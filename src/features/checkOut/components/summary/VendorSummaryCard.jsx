@@ -25,6 +25,7 @@ export default function VendorSummaryCard({
     subtotal,
     deliveryFee,
     salesTax,
+    pricesIncludeVat,
     addOnsTotal,
     tipValue,
     discountAmount,
@@ -83,6 +84,7 @@ export default function VendorSummaryCard({
           subtotal={subtotal}
           deliveryFee={deliveryFee}
           salesTax={salesTax}
+          pricesIncludeVat={pricesIncludeVat}
           addOnsTotal={addOnsTotal}
           tipValue={tipValue}
           discountAmount={discountAmount}
