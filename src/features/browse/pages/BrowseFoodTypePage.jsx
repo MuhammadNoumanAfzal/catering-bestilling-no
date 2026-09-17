@@ -10,6 +10,9 @@ export default function BrowseFoodTypePage() {
     error,
     isLoading,
     isRefreshing,
+    hasNextPage,
+    isLoadingMore,
+    loadMore,
   } =
     useBrowseCatalogItems("food-type");
 
@@ -18,6 +21,9 @@ export default function BrowseFoodTypePage() {
       error={error}
       isLoading={isLoading}
       isRefreshing={isRefreshing}
+      hasNextPage={hasNextPage}
+      isLoadingMore={isLoadingMore}
+      loadMore={loadMore}
       categories={categories}
       menuItems={items}
       moreOptions={moreOptions}
