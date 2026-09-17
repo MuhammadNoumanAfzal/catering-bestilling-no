@@ -7,6 +7,7 @@ import BrowseFilterBar from "../../../components/shared/BrowseFilterBar";
 
 export default function FoodBrowsePreviewSection({
   categories = [],
+  dietaryOptions = [],
   moreOptions = [],
   selectedCategory,
   onCategoryChange,
@@ -35,6 +36,7 @@ export default function FoodBrowsePreviewSection({
         />
 
         <BrowseFilterBar
+          dietaryOptions={dietaryOptions}
           onControlInteract={() => setShowMorePanel(false)}
           onApply={() => {
             setShowMorePanel(false);

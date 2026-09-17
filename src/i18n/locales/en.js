@@ -1494,8 +1494,8 @@ const en = {
       sort: "Sort by",
       rating: "Ratings",
       dietary: "Dietary options",
-      offer: "Offer",
-      pricing: "Pricing",
+      offer: "Delivery",
+      pricing: "Price",
       other: "Other Filters",
     },
     filterOptions: {

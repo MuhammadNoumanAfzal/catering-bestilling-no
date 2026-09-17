@@ -21,7 +21,7 @@ export default function FilterDropdown({
             : "left-6"
         } sm:left-1/2 sm:right-auto sm:-translate-x-1/2`}
       />
-      <div className="max-h-[min(18rem,calc(100vh-14rem))] space-y-1 overflow-y-auto pr-1">
+      <div className="hide-scrollbar max-h-[min(18rem,calc(100vh-14rem))] space-y-1 overflow-y-auto">
         {children}
       </div>
       <div className="mt-2 flex justify-end border-t border-[#f1ece6] pt-2">

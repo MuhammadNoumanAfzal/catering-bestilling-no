@@ -70,6 +70,7 @@ export default function BrowseCatalogView({
   loadMore = () => {},
   menuItems,
   disableLocationFiltering = false,
+  dietaryOptions = [],
   moreOptions,
   totalItems,
 }) {
@@ -234,6 +235,7 @@ export default function BrowseCatalogView({
           onCategoryChange={handleCategoryChange}
         />
         <BrowseFilterBar
+          dietaryOptions={dietaryOptions}
           onApply={() => setCurrentPage(1)}
           resultsAnchorId="browse-results"
         />

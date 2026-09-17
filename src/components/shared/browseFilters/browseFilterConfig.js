@@ -11,15 +11,15 @@ export const FILTER_LABELS = {
   sort: "Sort by",
   rating: "Ratings",
   dietary: "Dietary options",
-  offer: "Offer",
-  pricing: "Pricing",
+  offer: "Delivery",
+  pricing: "Price",
   other: "Other Filters",
 };
 
 export const FILTER_DEFAULTS = {
   sort: "Sort by",
   rating: "Ratings",
-  pricing: "Pricing",
+  pricing: "Any price",
   orderMinimum: "Any price",
   distance: "Any distance",
 };

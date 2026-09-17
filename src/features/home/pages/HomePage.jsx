@@ -8,6 +8,7 @@ import { getBrowseFallbackIcon } from "../../browse/data/browseData";
 import {
   browseProductsByFoodType,
   fetchFoodTypes,
+  fetchBrowseFilterOptions,
 } from "../../browse/api/browseTaxonomyService";
 import {
   FoodBrowsePreviewSection,
@@ -104,6 +105,7 @@ export default function HomePage() {
   const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [foodTypeCategories, setFoodTypeCategories] = useState([]);
+  const [dietaryOptions, setDietaryOptions] = useState([]);
   const [categoryBrowseProducts, setCategoryBrowseProducts] = useState([]);
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
@@ -146,11 +148,16 @@ export default function HomePage() {
 
     async function loadFoodTypes() {
       try {
-        const items = await fetchFoodTypes();
+        const [items, filterOptions] = await Promise.all([
+          fetchFoodTypes(),
+          fetchBrowseFilterOptions(),
+        ]);
 
         if (!isMounted) {
           return;
         }
+
+        setDietaryOptions(filterOptions.dietaryOptions || []);
 
         setFoodTypeCategories(
           items
@@ -435,6 +442,7 @@ export default function HomePage() {
       />
       <FoodBrowsePreviewSection
         categories={previewCategories}
+        dietaryOptions={dietaryOptions}
         moreOptions={previewMoreOptions}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
