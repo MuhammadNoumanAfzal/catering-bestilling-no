@@ -1,5 +1,6 @@
 import { LuUtensilsCrossed } from "react-icons/lu";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import { promptSignInRequired, showAuthErrorAlert } from "../../../utils/alerts";
 import {
@@ -61,6 +62,7 @@ export default function VendorOrderSidebar({
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
+  const { t } = useTranslation();
   const items = sortSummaryItems(orderSummary.items).map((item) => ({
     ...item,
     price: getItemPrice(item, orderSummary.personCount),
@@ -178,7 +180,7 @@ export default function VendorOrderSidebar({
               ) : null}
 
               <div className="mt-2 flex items-center justify-between gap-3">
-                <span>VAT</span>
+                <span>{t("checkout.vatIncluded", { defaultValue: "VAT (included)" })}</span>
                 <span className="font-semibold text-[#76706a]">
                   NOK {formatCurrency(salesTax)}
                 </span>

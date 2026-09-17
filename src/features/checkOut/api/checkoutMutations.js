@@ -40,6 +40,7 @@ export const CREATE_ORDER_MUTATION = `
         pricing {
           subtotal
           taxAmount
+          pricesIncludeVat
           deliveryFee
           grandTotal
           amountPaid

@@ -157,9 +157,11 @@ export const pricingOptions = [
 
 export const orderMinimumOptions = [
   "Any price",
-  "Under NOK 250",
-  "NOK 250 - NOK 500",
-  "NOK 500+",
+  "Under NOK 500",
+  "NOK 500 - NOK 1000",
+  "NOK 1000 - NOK 2000",
+  "NOK 2000 - NOK 5000",
+  "NOK 5000+",
 ];
 
 export const distanceOptions = [

@@ -164,6 +164,7 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
     pricing: {
       subtotal: invoice.pricing?.subtotal ?? null,
       taxAmount: invoice.pricing?.taxAmount ?? null,
+      pricesIncludeVat: invoice.pricing?.pricesIncludeVat ?? true,
       deliveryFee: invoice.pricing?.deliveryFee ?? null,
       grandTotal: invoice.pricing?.grandTotal ?? null,
       amountPaid: invoice.pricing?.amountPaid ?? null,

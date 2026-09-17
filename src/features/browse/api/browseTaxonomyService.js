@@ -579,3 +579,82 @@ export async function browseProductsByOccasion(variables) {
   payload.items = await hydrateRatingsForItems(payload.items);
   return payload;
 }
+
+const BROWSE_FILTER_OPTIONS_QUERY = `
+  query BrowseFilterOptions {
+    browseFilterOptions {
+      foodTypes { id name slug iconUrl }
+      occasions { id name slug iconUrl }
+      dietaryOptions { id name slug iconUrl }
+    }
+  }
+`;
+
+const BROWSE_MENUS_QUERY = `
+  query BrowseMenus($foodTypeSlug: String, $occasionSlug: String, $sort: BrowseMenuSort, $priceRange: PriceRange, $minRating: Float, $dietaryOptionIds: [ID!], $deliveryFilter: DeliveryFilter, $first: Int, $after: String) {
+    browseMenus(foodTypeSlug: $foodTypeSlug, occasionSlug: $occasionSlug, sort: $sort, priceRange: $priceRange, minRating: $minRating, dietaryOptionIds: $dietaryOptionIds, deliveryFilter: $deliveryFilter, first: $first, after: $after) {
+      edges { cursor node {
+        id slug title description imageUrl priceFrom currency publishedAt
+        vendor { id slug name logoUrl city averageRating reviewCount completedOrdersCount }
+        foodTypes { id name slug }
+        occasions { id name slug }
+        dietaryOptions { id name slug iconUrl }
+        delivery { fee isFree available }
+      } }
+      pageInfo { hasNextPage endCursor }
+      totalCount
+    }
+  }
+`;
+
+export async function fetchBrowseFilterOptions() {
+  const data = await graphqlRequest({ query: BROWSE_FILTER_OPTIONS_QUERY });
+  const options = data?.browseFilterOptions || {};
+  return {
+    foodTypes: Array.isArray(options.foodTypes) ? options.foodTypes.map((item) => ({ ...item, iconUrl: resolveIconUrl(item?.iconUrl) })) : [],
+    occasions: Array.isArray(options.occasions) ? options.occasions.map((item) => ({ ...item, iconUrl: resolveIconUrl(item?.iconUrl) })) : [],
+    dietaryOptions: Array.isArray(options.dietaryOptions) ? options.dietaryOptions.map((item) => ({ ...item, iconUrl: resolveIconUrl(item?.iconUrl) })) : [],
+  };
+}
+
+function mapBrowseMenuNode(node, mode) {
+  const vendor = node?.vendor || {};
+  const delivery = node?.delivery || {};
+  const price = Number(node?.priceFrom || 0);
+  const dietaryTags = (node?.dietaryOptions || []).map((item) => item?.slug || item?.name).filter(Boolean);
+  const categories = mode === "occasion" ? node?.occasions : node?.foodTypes;
+
+  return {
+    id: node?.id || "",
+    slug: node?.slug || "",
+    title: node?.title || "Menu Item",
+    name: node?.title || "Menu Item",
+    description: node?.description || "",
+    vendor: vendor?.name || "Catering partner",
+    vendorName: vendor?.name || "Catering partner",
+    vendorSlug: resolvePublicVendorSlug(vendor),
+    vendorData: { id: vendor?.id || "", slug: resolvePublicVendorSlug(vendor), name: vendor?.name || "Catering partner", rating: formatRating(vendor?.averageRating), reviewCount: Number(vendor?.reviewCount || 0), logo: vendor?.logoUrl || "", city: vendor?.city || "", addressLine: vendor?.city || "", deliveryFee: formatDeliveryFee(delivery?.fee) },
+    image: node?.imageUrl || vendor?.logoUrl || "/home/hero1.webp",
+    rating: formatRating(vendor?.averageRating),
+    price: price > 0 ? `NOK ${price.toFixed(2)}` : "",
+    discount: "",
+    categoryTags: (categories || []).map((item) => item?.slug).filter(Boolean),
+    dietaryTags,
+    offerTags: delivery?.isFree ? ["Free Delivery"] : [],
+    minimumOrderValue: price,
+    popularityScore: Number(vendor?.completedOrdersCount || 0),
+    minimumGuests: 0,
+  };
+}
+
+export async function browseMenus(variables, mode) {
+  const data = await graphqlRequest({ query: BROWSE_MENUS_QUERY, variables });
+  const connection = data?.browseMenus || {};
+  const payload = {
+    totalCount: Number(connection?.totalCount || 0),
+    items: (connection?.edges || []).map((edge) => mapBrowseMenuNode(edge?.node, mode)).filter((item) => item.id),
+    pageInfo: { hasNextPage: Boolean(connection?.pageInfo?.hasNextPage), endCursor: connection?.pageInfo?.endCursor || null },
+  };
+  payload.items = await hydrateRatingsForItems(payload.items);
+  return payload;
+}
