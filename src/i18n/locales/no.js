@@ -1548,8 +1548,8 @@ const no = {
       sort: "Sorter etter",
       rating: "Vurderinger",
       dietary: "Kostholdsvalg",
-      offer: "Tilbud",
-      pricing: "Prising",
+      offer: "Levering",
+      pricing: "Pris",
       other: "Andre filtre",
     },
     filterOptions: {

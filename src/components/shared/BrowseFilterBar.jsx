@@ -45,12 +45,13 @@ export default function BrowseFilterBar({
     setSelectedSort,
   } = useBrowseFilters();
   const styles = FILTER_BAR_VARIANTS[variant] ?? FILTER_BAR_VARIANTS.default;
-  const resolvedDietaryOptions = apiDietaryOptions.length ? apiDietaryOptions : dietaryOptions;
+  const resolvedDietaryOptions = apiDietaryOptions;
   const dietaryLabelBySlug = useMemo(() => new Map(resolvedDietaryOptions.map((option) => [option?.slug || option?.value || option, option?.name || option])), [resolvedDietaryOptions]);
   const filterStateKey = JSON.stringify({
     otherFilters,
     selectedDietary,
     selectedOffers,
+    dietaryLabelBySlug,
     selectedPricing,
     selectedRating,
     selectedSort,
@@ -92,7 +93,7 @@ export default function BrowseFilterBar({
     selectedDietary.forEach((option) => {
       chips.push({
         id: `dietary-${option}`,
-        label: translateBrowseOptionLabel(t, option),
+        label: dietaryLabelBySlug.get(option) ?? translateBrowseOptionLabel(t, option),
         onRemove: () =>
           setSelectedDietary((current) => current.filter((item) => item !== option)),
       });
@@ -101,7 +102,7 @@ export default function BrowseFilterBar({
     selectedOffers.forEach((option) => {
       chips.push({
         id: `offer-${option}`,
-        label: translateBrowseOptionLabel(t, option),
+        label: dietaryLabelBySlug.get(option) ?? translateBrowseOptionLabel(t, option),
         onRemove: () =>
           setSelectedOffers((current) => current.filter((item) => item !== option)),
       });

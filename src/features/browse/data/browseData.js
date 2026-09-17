@@ -62,9 +62,8 @@ export const browseFilterChips = [
   { key: "sort", label: "Sort by" },
   { key: "rating", label: "Ratings", icon: "star" },
   { key: "dietary", label: "Dietary options" },
-  { key: "offer", label: "Offer" },
-  { key: "pricing", label: "Pricing" },
-  { key: "other", label: "Other Filters" },
+  { key: "offer", label: "Delivery" },
+  { key: "pricing", label: "Price" },
 ];
 
 export const moreFoodTypeOptions = [
@@ -127,32 +126,38 @@ export const moreOccasionOptions = [
 
 export const sortByOptions = [
   "Recommended",
-  "Most Popular",
   "Highest Rated",
+  "Most Popular",
   "Price: Low to High",
   "Price: High to Low",
   "Newest",
 ];
 
 export const ratingOptions = [
-  "5 or more",
-  "4 or more",
-  "3 or more",
-  "2 or more",
+  "4.5+",
+  "4.0+",
+  "3.0+",
+  "2.0+",
+  "1.0+",
 ];
 
 export const dietaryOptions = ["Vegetarian", "Vegan", "Halal", "Gluten-Free"];
 
 export const offerOptions = [
+  "Any Delivery",
   "Free Delivery",
-  "Accepts discount code",
-  "Have a discount",
+  "Delivery Fee: 0-150 NOK",
+  "Delivery Fee: 150-300 NOK",
+  "Delivery Fee: 300+ NOK",
 ];
 
 export const pricingOptions = [
-  "Budget-friendly",
-  "Standard",
-  "Premium",
+  "Any price",
+  "Under NOK 500",
+  "NOK 500 - NOK 1000",
+  "NOK 1000 - NOK 2000",
+  "NOK 2000 - NOK 5000",
+  "NOK 5000+",
 ];
 
 export const orderMinimumOptions = [

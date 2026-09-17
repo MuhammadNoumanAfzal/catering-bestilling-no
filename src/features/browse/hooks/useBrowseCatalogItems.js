@@ -39,6 +39,15 @@ function mapMinimumRating(value) {
 
 function mapPriceRange(value) { return { "Under NOK 500": "UNDER_500", "NOK 500 - NOK 1000": "BETWEEN_500_AND_1000", "NOK 1000 - NOK 2000": "BETWEEN_1000_AND_2000", "NOK 2000 - NOK 5000": "BETWEEN_2000_AND_5000", "NOK 5000+": "OVER_5000" }[value] || null; }
 
+function mapDeliveryFilter(value) {
+  return {
+    "Free Delivery": "FREE_DELIVERY",
+    "Delivery Fee: 0-150 NOK": "FEE_0_TO_150",
+    "Delivery Fee: 150-300 NOK": "FEE_150_TO_300",
+    "Delivery Fee: 300+ NOK": "FEE_300_PLUS",
+  }[value] || null;
+}
+
 function resolveSelectedSlug(selection, categories) {
   const rawValue = Array.isArray(selection) ? selection[0] : selection;
   const normalizedValue = `${rawValue ?? ""}`.trim();
@@ -49,7 +58,7 @@ function resolveSelectedSlug(selection, categories) {
 
 export function useBrowseCatalogItems(mode = "food-type") {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { locationValue, searchQuery, selectedSort, selectedRating, selectedDietary, selectedOffers, otherFilters } = useBrowseFilters();
+  const { locationValue, searchQuery, selectedSort, selectedRating, selectedDietary, selectedOffers, selectedPricing } = useBrowseFilters();
   const [categories, setCategories] = useState([]);
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [items, setItems] = useState([]);
@@ -103,10 +112,10 @@ export function useBrowseCatalogItems(mode = "food-type") {
           foodTypeSlug: mode === "food-type" ? selectedSlug : null,
           occasionSlug: mode === "occasion" ? selectedSlug : null,
           sort: mapSortToApiValue(selectedSort),
-          priceRange: mapPriceRange(otherFilters?.orderMinimum),
+          priceRange: mapPriceRange(selectedPricing),
           minRating: mapMinimumRating(selectedRating),
           dietaryOptionIds: selectedDietary.map((value) => dietaryOptions.find((option) => option.id === value || option.slug === value || option.name === value)?.id || value),
-          deliveryFilter: selectedOffers.includes("Free Delivery") ? "FREE_DELIVERY" : null,
+          deliveryFilter: mapDeliveryFilter(selectedOffers[0]),
           first: PAGE_SIZE, after: null,
         };
         const payload = await browseMenus(variables, mode);
@@ -124,7 +133,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
     }
     loadItems();
     return () => { isMounted = false; };
-  }, [dietaryOptions, locationValue, mode, otherFilters?.orderMinimum, searchQuery, selectedDietary, selectedOffers, selectedRating, selectedSlug, selectedSort]);
+  }, [dietaryOptions, locationValue, mode, searchQuery, selectedDietary, selectedOffers, selectedPricing, selectedRating, selectedSlug, selectedSort]);
 
   const loadMore = async () => {
     if (isLoadingMore || !pageInfo.hasNextPage || !pageInfo.endCursor) return;
@@ -134,10 +143,10 @@ export function useBrowseCatalogItems(mode = "food-type") {
         foodTypeSlug: mode === "food-type" ? selectedSlug : null,
         occasionSlug: mode === "occasion" ? selectedSlug : null,
         sort: mapSortToApiValue(selectedSort),
-        priceRange: mapPriceRange(otherFilters?.orderMinimum),
+        priceRange: mapPriceRange(selectedPricing),
         minRating: mapMinimumRating(selectedRating),
         dietaryOptionIds: selectedDietary.map((value) => dietaryOptions.find((option) => option.id === value || option.slug === value || option.name === value)?.id || value),
-        deliveryFilter: selectedOffers.includes("Free Delivery") ? "FREE_DELIVERY" : null,
+        deliveryFilter: mapDeliveryFilter(selectedOffers[0]),
         first: PAGE_SIZE,
         after: pageInfo.endCursor,
       };

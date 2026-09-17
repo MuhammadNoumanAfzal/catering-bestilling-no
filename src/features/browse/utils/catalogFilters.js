@@ -41,20 +41,37 @@ export function matchesDietaryFilter(item, selectedDietary) {
 }
 
 export function matchesOfferFilter(item, selectedOffers) {
-  if (!selectedOffers || selectedOffers.length === 0) {
+  const selectedDelivery = selectedOffers?.[0];
+  if (!selectedDelivery || selectedDelivery === "Any Delivery") {
     return true;
   }
 
-  const offerTags = item.offerTags ?? [];
-  return selectedOffers.every((option) => offerTags.includes(option));
+  if (selectedDelivery === "Free Delivery") {
+    return (item.offerTags ?? []).includes("Free Delivery");
+  }
+
+  const deliveryFee = extractFirstNumber(item?.vendorData?.deliveryFee);
+  if (selectedDelivery === "Delivery Fee: 0-150 NOK") return deliveryFee >= 0 && deliveryFee <= 150;
+  if (selectedDelivery === "Delivery Fee: 150-300 NOK") return deliveryFee >= 150 && deliveryFee <= 300;
+  if (selectedDelivery === "Delivery Fee: 300+ NOK") return deliveryFee >= 300;
+  return true;
 }
 
 export function matchesPricingFilter(item, selectedPricing) {
-  if (!selectedPricing || selectedPricing === FILTER_DEFAULTS.pricing) {
+  if (!selectedPricing || selectedPricing === FILTER_DEFAULTS.pricing || selectedPricing === "Any price") {
     return true;
   }
 
-  return item.pricingTier === selectedPricing;
+  const price = extractPriceValue(item.price);
+  const ranges = {
+    "Under NOK 500": price < 500,
+    "NOK 500 - NOK 1000": price >= 500 && price <= 1000,
+    "NOK 1000 - NOK 2000": price >= 1000 && price <= 2000,
+    "NOK 2000 - NOK 5000": price >= 2000 && price <= 5000,
+    "NOK 5000+": price >= 5000,
+  };
+
+  return ranges[selectedPricing] ?? true;
 }
 
 export function matchesOtherFilters(item, otherFilters) {

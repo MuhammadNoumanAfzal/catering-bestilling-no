@@ -4,6 +4,7 @@ import { useBrowseCatalogItems } from "../hooks/useBrowseCatalogItems";
 export default function BrowseOccasionPage() {
   const {
     categories,
+    dietaryOptions,
     moreOptions,
     items,
     totalCount,
@@ -25,6 +26,7 @@ export default function BrowseOccasionPage() {
       isLoadingMore={isLoadingMore}
       loadMore={loadMore}
       categories={categories}
+      dietaryOptions={dietaryOptions}
       menuItems={items}
       moreOptions={moreOptions}
       totalItems={totalCount}
