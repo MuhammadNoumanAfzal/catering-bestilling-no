@@ -136,7 +136,7 @@ export default function CommonNavbarActions({
               </span>
             ) : (
               <span className="type-h6 hidden text-[#2f2f2f] sm:inline">
-                Menu
+                {t("nav.menu", { defaultValue: "Menu" })}
               </span>
             )}
             <FiMenu className="text-[16px] text-[#6a625c] sm:text-[18px]" />

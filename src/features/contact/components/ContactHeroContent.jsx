@@ -5,11 +5,6 @@ import { COMPANY_EMAIL } from "../../../constants/companyContact";
 
 export default function ContactHeroContent() {
   const { t } = useTranslation();
-  const heroStats = [
-    { label: t("contact.avgReply"), value: t("contact.avgReplyValue") },
-    { label: t("contact.coverage"), value: t("contact.coverageValue") },
-    { label: t("contact.supportHours"), value: t("contact.supportHoursValue") },
-  ];
 
   return (
     <div className="relative">
@@ -42,21 +37,7 @@ export default function ContactHeroContent() {
         </Link>
       </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-3">
-        {heroStats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-[22px] border border-[#eadccf] bg-white/88 p-4 shadow-[0_16px_32px_rgba(43,31,20,0.06)] backdrop-blur"
-          >
-            <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-[#af7d5f]">
-              {stat.label}
-            </p>
-            <p className="mt-2 text-[26px] font-semibold text-[#1e1a16]">
-              {stat.value}
-            </p>
-          </div>
-        ))}
-      </div>
+
     </div>
   );
 }

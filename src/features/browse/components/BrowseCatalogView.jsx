@@ -194,7 +194,7 @@ export default function BrowseCatalogView({
     startIndex + ITEMS_PER_PAGE,
   );
   const allCategoryOptions = [...categories, ...moreOptions].filter(
-    (item) => item?.name !== "More",
+    (item) => item?.value !== "__more__",
   );
   const resolveCategoryLabel = (value) => {
     const matchedOption = allCategoryOptions.find(

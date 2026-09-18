@@ -47,50 +47,19 @@ export function createPendingVendorReview(payload) {
   };
 }
 
-export function getVendorReviewSummaryCards(vendor) {
-  const reviewSummary = vendor?.reviewSummary || null;
-  const ratingBreakdown = Array.isArray(reviewSummary?.ratingBreakdown)
-    ? reviewSummary.ratingBreakdown
-    : [];
-  const topRatingBand = ratingBreakdown.reduce(
-    (bestMatch, item) => {
-      const count = Number(item?.count ?? 0);
-
-      if (count > bestMatch.count) {
-        return {
-          stars: Number(item?.stars ?? 0),
-          count,
-        };
-      }
-
-      return bestMatch;
-    },
-    { stars: 0, count: 0 },
-  );
-
+export function getVendorReviewSummaryCards(vendor, t) {
   return [
     {
-      label: "Rating",
+      label: t("vendor.reviews.summaryRating"),
       value: `${Number(vendor?.rating ?? 0).toFixed(1)} / 5`,
-      note: vendor?.reviewCount ? `${vendor.reviewCount} reviews` : "",
+      note: vendor?.reviewCount
+        ? t("vendor.reviews.fromReviews", { count: vendor.reviewCount })
+        : "",
     },
     {
-      label: "Location",
-      value: vendor?.city || vendor?.addressLine || "Not available",
+      label: t("vendor.reviews.summaryLocation"),
+      value: vendor?.city || vendor?.addressLine || t("vendor.reviews.notAvailable"),
       note: vendor?.addressLine || "",
-    },
-    {
-      label: "Delivery",
-      value: vendor?.deliveryFee || "Not available",
-      note: "",
-    },
-    {
-      label: "Schedule",
-      value: vendor?.availability?.delivery?.label || "Not available",
-      note:
-        topRatingBand.count > 0
-          ? `Most reviews are ${topRatingBand.stars}-star ratings`
-          : "",
     },
   ];
 }
