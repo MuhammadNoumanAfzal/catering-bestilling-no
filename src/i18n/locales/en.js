@@ -1307,7 +1307,7 @@ const en = {
       title: "Support Center",
       description:
         "We're here to help. Find answers or get in touch with our team.",
-      viewResponses: "View Responses",
+      viewResponses: "View Inbox",
       submitTitle: "Submit a Support Ticket",
       submitDescription: "Describe your issue and our team will get back to you.",
       subject: "Subject/Issue Type",
