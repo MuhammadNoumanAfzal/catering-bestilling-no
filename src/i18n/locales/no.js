@@ -165,7 +165,7 @@ const no = {
     verifyCode: {
       title: "Glemt passord",
       subtitle: "Skriv inn den {{count}}-sifrede koden som ble sendt til e-posten din.",
-      footerPrompt: "Fikk du ikke kodenå",
+      footerPrompt: "Fikk du ikke koden?",
       footerAction: "Send på nytt",
       submit: "Bekreft",
       submitting: "Bekrefter...",
@@ -190,14 +190,14 @@ const no = {
     heroBadgeTwo: "Enklere firmaplanlegging",
     heroBadgeThree: "Private feiringer",
     heroTitle: "Levering i hele Norge",
-    heroTitleLineOne: "Levering i",
-    heroTitleLineTwo: "hele Norge",
+    heroTitleLineOne: "Levering i hele Norge",
+    heroTitleLineTwo: "«Bestill catering fra din favorittleverandør i hele Norge»",
     heroSubtitle:
       "Sammenlign pålitelige cateringleverandører, utvalgte menyer og trygg levering til kontorarrangementer, private selskaper og store samlinger.",
     heroSlideTwoTitleLineOne: "Samle teamet med",
     heroSlideTwoTitleLineTwo: "smartere catering",
     heroSlideTwoSubtitle:
-      "Planlegg kontorlunsjer, workshops, lanseringer og måter med menyer som passer tidsplanen, antall gjester og uttrykket dere vil ha.",
+      "Planlegg kontorlunsjer, workshops, lanseringer og møter med menyer som passer tidsplanen, antall gjester og uttrykket dere vil ha.",
     heroSlideThreeTitleLineOne: "Feir med menyer",
     heroSlideThreeTitleLineTwo: "gjestene husker",
     heroSlideThreeSubtitle:
@@ -207,7 +207,7 @@ const no = {
     heroPreviewThree: "Buffeter og feiringsmenyer til spesielle anledninger",
     heroStatOne: "verifiserte cateringpartnere klare til sammenligning",
     heroStatTwo: "typisk planleggingsvindu for større bestillinger",
-    heroStatThree: "serveringsstiler for alt fra måter til feiringer",
+    heroStatThree: "serveringsstiler for alt fra møter til feiringer",
     heroCardOneTitle: "Kurert for kvalitet og timing",
     heroCardOneBody:
       "Fra serverte retter til buffetbord kan du finne leverandører som matcher anledning, leveringsområde og servicenivå.",
