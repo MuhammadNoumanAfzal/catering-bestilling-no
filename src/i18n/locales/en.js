@@ -177,8 +177,8 @@ const en = {
     heroBadgeTwo: "Corporate planning made easy",
     heroBadgeThree: "Private celebrations",
     heroTitle: "Order catering from your favorite supplier across Norway",
-    heroTitleLineOne: "Order catering from",
-    heroTitleLineTwo: "your favorite supplier across Norway",
+    heroTitleLineOne: "Delivery all over Norway",
+    heroTitleLineTwo: "Order catering from your favorite vendor all over Norway",
     heroSubtitle:
       "Compare trusted caterers, curated menus, and reliable delivery for office events, private parties, and large gatherings.",
     heroSlideTwoTitleLineOne: "Bring Teams Together",
