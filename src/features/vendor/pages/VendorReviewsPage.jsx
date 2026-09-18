@@ -62,6 +62,7 @@ function SummaryCard({
 }
 
 function ReviewCard({ review, isFeatured = false }) {
+  const { t } = useTranslation();
   return (
     <article
       className={`overflow-hidden rounded-[24px] border border-[#eadfd2] ${
@@ -75,7 +76,7 @@ function ReviewCard({ review, isFeatured = false }) {
           <div className="max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex rounded-full bg-[#f6efe7] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#7b6c61]">
-                {review.occasion || "General"}
+                {review.occasion || t("vendor.reviews.generalOccasion")}
               </span>
             </div>
 
@@ -106,7 +107,7 @@ function ReviewCard({ review, isFeatured = false }) {
           <div className="mt-5 rounded-[18px] border border-[#eadfd2] bg-[#fbf6f1] p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#cf6e38]">
-                Vendor Reply
+                {t("vendor.reviews.vendorReply")}
               </p>
               <span className="text-[12px] text-[#7b7067]">
                 {review.vendorReply.createdOn || ""}
@@ -123,13 +124,14 @@ function ReviewCard({ review, isFeatured = false }) {
 }
 
 function EmptyReviewsState({ onAddReview, canReview }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-[28px] border border-dashed border-[#e3d7ca] bg-[linear-gradient(180deg,#fffaf6_0%,#fff4eb_100%)] p-8 text-center shadow-[0_14px_36px_rgba(31,19,8,0.05)]">
       <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-[20px] bg-white text-[#cf6e38] shadow-[0_10px_24px_rgba(31,19,8,0.06)]">
         <FiMessageSquare className="text-[26px]" />
       </div>
       <h2 className="mt-5 text-[28px] font-semibold tracking-[-0.03em] text-[#171512]">
-        No reviews published yet
+        {t("vendor.reviews.noReviewsTitle")}
       </h2>
       {canReview ? (
         <button
@@ -138,11 +140,11 @@ function EmptyReviewsState({ onAddReview, canReview }) {
           className="mt-6 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#cf6e38] px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-[#bb602d]"
         >
           <FiPlus className="text-[16px]" />
-          Write a review
+          {t("vendor.reviews.writeReview")}
         </button>
       ) : (
         <p className="mt-5 text-sm text-[#74685d]">
-          Reviews can be submitted after an eligible order is completed.
+          {t("vendor.reviews.noReviewsDescription")}
         </p>
       )}
     </div>
