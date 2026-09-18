@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { FILTER_DEFAULTS } from "../../../components/shared/browseFilters/browseFilterConfig";
 import { getBrowseFallbackIcon } from "../data/browseData";
@@ -57,6 +58,7 @@ function resolveSelectedSlug(selection, categories) {
 }
 
 export function useBrowseCatalogItems(mode = "food-type") {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { locationValue, searchQuery, selectedSort, selectedRating, selectedDietary, selectedOffers, selectedPricing } = useBrowseFilters();
   const [categories, setCategories] = useState([]);
@@ -159,7 +161,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
       setIsLoadingMore(false);
     }
   };
-  const primaryCategories = useMemo(() => categories.length <= 8 ? categories : [...categories.slice(0, 8), { name: "More", value: "__more__" }], [categories]);
+  const primaryCategories = useMemo(() => categories.length <= 8 ? categories : [...categories.slice(0, 8), { name: t("browse.more", { defaultValue: "More" }), value: "__more__" }], [categories, t]);
   const moreOptions = useMemo(() => categories.length > 8 ? categories.slice(8) : [], [categories]);
   const hasMenuContent = items.length > 0 || totalCount > 0;
 

@@ -28,6 +28,7 @@ const no = {
       menu: "Meny",
     },
     cart: "Handlekurv",
+    menu: "Meny",
     openProfileMenu: "Åpne profilmeny",
     openMenu: "Åpne meny",
     closeMenu: "Lukk meny",
@@ -36,12 +37,12 @@ const no = {
     clearLocation: "Fjern sted",
     clearDeliveryFilter: "Fjern leveringsfilter",
     clearEventFilter: "Fjern arrangementsfilter",
-    searchRestaurants: "SØk restaurant...",
-    clearSearch: "Fjern sØk",
-    searchAction: "SØk",
+    searchRestaurants: "S\u00f8k restaurant...",
+    clearSearch: "Fjern s\u00f8k",
+    searchAction: "S\u00f8k",
     anyTime: "Når som helst",
     anyDay: "Valgfri dag",
-    eventDetails: "Arrangementsdetaljer",
+    eventDetails: "Arrangement",
     attendees: "{{count}} deltakere",
     deliveryDate: "Leveringsdato",
     deliveryTime: "Leveringstid",
@@ -71,9 +72,10 @@ const no = {
     copyright: "\u00a9 2026 GoCatering",
   },
   browse: {
+    more: "Mer",
     tabs: {
-      foodType: "Bla etter mattype",
-      occasion: "Bla etter anledning",
+      foodType: "Sorter etter mattype",
+      occasion: "Sorter etter anledning",
     },
   },
   auth: {
@@ -87,13 +89,13 @@ const no = {
       passwordPlaceholder: "********",
     },
     footer: {
-      imCaterer: "Jeg er caterer",
+      imCaterer: "Jeg er leverand\u00f8r",
     },
     layout: {
       badge: "GoCatering-tilgang",
-      title: "Enkel tilgang til bestillinger, leverandører og teamlunsjer.",
-      description:
-        "Et ryddigere sted å logge inn, opprette konto og komme tilbake til cateringflyten din.",
+      title: "Enkel tilgang til bestillinger, leverand\u00f8rer og ordrehistorikk.",
+      description:
+        "Et ryddigere sted \u00e5 logge inn, opprette konto og komme tilbake til kontoen din.",
       featureOne: "Rask planlegging",
       featureTwo: "Varm merkevarefølelse",
       featureThree: "Ryddigere kontoflyt",
@@ -101,7 +103,7 @@ const no = {
     signIn: {
       badge: "Logg inn",
       title: "Velkommen tilbake",
-      subtitle: "Logg inn for å fortsette å administrere cateringkontoen din.",
+      subtitle: "Logg inn for \u00e5 fortsette \u00e5 administrere kontoen din.",
       helper: "Bruk den registrerte kontoen din",
       forgotPassword: "Glemt passord?",
       submit: "Logg inn",
@@ -187,9 +189,9 @@ const no = {
     heroBadgeOne: "Kuratert arrangementscatering",
     heroBadgeTwo: "Enklere firmaplanlegging",
     heroBadgeThree: "Private feiringer",
-    heroTitle: "Bestill catering fra din favorittleverandør i hele Norge",
-    heroTitleLineOne: "Bestill catering fra din",
-    heroTitleLineTwo: "favorittleverandør i hele Norge",
+    heroTitle: "Levering i hele Norge",
+    heroTitleLineOne: "Levering i",
+    heroTitleLineTwo: "hele Norge",
     heroSubtitle:
       "Sammenlign pålitelige cateringleverandører, utvalgte menyer og trygg levering til kontorarrangementer, private selskaper og store samlinger.",
     heroSlideTwoTitleLineOne: "Samle teamet med",
@@ -217,7 +219,7 @@ const no = {
       "Velg menyer med fokus på presentasjon, gjesteopplevelse og trygg levering til private og familiære feiringer.",
     deliveryAddressPlaceholder: "Skriv inn leveringsadressen din",
     postalCodePlaceholder: "Legg til postnummer",
-    search: "SØk",
+    search: "S\u00f8k",
     explore: "Utforsk",
     browseAllVendors: "Se alle leverandører",
     postalCodeHint:
@@ -368,10 +370,10 @@ const no = {
       "Fortsatt bruk av plattformen etter policyoppdateringer betyr at du godtar de reviderte personvernpraksisene.",
   },
   contact: {
-    supportBadge: "Kontakt- og arrangementsstøtte",
-    heroTitle: "Planlegger du lunsj for ti eller catering for to hundre?",
-    heroDescription:
-      "Nå et team som forstår matlogistikk, leverandørkoordinering og profesjonell arrangementslevering. Vi hjelper deg med å gjøre uklare forespårsler om til tydelige planer raskt.",
+    supportBadge: "KUNDESERVICE",
+    heroTitle: "Planlegger du lunsj for 10 eller catering for 200?",
+    heroDescription:
+      "V\u00e5rt team vil hjelpe deg med din foresp\u00f8rsel og kontakte en eller flere leverand\u00f8rer basert p\u00e5 dine \u00f8nsker og behov.",
     emailSupport: "E-post til support",
     exploreMenus: "Utforsk menyer",
     avgReply: "Gjennomsnittlig svar",
@@ -437,8 +439,8 @@ const no = {
     topicOther: "Annet",
     tooManyRequests: "For mange forespårsler. Prøv igjen senere.",
     pleaseSlowDown: "Ta det litt roligere",
-    submitFailed: "Kunne ikke sende forespårselen din akkurat nå.",
-    requestFailed: "Kontaktforespårsel mislyktes",
+    submitFailed: "Kunne ikke sende foresp\u00f8rselen din akkurat n\u00e5.",
+    requestFailed: "Kontaktforesp\u00f8rsel mislyktes",
   },
   vendor: {
     unableToLoadPage: "Kunne ikke laste leverandørsiden",
@@ -497,6 +499,13 @@ const no = {
       fromReviews: "fra {{count}} anmeldelser",
       availableAfterOrder: "Anmeldelse tilgjengelig etter gyldig bestilling",
       writeReview: "Skriv en anmeldelse",
+      summaryRating: "Vurdering",
+      summaryLocation: "Sted",
+      summaryDelivery: "Leveringspris",
+      summarySchedule: "Leveringstid",
+      freeDelivery: "Gratis levering",
+      notAvailable: "Ikke oppgitt",
+      topRatingBand: "Flest {{stars}}-stjerners vurderinger",
       loading: "Laster...",
       loadMore: "Last inn flere anmeldelser",
       missingDetailsTitle: "Mangler anmeldelsesdetaljer",
@@ -518,7 +527,7 @@ const no = {
       namePlaceholder: "Skriv inn navnet ditt",
       email: "E-post",
       emailPlaceholder: "Skriv inn e-postadresse",
-      occasion: "Anledning",
+      occasion: "Sorter etter anledning",
       eventDate: "Arrangementsdato",
       reviewTitle: "Tittel på anmeldelse",
       titlePlaceholder: "Skriv inn tittel på vurderingen",
@@ -562,6 +571,7 @@ const no = {
     menuItem: "Menyvare",
     menuDetails: "Menyinformasjon",
     startingFrom: "Starter fra",
+    perPerson: "pr. person",
     minimumOrder: "Minimumsbestilling",
     persons: "{{count}} personer",
     deliveryStyle: "Leveringstype",
@@ -625,7 +635,7 @@ const no = {
     notSelected: "Ikke valgt",
     noSlotsForDate:
       "Ingen leveringstider er tilgjengelige for valgt dato. Velg en annen dag.",
-    eventDetails: "Arrangementsdetaljer",
+    eventDetails: "Arrangement",
     guestCountIntro: "Angi forventet antall gjester for denne bestillingen.",
     personsLabel: "Personer:",
     minimumLabel: "Minimum {{count}}",
@@ -647,9 +657,9 @@ const no = {
     continue: "Fortsett",
     tryAgain: "Prøv igjen",
     somethingWentWrong: "Noe gikk galt",
-    requestSubmittedTitle: "Forespårsel sendt",
-    requestSubmittedText:
-      "Forespårselen din ble sendt. Teamet vårt vil gjennomgå den og kontakte deg snart.",
+    requestSubmittedTitle: "Foresp\u00f8rsel sendt",
+    requestSubmittedText:
+      "Foresp\u00f8rselen din ble sendt. Teamet v\u00e5rt vil gjennomg\u00e5 den og kontakte deg snart.",
     removeItemTitle: "Fjerne vare?",
     removeNamedItemText: 'Fjerne "{{itemName}}" fra handlekurvenå',
     removeGenericItemText: "Fjerne denne varen fra handlekurvenå",
@@ -800,9 +810,9 @@ const no = {
   orderConfirmed: {
     logoAlt: "GoCatering",
     placedSuccessfully: "Bestillingen ble lagt inn",
-    heroTitle: "Bestillingen din hos GoCatering er lagt inn",
-    heroDescription:
-      "Vi har mottatt forespørselen din og sendt den til leverandøren. Du vil snart motta en e-postbekreftelse med de endelige bestillingsdetaljene.",
+    heroTitle: "Planlegger du lunsj for 10 eller catering for 200?",
+    heroDescription:
+      "V\u00e5rt team vil hjelpe deg med din foresp\u00f8rsel og kontakte en eller flere leverand\u00f8rer basert p\u00e5 dine \u00f8nsker og behov.",
     backToHome: "Tilbake til hjem",
     browseMenus: "Utforsk menyer",
     browseDashboard: "Se dashboard",
@@ -1276,7 +1286,7 @@ const no = {
       accountSafetySubtitle:
         "Administrer midlertidig deaktivering eller fjern kundekontoen permanent ved behov.",
       accountControls: "Kontokontroller",
-      safetyHeroTitle: "Ta en pause eller fjern profilen permanent",
+      safetyHeroTitle: "Levering i hele Norge",
       safetyHeroDescription:
         "Deaktivering logger deg ut og deaktiverer tilgangen midlertidig. Permanent sletting er for personvern eller kontolukking og kan ikke angres.",
       temporarilyDeactivate: "Deaktiver midlertidig",
@@ -1540,9 +1550,10 @@ const no = {
     },
   },
   browse: {
+    more: "Mer",
     tabs: {
-      foodType: "Bla etter mattype",
-      occasion: "Bla etter anledning",
+      foodType: "Sorter etter mattype",
+      occasion: "Sorter etter anledning",
     },
     filters: {
       sort: "Sorter etter",

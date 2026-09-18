@@ -18,41 +18,6 @@ import {
   getVendorReviewSummaryCards,
 } from "../utils/vendorReviewForm";
 
-function formatScheduleGroups(slots = [], fallbackLabel = "") {
-  if (!Array.isArray(slots) || slots.length === 0) {
-    return fallbackLabel ? [fallbackLabel] : [];
-  }
-
-  const groupedSlots = slots.reduce((groups, slot) => {
-    const start = `${slot?.start ?? ""}`.trim();
-    const end = `${slot?.end ?? ""}`.trim();
-    const day = `${slot?.day ?? ""}`.trim();
-
-    if (!start || !end || !day) {
-      return groups;
-    }
-
-    const key = `${start}-${end}`;
-    if (!groups[key]) {
-      groups[key] = {
-        time: `${start} - ${end}`,
-        days: [],
-      };
-    }
-
-    groups[key].days.push(day);
-    return groups;
-  }, {});
-
-  return Object.values(groupedSlots).map(({ days, time }) => {
-    const formattedDays = days
-      .map((day) => `${day}`.slice(0, 1).toUpperCase() + `${day}`.slice(1, 3))
-      .join(", ");
-
-    return formattedDays ? `${formattedDays}: ${time}` : time;
-  });
-}
-
 function SummaryCard({
   icon: Icon,
   label,
@@ -228,21 +193,13 @@ export default function VendorReviewsPage() {
     derivedAverageRating ??
     Number(vendor?.rating ?? 0)
   ).toString();
-  const scheduleLines = useMemo(
-    () =>
-      formatScheduleGroups(
-        vendor?.availability?.delivery?.slots,
-        vendor?.availability?.delivery?.label,
-      ),
-    [vendor],
-  );
   const summaryCards = useMemo(
     () =>
       getVendorReviewSummaryCards({
         ...vendor,
         rating: averageRating,
         reviewCount,
-      }).map((card, index) => ({
+      }, t).map((card, index) => ({
         ...card,
         compact: index > 0,
         scheduleLines: index === 3 ? scheduleLines : [],
@@ -255,7 +212,7 @@ export default function VendorReviewsPage() {
                 ? FiTruck
                 : FiMessageSquare,
       })),
-    [averageRating, reviewCount, scheduleLines, vendor],
+    [averageRating, reviewCount, t, vendor],
   );
 
   useEffect(() => {
@@ -368,7 +325,7 @@ export default function VendorReviewsPage() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
               {summaryCards.map((card) => (
                 <SummaryCard
                   key={card.label}

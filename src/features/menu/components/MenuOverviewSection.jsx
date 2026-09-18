@@ -150,10 +150,21 @@ function TimingPanel({ entries }) {
 
 export default function MenuOverviewSection({ vendor, menuItem }) {
   const { t } = useTranslation();
-  const priceLabel = menuItem.modal?.priceLabel ?? "per person";
+  const rawPriceLabel = menuItem.modal?.priceLabel ?? menuItem?.pricingType ?? "per-person";
   const unitPrice = Number(
     menuItem.modal?.unitPrice ?? menuItem.modal?.pricePerPerson ?? menuItem.price ?? 0,
   );
+  const normalizedPriceLabel = `${rawPriceLabel}`.trim().toLowerCase();
+  const priceLabel = ["per person", "per-person", "per_person"].includes(normalizedPriceLabel)
+    ? t("menu.perPerson", { defaultValue: "pr. person" })
+    : rawPriceLabel;
+  const formattedUnitPrice = new Intl.NumberFormat("nb-NO", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: Number.isInteger(unitPrice) ? 0 : 2,
+  }).format(unitPrice);
+  const priceText = Number.isInteger(unitPrice)
+    ? `kr ${formattedUnitPrice},-`
+    : `kr ${formattedUnitPrice}`;
   const minimumPersons = Number(menuItem?.serves ?? 1);
   const cuisineBadge =
     menuItem?.modal?.badge || menuItem?.badge || menuItem?.category || "Chef's pick";
@@ -202,7 +213,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
             </p>
             <div className="mt-1 flex items-end gap-1.5">
               <p className="text-[25px] font-semibold leading-none tracking-[-0.05em] text-[#17120f]">
-                NOK {unitPrice.toFixed(2)}
+                {priceText}
               </p>
               <p className="pb-0.5 text-[10px] font-medium text-[#796b61]">
                 {priceLabel}

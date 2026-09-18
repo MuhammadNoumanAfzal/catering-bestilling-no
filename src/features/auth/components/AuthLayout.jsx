@@ -29,20 +29,7 @@ export default function AuthLayout() {
               <h1 className="mt-5 font-serif text-[44px] leading-[0.98] text-white">
                 {t("auth.layout.title")}
               </h1>
-              <p className="mt-4 text-[16px] leading-7 text-white/76">
-                {t("auth.layout.description")}
-              </p>
-              <div className="mt-5 grid gap-2">
-                <div className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-2.5 text-[14px] text-white/82 backdrop-blur-sm">
-                  {t("auth.layout.featureOne")}
-                </div>
-                <div className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-2.5 text-[14px] text-white/82 backdrop-blur-sm">
-                  {t("auth.layout.featureTwo")}
-                </div>
-                <div className="rounded-[22px] border border-white/12 bg-white/8 px-4 py-2.5 text-[14px] text-white/82 backdrop-blur-sm">
-                  {t("auth.layout.featureThree")}
-                </div>
-              </div>
+
             </div>
           </section>
 
