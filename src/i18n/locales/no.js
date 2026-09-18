@@ -1156,7 +1156,7 @@ const no = {
       title: "Supportsenter",
       description:
         "Vi er her for å hjelpe. Finn svar eller ta kontakt med teamet vårt.",
-      viewResponses: "Se svar",
+      viewResponses: "Vis innboks",
       submitTitle: "Send en supporthenvendelse",
       submitDescription: "Beskriv problemet ditt, så vil teamet vårt svare deg.",
       subject: "Emne/problemtype",
