@@ -16,8 +16,7 @@ import {
 import { AUTH_ROLE } from "../../constants/authForms";
 import { useAuth } from "../../hooks/useAuth";
 
-const VENDOR_REGISTER_URL =
-  "https://catering-bestilling-no-vendor-panel.vercel.app/";
+const VENDOR_REGISTER_URL = "https://vendor.gocatering.no/";
 const VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY =
   "vendor-dashboard-onboarding-guide-pending";
 

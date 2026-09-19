@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import {
   formatCategoryLabel,
@@ -18,6 +19,7 @@ import {
 } from "../utils/homeCatalog";
 
 export default function ProductListingPage() {
+  const { t } = useTranslation();
   const { productType } = useParams();
   const [searchParams] = useSearchParams();
   const { deliveryDate, deliveryTime, locationValue, searchQuery } = useBrowseFilters();
@@ -34,9 +36,12 @@ export default function ProductListingPage() {
     return <Navigate to="/" replace />;
   }
 
-  const title = "Popular Products";
-  const description =
-    "Browse the most-ordered meals and catering picks that teams keep coming back to.";
+  const badge = t("products.badge", { defaultValue: "Products" });
+  const title = t("products.popularTitle", { defaultValue: "Popular Products" });
+  const description = t("products.popularDescription", {
+    defaultValue:
+      "Browse the most-ordered meals and catering picks that teams keep coming back to.",
+  });
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const filteredProducts = useMemo(
     () =>
@@ -54,7 +59,7 @@ export default function ProductListingPage() {
 
   return (
     <CatalogListingPageLayout
-      badge="Products"
+      badge={badge}
       title={title}
       description={description}
       activeCategoryLabel={activeCategoryLabel}
@@ -71,11 +76,11 @@ export default function ProductListingPage() {
         )
       }
     >
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {visibleProducts.map((product) => (
-            <ProductItem key={product.id ?? product.name} {...product} />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {visibleProducts.map((product) => (
+          <ProductItem key={product.id ?? product.name} {...product} />
+        ))}
+      </div>
     </CatalogListingPageLayout>
   );
 }

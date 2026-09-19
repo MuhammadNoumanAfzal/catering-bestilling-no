@@ -66,9 +66,9 @@ const no = {
     vendors: "Leverandører",
     terms: "Vilkår",
     privacy: "Personvern",
-    headline: "Moderne catering, uten friksjon.",
+    headline: "Levering i hele Norge",
     description:
-      "Oppdag lokale matpartnere for kontorlunsjer, måter og private arrangementer.",
+      "Bestill catering fra din favorittleverandør i hele Norge",
     copyright: "\u00a9 2026 GoCatering",
   },
   browse: {
@@ -77,6 +77,27 @@ const no = {
       foodType: "Sorter etter mattype",
       occasion: "Sorter etter anledning",
     },
+  },
+  vendors: {
+    badge: "Leverandører",
+    allTitle: "Alle leverandører",
+    popularTitle: "Populære leverandører",
+    featuredTitle: "Utvalgte leverandører",
+    allDescription:
+      "Utforsk alle tilgjengelige leverandører på ett sted, og filtrer etter sted, kategori eller søk for å finne den beste maten til ditt arrangement.",
+    popularDescription:
+      "Utforsk leverandørene kundene bestiller mest fra til hverdagslunsj og kontorcatering.",
+    featuredDescription:
+      "Utforsk et håndplukket utvalg av leverandører med fantastiske menyer for teamlunsjer, møter og arrangementer.",
+    backToHome: "Tilbake til forsiden",
+    showingCategory: "Viser kategori: {{category}}",
+    showMore: "Vis {{count}} til",
+  },
+  products: {
+    badge: "Produkter",
+    popularTitle: "Populære produkter",
+    popularDescription:
+      "Utforsk de mest bestilte måltidene og cateringfavorittene teamene velger om og om igjen.",
   },
   auth: {
     common: {
@@ -93,8 +114,9 @@ const no = {
     },
     layout: {
       badge: "GoCatering-tilgang",
-      title: "Enkel tilgang til bestillinger, leverand\u00f8rer og ordrehistorikk.",
-      description:
+      title:
+        "Enkel tilgang til bestillinger, leverand\u00f8rer og ordrehistorikk.",
+      description:
         "Et ryddigere sted \u00e5 logge inn, opprette konto og komme tilbake til kontoen din.",
       featureOne: "Rask planlegging",
       featureTwo: "Varm merkevarefølelse",
@@ -103,7 +125,8 @@ const no = {
     signIn: {
       badge: "Logg inn",
       title: "Velkommen tilbake",
-      subtitle: "Logg inn for \u00e5 fortsette \u00e5 administrere kontoen din.",
+      subtitle:
+        "Logg inn for \u00e5 fortsette \u00e5 administrere kontoen din.",
       helper: "Bruk den registrerte kontoen din",
       forgotPassword: "Glemt passord?",
       submit: "Logg inn",
@@ -113,12 +136,14 @@ const no = {
       success: "Velkommen tilbake, {{name}}",
       errorTitle: "Innlogging mislyktes",
       errorMessage: "Kan ikke logge inn akkurat nå.",
-      invalidCredentials: "E-posten eller passordet ser ikke riktig ut. Kontroller opplysningene og prøv igjen, eller velg «Glemt passord?»."
+      invalidCredentials:
+        "E-posten eller passordet ser ikke riktig ut. Kontroller opplysningene og prøv igjen, eller velg «Glemt passord?».",
     },
     signUp: {
       badge: "Opprett konto",
       title: "Opprett kontoen din",
-      subtitle: "Bli med raskt og start bestillingen med en renere og enklere flyt.",
+      subtitle:
+        "Bli med raskt og start bestillingen med en renere og enklere flyt.",
       firstName: "Fornavn",
       firstNamePlaceholder: "Skriv inn fornavn",
       lastName: "Etternavn",
@@ -126,7 +151,8 @@ const no = {
       phone: "Telefon",
       phonePlaceholder: "Skriv inn telefonnummer",
       phoneHelper: "Kun Norge. Skriv inn de åtte sifrene etter +47.",
-      invalidPhone: "Skriv inn et gyldig norsk telefonnummer med åtte sifre etter +47.",
+      invalidPhone:
+        "Skriv inn et gyldig norsk telefonnummer med åtte sifre etter +47.",
       postCode: "Postnummer",
       postCodePlaceholder: "Skriv inn postnummer",
       submit: "Opprett konto",
@@ -142,13 +168,16 @@ const no = {
       errorTitle: "Registrering mislyktes",
       errorMessage: "Kan ikke opprette kontoen din akkurat nå.",
       verifyTitle: "Bekreft e-posten din",
-      verifySubtitle: "Skriv inn den 6-sifrede bekreftelseskoden vi sendte til {{email}} for å fullføre opprettelsen av kontoen din.",
-      emailStepHelper: "Vi sender en bekreftelseskode etter at du har klikket på Registrer.",
+      verifySubtitle:
+        "Skriv inn den 6-sifrede bekreftelseskoden vi sendte til {{email}} for å fullføre opprettelsen av kontoen din.",
+      emailStepHelper:
+        "Vi sender en bekreftelseskode etter at du har klikket på Registrer.",
       sendingOtp: "Sender kode...",
       registerAndSendOtp: "Registrer",
       verificationBadge: "E-postbekreftelse",
       editDetails: "Endre opplysninger",
-      otpInputHelper: "Skriv inn koden som ble sendt til e-posten din. Den utløper etter 10 minutter.",
+      otpInputHelper:
+        "Skriv inn koden som ble sendt til e-posten din. Den utløper etter 10 minutter.",
       resendOtp: "Send kode på nytt",
       verifyingOtp: "Bekrefter...",
       verifyAndCreate: "Bekreft og opprett konto",
@@ -164,7 +193,8 @@ const no = {
     },
     verifyCode: {
       title: "Glemt passord",
-      subtitle: "Skriv inn den {{count}}-sifrede koden som ble sendt til e-posten din.",
+      subtitle:
+        "Skriv inn den {{count}}-sifrede koden som ble sendt til e-posten din.",
       footerPrompt: "Fikk du ikke koden?",
       footerAction: "Send på nytt",
       submit: "Bekreft",
@@ -189,9 +219,9 @@ const no = {
     heroBadgeOne: "Kuratert arrangementscatering",
     heroBadgeTwo: "Enklere firmaplanlegging",
     heroBadgeThree: "Private feiringer",
-    heroTitle: "Levering i hele Norge",
-    heroTitleLineOne: "Levering i hele Norge",
-    heroTitleLineTwo: "«Bestill catering fra din favorittleverandør i hele Norge»",
+    heroTitle: "Bestill catering fra din favorittleverandør i hele Norge",
+    heroTitleLineOne: "Bestill catering fra din",
+    heroTitleLineTwo: "favorittleverandør i hele Norge",
     heroSubtitle:
       "Sammenlign pålitelige cateringleverandører, utvalgte menyer og trygg levering til kontorarrangementer, private selskaper og store samlinger.",
     heroSlideTwoTitleLineOne: "Samle teamet med",
@@ -286,8 +316,7 @@ const no = {
     profilePhotoUnavailable: "Ikke oppgitt",
     profileCompletion: "Profilfullføring",
     notificationTitle: "Varslingsinnstillinger",
-    notificationSubtitle:
-      "Velg hvordan du vil motta konto- og ordrevarsler.",
+    notificationSubtitle: "Velg hvordan du vil motta konto- og ordrevarsler.",
     email: "E-post",
     emailDescription: "Motta varsler i e-postinnboksen din.",
     sms: "Tekstmelding",
@@ -372,7 +401,7 @@ const no = {
   contact: {
     supportBadge: "KUNDESERVICE",
     heroTitle: "Planlegger du lunsj for 10 eller catering for 200?",
-    heroDescription:
+    heroDescription:
       "V\u00e5rt team vil hjelpe deg med din foresp\u00f8rsel og kontakte en eller flere leverand\u00f8rer basert p\u00e5 dine \u00f8nsker og behov.",
     emailSupport: "E-post til support",
     exploreMenus: "Utforsk menyer",
@@ -500,7 +529,8 @@ const no = {
       availableAfterOrder: "Anmeldelse tilgjengelig etter gyldig bestilling",
       writeReview: "Skriv en anmeldelse",
       noReviewsTitle: "Ingen anmeldelser publisert ennå",
-      noReviewsDescription: "Anmeldelser kan sendes inn etter at en gyldig bestilling er fullført.",
+      noReviewsDescription:
+        "Anmeldelser kan sendes inn etter at en gyldig bestilling er fullført.",
       generalOccasion: "Generelt",
       vendorReply: "Svar fra leverandør",
       summaryRating: "Vurdering",
@@ -615,7 +645,8 @@ const no = {
     date: "Dato",
     chooseAvailableDate: "Velg en tilgjengelig dato",
     availableDatesNote: "Bare uthevede datoer har leveringstilgjengelighet.",
-    dateUnavailable: "Levering er ikke tilgjengelig denne datoen. Velg en dag i leverandørens leveringsplan.",
+    dateUnavailable:
+      "Levering er ikke tilgjengelig denne datoen. Velg en dag i leverandørens leveringsplan.",
     time: "Tid",
     selectDateFirst: "Velg en dato først",
     checkingSlots: "Sjekker tilgjengelige leveringstider...",
@@ -631,8 +662,7 @@ const no = {
     spotsLeft_other: "{{count}} plasser igjen",
     stepTwo: "Steg 2",
     fineTuneTime: "Finjuster nåyaktig tidspunkt",
-    timeBetween:
-      "Velg et 15-minutters tidspunkt mellom {{start}} og {{end}}.",
+    timeBetween: "Velg et 15-minutters tidspunkt mellom {{start}} og {{end}}.",
     availabilityHint:
       "Leverandøren er tilgjengelig mellom {{start}} og {{end}} for dette valget.",
     currentTime: "Gjeldende tid",
@@ -650,7 +680,8 @@ const no = {
     addToCart: "Legg i handlekurv",
     addOnsEyebrow: "Tilpass bestillingen",
     addOnsTitle: "Tillegg",
-    addOnsIntro: "Legg til ekstra varer eller sideretter for å tilpasse menyen til teamet ditt.",
+    addOnsIntro:
+      "Legg til ekstra varer eller sideretter for å tilpasse menyen til teamet ditt.",
     addOnsLocked:
       "Velg tilleggene du vil ha, og legg deretter hovedretten i handlekurven. Tillegg kan ikke bestilles alene.",
     add: "Legg til",
@@ -662,7 +693,7 @@ const no = {
     tryAgain: "Prøv igjen",
     somethingWentWrong: "Noe gikk galt",
     requestSubmittedTitle: "Foresp\u00f8rsel sendt",
-    requestSubmittedText:
+    requestSubmittedText:
       "Foresp\u00f8rselen din ble sendt. Teamet v\u00e5rt vil gjennomg\u00e5 den og kontakte deg snart.",
     removeItemTitle: "Fjerne vare?",
     removeNamedItemText: 'Fjerne "{{itemName}}" fra handlekurvenå',
@@ -741,8 +772,10 @@ const no = {
     editInvoiceAddress: "Rediger fakturaadresse",
     currentDeliveryAddress: "Gjeldende leveringsadresse",
     currentInvoiceAddress: "Gjeldende fakturaadresse",
-    deliveryAddressEmpty: "Velg en lagret leveringsadresse eller legg til en egendefinert adresse.",
-    invoiceAddressEmpty: "Velg en lagret fakturaadresse eller legg til en egendefinert adresse.",
+    deliveryAddressEmpty:
+      "Velg en lagret leveringsadresse eller legg til en egendefinert adresse.",
+    invoiceAddressEmpty:
+      "Velg en lagret fakturaadresse eller legg til en egendefinert adresse.",
     useDeliveryForInvoice: "Bruk leveringsadresse for faktura",
     emptyCartTitle: "Handlekurven din er tom",
     emptyCartDescription: "Legg til menyvarer før du går videre til utsjekk.",
@@ -758,9 +791,11 @@ const no = {
     placeOrder: "Legg inn bestilling",
     backendPricingError: "Kunne ikke laste backend-prising for utsjekk.",
     detailsRequiredTitle: "Bestillingsdetaljer kreves",
-    selectedSlotUnavailableTitle: "Valgt leveringstid er ikke lenger tilgjengelig",
+    selectedSlotUnavailableTitle:
+      "Valgt leveringstid er ikke lenger tilgjengelig",
     placeOrderFailedTitle: "Bestilling mislyktes",
-    placeOrderFailedMessage: "Kunne ikke legge inn bestillingen din akkurat nå.",
+    placeOrderFailedMessage:
+      "Kunne ikke legge inn bestillingen din akkurat nå.",
     contactInfo: "Kontaktinformasjon",
     companyName: "Firmanavn",
     organizationNumber: "Organisasjonsnummer",
@@ -775,7 +810,8 @@ const no = {
     hideEditor: "Skjul editor",
     savedAddressHint:
       "Automatisk fylt inn fra lagrede adresser, men du kan fortsatt tilpasse den her.",
-    noSavedAddressHint: "Ingen lagret adresse funnet ennå. Legg til adressen din nedenfor.",
+    noSavedAddressHint:
+      "Ingen lagret adresse funnet ennå. Legg til adressen din nedenfor.",
     suiteFloorOptional: "Suite/etasje (valgfritt)",
     apartmentFloorOptional: "Leilighet/etasje (valgfritt)",
     city: "By",
@@ -815,7 +851,7 @@ const no = {
     logoAlt: "GoCatering",
     placedSuccessfully: "Bestillingen ble lagt inn",
     heroTitle: "Planlegger du lunsj for 10 eller catering for 200?",
-    heroDescription:
+    heroDescription:
       "V\u00e5rt team vil hjelpe deg med din foresp\u00f8rsel og kontakte en eller flere leverand\u00f8rer basert p\u00e5 dine \u00f8nsker og behov.",
     backToHome: "Tilbake til hjem",
     browseMenus: "Utforsk menyer",
@@ -999,7 +1035,8 @@ const no = {
         retry: "Prøv igjen",
         back: "Tilbake til fakturaer",
         title: "Fakturadetaljer",
-        description: "Se gjennom fakturainformasjonen og eksporter PDF ved behov.",
+        description:
+          "Se gjennom fakturainformasjonen og eksporter PDF ved behov.",
         orderForVendor: "{{event}} for {{vendor}}",
         orderLabel: "Bestilling {{orderNumber}}",
         untitledOrder: "Bestilling",
@@ -1027,7 +1064,8 @@ const no = {
         verifiedAt: "Verifisert",
         rejectedAt: "Avvist den",
         paymentStatusNoticeTitle: "Betalingsstatus",
-        paymentReportingUnavailable: "Betalingsrapportering er ikke tilgjengelig",
+        paymentReportingUnavailable:
+          "Betalingsrapportering er ikke tilgjengelig",
         invoiceAccessDeniedNotice:
           "Du har ikke tilgang til å se denne fakturaen.",
         bankTransferOnlyNotice:
@@ -1047,7 +1085,8 @@ const no = {
         paymentDate: "Betalingsdato",
         transferReference: "Betalingsreferanse",
         transferReferencePlaceholder: "KID eller bankreferanse",
-        paymentNotePlaceholder: "Fortell admin hvordan du betalte denne fakturaen",
+        paymentNotePlaceholder:
+          "Fortell admin hvordan du betalte denne fakturaen",
         receiptFile: "Kvitteringsfil",
         receiptFileHelp: "JPG, JPEG, PNG, PDF eller WEBP opptil 5 MB.",
         reportPayment: "Rapporter betaling",
@@ -1055,7 +1094,8 @@ const no = {
         paymentReportFailed: "Betalingsrapporten mislyktes",
         receiptValidationTitle: "Ugyldig kvitteringsfil",
         receiptSizeError: "Last opp en kvitteringsfil som er mindre enn 5 MB.",
-        receiptTypeError: "Last opp en kvittering i JPG, JPEG, PNG, PDF eller WEBP.",
+        receiptTypeError:
+          "Last opp en kvittering i JPG, JPEG, PNG, PDF eller WEBP.",
         bankTransferDetails: "Bankoverføringsdetaljer",
         accountName: "Kontonavn",
         accountNumber: "Kontonummer",
@@ -1137,7 +1177,8 @@ const no = {
       messages: {
         defaultTitle: "Varsel",
         orderPlacedTitle: "Bestilling lagt inn",
-        orderPlacedBody: "Bestillingen din (ID: {{orderId}}) har blitt lagt inn.",
+        orderPlacedBody:
+          "Bestillingen din (ID: {{orderId}}) har blitt lagt inn.",
         orderStatusUpdateTitle: "Oppdatering av bestillingsstatus",
         orderStatusUpdatedBody:
           "Statusen for bestillingen din (ID: {{orderId}}) er oppdatert til {{status}}.",
@@ -1158,7 +1199,8 @@ const no = {
         "Vi er her for å hjelpe. Finn svar eller ta kontakt med teamet vårt.",
       viewResponses: "Vis innboks",
       submitTitle: "Send en supporthenvendelse",
-      submitDescription: "Beskriv problemet ditt, så vil teamet vårt svare deg.",
+      submitDescription:
+        "Beskriv problemet ditt, så vil teamet vårt svare deg.",
       subject: "Emne/problemtype",
       selectIssueType: "Velg problemtype",
       relatedOrder: "Relatert bestilling (valgfritt)",
@@ -1170,16 +1212,18 @@ const no = {
       clickOrDrag: "Klikk eller dra for å laste opp",
       attachmentDisabledHint:
         "Du kan fortsatt sende inn henvendelsen uten vedlegg.",
-      attachmentHint: "PNG-, JPG-, JPEG- eller WEBP-bilde maks 2MB",
-      attachmentReady: "Vedlegget er valgt og klart til å sendes med henvendelsen.",
+      attachmentHint: "PNG-, JPG-, JPEG- eller WEBP-bilde maks 5MB",
+      attachmentReady:
+        "Vedlegget er valgt og klart til å sendes med henvendelsen.",
       submitting: "Sender inn...",
       submit: "Send henvendelse",
       uploadUnavailableError:
         "Vedlegg er midlertidig utilgjengelige akkurat nå. Du kan fortsatt sende inn henvendelsen uten bilde.",
       invalidFileType: "Last opp et PNG-, JPG-, JPEG- eller WEBP-bilde.",
-      invalidFileSize: "Last opp et bilde under 2MB.",
+      invalidFileSize: "Last opp et bilde under 5MB.",
       submittedSuccess: "Supporthenvendelsen ble sendt",
-      submitFailedMessage: "Kunne ikke sende inn supporthenvendelsen akkurat nå.",
+      submitFailedMessage:
+        "Kunne ikke sende inn supporthenvendelsen akkurat nå.",
       submitFailedTitle: "Supporthenvendelse mislyktes",
       subjects: {
         orderNotReceived: "Bestilling ikke mottatt",
@@ -1255,7 +1299,8 @@ const no = {
       title: "Innstillinger",
       onboardingBadge: "Fullfør kontooppsettet",
       onboardingTitle: "Fullfør kontooppsettet",
-      onboardingDescription: "Fullfør kontoinformasjonen din på innstillingssiden, inkludert profilbildet ditt. Gå deretter til adressesiden for å legge til leverings- og fakturaadresse.",
+      onboardingDescription:
+        "Fullfør kontoinformasjonen din på innstillingssiden, inkludert profilbildet ditt. Gå deretter til adressesiden for å legge til leverings- og fakturaadresse.",
       onboardingPhotoStep: "Legg til profilbilde",
       onboardingAddressStep: "Fyll inn adresseinformasjon",
       onboardingAddressAction: "Gå til adresser",
@@ -1333,15 +1378,30 @@ const no = {
       oldPasswordMismatch: "Bekreftelsen av gammelt passord stemmer ikke.",
       newPasswordMismatch: "Bekreftelsen av nytt passord stemmer ikke.",
       passwordChangedSuccess: "Passordet ble endret.",
-      updateFailedMessage: "Kunne ikke oppdatere innstillingene dine akkurat nå.",
+      updateFailedMessage:
+        "Kunne ikke oppdatere innstillingene dine akkurat nå.",
       updateFailedTitle: "Oppdatering av innstillinger mislyktes",
     },
   },
   vendorPanel: {
-    dateFilters: { filterByDate: "Filtrer etter dato", allTime: "Hele perioden", last7Days: "Siste 7 dager", lastMonth: "Siste måned", last3Months: "Siste 3 måneder", last6Months: "Siste 6 måneder", thisYear: "I år", customDate: "Egendefinert dato", clear: "Tøm filter", from: "Fra", to: "Til", apply: "Bruk" },
+    dateFilters: {
+      filterByDate: "Filtrer etter dato",
+      allTime: "Hele perioden",
+      last7Days: "Siste 7 dager",
+      lastMonth: "Siste måned",
+      last3Months: "Siste 3 måneder",
+      last6Months: "Siste 6 måneder",
+      thisYear: "I år",
+      customDate: "Egendefinert dato",
+      clear: "Tøm filter",
+      from: "Fra",
+      to: "Til",
+      apply: "Bruk",
+    },
     logoAlt: "GoCatering",
     searchAria: "Søk",
-    searchPlaceholder: "Søk etter bestillinger, leverandører, menyer eller ID-er...",
+    searchPlaceholder:
+      "Søk etter bestillinger, leverandører, menyer eller ID-er...",
     searching: "Søker etter leverandører og menyer...",
     clientDashboard: "Kundeoversikt",
     manageSubtitle: "Administrer restaurantene og driften din",
@@ -1384,8 +1444,7 @@ const no = {
       replyHint: "Svar sendes i den samme supporttråden.",
       sending: "Sender...",
       sendReply: "Send svar",
-      emptySelection:
-        "Velg en supportsak for å se samtalen og sende et svar.",
+      emptySelection: "Velg en supportsak for å se samtalen og sende et svar.",
       replyFailedTitle: "Svar mislyktes",
       replyFailedMessage: "Kunne ikke sende supportsvar akkurat nå.",
     },
@@ -1414,7 +1473,8 @@ const no = {
         title: "Leverandørside",
         description: "Denne delen er klar for sin dedikerte innholdsmodul.",
       },
-      readyTitle: "Denne siden er strukturert og klar for videre funksjonsarbeid.",
+      readyTitle:
+        "Denne siden er strukturert og klar for videre funksjonsarbeid.",
       readyDescription:
         "Felles layout, ruting, navigasjonstilstand og sidebeholder er allerede på plass. Du kan nå bygge denne skjermen videre uten å endre leverandørskallet igjen.",
       readyBadge: "Klar for neste modul",
@@ -1425,7 +1485,8 @@ const no = {
       loadErrorMessage: "Kunne ikke laste dashboard-data akkurat nå.",
       totalOrders: "Totale bestillinger",
       pendingInvoice: "Ventende faktura",
-      welcomeBack: "Velkommen tilbake, {{name}}! Her er en oversikt over aktiviteten din.",
+      welcomeBack:
+        "Velkommen tilbake, {{name}}! Her er en oversikt over aktiviteten din.",
       recentOrders: "Nylige bestillinger",
       noRecentOrders: "Ingen nylige bestillinger funnet.",
       noRecentInvoices: "Ingen nylige fakturaer funnet.",
@@ -1452,21 +1513,25 @@ const no = {
     },
     restaurants: {
       title: "Lagrede restauranter",
-      description: "Se alle lagrede restaurantene du liker å bestille fra igjen",
+      description:
+        "Se alle lagrede restaurantene du liker å bestille fra igjen",
       signInTitle: "Logg inn for å se lagrede restauranter",
       signInMessage:
         "De lagrede restaurantene er knyttet til kontoen din og lastes fra API-et etter innlogging.",
       loadErrorTitle: "Kunne ikke laste lagrede restauranter",
       loadErrorMessage: "Kunne ikke laste lagrede restauranter akkurat nå.",
-      updateSavedFailed: "Kunne ikke oppdatere lagrede restauranter akkurat nå.",
+      updateSavedFailed:
+        "Kunne ikke oppdatere lagrede restauranter akkurat nå.",
       removedSaved: "{{name}} ble fjernet fra lagrede restauranter",
       removeSavedAria: "Fjern {{name}} fra lagrede restauranter",
       emptyTitle: "Ingen lagrede restauranter ennå",
-      emptyMessage: "Lagre restauranter fra detaljsiden eller menysiden for å se dem her.",
+      emptyMessage:
+        "Lagre restauranter fra detaljsiden eller menysiden for å se dem her.",
     },
     orders: {
       loadErrorTitle: "Kunne ikke laste bestillinger",
-      description: "Følg aktive bestillinger og se bestillingshistorikken fra kontoen din.",
+      description:
+        "Følg aktive bestillinger og se bestillingshistorikken fra kontoen din.",
       quickStatus: "Hurtigstatus",
       activeOrders: "Aktive bestillinger",
       recentOrders: "Nylige bestillinger",
@@ -1496,7 +1561,47 @@ const no = {
       },
     },
     orderDetails: {
-      closeAria: "Lukk ordredetaljer", overview: "Ordreoversikt", title: "Ordredetaljer", loading: "Laster ordredetaljer...", loadErrorTitle: "Kunne ikke laste inn fullstendige ordredetaljer", changeRequested: "Endring forespurt", vendor: "Leverandør", orderId: "Ordre-ID", event: "Arrangement", guests: "Gjester", total: "Total", items: "Varer", itemCount: "{{count}} vare", itemCount_other: "{{count}} varer", description: "Beskrivelse", vendorNote: "Notat til leverandør", selectedOptions: "Valgte alternativer", addOns: "Tillegg", includedItems: "Inkluderte varer", noItems: "Varedetaljer er ikke tilgjengelige i gjeldende API-svar.", modifiedItems: "Endrede varer", modifiedDescription: "Dette er ventende endringer foreslått av leverandøren. Den opprinnelige bestillingen forblir aktiv til du godkjenner og bruker dem.", changeCount: "{{count}} endring", changeCount_other: "{{count}} endringer", previous: "Tidligere", updated: "Oppdatert", orderInformation: "Ordreinformasjon", invoiceNumber: "Fakturanummer", orderPlacedOn: "Bestilt den", eventDate: "Arrangementsdato", eventTime: "Arrangementstid", guestCount: "Antall gjester", deliveryFee: "Leveringsgebyr", deliveryAddress: "Leveringsadresse", orderNotes: "Ordrenotater", notAvailable: "Ikke tilgjengelig", grandTotal: "Totalsum", grandTotalHint: "Inkluderer hele ordrebeløpet", modificationClosed: "Endring stengt", modifyOrder: "Endre bestilling"
+      closeAria: "Lukk ordredetaljer",
+      overview: "Ordreoversikt",
+      title: "Ordredetaljer",
+      loading: "Laster ordredetaljer...",
+      loadErrorTitle: "Kunne ikke laste inn fullstendige ordredetaljer",
+      changeRequested: "Endring forespurt",
+      vendor: "Leverandør",
+      orderId: "Ordre-ID",
+      event: "Arrangement",
+      guests: "Gjester",
+      total: "Total",
+      items: "Varer",
+      itemCount: "{{count}} vare",
+      itemCount_other: "{{count}} varer",
+      description: "Beskrivelse",
+      vendorNote: "Notat til leverandør",
+      selectedOptions: "Valgte alternativer",
+      addOns: "Tillegg",
+      includedItems: "Inkluderte varer",
+      noItems: "Varedetaljer er ikke tilgjengelige i gjeldende API-svar.",
+      modifiedItems: "Endrede varer",
+      modifiedDescription:
+        "Dette er ventende endringer foreslått av leverandøren. Den opprinnelige bestillingen forblir aktiv til du godkjenner og bruker dem.",
+      changeCount: "{{count}} endring",
+      changeCount_other: "{{count}} endringer",
+      previous: "Tidligere",
+      updated: "Oppdatert",
+      orderInformation: "Ordreinformasjon",
+      invoiceNumber: "Fakturanummer",
+      orderPlacedOn: "Bestilt den",
+      eventDate: "Arrangementsdato",
+      eventTime: "Arrangementstid",
+      guestCount: "Antall gjester",
+      deliveryFee: "Leveringsgebyr",
+      deliveryAddress: "Leveringsadresse",
+      orderNotes: "Ordrenotater",
+      notAvailable: "Ikke tilgjengelig",
+      grandTotal: "Totalsum",
+      grandTotalHint: "Inkluderer hele ordrebeløpet",
+      modificationClosed: "Endring stengt",
+      modifyOrder: "Endre bestilling",
     },
     invoices: {
       title: "Fakturaer",
@@ -1613,7 +1718,8 @@ const no = {
     },
     otherFilters: {
       individualPackaging: "Individuell pakking",
-      individualPackagingDescription: "Restauranter som tilbyr individuelt pakkede varer",
+      individualPackagingDescription:
+        "Restauranter som tilbyr individuelt pakkede varer",
       new: "Ny",
       newDescription: "Restauranter som er nye på GoCatering",
       smallBusiness: "Liten bedrift",
@@ -1643,7 +1749,8 @@ const no = {
       "Det finnes ingen tilgjengelige menyvarer for {{categoryLabel}} akkurat nå. Prøv en annen kategori for å se flere alternativer.",
     noMenuGeneric:
       "Det finnes ingen tilgjengelige menyvarer akkurat nå. Prøv en annen kategori for å se flere alternativer.",
-    noVendorsGeneric: "Ingen leverandører er tilgjengelige for dette området ennå.",
+    noVendorsGeneric:
+      "Ingen leverandører er tilgjengelige for dette området ennå.",
     noProductsGeneric: "Ingen produkter er tilgjengelige akkurat nå.",
     clearAllFilters: "Fjern alle filtre",
     clearFilter: "Fjern filter",

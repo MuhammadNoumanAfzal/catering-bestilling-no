@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import {
   formatCategoryLabel,
@@ -16,6 +17,7 @@ import {
 } from "../utils/homeCatalog";
 
 export default function VendorListingPage() {
+  const { t } = useTranslation();
   const { vendorType } = useParams();
   const [searchParams] = useSearchParams();
   const { deliveryDate, deliveryTime, locationValue, searchQuery } = useBrowseFilters();
@@ -68,16 +70,26 @@ export default function VendorListingPage() {
     return <Navigate to="/" replace />;
   }
 
+  const badge = t("vendors.badge", { defaultValue: "Vendors" });
   const title = isAll
-    ? "All Vendors"
+    ? t("vendors.allTitle", { defaultValue: "All Vendors" })
     : isPopular
-      ? "Popular Vendors"
-      : "Featured Vendors";
+      ? t("vendors.popularTitle", { defaultValue: "Popular Vendors" })
+      : t("vendors.featuredTitle", { defaultValue: "Featured Vendors" });
   const description = isAll
-    ? "Browse all available vendors in one place and filter by location, category, or search to find the best fit for your event."
+    ? t("vendors.allDescription", {
+        defaultValue:
+          "Browse all available vendors in one place and filter by location, category, or search to find the best fit for your event.",
+      })
     : isPopular
-      ? "Explore the vendors customers order from most often for everyday lunches and office catering."
-      : "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.";
+      ? t("vendors.popularDescription", {
+          defaultValue:
+            "Explore the vendors customers order from most often for everyday lunches and office catering.",
+        })
+      : t("vendors.featuredDescription", {
+          defaultValue:
+            "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.",
+        });
   const vendors = isAll
     ? (allVendors.length > 0 ? allVendors : directVendors)
     : isPopular
@@ -100,7 +112,7 @@ export default function VendorListingPage() {
 
   return (
     <CatalogListingPageLayout
-      badge="Vendors"
+      badge={badge}
       title={title}
       description={description}
       activeCategoryLabel={activeCategoryLabel}
@@ -117,11 +129,11 @@ export default function VendorListingPage() {
         )
       }
     >
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {visibleVendors.map((vendor) => (
-            <VendorCard key={vendor.id ?? vendor.name} {...vendor} />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {visibleVendors.map((vendor) => (
+          <VendorCard key={vendor.id ?? vendor.name} {...vendor} />
+        ))}
+      </div>
     </CatalogListingPageLayout>
   );
 }
