@@ -28,7 +28,7 @@ export default function HeroSection({
         <div className="px-4 pb-6 sm:px-6 sm:pb-8 lg:px-8 lg:pb-10">
           <div className="grid items-center gap-6 overflow-hidden bg-transparent py-2 sm:gap-8 sm:py-4 lg:grid-cols-[0.95fr_1.05fr] lg:gap-6 lg:py-6">
             <div className="max-w-[680px] pl-0 sm:pl-4 lg:pl-6">
-              <h1 className="max-w-[12ch] text-[28px] font-black leading-[0.98] tracking-[-0.05em] text-[#17110d] sm:max-w-none sm:text-[46px] sm:leading-[1.02] lg:text-[56px]">
+              <h1 className="max-w-full text-[24px] font-black leading-[1.05] tracking-[-0.04em] text-[#17110d] sm:text-[46px] sm:leading-[1.02] lg:text-[56px]">
                 {t("home.heroTitleLineOne")}
                 <br />
                 {t("home.heroTitleLineTwo")}

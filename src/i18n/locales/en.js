@@ -65,9 +65,9 @@ const en = {
     vendors: "Vendors",
     terms: "Terms",
     privacy: "Privacy",
-    headline: "Modern catering, minus the friction.",
+    headline: "Delivery across Norway",
     description:
-      "Discover local food partners for office lunches, meetings, and private events.",
+      "Order catering from your favorite supplier across Norway",
     copyright: "\u00a9 2026 GoCatering",
   },
   browse: {
@@ -75,6 +75,27 @@ const en = {
       foodType: "Browse by Food Type",
       occasion: "Browse by Occasion",
     },
+  },
+  vendors: {
+    badge: "Vendors",
+    allTitle: "All Vendors",
+    popularTitle: "Popular Vendors",
+    featuredTitle: "Featured Vendors",
+    allDescription:
+      "Browse all available vendors in one place and filter by location, category, or search to find the best fit for your event.",
+    popularDescription:
+      "Explore the vendors customers order from most often for everyday lunches and office catering.",
+    featuredDescription:
+      "Browse a hand-picked mix of vendors offering standout menus for team lunches, meetings, and events.",
+    backToHome: "Back to home",
+    showingCategory: "Showing category: {{category}}",
+    showMore: "Show {{count}} more",
+  },
+  products: {
+    badge: "Products",
+    popularTitle: "Popular Products",
+    popularDescription:
+      "Browse the most-ordered meals and catering picks that teams keep coming back to.",
   },
   auth: {
     common: {
@@ -177,8 +198,8 @@ const en = {
     heroBadgeTwo: "Corporate planning made easy",
     heroBadgeThree: "Private celebrations",
     heroTitle: "Order catering from your favorite supplier across Norway",
-    heroTitleLineOne: "Delivery all over Norway",
-    heroTitleLineTwo: "Order catering from your favorite vendor all over Norway",
+    heroTitleLineOne: "Order catering from your",
+    heroTitleLineTwo: "favorite supplier across Norway",
     heroSubtitle:
       "Compare trusted caterers, curated menus, and reliable delivery for office events, private parties, and large gatherings.",
     heroSlideTwoTitleLineOne: "Bring Teams Together",
@@ -899,8 +920,8 @@ const en = {
     viewMore: "View More",
     nav: {
       dashboard: "Dashboard",
-    customer: "Customer",
-    clientDashboard: "Client dashboard",
+      customer: "Customer",
+      clientDashboard: "Client dashboard",
       orders: "Orders",
       restaurants: "Restaurants",
       invoices: "Invoices",
@@ -1321,7 +1342,7 @@ const en = {
       clickOrDrag: "Click or drag to upload",
       attachmentDisabledHint:
         "You can still submit your ticket without an attachment.",
-      attachmentHint: "PNG, JPG, JPEG or WEBP image max 2MB",
+      attachmentHint: "PNG, JPG, JPEG or WEBP image max 5MB",
       attachmentReady:
         "Attachment selected and ready to send with your ticket.",
       submitting: "Submitting...",
@@ -1329,7 +1350,7 @@ const en = {
       uploadUnavailableError:
         "Attachments are temporarily unavailable right now. You can still submit your ticket without an image.",
       invalidFileType: "Please upload a PNG, JPG, JPEG, or WEBP image.",
-      invalidFileSize: "Please upload an image under 2MB.",
+      invalidFileSize: "Please upload an image under 5MB.",
       submittedSuccess: "Support ticket submitted successfully",
       submitFailedMessage: "Unable to submit support ticket right now.",
       submitFailedTitle: "Support ticket failed",

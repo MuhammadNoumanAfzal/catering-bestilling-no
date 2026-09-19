@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import BackLinkButton from "../../../components/shared/BackLinkButton";
 
 export default function CatalogListingPageLayout({
@@ -11,6 +12,8 @@ export default function CatalogListingPageLayout({
   onShowMore,
   children,
 }) {
+  const { t } = useTranslation();
+
   return (
     <section className="bg-white px-4 py-8 sm:px-6 lg:px-20">
       <div className="mx-auto w-full max-w-7xl">
@@ -25,13 +28,16 @@ export default function CatalogListingPageLayout({
             </p>
             {activeCategoryLabel ? (
               <p className="mt-3 inline-flex rounded-full bg-[#fff1eb] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#c85f33]">
-                Showing category: {activeCategoryLabel}
+                {t("vendors.showingCategory", {
+                  category: activeCategoryLabel,
+                  defaultValue: `Showing category: ${activeCategoryLabel}`,
+                })}
               </p>
             ) : null}
           </div>
 
           <BackLinkButton to="/" className="text-[13px]">
-            Back to home
+            {t("vendors.backToHome", { defaultValue: "Back to home" })}
           </BackLinkButton>
         </div>
 
@@ -50,7 +56,7 @@ export default function CatalogListingPageLayout({
               onClick={onShowMore}
               className="rounded-full bg-[#c85f33] px-6 py-3 text-[14px] font-semibold text-white transition hover:bg-[#b6542c]"
             >
-              Show 8 more
+              {t("vendors.showMore", { count: 8, defaultValue: "Show 8 more" })}
             </button>
           </div>
         ) : null}
