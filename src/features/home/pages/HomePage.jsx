@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { showNoVendorsAlert } from "../../../utils/alerts";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
-import { getBrowseFallbackIcon } from "../../browse/data/browseData";
+import { foodTypeCategories as fallbackFoodTypeCategories, getBrowseFallbackIcon } from "../../browse/data/browseData";
 import {
   browseProductsByFoodType,
   fetchFoodTypes,
@@ -159,20 +159,26 @@ export default function HomePage() {
 
         setDietaryOptions(filterOptions.dietaryOptions || []);
 
+        const mappedFoodTypes = items.map((item) => ({
+          id: item.id || "",
+          name: item.name || "Category",
+          value: item.slug || slugifyCategory(item.name),
+          slug: item.slug || slugifyCategory(item.name),
+          icon: item.iconUrl || getBrowseFallbackIcon(item.slug || item.name),
+        }));
+
         setFoodTypeCategories(
-          items
-            .filter((item) => Number(item?.productsCount ?? 0) > 0)
-            .map((item) => ({
-              id: item.id || "",
-              name: item.name || "Category",
-              value: item.slug || slugifyCategory(item.name),
-              slug: item.slug || slugifyCategory(item.name),
-              icon: item.iconUrl || getBrowseFallbackIcon(item.slug || item.name),
-            })),
+          mappedFoodTypes.length >= 6
+            ? mappedFoodTypes
+            : fallbackFoodTypeCategories.map((item) => ({
+                ...item,
+                value: slugifyCategory(item.name),
+                slug: slugifyCategory(item.name),
+              })),
         );
       } catch {
         if (isMounted) {
-          setFoodTypeCategories([]);
+          setFoodTypeCategories(fallbackFoodTypeCategories.map((item) => ({ ...item, value: slugifyCategory(item.name), slug: slugifyCategory(item.name) })));
         }
       }
     }

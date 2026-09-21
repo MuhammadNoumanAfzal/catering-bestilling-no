@@ -24,7 +24,7 @@ export default function FoodBrowsePreviewSection({
   return (
     <section className="overflow-x-clip bg-white px-4 py-6 sm:px-8 lg:px-20">
       <div className="relative mx-auto w-full max-w-7xl">
-        <BrowseTabs gapless showCenterDivider />
+        <BrowseTabs activeId="food-type" gapless showCenterDivider />
 
         <BrowseCategoryStrip
           activeCategory={selectedCategory}

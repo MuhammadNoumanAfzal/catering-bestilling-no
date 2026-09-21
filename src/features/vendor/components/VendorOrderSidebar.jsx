@@ -97,13 +97,13 @@ export default function VendorOrderSidebar({
           <div className="flex min-h-[720px] flex-col items-center justify-center text-center">
             <LuUtensilsCrossed className="text-[64px] text-[#9d9d9d]" />
             <p className="mt-4 type-h3 font-semibold text-[#1f1f1f]">
-              Add items to your cart
+              {t("vendor.addItemsToCart")}
             </p>
           </div>
         ) : (
           <div className="border border-[#d8d2ca] bg-white px-3 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
             <h2 className="text-center type-h3 font-extrabold uppercase tracking-[0.04em] ">
-              Order Summary
+              {t("vendor.orderSummary")}
             </h2>
 
             <div className="mt-3 border-t border-[#ddd6cf] pt-3">
@@ -135,15 +135,15 @@ export default function VendorOrderSidebar({
                   <div className="mt-3 flex items-center justify-between gap-3">
                     <p className="type-para text-[#76706a]">
                       {item.isAddOn
-                        ? `Qty ${item.quantity}`
-                        : `Serves ${item.effectiveServes}`}
+                        ? t("vendor.qty", { count: item.quantity })
+                        : t("vendor.serves", { count: item.effectiveServes })}
                     </p>
                     <button
                       type="button"
                       onClick={() => onRemoveItem(item.id)}
                       className="cursor-pointer type-para font-medium text-[#e05b46]"
                     >
-                      Delete
+                      {t("vendor.deleteItem")}
                     </button>
                   </div>
                 </div>
@@ -153,7 +153,7 @@ export default function VendorOrderSidebar({
 
             <div className="border-b border-[#e2ddd8] py-4 type-para ">
               <div className="flex items-center justify-between gap-3">
-                <span>Subtotal</span>
+                <span>{t("vendor.subtotal")}</span>
                 <span className="font-semibold ">
                   NOK {formatCurrency(subtotal)}
                 </span>
@@ -161,18 +161,18 @@ export default function VendorOrderSidebar({
               <p className="mt-1 type-para text-[#76706a]">{restaurantName}</p>
 
               <div className="mt-2 flex items-center justify-between gap-3">
-                <span>Delivery fee</span>
+                <span>{t("vendor.deliveryFee")}</span>
                 <span className="font-semibold text-[#76706a]">
                   NOK {formatCurrency(deliveryFee)}
                 </span>
               </div>
               <p className="mt-1 type-para text-[#76706a]">
-                This is not a driver tip
+                {t("vendor.notDriverTip")}
               </p>
 
               {addOnsTotal > 0 ? (
                 <div className="mt-2 flex items-center justify-between gap-3">
-                  <span>Add-ons</span>
+                  <span>{t("vendor.addOns")}</span>
                   <span className="font-semibold text-[#76706a]">
                     NOK {formatCurrency(addOnsTotal)}
                   </span>
@@ -187,7 +187,7 @@ export default function VendorOrderSidebar({
               </div>
 
               <div className="mt-2 flex items-center justify-between gap-3">
-                <span>Tip</span>
+                <span>{t("vendor.tip")}</span>
                 <span className="font-semibold ">
                   NOK {formatCurrency(tipValue)}
                 </span>
@@ -195,7 +195,7 @@ export default function VendorOrderSidebar({
             </div>
 
             <div className="border-b border-[#e2ddd8] py-4">
-              <p className="text-[13px] font-semibold ">Tip</p>
+              <p className="text-[13px] font-semibold ">{t("vendor.tip")}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {TIP_OPTIONS.map((option) => (
                   <button
@@ -227,7 +227,7 @@ export default function VendorOrderSidebar({
               {orderSummary.tipRate === "other" && (
                 <div className="mt-3 max-w-[200px]">
                   <label className="block text-[12px] font-medium text-[#8b8580]">
-                    Enter custom tip amount (NOK)
+                    {t("vendor.customTipAmount")}
                   </label>
                   <div className="relative mt-1.5 rounded-[4px] shadow-sm">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -249,20 +249,20 @@ export default function VendorOrderSidebar({
 
             <div className="border-b border-[#e2ddd8] py-4">
               <h3 className="text-center type-h3 font-extrabold uppercase tracking-[0.04em] text-[#1d1d1d]">
-                Event Details
+                {t("menu.eventDetails")}
               </h3>
 
               <div className="mt-4">
                 <p className="type-para font-semibold ">
-                  Delivery Date &amp; Time
+                  {t("vendor.deliveryDateTime")}
                 </p>
                 <div className="mt-2 w-full border border-[#ddd6cf] px-3 py-3 text-left text-[14px] text-[#66605b]">
-                  {formattedDateTime || "Select delivery date and time during checkout"}
+                  {formattedDateTime || t("vendor.selectDeliveryDateTime")}
                 </div>
               </div>
 
               <div className="mt-4">
-                <p className="type-para font-semibold ">Person Count</p>
+                <p className="type-para font-semibold ">{t("menu.personsLabel")}</p>
                 <div className="mt-2 inline-flex items-center border border-[#d7d1ca] text-[14px] text-[#3a3a3a]">
                   <button
                     type="button"
@@ -292,15 +292,14 @@ export default function VendorOrderSidebar({
 
               <div className="mt-4 text-center type-para text-[#55514d]">
                 <p>
-                  Location:{" "}
-                  {orderSummary.deliveryAddress || "Add delivery address during checkout"}
+                  {t("vendor.location")}: {" "}{orderSummary.deliveryAddress || t("vendor.addDeliveryAddress")}
                 </p>
               </div>
             </div>
 
             <div className="pt-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="type-h4 font-semibold ">Total</span>
+                <span className="type-h4 font-semibold ">{t("vendor.total")}</span>
                 <span className="type-h4  font-semibold ">
                   NOK {formatCurrency(grandTotal)}
                 </span>
@@ -344,15 +343,15 @@ export default function VendorOrderSidebar({
                   if (validationError) {
                     await showAuthErrorAlert(
                       validationError,
-                      "Order details required",
+                      t("vendor.orderDetailsRequired"),
                     );
                     return;
                   }
 
                   if (!isVendorAvailable) {
                     await showAuthErrorAlert(
-                      "This caterer is unavailable at your selected delivery time. Please choose another date or time before checkout.",
-                      "Unavailable for selected time",
+                      t("vendor.unavailableSelectedTimeMessage"),
+                      t("vendor.unavailableSelectedTimeTitle"),
                     );
                     return;
                   }
@@ -365,7 +364,7 @@ export default function VendorOrderSidebar({
                     : "cursor-not-allowed bg-[#d7c5b9]"
                 }`}
               >
-                Checkout
+                {t("vendor.checkout")}
               </button>
             </div>
           </div>

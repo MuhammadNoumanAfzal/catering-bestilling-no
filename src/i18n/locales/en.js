@@ -82,7 +82,7 @@ const en = {
     popularTitle: "Popular Vendors",
     featuredTitle: "Featured Vendors",
     allDescription:
-      "Browse all available vendors in one place and filter by location, category, or search to find the best fit for your event.",
+      "Explore the most popular vendors in your area.",
     popularDescription:
       "Explore the vendors customers order from most often for everyday lunches and office catering.",
     featuredDescription:
@@ -458,6 +458,33 @@ const en = {
     sharingUnsupported: "Sharing is not supported on this device",
     backToSearch: "Back to search",
     cateringMenu: "Catering Menu",
+    menuCategory: "Menu Category",
+    feeds: "Feeds {{count}}",
+    allergens: "Allergens: {{allergens}}",
+    itemTags: {
+      popular: "Popular",
+      featured: "Featured",
+    },
+    addItemsToCart: "Add items to your cart",
+    orderSummary: "Order Summary",
+    deleteItem: "Delete",
+    qty: "Qty {{count}}",
+    serves: "Serves {{count}}",
+    subtotal: "Subtotal",
+    deliveryFee: "Delivery fee",
+    notDriverTip: "This is not a driver tip",
+    addOns: "Add-ons",
+    tip: "Tip",
+    customTipAmount: "Enter custom tip amount (NOK)",
+    deliveryDateTime: "Delivery Date & Time",
+    selectDeliveryDateTime: "Select delivery date and time during checkout",
+    location: "Location",
+    addDeliveryAddress: "Add delivery address during checkout",
+    total: "Total",
+    checkout: "Checkout",
+    orderDetailsRequired: "Order details required",
+    unavailableSelectedTimeMessage: "This caterer is unavailable at your selected delivery time. Please choose another date or time before checkout.",
+    unavailableSelectedTimeTitle: "Unavailable for selected time",
     openForSelectedTime: "Open for selected time",
     closedOrUnavailable: "Closed / Not Available",
     reviewsCount: "({{count}} reviews)",
@@ -615,6 +642,7 @@ const en = {
     checkingSlots: "Checking available delivery slots...",
     signInForSlots:
       "Sign in to view live delivery availability for the selected date.",
+    signInSlotsTitle: "Sign in to view delivery slots",
     stepOne: "Step 1",
     chooseWindow: "Choose a delivery window",
     selectedWindow: "Selected: {{label}}",
@@ -633,10 +661,10 @@ const en = {
     notSelected: "Not selected",
     noSlotsForDate:
       "No delivery slots are available for the selected date. Please choose another day.",
-    eventDetails: "Event Details",
+    eventDetails: "Number of people",
     guestCountIntro: "Set the expected number of guests for this order.",
-    personsLabel: "Persons:",
-    minimumLabel: "Minimum {{count}}",
+    personsLabel: "Number of people",
+    minimumLabel: "Minimum {{count}} people",
     addVendorNote: "Add Note for Vendor",
     addVendorNoteDesc:
       "Share access notes, setup instructions, or anything the kitchen should know before delivery.",
@@ -908,7 +936,7 @@ const en = {
     },
   },
   vendorPanel: {
-    dateFilters: { filterByDate: "Filter by date", allTime: "All time", last7Days: "Last 7 days", lastMonth: "Last month", last3Months: "Last 3 months", last6Months: "Last 6 months", thisYear: "This year", customDate: "Custom date", clear: "Clear filters", from: "From", to: "To", apply: "Apply" },
+    dateFilters: { filterByDate: "Filter by date", allTime: "All time", last7Days: "Last 7 days", lastMonth: "Last month", last3Months: "Last 3 months", last6Months: "Last 6 months", thisYear: "This year", customDate: "Custom date", customRange: "From: {{from}} To: {{to}}", clear: "Clear filters", from: "From", to: "To", active: "Active", apply: "Apply" },
     logoAlt: "GoCatering",
     searchAria: "Search",
     searchPlaceholder: "Search orders, vendors, menus, or IDs...",
@@ -1342,7 +1370,7 @@ const en = {
       clickOrDrag: "Click or drag to upload",
       attachmentDisabledHint:
         "You can still submit your ticket without an attachment.",
-      attachmentHint: "PNG, JPG, JPEG or WEBP image max 5MB",
+      attachmentHint: "PNG, JPG, JPEG or WEBP image",
       attachmentReady:
         "Attachment selected and ready to send with your ticket.",
       submitting: "Submitting...",
@@ -1350,7 +1378,6 @@ const en = {
       uploadUnavailableError:
         "Attachments are temporarily unavailable right now. You can still submit your ticket without an image.",
       invalidFileType: "Please upload a PNG, JPG, JPEG, or WEBP image.",
-      invalidFileSize: "Please upload an image under 5MB.",
       submittedSuccess: "Support ticket submitted successfully",
       submitFailedMessage: "Unable to submit support ticket right now.",
       submitFailedTitle: "Support ticket failed",

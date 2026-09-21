@@ -42,7 +42,7 @@ const no = {
     searchAction: "S\u00f8k",
     anyTime: "Når som helst",
     anyDay: "Valgfri dag",
-    eventDetails: "Arrangement",
+    eventDetails: "Antall personer",
     attendees: "{{count}} deltakere",
     deliveryDate: "Leveringsdato",
     deliveryTime: "Leveringstid",
@@ -84,7 +84,7 @@ const no = {
     popularTitle: "Populære leverandører",
     featuredTitle: "Utvalgte leverandører",
     allDescription:
-      "Utforsk alle tilgjengelige leverandører på ett sted, og filtrer etter sted, kategori eller søk for å finne den beste maten til ditt arrangement.",
+      "Utforsk de mest populære leverandørene innen ditt område.",
     popularDescription:
       "Utforsk leverandørene kundene bestiller mest fra til hverdagslunsj og kontorcatering.",
     featuredDescription:
@@ -253,13 +253,13 @@ const no = {
     explore: "Utforsk",
     browseAllVendors: "Se alle leverandører",
     postalCodeHint:
-      "Skriv inn et postnummer med 4 eller 5 sifre for å sØke i området ditt.",
+      "Skriv inn et postnummer med 4 eller 5 sifre for å søke i området ditt.",
     more: "Mer",
     menuTitle: "Meny",
     menuTitleWithCategory: "{{category}}-meny",
     postalCodeSummary: "postnummer {{postCode}}",
     postalCodeValidation:
-      "Postnummeret må våre 4 eller 5 sifre før du kan sØke.",
+      "Postnummeret må være 4 eller 5 sifre før du kan søke.",
     categoryVendorsServing:
       "{{category}} leverandører som leverer til {{location}}",
     vendorsServing: "Leverandører som leverer til {{location}}",
@@ -327,7 +327,7 @@ const no = {
     languageSubtitle:
       "Velg språket som brukes for hardkodet klientinnhold i hele appen.",
     languageDescription:
-      "API-drevne navn og beskrivelser vises på originalspråket til flersprØklig API-støtte er lagt til.",
+      "API-drevne navn og beskrivelser vises på originalspråket til flerspråklig API-støtte er lagt til.",
     saveHeading: "Lagre endringer",
     reset: "Tilbakestill",
     save: "Lagre endringer",
@@ -424,7 +424,7 @@ const no = {
     helpTopic: "Hva kan vi hjelpe med?",
     message: "Melding",
     messagePlaceholder:
-      "Fortell oss arrangementsdato, antall deltakere, ønsket kjØkken, leveringssted eller annet du trenger hjelp med.",
+      "Fortell oss arrangementsdato, antall deltakere, ønsket kjøkken, leveringssted eller annet du trenger hjelp med.",
     responseTime: "Vi svarer vanligvis innen \u00e9n virkedag.",
     sending: "Sender...",
     sendMessage: "Send melding",
@@ -439,7 +439,7 @@ const no = {
     callTeam: "Ring teamet vårt",
     callTeamDesc:
       "Best for hasteendringer i catering, leveringskoordinering og timing med leverandører.",
-    kitchenDesk: "BesØk kjØkkendesk",
+    kitchenDesk: "Besøk kjøkkendesk",
     kitchenDeskDesc:
       "Møt teamet for partnerskapssamtaler, menysmaking og arrangementsplanlegging.",
     stepOneTitle: "Fortell oss hva du trenger",
@@ -483,8 +483,35 @@ const no = {
     sharedSuccess: "{{name}} ble delt",
     linkCopied: "Restaurantlenken ble kopiert",
     sharingUnsupported: "Deling støttes ikke på denne enheten",
-    backToSearch: "Tilbake til sØk",
+    backToSearch: "Tilbake til søk",
     cateringMenu: "Cateringmeny",
+    menuCategory: "Menykategori",
+    feeds: "Holder til {{count}}",
+    allergens: "Allergener: {{allergens}}",
+    itemTags: {
+      popular: "Populær",
+      featured: "Fremhevet",
+    },
+    addItemsToCart: "Legg varer i handlekurven",
+    orderSummary: "Ordresammendrag",
+    deleteItem: "Slett",
+    qty: "Ant. {{count}}",
+    serves: "Holder til {{count}}",
+    subtotal: "Delsum",
+    deliveryFee: "Leveringsgebyr",
+    notDriverTip: "Dette er ikke tips til sjåføren",
+    addOns: "Tillegg",
+    tip: "Tips",
+    customTipAmount: "Skriv inn egendefinert tipsbeløp (NOK)",
+    deliveryDateTime: "Leveringsdato og tid",
+    selectDeliveryDateTime: "Velg leveringsdato og tid i utsjekken",
+    location: "Sted",
+    addDeliveryAddress: "Legg til leveringsadresse i utsjekken",
+    total: "Totalt",
+    checkout: "Til utsjekk",
+    orderDetailsRequired: "Ordredetaljer kreves",
+    unavailableSelectedTimeMessage: "Denne leverandøren er ikke tilgjengelig på valgt leveringstid. Velg en annen dato eller tid før utsjekk.",
+    unavailableSelectedTimeTitle: "Utilgjengelig for valgt tid",
     openForSelectedTime: "Åpen for valgt tidspunkt",
     closedOrUnavailable: "Stengt / ikke tilgjengelig",
     reviewsCount: "({{count}} anmeldelser)",
@@ -652,6 +679,7 @@ const no = {
     checkingSlots: "Sjekker tilgjengelige leveringstider...",
     signInForSlots:
       "Logg inn for å se live leveringstilgjengelighet for valgt dato.",
+    signInSlotsTitle: "Logg inn for å se leveringstider",
     stepOne: "Steg 1",
     chooseWindow: "Velg et leveringsvindu",
     selectedWindow: "Valgt: {{label}}",
@@ -669,13 +697,13 @@ const no = {
     notSelected: "Ikke valgt",
     noSlotsForDate:
       "Ingen leveringstider er tilgjengelige for valgt dato. Velg en annen dag.",
-    eventDetails: "Arrangement",
+    eventDetails: "Antall personer",
     guestCountIntro: "Angi forventet antall gjester for denne bestillingen.",
-    personsLabel: "Personer:",
-    minimumLabel: "Minimum {{count}}",
+    personsLabel: "Antall personer",
+    minimumLabel: "Minimum {{count}} personer",
     addVendorNote: "Legg til notat for leverandør",
     addVendorNoteDesc:
-      "Del adkomstnotater, oppsettsinstruksjoner eller annet kjØkkenet bør vite før levering.",
+      "Del adkomstnotater, oppsettsinstruksjoner eller annet kjøkkenet bør vite før levering.",
     addNotePlaceholder: "Legg til notat...",
     addToCart: "Legg i handlekurv",
     addOnsEyebrow: "Tilpass bestillingen",
@@ -758,7 +786,7 @@ const no = {
     rejectionPlaceholder: "Skriv avvisningsgrunn",
     rejectionReasonLabel: "Avvisningsgrunn",
     rejectAdjustmentConfirm: "Avvis endring",
-    rejectionReasonRequired: "En avvisningsgrunn er pØkrevd.",
+    rejectionReasonRequired: "En avvisningsgrunn er påkrevd.",
   },
   checkout: {
     title: "Utsjekk",
@@ -1159,6 +1187,7 @@ const no = {
       },
       date: {
         allTime: "Hele perioden",
+        last7Days: "Siste 7 dager",
         lastMonth: "Siste måned",
         last3Months: "Siste 3 måneder",
         last6Months: "Siste 6 måneder",
@@ -1212,7 +1241,7 @@ const no = {
       clickOrDrag: "Klikk eller dra for å laste opp",
       attachmentDisabledHint:
         "Du kan fortsatt sende inn henvendelsen uten vedlegg.",
-      attachmentHint: "PNG-, JPG-, JPEG- eller WEBP-bilde maks 5MB",
+      attachmentHint: "PNG-, JPG-, JPEG- eller WEBP-bilde",
       attachmentReady:
         "Vedlegget er valgt og klart til å sendes med henvendelsen.",
       submitting: "Sender inn...",
@@ -1220,7 +1249,6 @@ const no = {
       uploadUnavailableError:
         "Vedlegg er midlertidig utilgjengelige akkurat nå. Du kan fortsatt sende inn henvendelsen uten bilde.",
       invalidFileType: "Last opp et PNG-, JPG-, JPEG- eller WEBP-bilde.",
-      invalidFileSize: "Last opp et bilde under 5MB.",
       submittedSuccess: "Supporthenvendelsen ble sendt",
       submitFailedMessage:
         "Kunne ikke sende inn supporthenvendelsen akkurat nå.",
@@ -1393,9 +1421,11 @@ const no = {
       last6Months: "Siste 6 måneder",
       thisYear: "I år",
       customDate: "Egendefinert dato",
+      customRange: "Fra: {{from}} Til: {{to}}",
       clear: "Tøm filter",
       from: "Fra",
       to: "Til",
+      active: "Aktiv",
       apply: "Bruk",
     },
     logoAlt: "GoCatering",

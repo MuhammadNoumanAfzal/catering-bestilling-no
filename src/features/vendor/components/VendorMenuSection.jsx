@@ -1,6 +1,8 @@
 import VendorMenuItemCard from "./VendorMenuItemCard";
+import { useTranslation } from "react-i18next";
 
 export default function VendorMenuSection({ section, onItemClick }) {
+  const { t } = useTranslation();
   const sectionDescription =
     section.description || section.items[0]?.description || "";
 
@@ -8,7 +10,7 @@ export default function VendorMenuSection({ section, onItemClick }) {
     <section className="scroll-mt-36 rounded-[20px] border border-[#efe4da] bg-[#fffdfa] p-4 sm:p-5">
       <div className="max-w-3xl">
         <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#cf6e38]">
-          Menu Category
+          {t("vendor.menuCategory")}
         </p>
         <h3 className="mt-2 type-h4 text-[#111]">{section.title}</h3>
         {sectionDescription ? (
