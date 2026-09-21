@@ -97,7 +97,7 @@ export default function HomeNavbar() {
     await signOut();
     setIsProfileMenuOpen(false);
     closeMenu();
-    await showSuccessToast("Logged out successfully");
+    await showSuccessToast(t("alerts.loggedOutSuccess"));
   };
 
   const homeProfileMenuItems = [

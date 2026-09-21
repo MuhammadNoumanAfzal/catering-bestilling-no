@@ -567,10 +567,11 @@ export default function MenuDetailsPage() {
       deliveryAddress: orderSummary.deliveryAddress,
       personCount: orderSummary.personCount,
       minimumPersons,
+      t,
     });
 
     if (validationError) {
-      await showAuthErrorAlert(validationError, "Order details required");
+      await showAuthErrorAlert(validationError, t("menu.orderDetailsRequired"));
       return;
     }
 

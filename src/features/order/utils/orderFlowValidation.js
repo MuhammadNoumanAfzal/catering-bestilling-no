@@ -186,7 +186,11 @@ export function validateOrderSummaryBasics({
   deliveryTime,
   personCount,
   minimumPersons = 1,
+  t,
 }) {
+  const translate = typeof t === "function" ? t : null;
+  const message = (key, fallback, options) =>
+    translate ? translate(`orderValidation.${key}`, { defaultValue: fallback, ...options }) : fallback;
   const normalizedDate = `${deliveryDate ?? ""}`.trim();
   const normalizedTime = `${deliveryTime ?? ""}`.trim();
   const normalizedPersonCount = Math.max(
@@ -195,15 +199,15 @@ export function validateOrderSummaryBasics({
   );
 
   if (!normalizedDate) {
-    return "Please select a delivery date.";
+    return message("selectDeliveryDate", "Please select a delivery date.");
   }
 
   if (normalizedDate < getTodayDateValue()) {
-    return "Please select today or a future delivery date.";
+    return message("futureDeliveryDate", "Please select today or a future delivery date.");
   }
 
   if (!normalizedTime) {
-    return "Please select a delivery time.";
+    return message("selectDeliveryTime", "Please select a delivery time.");
   }
 
   if (normalizedDate === getTodayDateValue()) {
@@ -214,13 +218,13 @@ export function validateOrderSummaryBasics({
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
       if (selectedMinutes < currentMinutes) {
-        return "Please select a future delivery time for today.";
+        return message("futureDeliveryTimeToday", "Please select a future delivery time for today.");
       }
     }
   }
 
   if (normalizedPersonCount < (Number(minimumPersons ?? 1) || 1)) {
-    return `Person count must be at least ${minimumPersons}.`;
+    return message("minimumPersonCount", `Person count must be at least ${minimumPersons}.`, { count: minimumPersons });
   }
 
   return "";
@@ -231,7 +235,10 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue);
 }
 
-export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
+export function validateCheckoutForm({ formState, checkoutType, carts = [], t }) {
+  const translate = typeof t === "function" ? t : null;
+  const message = (key, fallback, options) =>
+    translate ? translate(`orderValidation.${key}`, { defaultValue: fallback, ...options }) : fallback;
   const commonError = validateOrderSummaryBasics({
     deliveryDate: formState.date,
     deliveryTime: formState.time,
@@ -245,7 +252,7 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
   }
 
   if (!`${formState.deliveryPostalCode ?? ""}`.trim()) {
-    return "Please enter the delivery postal code.";
+    return message("deliveryPostalCode", "Please enter the delivery postal code.");
   }
 
   const deliveryPostalCode = `${formState.deliveryPostalCode ?? ""}`.trim();
@@ -268,7 +275,7 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
           });
 
           if (!isMatched) {
-            return `The vendor "${vendor.name}" does not deliver to postal code ${deliveryPostalCode}.`;
+            return message("vendorPostalCodeUnavailable", `The vendor "${vendor.name}" does not deliver to postal code ${deliveryPostalCode}.`, { vendorName: vendor.name, postalCode: deliveryPostalCode });
           }
         }
       }
@@ -276,52 +283,52 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [] }) {
   }
 
   if (!`${formState.deliveryCity ?? ""}`.trim()) {
-    return "Please enter the delivery city.";
+    return message("deliveryCity", "Please enter the delivery city.");
   }
 
   if (!`${formState.invoiceAddress ?? ""}`.trim()) {
-    return "Please enter the invoice address.";
+    return message("invoiceAddress", "Please enter the invoice address.");
   }
 
   if (!`${formState.invoicePostalCode ?? ""}`.trim()) {
-    return "Please enter the invoice postal code.";
+    return message("invoicePostalCode", "Please enter the invoice postal code.");
   }
 
   if (!`${formState.invoiceCity ?? ""}`.trim()) {
-    return "Please enter the invoice city.";
+    return message("invoiceCity", "Please enter the invoice city.");
   }
 
   if (!`${formState.phone ?? ""}`.trim()) {
-    return "Please enter the phone number.";
+    return message("phone", "Please enter the phone number.");
   }
 
   if (!isValidEmail(formState.email)) {
-    return "Please enter a valid email address.";
+    return message("validEmail", "Please enter a valid email address.");
   }
 
   if (checkoutType === "corporate") {
     if (!`${formState.companyName ?? ""}`.trim()) {
-      return "Please enter the company name.";
+      return message("companyName", "Please enter the company name.");
     }
 
     if (!`${formState.organizationNumber ?? ""}`.trim()) {
-      return "Please enter the organization number.";
+      return message("organizationNumber", "Please enter the organization number.");
     }
 
     if (!`${formState.eventName ?? ""}`.trim()) {
-      return "Please enter the event name.";
+      return message("eventName", "Please enter the event name.");
     }
   } else {
     if (!`${formState.firstName ?? ""}`.trim()) {
-      return "Please enter the first name.";
+      return message("firstName", "Please enter the first name.");
     }
 
     if (!`${formState.lastName ?? ""}`.trim()) {
-      return "Please enter the last name.";
+      return message("lastName", "Please enter the last name.");
     }
 
     if (!`${formState.occasion ?? ""}`.trim()) {
-      return "Please enter the occasion.";
+      return message("occasion", "Please enter the occasion.");
     }
   }
 
