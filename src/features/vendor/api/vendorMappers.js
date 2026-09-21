@@ -209,9 +209,6 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
   const unitPrice = price;
   const detailLines = [
     product.description || "",
-    normalizeTags(product.allergens).length
-      ? `Allergens: ${normalizeTags(product.allergens).join(", ")}`
-      : "",
   ].filter(Boolean);
   const availableDays = Array.isArray(product.availableDays)
     ? product.availableDays
@@ -226,6 +223,7 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
     serves,
     subcategory,
     tag: product.isPopular ? "Popular" : product.isFeatured ? "Featured" : "",
+    tagKey: product.isPopular ? "popular" : product.isFeatured ? "featured" : "",
     description: product.description || "",
     detailLines,
     dietaryLabels: normalizeTags(product.dietaryTags),

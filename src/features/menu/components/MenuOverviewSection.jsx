@@ -183,7 +183,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
                 href="#menu-item-overview"
                 className="rounded-full bg-[#fff1e8] px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#c56535] transition hover:bg-[#ffe4d3] focus:outline-none focus:ring-2 focus:ring-[#cf6e38]/35"
               >
-                {cuisineBadge}
+                {t("menu.menuItem")}
               </a>
               <a
                 href="#menu-included-details"
@@ -226,14 +226,6 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
                 </p>
                 <p className="mt-0.5 text-[13px] font-semibold text-[#221b17]">
                   {t("menu.persons", { count: minimumPersons })}
-                </p>
-              </div>
-              <div className="rounded-[14px] bg-[#faf4ee] px-3 py-2">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.10em] text-[#a48370]">
-                  {t("menu.deliveryStyle")}
-                </p>
-                <p className="mt-0.5 text-[13px] font-semibold text-[#221b17]">
-                  {t("menu.deliveryStyleValue")}
                 </p>
               </div>
             </div>

@@ -217,7 +217,7 @@ export default function MenuDetailsPage() {
         Promise.resolve()
           .then(() =>
             promptSignInRequired({
-              title: "Sign in to view delivery slots",
+              title: t("menu.signInSlotsTitle"),
               text: authMessage,
             }),
           )
@@ -335,7 +335,7 @@ export default function MenuDetailsPage() {
               lastSlotAuthPromptKeyRef.current = promptKey;
 
               const result = await promptSignInRequired({
-                title: "Sign in to view delivery slots",
+                title: t("menu.signInSlotsTitle"),
                 text: authMessage,
               });
 

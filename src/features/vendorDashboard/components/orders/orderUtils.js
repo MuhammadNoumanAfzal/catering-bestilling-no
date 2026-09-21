@@ -11,13 +11,13 @@ export const ORDER_TABS = [
 ];
 
 export const ORDER_DATE_OPTIONS = [
-  { labelKey: "vendorPanel.notifications.date.allTime", value: "all-time" },
-  { labelKey: "vendorPanel.notifications.date.last7Days", value: "last-7-days" },
-  { labelKey: "vendorPanel.notifications.date.lastMonth", value: "last-month" },
-  { labelKey: "vendorPanel.notifications.date.last3Months", value: "last-3-months" },
-  { labelKey: "vendorPanel.notifications.date.last6Months", value: "last-6-months" },
-  { labelKey: "vendorPanel.notifications.date.thisYear", value: "this-year" },
-  { labelKey: "vendorPanel.notifications.date.customDate", value: "custom-date" },
+  { labelKey: "vendorPanel.dateFilters.allTime", value: "all-time" },
+  { labelKey: "vendorPanel.dateFilters.last7Days", value: "last-7-days" },
+  { labelKey: "vendorPanel.dateFilters.lastMonth", value: "last-month" },
+  { labelKey: "vendorPanel.dateFilters.last3Months", value: "last-3-months" },
+  { labelKey: "vendorPanel.dateFilters.last6Months", value: "last-6-months" },
+  { labelKey: "vendorPanel.dateFilters.thisYear", value: "this-year" },
+  { labelKey: "vendorPanel.dateFilters.customDate", value: "custom-date" },
 ];
 
 export const PAGE_SIZE = 8;
@@ -214,7 +214,7 @@ export function getDateFilterLabel(
 ) {
   if (selectedRange === "custom-date") {
     if (customDateRange.from && customDateRange.to) {
-      return t("vendorPanel.notifications.date.customRange", {
+      return t("vendorPanel.dateFilters.customRange", {
         from: formatInputDate(customDateRange.from),
         to: formatInputDate(customDateRange.to),
       });
@@ -222,7 +222,7 @@ export function getDateFilterLabel(
 
     const fromDate = new Date(referenceDate);
     fromDate.setDate(referenceDate.getDate() - 28);
-    return t("vendorPanel.notifications.date.customRange", {
+    return t("vendorPanel.dateFilters.customRange", {
       from: formatDateChip(fromDate),
       to: formatDateChip(referenceDate),
     });
@@ -231,7 +231,7 @@ export function getDateFilterLabel(
   return (
     t(
       ORDER_DATE_OPTIONS.find((option) => option.value === selectedRange)
-        ?.labelKey ?? "vendorPanel.notifications.date.allTime",
+        ?.labelKey ?? "vendorPanel.dateFilters.allTime",
     )
   );
 }

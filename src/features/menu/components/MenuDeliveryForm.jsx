@@ -73,8 +73,8 @@ export default function MenuDeliveryForm({
   const hasSlots = deliverySlots.length > 0;
   const selectedTime = orderSummary.deliveryTime || "";
   const personCount = Math.max(minimumPersons, Number(orderSummary.personCount) || minimumPersons);
-  const quickGuestCounts = Array.from({ length: 5 }, (_, index) => minimumPersons + index * 5);
-  const guestCountOptions = [...new Set([personCount, ...quickGuestCounts])].sort((left, right) => left - right);
+  const maxGuestOption = Math.max(personCount, minimumPersons + 10);
+  const guestCountOptions = Array.from({ length: maxGuestOption - minimumPersons + 1 }, (_, index) => minimumPersons + index);
   const firstAvailableSlot = deliverySlots.find((slot) => !slot.isFullyBooked) || null;
 
   function isTimeInSlot(time, slot) {

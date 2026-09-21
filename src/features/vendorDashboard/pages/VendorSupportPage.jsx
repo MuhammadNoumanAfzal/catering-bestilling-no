@@ -16,7 +16,6 @@ const ALLOWED_ATTACHMENT_TYPES = [
   "image/jpg",
   "image/webp",
 ];
-const MAX_ATTACHMENT_SIZE_BYTES = 2 * 1024 * 1024;
 
 const SUBJECT_OPTIONS = [
   { labelKey: "vendorPanel.supportPage.subjects.orderNotReceived", value: "order-not-received" },
@@ -154,13 +153,6 @@ export default function VendorSupportPage() {
             setSelectedFile(null);
             setSelectedFileName("");
             setAttachmentError(st("invalidFileType"));
-            return;
-          }
-
-          if (nextFile.size > MAX_ATTACHMENT_SIZE_BYTES) {
-            setSelectedFile(null);
-            setSelectedFileName("");
-            setAttachmentError(st("invalidFileSize"));
             return;
           }
 

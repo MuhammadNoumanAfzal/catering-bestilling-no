@@ -1,4 +1,10 @@
+import { useTranslation } from "react-i18next";
+
 export default function VendorMenuItemCard({ item, onClick }) {
+  const { t } = useTranslation();
+  const tagLabel = item.tagKey
+    ? t(`vendor.itemTags.${item.tagKey}`, { defaultValue: item.tag })
+    : item.tag;
   return (
     <article
       onClick={onClick}
@@ -22,7 +28,7 @@ export default function VendorMenuItemCard({ item, onClick }) {
 
           {item.tag ? (
             <span className="inline-flex rounded-full bg-[#fff1eb] px-2 py-0.5 text-[10px] font-medium text-[#cf5d2e]">
-              {item.tag}
+              {tagLabel}
             </span>
           ) : null}
         </div>
@@ -32,7 +38,7 @@ export default function VendorMenuItemCard({ item, onClick }) {
         </h4>
         {item.serves ? (
           <p className="text-[0.98rem] font-medium text-[#3a342f]">
-            Feeds {item.serves}
+            {t("vendor.feeds", { count: item.serves })}
           </p>
         ) : null}
 
@@ -47,6 +53,14 @@ export default function VendorMenuItemCard({ item, onClick }) {
               </p>
             ))}
           </div>
+        ) : null}
+
+        {item.allergens?.length ? (
+          <p className="line-clamp-2 text-[0.9rem] leading-5 text-[#746b63]">
+            {t("vendor.allergens", {
+              allergens: item.allergens.join(", "),
+            })}
+          </p>
         ) : null}
 
         <div className="flex flex-wrap gap-2">
