@@ -1,5 +1,5 @@
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 import { formatTimeTo24Hour } from "../../../components/shared/navbar/navbarDateUtils";
@@ -73,9 +73,22 @@ export default function MenuDeliveryForm({
   const hasSlots = deliverySlots.length > 0;
   const selectedTime = orderSummary.deliveryTime || "";
   const personCount = Math.max(minimumPersons, Number(orderSummary.personCount) || minimumPersons);
-  const maxGuestOption = Math.max(personCount, minimumPersons + 10);
-  const guestCountOptions = Array.from({ length: maxGuestOption - minimumPersons + 1 }, (_, index) => minimumPersons + index);
+  const [personCountDraft, setPersonCountDraft] = useState(String(personCount));
   const firstAvailableSlot = deliverySlots.find((slot) => !slot.isFullyBooked) || null;
+
+  useEffect(() => {
+    setPersonCountDraft(String(personCount));
+  }, [personCount]);
+
+  function commitPersonCount(nextValue) {
+    const parsedValue = Number.parseInt(nextValue, 10);
+    const safeValue = Number.isFinite(parsedValue)
+      ? Math.max(minimumPersons, parsedValue)
+      : minimumPersons;
+
+    onPersonCountChange(safeValue);
+    setPersonCountDraft(String(safeValue));
+  }
 
   function isTimeInSlot(time, slot) {
     return time >= slot.start && time <= slot.end;
@@ -370,16 +383,35 @@ export default function MenuDeliveryForm({
             >
               -
             </button>
-            <select
+            <input
               aria-label="Guest count"
-              className="h-8 min-w-14 cursor-pointer appearance-none bg-white px-2 text-center text-[12px] font-semibold text-[#1d1713] outline-none focus:bg-[#fffaf6]"
-              onChange={(event) => onPersonCountChange(Math.max(minimumPersons, Number(event.target.value)))}
-              value={personCount}
-            >
-              {guestCountOptions.map((count) => (
-                <option key={count} value={count}>{count}</option>
-              ))}
-            </select>
+              className="h-8 w-20 bg-white px-2 text-center text-[12px] font-semibold text-[#1d1713] outline-none focus:bg-[#fffaf6]"
+              inputMode="numeric"
+              min={minimumPersons}
+              onBlur={(event) => commitPersonCount(event.target.value)}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+
+                if (!/^\d*$/.test(nextValue)) {
+                  return;
+                }
+
+                setPersonCountDraft(nextValue);
+
+                const parsedValue = Number.parseInt(nextValue, 10);
+                if (Number.isFinite(parsedValue) && parsedValue >= minimumPersons) {
+                  onPersonCountChange(parsedValue);
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.currentTarget.blur();
+                }
+              }}
+              step="1"
+              type="number"
+              value={personCountDraft}
+            />
             <button
               aria-label="Increase guest count"
               className="h-8 w-8 border-l border-[#e5ddd6] text-[16px] font-semibold text-[#6b5d53] transition hover:bg-[#fff5ef]"

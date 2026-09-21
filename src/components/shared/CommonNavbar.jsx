@@ -366,7 +366,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
 
     await signOut();
     setIsActionMenuOpen(false);
-    await showSuccessToast("Logged out successfully");
+    await showSuccessToast(t("alerts.loggedOutSuccess"));
   };
 
   const isDashboardHeader = isVendorDashboardRoute(pathname);
