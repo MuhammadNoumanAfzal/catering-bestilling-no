@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 export function ProductItem({
+  id,
   image,
   name,
   vendorSlug,
@@ -13,11 +14,17 @@ export function ProductItem({
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const productPath =
+    vendorSlug && id
+      ? "/vendor/" + encodeURIComponent(vendorSlug) + "/menu/" + encodeURIComponent(id)
+      : vendorSlug
+        ? "/vendor/" + encodeURIComponent(vendorSlug)
+        : "";
 
   return (
     <article
       className="group cursor-pointer"
-      onClick={() => vendorSlug && navigate(`/vendor/${vendorSlug}`)}
+      onClick={() => productPath && navigate(productPath)}
     >
       <div className="overflow-hidden rounded-[18px] bg-[#f2f2f2]">
         <img
