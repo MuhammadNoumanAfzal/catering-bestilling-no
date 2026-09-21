@@ -137,11 +137,15 @@ export function getVendorTotals(cart) {
   const backendPricing = cart?.orderSummary?.pricing;
 
   if (backendPricing) {
+    const subtotal = parseBackendAmount(backendPricing.subtotal);
+    const salesTax = parseBackendAmount(backendPricing.taxAmount);
+    const pricesIncludeVat = backendPricing.pricesIncludeVat !== false;
+
     return {
-      subtotal: parseBackendAmount(backendPricing.subtotal),
+      subtotal: pricesIncludeVat ? subtotal + salesTax : subtotal,
       deliveryFee: parseBackendAmount(backendPricing.deliveryFee),
-      salesTax: parseBackendAmount(backendPricing.taxAmount),
-      pricesIncludeVat: backendPricing.pricesIncludeVat !== false,
+      salesTax,
+      pricesIncludeVat,
       addOnsTotal: parseBackendAmount(backendPricing.addOnsTotal),
       tipValue: parseBackendAmount(backendPricing.tipAmount),
       discountAmount: parseBackendAmount(backendPricing.discountAmount),
@@ -174,14 +178,14 @@ export function getVendorTotals(cart) {
   const addOnsExVat = addOnsGrossTotal / (1 + SALES_TAX_RATE);
   const salesTax = qualifyingAmount - subtotalExVat - addOnsExVat;
   const tipValue = getTipValue(cart.orderSummary, qualifyingAmount);
-  const grandTotal = subtotalExVat + addOnsExVat + salesTax + deliveryFee + tipValue;
+  const grandTotal = qualifyingAmount + deliveryFee + tipValue;
 
   return {
-    subtotal: subtotalExVat,
+    subtotal: mainItemsGrossTotal,
     deliveryFee,
     salesTax,
     pricesIncludeVat: true,
-    addOnsTotal: addOnsExVat,
+    addOnsTotal: addOnsGrossTotal,
     tipValue,
     discountAmount: 0,
     serviceFee: 0,

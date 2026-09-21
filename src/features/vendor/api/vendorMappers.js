@@ -1,3 +1,4 @@
+import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
 import { getPublicMenuCount, isPublicVendorVisible } from "./publicVisibility";
 
 const DAY_MAP = {
@@ -200,7 +201,8 @@ function unwrapSpecialClosures(specialClosures) {
 }
 
 function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
-  const price = parseFloat(product.priceWithTax || 0);
+  const vendorBasePrice = parseFloat(product.priceWithTax || 0);
+  const price = toCustomerVatInclusivePrice(vendorBasePrice);
   const serves = product.minimumGuests || 1;
   const pricingType = product.pricingType === "per-person" ? "per-person" : "fixed";
   // Backend checkout pricing treats per-person items as:

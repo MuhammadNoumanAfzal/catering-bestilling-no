@@ -7,40 +7,55 @@ import {
 import { LiaBicycleSolid } from "react-icons/lia";
 import { useTranslation } from "react-i18next";
 
-const DAY_LABELS = {
-  0: "Sun",
-  1: "Mon",
-  2: "Tue",
-  3: "Wed",
-  4: "Thu",
-  5: "Fri",
-  6: "Sat",
-  su: "Sun",
-  sun: "Sun",
-  sunday: "Sun",
-  mo: "Mon",
-  mon: "Mon",
-  monday: "Mon",
-  tu: "Tue",
-  tue: "Tue",
-  tuesday: "Tue",
-  we: "Wed",
-  wed: "Wed",
-  wednesday: "Wed",
-  th: "Thu",
-  thu: "Thu",
-  thursday: "Thu",
-  fr: "Fri",
-  fri: "Fri",
-  friday: "Fri",
-  sa: "Sat",
-  sat: "Sat",
-  saturday: "Sat",
+const DAY_INDEX_BY_KEY = {
+  0: 0,
+  su: 0,
+  sun: 0,
+  sunday: 0,
+  1: 1,
+  mo: 1,
+  mon: 1,
+  monday: 1,
+  2: 2,
+  tu: 2,
+  tue: 2,
+  tuesday: 2,
+  3: 3,
+  we: 3,
+  wed: 3,
+  wednesday: 3,
+  4: 4,
+  th: 4,
+  thu: 4,
+  thursday: 4,
+  5: 5,
+  fr: 5,
+  fri: 5,
+  friday: 5,
+  6: 6,
+  sa: 6,
+  sat: 6,
+  saturday: 6,
 };
 
 const DELIVERY_DAY_ORDER = { mo: 0, mon: 0, monday: 0, 1: 0, tu: 1, tue: 1, tuesday: 1, 2: 1, we: 2, wed: 2, wednesday: 2, 3: 2, th: 3, thu: 3, thursday: 3, 4: 3, fr: 4, fri: 4, friday: 4, 5: 4, sa: 5, sat: 5, saturday: 5, 6: 5, su: 6, sun: 6, sunday: 6, 0: 6 };
 
-function normalizeTimingEntries(vendor) {
+function formatDayLabel(day, locale) {
+  const key = `${day ?? ""}`.trim().toLowerCase();
+  const dayIndex = DAY_INDEX_BY_KEY[key];
+
+  if (dayIndex === undefined) {
+    return `${day ?? ""}`.trim();
+  }
+
+  const label = new Intl.DateTimeFormat(locale, { weekday: "short" })
+    .format(new Date(2024, 5, 2 + dayIndex))
+    .replace(/\.$/, "");
+
+  return label ? label.charAt(0).toUpperCase() + label.slice(1) : "";
+}
+
+function normalizeTimingEntries(vendor, locale) {
   const rawSlots = Array.isArray(vendor?.availability?.delivery?.slots)
     ? vendor.availability.delivery.slots
     : [];
@@ -48,7 +63,7 @@ function normalizeTimingEntries(vendor) {
   const slotEntries = rawSlots
     .map((slot) => {
       const dayKey = `${slot?.day ?? ""}`.trim().toLowerCase();
-      const dayLabel = DAY_LABELS[dayKey] ?? DAY_LABELS[slot?.day] ?? `${slot?.day ?? ""}`.trim();
+      const dayLabel = formatDayLabel(slot?.day, locale);
       const start = `${slot?.start ?? ""}`.trim();
       const end = `${slot?.end ?? ""}`.trim();
 
@@ -99,7 +114,7 @@ function MetricCard({ icon, label, value, subvalue }) {
 }
 
 function TimingPanel({ entries }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="rounded-[20px] border border-[#e8ddd3] bg-[linear-gradient(135deg,#fffaf6_0%,#fff4eb_100%)] p-3 shadow-[0_12px_26px_rgba(55,34,19,0.04)] sm:p-3.5">
@@ -149,7 +164,7 @@ function TimingPanel({ entries }) {
 }
 
 export default function MenuOverviewSection({ vendor, menuItem }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const rawPriceLabel = menuItem.modal?.priceLabel ?? menuItem?.pricingType ?? "per-person";
   const unitPrice = Number(
     menuItem.modal?.unitPrice ?? menuItem.modal?.pricePerPerson ?? menuItem.price ?? 0,
@@ -171,7 +186,8 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
   const description =
     menuItem.description ||
     "A curated catering option prepared for dependable delivery and easy team ordering.";
-  const timingEntries = normalizeTimingEntries(vendor);
+  const locale = i18n.language?.startsWith("no") ? "nb-NO" : "en-GB";
+  const timingEntries = normalizeTimingEntries(vendor, locale);
 
   return (
     <>
