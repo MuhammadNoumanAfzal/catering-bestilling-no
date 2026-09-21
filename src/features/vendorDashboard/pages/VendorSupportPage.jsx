@@ -75,7 +75,7 @@ export default function VendorSupportPage() {
 
     try {
       const uploadedAttachment = selectedFile
-        ? await uploadMenuImage(selectedFile)
+        ? await uploadMenuImage(selectedFile, { optimize: true })
         : null;
 
       const response = await createSupportTicket({
