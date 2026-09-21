@@ -1,3 +1,4 @@
+import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import { hydrateRatingsForItems } from "../../../utils/ratingHydrator";
 
@@ -343,7 +344,7 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
 `;
 
 function formatPriceWithLabel(price, pricingType) {
-  const amount = Number(price ?? 0);
+  const amount = toCustomerVatInclusivePrice(price);
 
   if (!Number.isFinite(amount) || amount <= 0) {
     return "";
@@ -518,7 +519,7 @@ function mapProductNode(node, mode) {
     individualPackaging: false,
     newlyAdded: false,
     smallBusiness: false,
-    minimumOrderValue: Number(node?.priceWithTax ?? 0) || 0,
+    minimumOrderValue: toCustomerVatInclusivePrice(node?.priceWithTax),
     distanceKm: 0,
     popularityScore: Number(node?.ordersCount ?? 0) || 0,
     minimumGuests: Number(node?.minimumGuests ?? 0) || 0,

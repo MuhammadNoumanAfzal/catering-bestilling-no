@@ -1,3 +1,4 @@
+import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
 import {
   getPublicMenuCount,
   isCustomerVisibleMenuProduct,
@@ -214,7 +215,8 @@ export function mapProductNode(node) {
     return null;
   }
 
-  const basePrice = Number.parseFloat(node?.priceWithTax || 0);
+  const vendorBasePrice = Number.parseFloat(node?.priceWithTax || 0);
+  const basePrice = toCustomerVatInclusivePrice(vendorBasePrice);
   const guestCount = Math.max(1, Number(node?.minimumGuests ?? 1));
   const displayPrice =
     node?.pricingType === "per-person" ? basePrice / guestCount : basePrice;
