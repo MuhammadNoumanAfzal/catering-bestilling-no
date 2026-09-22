@@ -254,8 +254,8 @@ const no = {
     postalCodeHint:
       "Skriv inn et postnummer med 4 eller 5 sifre for å søke i området ditt.",
     more: "Mer",
-    menuTitle: "Meny",
-    menuTitleWithCategory: "{{category}}-meny",
+    menuTitle: "Menyer",
+    menuTitleWithCategory: "{{category}}-menyer",
     postalCodeSummary: "postnummer {{postCode}}",
     postalCodeValidation:
       "Postnummeret må være 4 eller 5 sifre før du kan søke.",
@@ -1786,7 +1786,7 @@ const no = {
       "Vi laster de best passende menyalternativene for valgt kategori og filtre.",
     loadErrorTitle: "Kunne ikke laste bla-siden",
     updatingResults: "Oppdaterer menyresultater...",
-    menuTitle: "Meny",
+    menuTitle: "Menyer",
     previous: "Forrige",
     next: "Neste",
     itemsCount: "{{count}} varer",
