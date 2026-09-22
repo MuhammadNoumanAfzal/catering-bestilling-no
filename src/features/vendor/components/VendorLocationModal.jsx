@@ -193,7 +193,7 @@ function OpeningHoursSection({ rows }) {
 }
 
 export default function VendorLocationModal({ vendor, onClose }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (!vendor) {
     return null;
@@ -218,6 +218,24 @@ export default function VendorLocationModal({ vendor, onClose }) {
             postCode: postalCode,
           }))
         : [];
+  const serviceAreaCountLabel = i18n.language?.startsWith("no")
+    ? `${displayAreas.length} postnumre`
+    : `${displayAreas.length} postal codes`;
+  const groupedServiceAreas = displayAreas.reduce((groups, area) => {
+    const groupName = `${area.name || ""}`.trim() || t("vendor.serviceAreas");
+    const existingGroup = groups.find((group) => group.name === groupName);
+    const normalizedArea = {
+      id: area.id || `${groupName}-${area.postCode}`,
+      postCode: area.postCode,
+    };
+
+    if (existingGroup) {
+      existingGroup.areas.push(normalizedArea);
+      return groups;
+    }
+
+    return [...groups, { name: groupName, areas: [normalizedArea] }];
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 bg-[rgba(25,18,12,0.48)] backdrop-blur-[5px]">
@@ -249,57 +267,57 @@ export default function VendorLocationModal({ vendor, onClose }) {
           </div>
 
           <div className="relative overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-              <div className="space-y-4">
-                <SectionCard
-                  icon={<FiMapPin />}
-                  title={t("vendor.pickupAddress")}
-                  eyebrow={t("vendor.location")}
-                >
-                  <div className="space-y-3">
-                    <div className="rounded-[18px] bg-[#fff7f1] px-4 py-3.5">
-                      <p className="text-[16px] font-semibold leading-7 text-[#1f1a16] break-words">
-                        {displayAddress || "-"}
-                      </p>
-                      {displayCity ? (
-                        <p className="mt-1 text-[13px] font-medium text-[#786b60]">
-                          {displayCity}
+            <div className="space-y-4">
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                <div className="space-y-4">
+                  <SectionCard
+                    icon={<FiMapPin />}
+                    title={t("vendor.pickupAddress")}
+                    eyebrow={t("vendor.location")}
+                  >
+                    <div className="space-y-3">
+                      <div className="rounded-[18px] bg-[#fff7f1] px-4 py-3.5">
+                        <p className="text-[16px] font-semibold leading-7 text-[#1f1a16] break-words">
+                          {displayAddress || "-"}
                         </p>
-                      ) : null}
-                    </div>
-
-                    {pickupInstructions ? (
-                      <div className="rounded-[18px] border border-[#f1e2d6] bg-white px-4 py-3.5">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b08567]">
-                          {t("vendor.pickupInstructions")}
-                        </p>
-                        <p className="mt-2 whitespace-pre-line text-[13px] leading-7 text-[#64584e]">
-                          {pickupInstructions}
-                        </p>
+                        {displayCity ? (
+                          <p className="mt-1 text-[13px] font-medium text-[#786b60]">
+                            {displayCity}
+                          </p>
+                        ) : null}
                       </div>
-                    ) : null}
 
-                    <div className="flex flex-wrap gap-2">
-                      {displayCity ? (
-                        <InfoPill tone="brand">
-                          <FiNavigation className="mr-1.5" />
-                          {displayCity}
-                        </InfoPill>
+                      {pickupInstructions ? (
+                        <div className="rounded-[18px] border border-[#f1e2d6] bg-white px-4 py-3.5">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#b08567]">
+                            {t("vendor.pickupInstructions")}
+                          </p>
+                          <p className="mt-2 whitespace-pre-line text-[13px] leading-7 text-[#64584e]">
+                            {pickupInstructions}
+                          </p>
+                        </div>
                       ) : null}
+
+                      <div className="flex flex-wrap gap-2">
+                        {displayCity ? (
+                          <InfoPill tone="brand">
+                            <FiNavigation className="mr-1.5" />
+                            {displayCity}
+                          </InfoPill>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                </SectionCard>
+                  </SectionCard>
 
-                <SectionCard
-                  icon={<FiCalendar />}
-                  title={t("vendor.openingHours")}
-                  eyebrow={t("vendor.takeout")}
-                >
-                  <OpeningHoursSection rows={takeoutRows} />
-                </SectionCard>
-              </div>
+                  <SectionCard
+                    icon={<FiCalendar />}
+                    title={t("vendor.openingHours")}
+                    eyebrow={t("vendor.takeout")}
+                  >
+                    <OpeningHoursSection rows={takeoutRows} />
+                  </SectionCard>
+                </div>
 
-              <div className="space-y-4">
                 <SectionCard
                   icon={<FiTruck />}
                   title={t("vendor.deliveryFees")}
@@ -323,40 +341,53 @@ export default function VendorLocationModal({ vendor, onClose }) {
                     </div>
                   </div>
                 </SectionCard>
-
-                <SectionCard
-                  icon={<FiClock />}
-                  title={t("vendor.serviceAreas")}
-                  eyebrow={t("vendor.coverage")}
-                >
-                  {displayAreas.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {displayAreas.map((area) => (
-                        <span
-                          key={area.id}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-[#eadcd0] bg-[#fff7f1] px-3.5 py-2 text-[12px] font-medium text-[#584d45]"
-                        >
-                          {area.name ? (
-                            <>
-                              <span className="font-semibold text-[#2d241f]">
-                                {area.name}
-                              </span>
-                              <span className="text-[#b38f76]">&bull;</span>
-                              <span>{area.postCode}</span>
-                            </>
-                          ) : (
-                            <span>{area.postCode}</span>
-                          )}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="rounded-[18px] border border-dashed border-[#e4d6ca] bg-[#fffaf6] px-4 py-4 text-[14px] font-medium text-[#7a6c60]">
-                      {t("vendor.noServiceAreas")}
-                    </div>
-                  )}
-                </SectionCard>
               </div>
+
+              <SectionCard
+                icon={<FiClock />}
+                title={t("vendor.serviceAreas")}
+                eyebrow={t("vendor.coverage")}
+              >
+                {displayAreas.length > 0 ? (
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-2 rounded-[18px] border border-[#f1e2d6] bg-[#fffaf7] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-[13px] font-medium leading-6 text-[#6f6258]">
+                        {t("vendor.serviceAreas")}
+                      </p>
+                      <span className="inline-flex w-fit rounded-full border border-[#eadcd0] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#4b4038]">
+                        {serviceAreaCountLabel}
+                      </span>
+                    </div>
+
+                    {groupedServiceAreas.map((group) => (
+                      <div key={group.name} className="rounded-[18px] border border-[#efe2d7] bg-white px-4 py-4">
+                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                          <h4 className="text-[15px] font-semibold text-[#211913]">
+                            {group.name}
+                          </h4>
+                          <span className="rounded-full bg-[#fff3ea] px-3 py-1 text-[11px] font-semibold text-[#9a5c39]">
+                            {i18n.language?.startsWith("no") ? `${group.areas.length} postnumre` : `${group.areas.length} postal codes`}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+                          {group.areas.map((area) => (
+                            <span
+                              key={area.id}
+                              className="flex h-10 items-center justify-center rounded-[12px] border border-[#eadcd0] bg-[#fff7f1] px-3 text-[13px] font-semibold tabular-nums text-[#3b3029]"
+                            >
+                              {area.postCode}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-[18px] border border-dashed border-[#e4d6ca] bg-[#fffaf6] px-4 py-4 text-[14px] font-medium text-[#7a6c60]">
+                    {t("vendor.noServiceAreas")}
+                  </div>
+                )}
+              </SectionCard>
             </div>
           </div>
         </div>
