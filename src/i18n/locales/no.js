@@ -87,8 +87,7 @@ const no = {
       "Utforsk de mest populære leverandørene innen ditt område.",
     popularDescription:
       "Utforsk leverandørene kundene bestiller mest fra til hverdagslunsj og kontorcatering.",
-    featuredDescription:
-      "Utforsk et håndplukket utvalg av leverandører med fantastiske menyer for teamlunsjer, møter og arrangementer.",
+    featuredDescription: "Utforsk de mest populære leverandørene innen ditt område",
     backToHome: "Tilbake til forsiden",
     showingCategory: "Viser kategori: {{category}}",
     showMore: "Vis {{count}} til",

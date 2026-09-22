@@ -485,8 +485,29 @@ function mapBrowseVendor(vendor) {
   };
 }
 
+function normalizeCatalogText(value) {
+  return `${value ?? ""}`.trim().toLowerCase();
+}
+
+function isAddOnCatalogItem(node) {
+  const productType = normalizeCatalogText(node?.productType || node?.type || node?.itemType);
+
+  if (["add-on", "addon", "add_on", "extra", "tillegg"].includes(productType)) {
+    return true;
+  }
+
+  const label = normalizeCatalogText([node?.title, node?.name, node?.slug].filter(Boolean).join(" "));
+  return /(^|[\s(-])(add-on|addon|add_on|tillegg)([\s)-]|$)/.test(label);
+}
+
 function isPrimaryMenuProduct(node) {
-  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
+  const productType = normalizeCatalogText(node?.productType || node?.type || node?.itemType || "menu");
+
+  if (isAddOnCatalogItem(node)) {
+    return false;
+  }
+
+  return !productType || ["menu", "package", "catering", "menu_item", "menu-item"].includes(productType);
 }
 
 function mapProductNode(node, mode) {
@@ -661,9 +682,14 @@ function mapBrowseMenuNode(node, mode) {
 export async function browseMenus(variables, mode) {
   const data = await graphqlRequest({ query: BROWSE_MENUS_QUERY, variables });
   const connection = data?.browseMenus || {};
+  const items = (connection?.edges || [])
+    .map((edge) => edge?.node)
+    .filter(isPrimaryMenuProduct)
+    .map((node) => mapBrowseMenuNode(node, mode))
+    .filter((item) => item.id);
   const payload = {
-    totalCount: Number(connection?.totalCount || 0),
-    items: (connection?.edges || []).map((edge) => mapBrowseMenuNode(edge?.node, mode)).filter((item) => item.id),
+    totalCount: items.length,
+    items,
     pageInfo: { hasNextPage: Boolean(connection?.pageInfo?.hasNextPage), endCursor: connection?.pageInfo?.endCursor || null },
   };
   payload.items = await hydrateRatingsForItems(payload.items);
