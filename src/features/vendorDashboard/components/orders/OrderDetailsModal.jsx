@@ -201,6 +201,7 @@ export default function OrderDetailsModal({
   }
 
   const items = getOrderDetailItems(order);
+  const hasUsableFallbackData = Boolean(order?.id || order?.rawId) && (items.length > 0 || order?.total || order?.vendor);
   const meta = getOrderMeta(order);
   const modifiedItems = getModifiedItems(order);
   const pendingVendorAdjustment = order?.pendingVendorAdjustment || null;
@@ -265,7 +266,7 @@ export default function OrderDetailsModal({
               </div>
             ) : null}
 
-            {error && !isLoading ? (
+            {error && !isLoading && !hasUsableFallbackData ? (
               <div className="rounded-[22px] border border-[#f1c8bb] bg-[#fff5f1] p-5 text-center">
                 <p className="text-sm font-semibold text-[#7a3f2e]">
                   {t("vendorPanel.orderDetails.loadErrorTitle")}

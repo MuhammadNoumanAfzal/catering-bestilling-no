@@ -3,6 +3,8 @@ import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../lib/auth/authSession";
 import i18n from "../../i18n";
 import { customerInvoiceHistory } from "./customerInvoiceHistory.js";
+import { readPlacedOrderDraft } from "../order/services";
+import { getVendorTotals } from "../checkOut/components/summary/checkoutSummaryUtils";
 
 const DEFAULT_RECEIPT_UPLOAD_ENDPOINT =
   "https://api.gocatering.no/api/upload-receipt/";
@@ -75,6 +77,11 @@ const FETCH_INVOICES_QUERY = `
             id
             eventName
             dueDate
+            finalPrice
+            pricing {
+              grandTotal
+              amountDue
+            }
           }
         }
       }
@@ -239,6 +246,7 @@ const GET_INVOICE_ORDER_FALLBACK_QUERY = `
     clientOrder(id: $orderId) {
       id
       eventName
+      finalPrice
       personCount
       deliveryAddressStr
       orderNotes
@@ -410,9 +418,94 @@ function translateBankInstructions(value) {
 }
 
 function toNumber(value) {
-  const amount = Number(value ?? 0);
-  return Number.isFinite(amount) ? amount : 0;
+  return parseMoneyAmount(value);
 }
+
+function parseMoneyAmount(value) {
+  if (value && typeof value === "object") {
+    return parseMoneyAmount(value.amount ?? value.formatted);
+  }
+
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  const normalized = String(value ?? "")
+    .replace(/[^0-9,.-]/g, "")
+    .replace(/\s+/g, "")
+    .replace(/,(?=\d{1,2}$)/, ".")
+    .replace(/,/g, "");
+  const parsed = Number(normalized);
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function getPlacedDraftGrossAmount(node = {}) {
+  const draft = readPlacedOrderDraft();
+
+  if (!draft) {
+    return 0;
+  }
+
+  const identifiers = new Set(
+    [node.id, node.orderId, node.invoiceNumber, node.orderNumber, node.order?.id]
+      .filter(Boolean)
+      .map((value) => String(value)),
+  );
+  const placedOrder = (draft.placedOrders || []).find((order) =>
+    [order.orderId, order.orderNumber, order.invoiceId, order.invoiceNumber]
+      .filter(Boolean)
+      .some((value) => identifiers.has(String(value))),
+  );
+  const placedGross = parseMoneyAmount(
+    placedOrder?.pricing?.grandTotal ?? placedOrder?.pricing?.amountDue ?? placedOrder?.pricing?.formattedTotal,
+  );
+
+  if (placedGross > 0) {
+    return placedGross;
+  }
+
+  const cart =
+    (draft.carts || []).find((entry) => {
+      const vendorSlug = String(entry?.vendor?.slug || "");
+      const vendorName = String(entry?.vendor?.name || entry?.vendor?.businessName || "");
+      return (
+        vendorSlug && vendorSlug === String(node.vendor?.slug || node.vendorSlug || "")
+      ) || (
+        vendorName && vendorName === String(node.vendor?.name || node.vendorName || "")
+      );
+    }) || ((draft.carts || []).length === 1 ? draft.carts[0] : null);
+
+  if (!cart) {
+    return 0;
+  }
+
+  return parseMoneyAmount(getVendorTotals(cart).grandTotal);
+}
+function resolveGrossInvoiceAmount(node, pricing = {}) {
+  const subtotal = toNumber(pricing.subtotal ?? node.subtotal);
+  const taxAmount = toNumber(pricing.taxAmount ?? node.taxAmount);
+  const deliveryFee = toNumber(pricing.deliveryFee ?? node.deliveryFee);
+  const addOnsTotal = toNumber(pricing.addOnsTotal ?? node.addOnsTotal);
+  const tipAmount = toNumber(pricing.tipAmount ?? node.tipAmount);
+  const discountAmount = toNumber(pricing.discountAmount ?? node.discountAmount);
+  const serviceFee = toNumber(pricing.serviceFee ?? node.serviceFee);
+  const grossFromParts = subtotal + deliveryFee + addOnsTotal + tipAmount + serviceFee - discountAmount;
+  const candidates = [
+    getPlacedDraftGrossAmount(node),
+    toNumber(pricing.grandTotal),
+    toNumber(pricing.amountDue),
+    toNumber(node.order?.finalPrice),
+    toNumber(node.order?.pricing?.grandTotal),
+    toNumber(node.order?.pricing?.amountDue),
+    toNumber(node.grandTotal),
+    toNumber(node.totalAmount),
+    grossFromParts,
+  ].filter((amount) => Number.isFinite(amount) && amount > 0);
+
+  return candidates.length ? Math.max(...candidates) : 0;
+}
+
 
 function formatFlexibleMoney(value, currency = "NOK") {
   if (value && typeof value === "object") {
@@ -531,6 +624,7 @@ function mapInvoiceListNode(node) {
   const status = mapInvoiceStatus(node.status);
   const currency = node.currency || "NOK";
   const orderId = node.id || node.order?.id || "";
+  const grossAmount = resolveGrossInvoiceAmount(node, pricing);
 
   return {
     id: orderId,
@@ -550,10 +644,10 @@ function mapInvoiceListNode(node) {
     tax: formatMoney(pricing.taxAmount ?? node.taxAmount, currency),
     deliveryFee: formatMoney(pricing.deliveryFee ?? node.deliveryFee, currency),
     tip: formatMoney(pricing.tipAmount ?? node.tipAmount, currency),
-    amount: formatMoney(pricing.grandTotal ?? node.totalAmount, currency),
+    amount: formatMoney(grossAmount, currency),
     paidAmount: formatMoney(pricing.amountPaid ?? node.paidAmount, currency),
-    dueAmount: formatMoney(pricing.amountDue ?? node.dueAmount, currency),
-    amountRaw: toNumber(pricing.grandTotal ?? node.totalAmount),
+    dueAmount: formatMoney(toNumber(pricing.amountDue ?? node.dueAmount) || grossAmount, currency),
+    amountRaw: grossAmount,
     currency,
     pdfUrl: node.pdfUrl || "",
     vendor: node.vendor?.name || "Catering partner",
@@ -629,6 +723,10 @@ function mapInvoiceDetail(node, orderFallback = null) {
     node.subtotal?.currency ||
     "NOK";
   const fallbackOrder = mapInvoiceOrderFallback(orderFallback, currency);
+  const grossAmount = resolveGrossInvoiceAmount({
+    ...node,
+    order: orderFallback || node.order,
+  }, node.pricing || {});
 
   return {
     id: node.id || "",
@@ -654,14 +752,11 @@ function mapInvoiceDetail(node, orderFallback = null) {
       node.deliveryFee?.formatted ||
       formatMoney(node.deliveryFee?.amount, currency),
     tipAmount: fallbackOrder.tipAmount || formatMoney(0, currency),
-    totalAmount:
-      node.grandTotal?.formatted ||
-      formatMoney(node.grandTotal?.amount, currency),
+    totalAmount: formatMoney(grossAmount, currency),
     paidAmount:
       node.amountPaid?.formatted ||
       formatMoney(node.amountPaid?.amount, currency),
-    dueAmount:
-      node.amountDue?.formatted || formatMoney(node.amountDue?.amount, currency),
+    dueAmount: formatMoney(parseMoneyAmount(node.amountDue) || grossAmount, currency),
     paymentType: node.paymentMethod || node.paymentType || "",
     paymentMethod: node.paymentMethod || "",
     canViewInvoice: Boolean(node.canViewInvoice ?? true),
