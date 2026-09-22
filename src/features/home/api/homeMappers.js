@@ -50,13 +50,25 @@ function extractCityFromAddress(address) {
   return segments[0] || "";
 }
 
+function formatKrAmount(value) {
+  const amount = Number(value ?? 0);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return "";
+  }
+
+  return `${new Intl.NumberFormat("nb-NO", {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount)}`;
+}
 function formatRating(value) {
   return parseFloat(value || 0).toFixed(1);
 }
 
 function formatDeliveryFee(value) {
   const amount = Number.parseFloat(value || 0);
-  return Number.isFinite(amount) ? `${amount} NOK Delivery fee` : "";
+  return Number.isFinite(amount) ? `${amount} Delivery fee` : "";
 }
 
 function normalizeTags(tags, fallback = []) {
@@ -171,7 +183,7 @@ function mapVendorNode(node) {
     pickupInstructions,
     freeDeliveryOver:
       freeDeliveryOver !== "" && freeDeliveryOver != null
-        ? `NOK ${Number.parseFloat(freeDeliveryOver || 0).toFixed(0)}`
+        ? Number.parseFloat(freeDeliveryOver || 0).toFixed(0)
         : "",
     primaryPostalCode: `${node?.postCode ?? ""}`.trim(),
     serviceAreas: (node?.serviceAreas || [])
@@ -181,12 +193,10 @@ function mapVendorNode(node) {
         name: area.name || "",
         postCode: `${area?.postCode ?? ""}`.trim(),
       })),
-    servicePostalCodes: [
-      `${node?.postCode ?? ""}`.trim(),
-      ...(node?.serviceAreas || [])
-        .filter((area) => area?.isActive)
-        .map((area) => `${area?.postCode ?? ""}`.trim()),
-    ].filter(Boolean),
+    servicePostalCodes: (node?.serviceAreas || [])
+      .filter((area) => area?.isActive)
+      .map((area) => `${area?.postCode ?? ""}`.trim())
+      .filter(Boolean),
     availability: {
       delivery: {
         days: deliveryDays,
@@ -244,7 +254,7 @@ export function mapProductNode(node) {
     ),
     dietaryTags: normalizeTags(node?.dietaryTags),
     minimumGuests: node?.minimumGuests ?? 0,
-    price: Number.isFinite(displayPrice) ? `NOK ${displayPrice.toFixed(2)}` : "",
+    price: formatKrAmount(displayPrice),
   };
 }
 

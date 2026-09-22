@@ -38,14 +38,14 @@ function mapMinimumRating(value) {
   return Number.isFinite(rating) ? rating : null;
 }
 
-function mapPriceRange(value) { return { "Under NOK 500": "UNDER_500", "NOK 500 - NOK 1000": "BETWEEN_500_AND_1000", "NOK 1000 - NOK 2000": "BETWEEN_1000_AND_2000", "NOK 2000 - NOK 5000": "BETWEEN_2000_AND_5000", "NOK 5000+": "OVER_5000" }[value] || null; }
+function mapPriceRange(value) { return { "Under 500": "UNDER_500", "500 - 1000": "BETWEEN_500_AND_1000", "1000 - 2000": "BETWEEN_1000_AND_2000", "2000 - 5000": "BETWEEN_2000_AND_5000", "5000+": "OVER_5000" }[value] || null; }
 
 function mapDeliveryFilter(value) {
   return {
     "Free Delivery": "FREE_DELIVERY",
-    "Delivery Fee: 0-150 NOK": "FEE_0_TO_150",
-    "Delivery Fee: 150-300 NOK": "FEE_150_TO_300",
-    "Delivery Fee: 300+ NOK": "FEE_300_PLUS",
+    "Delivery Fee: 0-150": "FEE_0_TO_150",
+    "Delivery Fee: 150-300": "FEE_150_TO_300",
+    "Delivery Fee: 300+": "FEE_300_PLUS",
   }[value] || null;
 }
 

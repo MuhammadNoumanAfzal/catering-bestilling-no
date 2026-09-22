@@ -393,7 +393,7 @@ export default function ModifyOrderModal({
       return "";
     }
 
-    return `NOK ${formatCurrency(grandTotal)}`;
+    return `${formatCurrency(grandTotal)}`;
   }, [
     formState.address,
     formState.date,

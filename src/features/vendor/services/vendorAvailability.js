@@ -10,12 +10,25 @@ function resolveVendorReference(vendor) {
   return vendor ?? null;
 }
 
+function getVendorServiceAreas(vendor) {
+  return Array.isArray(vendor?.serviceAreas) ? vendor.serviceAreas : [];
+}
+
 function resolveVendorPostalCoverage(vendor) {
-  return [
-    `${vendor?.primaryPostalCode ?? ""}`.trim(),
-    `${vendor?.postCode ?? ""}`.trim(),
-    ...((vendor?.servicePostalCodes ?? []).map((value) => `${value ?? ""}`.trim())),
-  ].filter(Boolean);
+  const serviceAreaPostCodes = getVendorServiceAreas(vendor)
+    .map((area) => `${area?.postCode ?? ""}`.trim())
+    .filter(Boolean);
+  const storedServicePostCodes = Array.isArray(vendor?.servicePostalCodes)
+    ? vendor.servicePostalCodes.map((value) => `${value ?? ""}`.trim()).filter(Boolean)
+    : [];
+
+  return [...new Set([...serviceAreaPostCodes, ...storedServicePostCodes])];
+}
+
+function resolveVendorServiceAreaNames(vendor) {
+  return getVendorServiceAreas(vendor)
+    .map((area) => `${area?.name ?? ""}`.trim())
+    .filter(Boolean);
 }
 
 function isDateValid(date) {
@@ -189,7 +202,7 @@ export function isVendorAvailableForPostalCode(vendor, postalCode) {
   }
 
   return resolveVendorPostalCoverage(vendor).some((candidate) =>
-    candidate.startsWith(normalizedInput),
+    normalizePostalCode(candidate) === normalizedInput,
   );
 }
 
@@ -213,13 +226,11 @@ export function isVendorAvailableForLocation(vendor, locationQuery) {
     return true;
   }
 
-  return [
-    vendor?.city ?? matchedVendor?.city,
-    vendor?.addressLine ?? matchedVendor?.addressLine,
-    vendor?.name ?? matchedVendor?.name,
-  ]
-    .filter(Boolean)
-    .some((value) => value.toLowerCase().includes(normalizedQuery));
+  const serviceAreaNames = resolveVendorServiceAreaNames(matchedVendor);
+
+  return serviceAreaNames.some((value) =>
+    normalizeLocationQuery(value).includes(normalizedQuery),
+  );
 }
 
 export function filterVendorsByLocation(vendors, locationQuery) {

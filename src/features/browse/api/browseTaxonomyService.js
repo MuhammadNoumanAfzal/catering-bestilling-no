@@ -343,6 +343,18 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
   }
 `;
 
+function formatKrAmount(value) {
+  const amount = Number(value ?? 0);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return "";
+  }
+
+  return `${new Intl.NumberFormat("nb-NO", {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount)}`;
+}
 function formatPriceWithLabel(price, pricingType) {
   const amount = toCustomerVatInclusivePrice(price);
 
@@ -350,7 +362,7 @@ function formatPriceWithLabel(price, pricingType) {
     return "";
   }
 
-  return `NOK ${amount.toFixed(2)} ${
+  return `${formatKrAmount(amount)} ${
     pricingType === "per-person" ? "per person" : "per order"
   }`;
 }
@@ -374,7 +386,7 @@ function extractCityFromAddress(address) {
 
 function formatDeliveryFee(value) {
   const amount = Number.parseFloat(value || 0);
-  return Number.isFinite(amount) ? `${amount} NOK Delivery fee` : "";
+  return Number.isFinite(amount) ? `${amount} Delivery fee` : "";
 }
 
 function normalizeDeliverySlots(deliveryTimeSlots = []) {
@@ -449,17 +461,15 @@ function mapBrowseVendor(vendor) {
         name: area.name || "",
         postCode: `${area?.postCode ?? ""}`.trim(),
       })),
-    servicePostalCodes: [
-      `${vendor?.postCode ?? ""}`.trim(),
-      ...(vendor?.serviceAreas || [])
-        .filter((area) => area?.isActive)
-        .map((area) => `${area?.postCode ?? ""}`.trim()),
-    ].filter(Boolean),
+    servicePostalCodes: (vendor?.serviceAreas || [])
+      .filter((area) => area?.isActive)
+      .map((area) => `${area?.postCode ?? ""}`.trim())
+      .filter(Boolean),
     deliveryFee: formatDeliveryFee(vendor?.deliverySettings?.baseDeliveryFee),
     freeDeliveryOver:
       vendor?.deliverySettings?.freeDeliveryOver !== "" &&
       vendor?.deliverySettings?.freeDeliveryOver != null
-        ? `NOK ${Number.parseFloat(vendor.deliverySettings.freeDeliveryOver || 0).toFixed(0)}`
+        ? Number.parseFloat(vendor.deliverySettings.freeDeliveryOver || 0).toFixed(0)
         : "",
     pickupAddress: vendor?.deliverySettings?.pickupAddress || "",
     pickupInstructions: vendor?.deliverySettings?.pickupInstructions || "",
@@ -637,7 +647,7 @@ function mapBrowseMenuNode(node, mode) {
     vendorData: { id: vendor?.id || "", slug: resolvePublicVendorSlug(vendor), name: vendor?.name || "Catering partner", rating: formatRating(vendor?.averageRating), reviewCount: Number(vendor?.reviewCount || 0), logo: vendor?.logoUrl || "", city: vendor?.city || "", addressLine: vendor?.city || "", deliveryFee: formatDeliveryFee(delivery?.fee) },
     image: node?.imageUrl || vendor?.logoUrl || "/home/hero1.webp",
     rating: formatRating(vendor?.averageRating),
-    price: price > 0 ? `NOK ${price.toFixed(2)}` : "",
+    price: formatKrAmount(price),
     discount: "",
     categoryTags: (categories || []).map((item) => item?.slug).filter(Boolean),
     dietaryTags,

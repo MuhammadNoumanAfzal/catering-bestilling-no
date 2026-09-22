@@ -1,5 +1,9 @@
 export function formatCurrency(value) {
-  return Number(value).toFixed(2);
+  const amount = Number(value ?? 0);
+  return new Intl.NumberFormat("nb-NO", {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 }
 
 export function formatDistance(addressLine = "") {
