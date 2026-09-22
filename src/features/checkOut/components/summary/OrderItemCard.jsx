@@ -25,7 +25,7 @@ export default function OrderItemCard({
 
         <div className="text-right">
           <p className="text-[13px] font-semibold text-[#252525]">
-            NOK {formatCurrency(item.effectivePrice)}
+            {formatCurrency(item.effectivePrice)}
           </p>
           <button
             type="button"

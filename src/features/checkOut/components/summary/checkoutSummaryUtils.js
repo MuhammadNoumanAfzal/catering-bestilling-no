@@ -8,10 +8,12 @@ export const TIP_OPTIONS = [
 export const SALES_TAX_RATE = 0.15;
 
 export function formatCurrency(value) {
+  const amount = Number(value ?? 0);
+
   return new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: 2,
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
     maximumFractionDigits: 2,
-  }).format(Number(value ?? 0));
+  }).format(amount);
 }
 
 export function extractAmount(value) {
@@ -137,20 +139,45 @@ export function getVendorTotals(cart) {
   const backendPricing = cart?.orderSummary?.pricing;
 
   if (backendPricing) {
-    const subtotal = parseBackendAmount(backendPricing.subtotal);
-    const salesTax = parseBackendAmount(backendPricing.taxAmount);
     const pricesIncludeVat = backendPricing.pricesIncludeVat !== false;
+    const backendSubtotal = parseBackendAmount(backendPricing.subtotal);
+    const backendAddOnsTotal = parseBackendAmount(backendPricing.addOnsTotal);
+    const backendTaxAmount = parseBackendAmount(backendPricing.taxAmount);
+    const localMainItemsGrossTotal = cart.orderSummary.items
+      .filter((item) => !item?.isAddOn)
+      .reduce((sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount), 0);
+    const localAddOnsGrossTotal = cart.orderSummary.items
+      .filter((item) => item?.isAddOn)
+      .reduce((sum, item) => sum + getItemPrice(item, cart.orderSummary.personCount), 0);
+    const subtotal = pricesIncludeVat && localMainItemsGrossTotal > 0
+      ? localMainItemsGrossTotal
+      : pricesIncludeVat
+        ? backendSubtotal + backendTaxAmount
+        : backendSubtotal;
+    const addOnsTotal = pricesIncludeVat && localAddOnsGrossTotal > 0
+      ? localAddOnsGrossTotal
+      : backendAddOnsTotal;
+    const deliveryFee = parseBackendAmount(backendPricing.deliveryFee);
+    const tipValue = parseBackendAmount(backendPricing.tipAmount);
+    const discountAmount = parseBackendAmount(backendPricing.discountAmount);
+    const serviceFee = parseBackendAmount(backendPricing.serviceFee);
+    const grossMerchandiseTotal = subtotal + addOnsTotal;
+    const salesTax = pricesIncludeVat
+      ? grossMerchandiseTotal - grossMerchandiseTotal / (1 + SALES_TAX_RATE)
+      : backendTaxAmount;
 
     return {
-      subtotal: pricesIncludeVat ? subtotal + salesTax : subtotal,
-      deliveryFee: parseBackendAmount(backendPricing.deliveryFee),
+      subtotal,
+      deliveryFee,
       salesTax,
       pricesIncludeVat,
-      addOnsTotal: parseBackendAmount(backendPricing.addOnsTotal),
-      tipValue: parseBackendAmount(backendPricing.tipAmount),
-      discountAmount: parseBackendAmount(backendPricing.discountAmount),
-      serviceFee: parseBackendAmount(backendPricing.serviceFee),
-      grandTotal: parseBackendAmount(backendPricing.grandTotal),
+      addOnsTotal,
+      tipValue,
+      discountAmount,
+      serviceFee,
+      grandTotal: pricesIncludeVat
+        ? grossMerchandiseTotal + deliveryFee + tipValue + serviceFee - discountAmount
+        : parseBackendAmount(backendPricing.grandTotal),
     };
   }
 

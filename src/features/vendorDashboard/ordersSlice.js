@@ -329,7 +329,7 @@ const formatDate = (dateStr) => {
 
 const formatAmount = (val) => {
   const num = parseFloat(val || 0);
-  return `NOK ${num.toFixed(2)}`;
+  return num.toFixed(2);
 };
 
 const formatNumber = (value, fallback = 0) => {
@@ -416,7 +416,7 @@ function buildPlacedOrderDraftOverride(orderId) {
     deliveryAddressStr: fullLocation,
     total:
       Number.isFinite(grandTotal) && grandTotal > 0
-        ? `NOK ${formatCheckoutCurrency(grandTotal)}`
+        ? formatCheckoutCurrency(grandTotal)
         : "",
   };
 }

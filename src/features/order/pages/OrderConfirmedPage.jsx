@@ -121,7 +121,7 @@ export default function OrderConfirmedPage() {
                     </p>
                     <p className="mt-2 text-[14px] font-semibold text-[#201b17]">
                       {pendingVendorAdjustment.newTotal != null
-                        ? `NOK ${pendingVendorAdjustment.newTotal}`
+                        ? `${pendingVendorAdjustment.newTotal}`
                         : t("orderConfirmed.willBeRecalculated")}
                     </p>
                   </div>

@@ -19,10 +19,19 @@ const TIP_OPTIONS = [
 ];
 
 function formatCurrency(value) {
+  const amount = Number(value ?? 0);
+  const normalizedAmount = Math.abs(amount - Math.round(amount)) < 0.005
+    ? Math.round(amount)
+    : amount;
+
   return new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: 2,
+    minimumFractionDigits: Number.isInteger(normalizedAmount) ? 0 : 2,
     maximumFractionDigits: 2,
-  }).format(Number(value ?? 0));
+  }).format(normalizedAmount);
+}
+
+function formatKr(value) {
+  return formatCurrency(value);
 }
 
 function formatDateTime(date, time) {
@@ -117,7 +126,7 @@ export default function VendorOrderSidebar({
                       {item.quantity} {item.name}
                     </p>
                     <p className="shrink-0 text-[14px] font-semibold ">
-                      NOK {formatCurrency(item.price)}
+                      {formatKr(item.price)}
                     </p>
                   </div>
 
@@ -155,7 +164,7 @@ export default function VendorOrderSidebar({
               <div className="flex items-center justify-between gap-3">
                 <span>{t("vendor.subtotal")}</span>
                 <span className="font-semibold ">
-                  NOK {formatCurrency(subtotal)}
+                  {formatKr(subtotal)}
                 </span>
               </div>
               <p className="mt-1 type-para text-[#76706a]">{restaurantName}</p>
@@ -163,7 +172,7 @@ export default function VendorOrderSidebar({
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>{t("vendor.deliveryFee")}</span>
                 <span className="font-semibold text-[#76706a]">
-                  NOK {formatCurrency(deliveryFee)}
+                  {formatKr(deliveryFee)}
                 </span>
               </div>
               <p className="mt-1 type-para text-[#76706a]">
@@ -174,22 +183,16 @@ export default function VendorOrderSidebar({
                 <div className="mt-2 flex items-center justify-between gap-3">
                   <span>{t("vendor.addOns")}</span>
                   <span className="font-semibold text-[#76706a]">
-                    NOK {formatCurrency(addOnsTotal)}
+                    {formatKr(addOnsTotal)}
                   </span>
                 </div>
               ) : null}
 
-              <div className="mt-2 flex items-center justify-between gap-3">
-                <span>{t("checkout.vatIncluded", { defaultValue: "VAT (included)" })}</span>
-                <span className="font-semibold text-[#76706a]">
-                  NOK {formatCurrency(salesTax)}
-                </span>
-              </div>
 
               <div className="mt-2 flex items-center justify-between gap-3">
                 <span>{t("vendor.tip")}</span>
                 <span className="font-semibold ">
-                  NOK {formatCurrency(tipValue)}
+                  {formatKr(tipValue)}
                 </span>
               </div>
             </div>
@@ -231,16 +234,16 @@ export default function VendorOrderSidebar({
                   </label>
                   <div className="relative mt-1.5 rounded-[4px] shadow-sm">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                      <span className="text-[13px] text-[#8b8580]">NOK</span>
+
                     </div>
                     <input
                       type="number"
                       min="0"
                       step="any"
-                      placeholder="0.00"
+                      placeholder="0"
                       value={orderSummary.customTipAmount ?? ""}
                       onChange={(event) => onTipChange("other", event.target.value)}
-                      className="block w-full rounded-[4px] border border-[#d4cfc8] py-1.5 pl-12 pr-3 text-[14px] text-[#2c2c2c] placeholder:text-[#a49b92] focus:border-[#cf6e38] focus:outline-none"
+                      className="block w-full rounded-[4px] border border-[#d4cfc8] py-1.5 pl-3 pr-3 text-[14px] text-[#2c2c2c] placeholder:text-[#a49b92] focus:border-[#cf6e38] focus:outline-none"
                     />
                   </div>
                 </div>
@@ -298,11 +301,18 @@ export default function VendorOrderSidebar({
             </div>
 
             <div className="pt-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="type-h4 font-semibold ">{t("vendor.total")}</span>
-                <span className="type-h4  font-semibold ">
-                  NOK {formatCurrency(grandTotal)}
-                </span>
+              <div className="rounded-[10px] border border-[#d9ead7] bg-[#f6fff5] px-3 py-2.5">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="type-h4 font-semibold text-[#1d1d1d]">{t("vendor.total")}</span>
+                  <div className="text-right">
+                    <span className="type-h4 font-semibold text-[#1d1d1d]">
+                      {formatKr(grandTotal)}
+                    </span>
+                    <p className="mt-1 text-[11px] font-semibold leading-4 text-[#2f7a3e]">
+                      {t("checkout.vatIncluded", { defaultValue: "VAT included" })}: {formatKr(salesTax)}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <button

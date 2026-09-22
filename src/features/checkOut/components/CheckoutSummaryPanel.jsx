@@ -20,6 +20,7 @@ export default function CheckoutSummaryPanel({
   const { t } = useTranslation();
   const totals = getCheckoutTotals(carts);
   const grandTotal = totals.grandTotal;
+  const includedVat = totals.salesTax;
 
   return (
     <aside className="min-w-0 bg-[#fcfaf7] lg:border-l lg:border-[#eee7e0]">
@@ -30,11 +31,11 @@ export default function CheckoutSummaryPanel({
               {t("checkout.summary")}
             </p>
             <div className="mt-2 flex items-center justify-between gap-3">
-              <span className="text-[12px] font-medium text-white/85">
+              <span className="text-[12px] font-medium text-[#5b6f58]">
                 {t("checkout.currentTotal")}
               </span>
               <span className="text-[21px] font-semibold leading-none text-white">
-                NOK {formatCurrency(grandTotal)}
+                {formatCurrency(grandTotal)}
               </span>
             </div>
           </div>
@@ -49,21 +50,25 @@ export default function CheckoutSummaryPanel({
               />
             ))}
           </div>
-
-          <div className="mt-3 rounded-[14px] bg-[#cf6e38] px-3 py-3 text-white">
-            <div className="flex items-center justify-between gap-3">
+          <div className="mt-3 rounded-[10px] border border-[#d9ead7] bg-[#f6fff5] px-3 py-2.5 text-[#1d1d1d]">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/70">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2f7a3e]">
                   {t("checkout.totalToPay")}
                 </p>
-                <p className="mt-0.5 text-[11px] leading-4 text-white/85">
+                <p className="mt-0.5 text-[11px] leading-4 text-[#5b6f58]">
                   {t("checkout.finalAmountShown")}
                 </p>
               </div>
 
-              <span className="text-[22px] font-semibold leading-none">
-                NOK {formatCurrency(grandTotal)}
-              </span>
+              <div className="text-right">
+                <span className="text-[22px] font-semibold leading-none">
+                  {formatCurrency(grandTotal)}
+                </span>
+                <p className="mt-1 text-[10px] font-semibold leading-4 text-[#2f7a3e]">
+                  {t("checkout.vatIncluded", { defaultValue: "VAT included" })}: {formatCurrency(includedVat)}
+                </p>
+              </div>
             </div>
           </div>
 

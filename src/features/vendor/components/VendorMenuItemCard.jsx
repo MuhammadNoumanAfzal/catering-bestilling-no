@@ -75,7 +75,7 @@ export default function VendorMenuItemCard({ item, onClick }) {
         </div>
 
         <p className="text-[1rem] font-semibold text-[#121212] sm:text-[1.08rem]">
-          NOK {item.price.toFixed(2)}
+          {item.price.toFixed(2)}
         </p>
       </div>
     </article>

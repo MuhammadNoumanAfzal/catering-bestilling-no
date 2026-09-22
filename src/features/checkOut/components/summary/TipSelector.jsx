@@ -46,7 +46,7 @@ export default function TipSelector({
           </label>
           <div className="relative mt-1.5 rounded-[6px] shadow-sm">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <span className="text-[13px] text-[#8b8580]">NOK</span>
+
             </div>
             <input
               type="number"
@@ -55,7 +55,7 @@ export default function TipSelector({
               placeholder="0.00"
               value={customTipAmount ?? ""}
               onChange={(event) => onSelect("other", event.target.value)}
-              className="block w-full rounded-[6px] border border-[#ddd5cc] py-2 pl-12 pr-3 text-[14px] text-[#2c2c2c] placeholder:text-[#a49b92] focus:border-[#cf6e38] focus:outline-none"
+              className="block w-full rounded-[6px] border border-[#ddd5cc] py-2 pl-3 pr-3 text-[14px] text-[#2c2c2c] placeholder:text-[#a49b92] focus:border-[#cf6e38] focus:outline-none"
             />
           </div>
         </div>

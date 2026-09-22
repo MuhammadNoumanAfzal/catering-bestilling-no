@@ -146,27 +146,27 @@ export const dietaryOptions = ["Vegetarian", "Vegan", "Halal", "Gluten-Free"];
 export const offerOptions = [
   "Any Delivery",
   "Free Delivery",
-  "Delivery Fee: 0-150 NOK",
-  "Delivery Fee: 150-300 NOK",
-  "Delivery Fee: 300+ NOK",
+  "Delivery Fee: 0-150",
+  "Delivery Fee: 150-300",
+  "Delivery Fee: 300+",
 ];
 
 export const pricingOptions = [
   "Any price",
-  "Under NOK 500",
-  "NOK 500 - NOK 1000",
-  "NOK 1000 - NOK 2000",
-  "NOK 2000 - NOK 5000",
-  "NOK 5000+",
+  "Under 500",
+  "500 - 1000",
+  "1000 - 2000",
+  "2000 - 5000",
+  "5000+",
 ];
 
 export const orderMinimumOptions = [
   "Any price",
-  "Under NOK 500",
-  "NOK 500 - NOK 1000",
-  "NOK 1000 - NOK 2000",
-  "NOK 2000 - NOK 5000",
-  "NOK 5000+",
+  "Under 500",
+  "500 - 1000",
+  "1000 - 2000",
+  "2000 - 5000",
+  "5000+",
 ];
 
 export const distanceOptions = [

@@ -51,9 +51,9 @@ export function matchesOfferFilter(item, selectedOffers) {
   }
 
   const deliveryFee = extractFirstNumber(item?.vendorData?.deliveryFee);
-  if (selectedDelivery === "Delivery Fee: 0-150 NOK") return deliveryFee >= 0 && deliveryFee <= 150;
-  if (selectedDelivery === "Delivery Fee: 150-300 NOK") return deliveryFee >= 150 && deliveryFee <= 300;
-  if (selectedDelivery === "Delivery Fee: 300+ NOK") return deliveryFee >= 300;
+  if (selectedDelivery === "Delivery Fee: 0-150") return deliveryFee >= 0 && deliveryFee <= 150;
+  if (selectedDelivery === "Delivery Fee: 150-300") return deliveryFee >= 150 && deliveryFee <= 300;
+  if (selectedDelivery === "Delivery Fee: 300+") return deliveryFee >= 300;
   return true;
 }
 
@@ -64,11 +64,11 @@ export function matchesPricingFilter(item, selectedPricing) {
 
   const price = extractPriceValue(item.price);
   const ranges = {
-    "Under NOK 500": price < 500,
-    "NOK 500 - NOK 1000": price >= 500 && price <= 1000,
-    "NOK 1000 - NOK 2000": price >= 1000 && price <= 2000,
-    "NOK 2000 - NOK 5000": price >= 2000 && price <= 5000,
-    "NOK 5000+": price >= 5000,
+    "Under 500": price < 500,
+    "500 - 1000": price >= 500 && price <= 1000,
+    "1000 - 2000": price >= 1000 && price <= 2000,
+    "2000 - 5000": price >= 2000 && price <= 5000,
+    "5000+": price >= 5000,
   };
 
   return ranges[selectedPricing] ?? true;
@@ -102,18 +102,18 @@ export function matchesOtherFilters(item, otherFilters) {
   if (otherFilters.orderMinimum !== FILTER_DEFAULTS.orderMinimum) {
     const minimumOrderValue = item.minimumOrderValue ?? extractFirstNumber(item.price);
 
-    if (otherFilters.orderMinimum === "Under NOK 250" && minimumOrderValue >= 250) {
+    if (otherFilters.orderMinimum === "Under 250" && minimumOrderValue >= 250) {
       return false;
     }
 
     if (
-      otherFilters.orderMinimum === "NOK 250 - NOK 500" &&
+      otherFilters.orderMinimum === "250 - 500" &&
       (minimumOrderValue < 250 || minimumOrderValue > 500)
     ) {
       return false;
     }
 
-    if (otherFilters.orderMinimum === "NOK 500+" && minimumOrderValue < 500) {
+    if (otherFilters.orderMinimum === "500+" && minimumOrderValue < 500) {
       return false;
     }
   }

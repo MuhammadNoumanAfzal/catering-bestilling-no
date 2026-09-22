@@ -23,36 +23,32 @@ export default function PriceDetailsCard({
       <div className="mt-2 space-y-1.5 text-[12px] text-[#2c2c2c]">
         <div className="flex items-center justify-between gap-3">
           <span>{pricesIncludeVat ? t("checkout.subtotalVatIncluded", { defaultValue: "Subtotal (VAT included)" }) : t("checkout.subtotal")}</span>
-          <span className="font-semibold">NOK {formatCurrency(subtotal)}</span>
+          <span className="font-semibold">{formatCurrency(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <span>{t("checkout.deliveryFee")}</span>
-          <span className="font-semibold">NOK {formatCurrency(deliveryFee)}</span>
+          <span className="font-semibold">{formatCurrency(deliveryFee)}</span>
         </div>
         {addOnsTotal > 0 ? (
           <div className="flex items-center justify-between gap-3">
             <span>{t("checkout.addOns")}</span>
-            <span className="font-semibold">NOK {formatCurrency(addOnsTotal)}</span>
+            <span className="font-semibold">{formatCurrency(addOnsTotal)}</span>
           </div>
         ) : null}
         <div className="flex items-center justify-between gap-3">
-          <span>{t("checkout.vatIncluded", { defaultValue: "VAT (included)" })}</span>
-          <span className="font-semibold">NOK {formatCurrency(salesTax)}</span>
-        </div>
-        <div className="flex items-center justify-between gap-3">
           <span>{t("checkout.tip")}</span>
-          <span className="font-semibold">NOK {formatCurrency(tipValue)}</span>
+          <span className="font-semibold">{formatCurrency(tipValue)}</span>
         </div>
         {serviceFee > 0 ? (
           <div className="flex items-center justify-between gap-3">
             <span>{t("checkout.serviceFee")}</span>
-            <span className="font-semibold">NOK {formatCurrency(serviceFee)}</span>
+            <span className="font-semibold">{formatCurrency(serviceFee)}</span>
           </div>
         ) : null}
         {discountAmount > 0 ? (
           <div className="flex items-center justify-between gap-3">
             <span>{t("checkout.discount")}</span>
-            <span className="font-semibold">-NOK {formatCurrency(discountAmount)}</span>
+            <span className="font-semibold">-{formatCurrency(discountAmount)}</span>
           </div>
         ) : null}
       </div>

@@ -42,7 +42,7 @@ const formatDate = (dateStr) => {
 
 const formatAmount = (val) => {
   const num = parseFloat(val || 0);
-  return `NOK ${num.toFixed(2)}`;
+  return num.toFixed(2);
 };
 
 const formatId = (id) => {

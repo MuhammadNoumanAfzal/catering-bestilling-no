@@ -15,7 +15,7 @@ function buildAmountDue(carts = [], fallbackAmount = "") {
     return fallbackAmount || "";
   }
 
-  return `NOK ${formatCurrency(grandTotal)}`;
+  return `${formatCurrency(grandTotal)}`;
 }
 
 export function formatOrderPreview(orderDraft) {

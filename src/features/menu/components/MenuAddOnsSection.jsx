@@ -21,7 +21,7 @@ function AddOnCard({
           {option.label}
         </p>
         <p className="mt-0.5 text-[12px] text-[#7d736b]">
-          NOK {formatCurrency(option.price)}
+          {formatCurrency(option.price)}
         </p>
 
         {quantity > 0 ? (

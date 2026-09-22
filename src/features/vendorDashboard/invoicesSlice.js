@@ -362,7 +362,7 @@ function formatMoney(value, currency = "NOK") {
   const amount = Number(value ?? 0);
 
   if (!Number.isFinite(amount)) {
-    return `${currency} 0.00`;
+    return "0.00";
   }
 
   try {
@@ -371,14 +371,14 @@ function formatMoney(value, currency = "NOK") {
         ? "nb-NO"
         : "en",
       {
-      style: "currency",
-      currency,
+      style: "decimal",
+
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
       },
     ).format(amount);
   } catch {
-    return `${currency} ${amount.toFixed(2)}`;
+    return amount.toFixed(2);
   }
 }
 
@@ -586,7 +586,7 @@ function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
                         addon?.totalPrice || addon?.unitPrice
                           ? ` (+${formatMoney(
                               addon.totalPrice || addon.unitPrice,
-                              currency,
+                        
                             )})`
                           : ""
                       }`
@@ -611,7 +611,7 @@ function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
             unitPrice: formatFlexibleMoney(item?.unitPrice, currency),
             totalPrice: formatFlexibleMoney(
               item?.lineTotal || item?.totalPrice || item?.unitPrice,
-              currency,
+        
             ),
           };
         })
@@ -767,25 +767,25 @@ function mapInvoiceDetail(node, orderFallback = null) {
                   node.settlement.commissionRecord.grossCommission?.formatted ||
                   formatMoney(
                     node.settlement.commissionRecord.grossCommission?.amount,
-                    currency,
+              
                   ),
                 fixedFee:
                   node.settlement.commissionRecord.fixedFee?.formatted ||
                   formatMoney(
                     node.settlement.commissionRecord.fixedFee?.amount,
-                    currency,
+              
                   ),
                 vatOnCommission:
                   node.settlement.commissionRecord.vatOnCommission?.formatted ||
                   formatMoney(
                     node.settlement.commissionRecord.vatOnCommission?.amount,
-                    currency,
+              
                   ),
                 totalCommission:
                   node.settlement.commissionRecord.totalCommission?.formatted ||
                   formatMoney(
                     node.settlement.commissionRecord.totalCommission?.amount,
-                    currency,
+              
                   ),
                 lockedAt: formatDateTime(
                   node.settlement.commissionRecord.lockedAt,
