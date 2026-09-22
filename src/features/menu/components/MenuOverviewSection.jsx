@@ -188,6 +188,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
     "A curated catering option prepared for dependable delivery and easy team ordering.";
   const locale = i18n.language?.startsWith("no") ? "nb-NO" : "en-GB";
   const timingEntries = normalizeTimingEntries(vendor, locale);
+  const vendorLocationText = vendor.addressLine || vendor.city || t("menu.notAvailable");
 
   return (
     <>
@@ -259,8 +260,8 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
         <MetricCard
           icon={<FiMapPin />}
           label={t("menu.location")}
-          value={vendor.city || vendor.addressLine || t("menu.notAvailable")}
-          subvalue={vendor.addressLine || ""}
+          value={vendorLocationText}
+          subvalue=""
         />
         <MetricCard
           icon={<FiTruck />}
