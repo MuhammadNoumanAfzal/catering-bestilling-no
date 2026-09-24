@@ -9,6 +9,7 @@ import {
   fetchBrowseFilterOptions,
 } from "../api/browseTaxonomyService";
 import { parseCategoryParamValue } from "../utils/categoryFilters";
+import { filterItemsByVendorLocation } from "../../vendor";
 
 const PAGE_SIZE = 24;
 
@@ -122,8 +123,13 @@ export function useBrowseCatalogItems(mode = "food-type") {
         };
         const payload = await browseMenus(variables, mode);
         if (!isMounted) return;
-        setItems(payload.items);
-        setTotalCount(payload.totalCount);
+        const visibleItems = filterItemsByVendorLocation(
+          payload.items,
+          locationValue,
+          (item) => item?.vendorData ?? item?.vendor ?? null,
+        );
+        setItems(visibleItems);
+        setTotalCount(locationValue.trim() ? visibleItems.length : payload.totalCount);
         setPageInfo(payload.pageInfo || { hasNextPage: false, endCursor: null });
       } catch (loadError) {
         if (!isMounted) return;
@@ -153,7 +159,15 @@ export function useBrowseCatalogItems(mode = "food-type") {
         after: pageInfo.endCursor,
       };
       const payload = await browseMenus(variables, mode);
-      setItems((current) => [...current, ...payload.items]);
+      const visibleItems = filterItemsByVendorLocation(
+        payload.items,
+        locationValue,
+        (item) => item?.vendorData ?? item?.vendor ?? null,
+      );
+      setItems((current) => [...current, ...visibleItems]);
+      if (locationValue.trim()) {
+        setTotalCount((current) => current + visibleItems.length);
+      }
       setPageInfo(payload.pageInfo || { hasNextPage: false, endCursor: null });
     } catch (loadError) {
       setError(loadError?.message || "Unable to load more menu items right now.");
