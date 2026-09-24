@@ -627,7 +627,7 @@ const BROWSE_MENUS_QUERY = `
     browseMenus(foodTypeSlug: $foodTypeSlug, occasionSlug: $occasionSlug, sort: $sort, priceRange: $priceRange, minRating: $minRating, dietaryOptionIds: $dietaryOptionIds, deliveryFilter: $deliveryFilter, first: $first, after: $after) {
       edges { cursor node {
         id slug title description imageUrl priceFrom currency publishedAt
-        vendor { id slug name logoUrl city averageRating reviewCount completedOrdersCount }
+        vendor { id slug name logoUrl city postCode averageRating reviewCount completedOrdersCount serviceAreas { id name postCode isActive } }
         foodTypes { id name slug }
         occasions { id name slug }
         dietaryOptions { id name slug iconUrl }
@@ -665,7 +665,7 @@ function mapBrowseMenuNode(node, mode) {
     vendor: vendor?.name || "Catering partner",
     vendorName: vendor?.name || "Catering partner",
     vendorSlug: resolvePublicVendorSlug(vendor),
-    vendorData: { id: vendor?.id || "", slug: resolvePublicVendorSlug(vendor), name: vendor?.name || "Catering partner", rating: formatRating(vendor?.averageRating), reviewCount: Number(vendor?.reviewCount || 0), logo: vendor?.logoUrl || "", city: vendor?.city || "", addressLine: vendor?.city || "", deliveryFee: formatDeliveryFee(delivery?.fee) },
+    vendorData: mapBrowseVendor({ ...vendor, deliverySettings: { baseDeliveryFee: delivery?.fee } }),
     image: node?.imageUrl || vendor?.logoUrl || "/home/hero1.webp",
     rating: formatRating(vendor?.averageRating),
     price: formatKrAmount(price),
