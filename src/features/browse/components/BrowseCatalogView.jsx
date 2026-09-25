@@ -253,7 +253,7 @@ export default function BrowseCatalogView({
 
       <BrowseMenuSection
         sectionId="browse-results"
-        title={t("browse.menuTitle")}
+        title=""
         items={paginatedItems}
         totalItems={filteredMenuItems.length}
         activeCategoryLabel={activeCategoryLabel}

@@ -30,8 +30,10 @@ export default function BrowseMenuSection({
     <section id={sectionId} className="mt-8 sm:mt-12">
       <div className="mx-auto w-full max-w-7xl px-0 sm:px-4">
         <div className="mb-4 flex items-start justify-between gap-3 sm:items-center">
-          <h2 className="type-h3 font-semibold text-[#191919]">{title}</h2>
-          <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-3">
+          {title ? (
+            <h2 className="type-h3 font-semibold text-[#191919]">{title}</h2>
+          ) : null}
+          <div className="ml-auto flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-3">
             <p className="text-xs text-[#777] sm:text-sm">
               {t("browse.itemsCount", { count: totalItems ?? items.length })}
             </p>
