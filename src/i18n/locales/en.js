@@ -71,6 +71,9 @@ const en = {
     copyright: "\u00a9 2026 GoCatering",
   },
   browse: {
+    loadErrorTitle: "Unable to load page",
+    loadErrorMessage:
+      "We couldn't complete that right now. Please try again in a moment. If it keeps happening, contact support.",
     tabs: {
       foodType: "Browse by Food Type",
       occasion: "Browse by Occasion",
