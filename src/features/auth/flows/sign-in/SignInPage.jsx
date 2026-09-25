@@ -43,7 +43,7 @@ function shouldCheckVendorDashboardOnboarding(user, state) {
   const hasOnboardingFlag =
     typeof window !== "undefined" &&
     window.sessionStorage.getItem(VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY) ===
-      "true";
+    "true";
 
   return hasVendorRouteIntent || hasVendorStatus || hasOnboardingFlag;
 }
@@ -98,17 +98,7 @@ async function resolveCustomerDestination(state) {
     return resolvePostSignInDestination(state);
   }
 
-  try {
-    const [settings, checkoutProfile] = await Promise.all([
-      fetchClientSettingsProfile(),
-      fetchCheckoutAutofillProfile(),
-    ]);
-
-    return isClientProfileComplete(settings, checkoutProfile) ? "/" : "/settings";
-  } catch {
-    // Keep incomplete or unverifiable profiles on Settings rather than skipping onboarding.
-    return "/settings";
-  }
+  return "/";
 }
 
 export default function SignInPage() {
