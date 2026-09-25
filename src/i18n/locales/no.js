@@ -73,6 +73,9 @@ const no = {
   },
   browse: {
     more: "Mer",
+    loadErrorTitle: "Kunne ikke laste siden",
+    loadErrorMessage:
+      "Vi kunne ikke fullføre dette akkurat nå. Prøv igjen om et øyeblikk. Hvis det fortsetter å skje, ta kontakt med kundeservice.",
     tabs: {
       foodType: "Sorter etter mattype",
       occasion: "Sorter etter anledning",

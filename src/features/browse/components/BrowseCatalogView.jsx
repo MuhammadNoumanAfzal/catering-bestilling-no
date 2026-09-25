@@ -216,9 +216,13 @@ export default function BrowseCatalogView({
     return (
       <section className="w-full px-4 py-8 sm:px-6 sm:py-10 md:px-20 md:py-12">
         <div className="mx-auto w-full max-w-7xl rounded-[28px] border border-red-200 bg-red-50 px-6 py-8 text-center">
-          <h3 className="type-h3 text-red-700">Unable to load browse page</h3>
           <h3 className="type-h3 text-red-700">{t("browse.loadErrorTitle")}</h3>
-          <p className="mt-3 text-sm text-red-600">{error}</p>
+          <p className="mt-3 text-sm text-red-600">
+            {t("browse.loadErrorMessage", {
+              defaultValue:
+                "Vi kunne ikke fullføre dette akkurat nå. Prøv igjen om et øyeblikk. Hvis det fortsetter å skje, ta kontakt med kundeservice.",
+            })}
+          </p>
         </div>
       </section>
     );
