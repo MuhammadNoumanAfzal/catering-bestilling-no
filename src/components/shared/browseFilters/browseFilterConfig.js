@@ -48,12 +48,24 @@ export const DIETARY_OPTION_KEYS = {
 };
 
 export const OFFER_OPTION_KEYS = {
+  "Any Delivery": "browse.filterOptions.offer.anyDelivery",
   "Free Delivery": "browse.filterOptions.offer.freeDelivery",
+  "Delivery Fee: 0-150": "browse.filterOptions.offer.fee0To150",
+  "Delivery Fee: 0–150": "browse.filterOptions.offer.fee0To150",
+  "Delivery Fee: 150-300": "browse.filterOptions.offer.fee150To300",
+  "Delivery Fee: 150–300": "browse.filterOptions.offer.fee150To300",
+  "Delivery Fee: 300+": "browse.filterOptions.offer.fee300Plus",
   "Accepts discount code": "browse.filterOptions.offer.acceptsDiscountCode",
   "Have a discount": "browse.filterOptions.offer.haveDiscount",
 };
 
 export const PRICING_OPTION_KEYS = {
+  "Any price": "browse.filterOptions.pricing.anyPrice",
+  "Under 500": "browse.filterOptions.pricing.under500",
+  "500 - 1000": "browse.filterOptions.pricing.range500To1000",
+  "1000 - 2000": "browse.filterOptions.pricing.range1000To2000",
+  "2000 - 5000": "browse.filterOptions.pricing.range2000To5000",
+  "5000+": "browse.filterOptions.pricing.over5000",
   "Budget-friendly": "browse.filterOptions.pricing.budgetFriendly",
   Standard: "browse.filterOptions.pricing.standard",
   Premium: "browse.filterOptions.pricing.premium",
@@ -92,11 +104,25 @@ export function translateBrowseChipLabel(t, key) {
 }
 
 export function translateBrowseOptionLabel(t, value) {
+  if (!value) return value;
   for (const group of BROWSE_LABEL_KEY_GROUPS) {
     if (group[value]) {
       return t(group[value], { defaultValue: value });
     }
   }
+
+  const altValue = value.includes("–") ? value.replace(/–/g, "-") : value.replace(/-/g, "–");
+  for (const group of BROWSE_LABEL_KEY_GROUPS) {
+    if (group[altValue]) {
+      return t(group[altValue], { defaultValue: value });
+    }
+  }
+
+  if (value === "Any Delivery") return t("browse.filterOptions.offer.anyDelivery", { defaultValue: "Valgfri levering" });
+  if (value === "Free Delivery") return t("browse.filterOptions.offer.freeDelivery", { defaultValue: "Gratis levering" });
+  if (value.startsWith("Delivery Fee: 0")) return t("browse.filterOptions.offer.fee0To150", { defaultValue: "Leveringsgebyr: 0–150 kr" });
+  if (value.startsWith("Delivery Fee: 150")) return t("browse.filterOptions.offer.fee150To300", { defaultValue: "Leveringsgebyr: 150–300 kr" });
+  if (value.startsWith("Delivery Fee: 300")) return t("browse.filterOptions.offer.fee300Plus", { defaultValue: "Leveringsgebyr: 300+ kr" });
 
   return value;
 }
