@@ -627,7 +627,7 @@ const BROWSE_MENUS_QUERY = `
     browseMenus(foodTypeSlug: $foodTypeSlug, occasionSlug: $occasionSlug, sort: $sort, priceRange: $priceRange, minRating: $minRating, dietaryOptionIds: $dietaryOptionIds, deliveryFilter: $deliveryFilter, first: $first, after: $after) {
       edges { cursor node {
         id slug title description imageUrl priceFrom currency publishedAt
-        vendor { id slug name logoUrl city postCode averageRating reviewCount completedOrdersCount serviceAreas { id name postCode isActive } }
+        vendor { id slug name logoUrl city averageRating reviewCount completedOrdersCount }
         foodTypes { id name slug }
         occasions { id name slug }
         dietaryOptions { id name slug iconUrl }
