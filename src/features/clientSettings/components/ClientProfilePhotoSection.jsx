@@ -98,52 +98,10 @@ export default function ClientProfilePhotoSection({
             </div>
           </div>
 
-          <div className="flex flex-col justify-between gap-5">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-[#f0d9ca] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#b07a5d]">
-                  {t("settings.profilePhotoBadge")}
-                </span>
-                <span className="rounded-full bg-[#fff1e7] px-3 py-1 text-[12px] font-medium text-[#9f5b36]">
-                  {t("settings.profilePhotoFormats")}
-                </span>
-              </div>
-              <h3 className="mt-3 text-[24px] font-semibold tracking-[-0.02em] text-[#1c1713]">
-                {formState.fullName || t("settings.profilePhotoFallbackName")}
-              </h3>
-              <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#65574c]">
-                {t("settings.profilePhotoHelp")}
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              <div className="rounded-[20px] border border-[#ecdfd5] bg-white/85 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#ad7a5d]">
-                  {t("settings.profilePhotoEmail")}
-                </p>
-                <p className="mt-2 break-all text-[15px] font-medium text-[#221914]">
-                  {formState.email || t("settings.profilePhotoUnavailable")}
-                </p>
-              </div>
-              <div className="rounded-[20px] border border-[#ecdfd5] bg-white/85 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#ad7a5d]">
-                  {t("settings.profilePhotoPhone")}
-                </p>
-                <p className="mt-2 text-[15px] font-medium text-[#221914]">
-                  {formState.phone || t("settings.profilePhotoUnavailable")}
-                </p>
-              </div>
-              <div className="rounded-[20px] border border-[#ecdfd5] bg-white/85 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#ad7a5d]">
-                  {t("settings.profilePhotoStatus")}
-                </p>
-                <p className="mt-2 text-[15px] font-medium text-[#221914]">
-                  {displayAvatar
-                    ? t("settings.profilePhotoAdded")
-                    : t("settings.profilePhotoNotAdded")}
-                </p>
-              </div>
-            </div>
+          <div className="flex flex-col justify-center gap-4">
+            <span className="w-fit rounded-full bg-[#fff1e7] px-3 py-1 text-[12px] font-medium text-[#9f5b36]">
+              {t("settings.profilePhotoFormats")}
+            </span>
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <button

@@ -225,7 +225,7 @@ const en = {
     heroCardThreeTitle: "Made for gatherings that feel special",
     heroCardThreeBody:
       "Choose menus designed for guest experience, presentation, and dependable setup for family and private celebrations.",
-    deliveryAddressPlaceholder: "Enter your delivery address",
+    deliveryAddressPlaceholder: "Add city",
     postalCodePlaceholder: "Add Postal Code",
     search: "Search",
     explore: "Explore",
@@ -251,7 +251,7 @@ const en = {
         location: {
           title: "Choose Location",
           description:
-            "Enter your delivery address or postal code to see which caterers and event menus are available in your area.",
+            "Enter the city or postal code where you want delivery, to see which caterers are available in your area.",
         },
         food: {
           title: "Select Food",
@@ -466,7 +466,7 @@ const en = {
       featured: "Featured",
     },
     addItemsToCart: "Add items to your cart",
-    orderSummary: "Order Summary",
+    orderSummary: "CART",
     deleteItem: "Delete",
     qty: "Qty {{count}}",
     serves: "Serves {{count}}",
@@ -481,7 +481,7 @@ const en = {
     location: "Location",
     addDeliveryAddress: "Add delivery address during checkout",
     total: "Total",
-    checkout: "Checkout",
+    checkout: "PROCEED TO CHECKOUT",
     orderDetailsRequired: "Order details required",
     unavailableSelectedTimeMessage: "This caterer is unavailable at your selected delivery time. Please choose another date or time before checkout.",
     unavailableSelectedTimeTitle: "Unavailable for selected time",
@@ -571,7 +571,7 @@ const en = {
     back: "Back",
     save: "Save",
     saved: "Saved",
-    orderSummary: "Order summary",
+    orderSummary: "CART",
     reviewBeforeCheckout: "Review before checkout",
     summaryDescription:
       "Your selected item, quantities, and delivery details will stay visible here while you configure the order.",
@@ -799,7 +799,7 @@ const en = {
     checkingAvailability: "Checking availability...",
     unavailable: "Checkout unavailable",
     waitingForLivePricing: "Waiting for live pricing",
-    placeOrder: "Place Order",
+    placeOrder: "SEND BESTILLING",
     backendPricingError: "Unable to load backend checkout pricing.",
     detailsRequiredTitle: "Checkout details required",
     selectedSlotUnavailableTitle: "Selected slot is no longer available",
@@ -825,6 +825,8 @@ const en = {
     city: "City",
     postalCode: "Postal Code",
     address: "Address",
+    eventName: "Event Name",
+    occasion: "Occasion (optional)",
     customerType: "Customer type",
     mode: {
       corporate: "Corporate",

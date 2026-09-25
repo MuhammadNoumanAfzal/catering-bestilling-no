@@ -65,14 +65,6 @@ export default function ContactInfoSection({
             placeholder={CHECKOUT_PLACEHOLDERS.lastName}
           />
           <CheckoutField
-            label={t("checkout.invoiceReference")}
-            value={formState.invoiceReference}
-            onChange={(event) =>
-              updateField("invoiceReference", event.target.value)
-            }
-            placeholder={CHECKOUT_PLACEHOLDERS.invoiceReference}
-          />
-          <CheckoutField
             label={t("checkout.phone")}
             value={formState.phone}
             onChange={(event) => updateField("phone", event.target.value)}

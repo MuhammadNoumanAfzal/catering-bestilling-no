@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 export default function AuthLayout() {
@@ -23,9 +23,13 @@ export default function AuthLayout() {
             <div className="absolute bottom-0 left-10 h-40 w-40 rounded-full border border-white/10 bg-[#f3be96]/10 blur-2xl" />
 
             <div className="relative z-10 max-w-md">
-              <div className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#ffe8d6]">
-                {t("auth.layout.badge")}
-              </div>
+              <Link to="/" className="inline-block">
+                <img
+                  src="/home/whiteLogo.png"
+                  alt="GoCatering"
+                  className="h-10 w-auto object-contain"
+                />
+              </Link>
               <h1 className="mt-5 font-serif text-[44px] leading-[0.98] text-white">
                 {t("auth.layout.title")}
               </h1>

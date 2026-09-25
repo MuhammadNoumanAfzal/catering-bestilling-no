@@ -246,7 +246,7 @@ const no = {
     heroCardThreeTitle: "Skapt for samlinger som skal føles spesielle",
     heroCardThreeBody:
       "Velg menyer med fokus på presentasjon, gjesteopplevelse og trygg levering til private og familiære feiringer.",
-    deliveryAddressPlaceholder: "Skriv inn leveringsadressen din",
+    deliveryAddressPlaceholder: "Legg til by",
     postalCodePlaceholder: "Legg til postnummer",
     search: "S\u00f8k",
     explore: "Utforsk",
@@ -275,7 +275,7 @@ const no = {
         location: {
           title: "Velg sted",
           description:
-            "Skriv inn leveringsadressen eller postnummeret ditt for å se hvilke cateringleverandører og arrangementsmenyer som er tilgjengelige i området ditt.",
+            "Skriv inn by eller postnummeret der du ønsker levering, for å se hvilke cateringleverandører som er tilgjengelige i området ditt.",
         },
         food: {
           title: "Velg mat",
@@ -492,7 +492,7 @@ const no = {
       featured: "Fremhevet",
     },
     addItemsToCart: "Legg varer i handlekurven",
-    orderSummary: "Ordresammendrag",
+    orderSummary: "HANDLEKURV",
     deleteItem: "Slett",
     qty: "Ant. {{count}}",
     serves: "Holder til {{count}}",
@@ -507,7 +507,7 @@ const no = {
     location: "Sted",
     addDeliveryAddress: "Legg til leveringsadresse i utsjekken",
     total: "Totalt",
-    checkout: "Til utsjekk",
+    checkout: "FORTSETT TIL KASSEN",
     orderDetailsRequired: "Ordredetaljer kreves",
     unavailableSelectedTimeMessage: "Denne leverandøren er ikke tilgjengelig på valgt leveringstid. Velg en annen dato eller tid før utsjekk.",
     unavailableSelectedTimeTitle: "Utilgjengelig for valgt tid",
@@ -605,7 +605,7 @@ const no = {
     back: "Tilbake",
     save: "Lagre",
     saved: "Lagret",
-    orderSummary: "Ordresammendrag",
+    orderSummary: "HANDLEKURV",
     reviewBeforeCheckout: "Se gjennom før utsjekk",
     summaryDescription:
       "Valgt vare, antall og leveringsdetaljer vil vises her mens du setter opp bestillingen.",
@@ -837,7 +837,7 @@ const no = {
     checkingAvailability: "Sjekker tilgjengelighet...",
     unavailable: "Utsjekk utilgjengelig",
     waitingForLivePricing: "Venter på live prising",
-    placeOrder: "Legg inn bestilling",
+    placeOrder: "SEND BESTILLING",
     backendPricingError: "Kunne ikke laste backend-prising for utsjekk.",
     detailsRequiredTitle: "Bestillingsdetaljer kreves",
     selectedSlotUnavailableTitle:
@@ -866,6 +866,8 @@ const no = {
     city: "By",
     postalCode: "Postnummer",
     address: "Adresse",
+    eventName: "Arrangementsnavn",
+    occasion: "Anledning (valgfritt)",
     customerType: "Kundetype",
     mode: {
       corporate: "Bedrift",

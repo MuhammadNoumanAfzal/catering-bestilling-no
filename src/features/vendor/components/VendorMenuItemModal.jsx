@@ -83,8 +83,6 @@ export default function VendorMenuItemModal({ item, onClose }) {
           : unitPrice * quantityCount,
       pricingType,
       details: [
-        `Serves ${item.serves}`,
-        selectedQuantity,
         selectedRequired,
         ...selectedAddOns,
         instructions ? `Note: ${instructions}` : null,

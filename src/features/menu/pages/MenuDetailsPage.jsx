@@ -618,8 +618,6 @@ export default function MenuDetailsPage() {
       selectedOptions,
       specialInstructions: normalizedVendorNote,
       details: [
-        t("menu.serves", { count: menuItem.serves }),
-        selectedQuantity,
         selectedRequired,
         normalizedVendorNote ? t("menu.note", { note: normalizedVendorNote }) : null,
       ].filter(Boolean),
