@@ -43,7 +43,7 @@ export default function BrowseFilterOptionsDropdown({
 
   if (chipKey === "offer" && openDropdown === "offer") {
     return <FilterDropdown minWidthClassName="min-w-[250px]" mobileAlign={mobileAlign} onClear={() => { setSelectedOffers([]); closeDropdown(); }}>
-      {offerOptions.map((option) => <button key={option} type="button" onClick={() => { setSelectedOffers(option === "Any Delivery" || selectedOffers.includes(option) ? [] : [option]); closeDropdown(); }} className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"><MultiSelectIndicator isSelected={selectedOffers.includes(option)} /><span>{translateBrowseOptionLabel(t, option)}</span></button>)}
+      {offerOptions.map((option) => <button key={option} type="button" onClick={() => { setSelectedOffers(option === "Any Delivery" || option === "Alle leveringer" || option === "Valgfri levering" || selectedOffers.includes(option) ? [] : [option]); closeDropdown(); }} className="type-para flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left text-black transition hover:bg-[#f7f2ec]"><MultiSelectIndicator isSelected={selectedOffers.includes(option)} /><span>{translateBrowseOptionLabel(t, option)}</span></button>)}
     </FilterDropdown>;
   }
 

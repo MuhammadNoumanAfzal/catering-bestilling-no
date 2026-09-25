@@ -49,12 +49,20 @@ export const DIETARY_OPTION_KEYS = {
 
 export const OFFER_OPTION_KEYS = {
   "Any Delivery": "browse.filterOptions.offer.anyDelivery",
+  "Alle leveringer": "browse.filterOptions.offer.anyDelivery",
+  "Valgfri levering": "browse.filterOptions.offer.anyDelivery",
   "Free Delivery": "browse.filterOptions.offer.freeDelivery",
+  "Gratis levering": "browse.filterOptions.offer.freeDelivery",
   "Delivery Fee: 0-150": "browse.filterOptions.offer.fee0To150",
   "Delivery Fee: 0–150": "browse.filterOptions.offer.fee0To150",
+  "Leveringsgebyr: 0–150 kr": "browse.filterOptions.offer.fee0To150",
+  "Leveringsgebyr: 0-150 kr": "browse.filterOptions.offer.fee0To150",
   "Delivery Fee: 150-300": "browse.filterOptions.offer.fee150To300",
   "Delivery Fee: 150–300": "browse.filterOptions.offer.fee150To300",
+  "Leveringsgebyr: 150–300 kr": "browse.filterOptions.offer.fee150To300",
+  "Leveringsgebyr: 150-300 kr": "browse.filterOptions.offer.fee150To300",
   "Delivery Fee: 300+": "browse.filterOptions.offer.fee300Plus",
+  "Leveringsgebyr: 300+ kr": "browse.filterOptions.offer.fee300Plus",
   "Accepts discount code": "browse.filterOptions.offer.acceptsDiscountCode",
   "Have a discount": "browse.filterOptions.offer.haveDiscount",
 };
@@ -103,28 +111,39 @@ export function translateBrowseChipLabel(t, key) {
   });
 }
 
+const NORWEGIAN_OPTION_FALLBACKS = {
+  "Any Delivery": "Alle leveringer",
+  "Free Delivery": "Gratis levering",
+  "Delivery Fee: 0-150": "Leveringsgebyr: 0–150 kr",
+  "Delivery Fee: 0–150": "Leveringsgebyr: 0–150 kr",
+  "Delivery Fee: 150-300": "Leveringsgebyr: 150–300 kr",
+  "Delivery Fee: 150–300": "Leveringsgebyr: 150–300 kr",
+  "Delivery Fee: 300+": "Leveringsgebyr: 300+ kr",
+};
+
 export function translateBrowseOptionLabel(t, value) {
   if (!value) return value;
+  const fallback = NORWEGIAN_OPTION_FALLBACKS[value] || value;
   for (const group of BROWSE_LABEL_KEY_GROUPS) {
     if (group[value]) {
-      return t(group[value], { defaultValue: value });
+      return t(group[value], { defaultValue: fallback });
     }
   }
 
   const altValue = value.includes("–") ? value.replace(/–/g, "-") : value.replace(/-/g, "–");
   for (const group of BROWSE_LABEL_KEY_GROUPS) {
     if (group[altValue]) {
-      return t(group[altValue], { defaultValue: value });
+      return t(group[altValue], { defaultValue: fallback });
     }
   }
 
-  if (value === "Any Delivery") return t("browse.filterOptions.offer.anyDelivery", { defaultValue: "Valgfri levering" });
-  if (value === "Free Delivery") return t("browse.filterOptions.offer.freeDelivery", { defaultValue: "Gratis levering" });
-  if (value.startsWith("Delivery Fee: 0")) return t("browse.filterOptions.offer.fee0To150", { defaultValue: "Leveringsgebyr: 0–150 kr" });
-  if (value.startsWith("Delivery Fee: 150")) return t("browse.filterOptions.offer.fee150To300", { defaultValue: "Leveringsgebyr: 150–300 kr" });
-  if (value.startsWith("Delivery Fee: 300")) return t("browse.filterOptions.offer.fee300Plus", { defaultValue: "Leveringsgebyr: 300+ kr" });
+  if (value === "Any Delivery" || value === "Valgfri levering" || value === "Alle leveringer") return t("browse.filterOptions.offer.anyDelivery", { defaultValue: "Alle leveringer" });
+  if (value === "Free Delivery" || value === "Gratis levering") return t("browse.filterOptions.offer.freeDelivery", { defaultValue: "Gratis levering" });
+  if (value.startsWith("Delivery Fee: 0") || value.startsWith("Leveringsgebyr: 0")) return t("browse.filterOptions.offer.fee0To150", { defaultValue: "Leveringsgebyr: 0–150 kr" });
+  if (value.startsWith("Delivery Fee: 150") || value.startsWith("Leveringsgebyr: 150")) return t("browse.filterOptions.offer.fee150To300", { defaultValue: "Leveringsgebyr: 150–300 kr" });
+  if (value.startsWith("Delivery Fee: 300") || value.startsWith("Leveringsgebyr: 300")) return t("browse.filterOptions.offer.fee300Plus", { defaultValue: "Leveringsgebyr: 300+ kr" });
 
-  return value;
+  return fallback;
 }
 
 export const FILTER_BAR_VARIANTS = {

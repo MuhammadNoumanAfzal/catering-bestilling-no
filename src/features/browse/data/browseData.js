@@ -144,11 +144,11 @@ export const ratingOptions = [
 export const dietaryOptions = ["Vegetarian", "Vegan", "Halal", "Gluten-Free"];
 
 export const offerOptions = [
-  "Any Delivery",
-  "Free Delivery",
-  "Delivery Fee: 0-150",
-  "Delivery Fee: 150-300",
-  "Delivery Fee: 300+",
+  "Alle leveringer",
+  "Gratis levering",
+  "Leveringsgebyr: 0–150 kr",
+  "Leveringsgebyr: 150–300 kr",
+  "Leveringsgebyr: 300+ kr",
 ];
 
 export const pricingOptions = [

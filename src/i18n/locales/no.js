@@ -98,7 +98,7 @@ const no = {
         newest: "Nyeste",
       },
       offer: {
-        anyDelivery: "Valgfri levering",
+        anyDelivery: "Alle leveringer",
         freeDelivery: "Gratis levering",
         fee0To150: "Leveringsgebyr: 0–150 kr",
         fee150To300: "Leveringsgebyr: 150–300 kr",
