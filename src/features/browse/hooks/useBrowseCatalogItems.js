@@ -44,9 +44,17 @@ function mapPriceRange(value) { return { "Under 500": "UNDER_500", "500 - 1000":
 function mapDeliveryFilter(value) {
   return {
     "Free Delivery": "FREE_DELIVERY",
+    "Gratis levering": "FREE_DELIVERY",
     "Delivery Fee: 0-150": "FEE_0_TO_150",
+    "Delivery Fee: 0–150": "FEE_0_TO_150",
+    "Leveringsgebyr: 0–150 kr": "FEE_0_TO_150",
+    "Leveringsgebyr: 0-150 kr": "FEE_0_TO_150",
     "Delivery Fee: 150-300": "FEE_150_TO_300",
+    "Delivery Fee: 150–300": "FEE_150_TO_300",
+    "Leveringsgebyr: 150–300 kr": "FEE_150_TO_300",
+    "Leveringsgebyr: 150-300 kr": "FEE_150_TO_300",
     "Delivery Fee: 300+": "FEE_300_PLUS",
+    "Leveringsgebyr: 300+ kr": "FEE_300_PLUS",
   }[value] || null;
 }
 

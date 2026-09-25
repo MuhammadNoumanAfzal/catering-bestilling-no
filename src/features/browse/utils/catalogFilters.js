@@ -42,18 +42,18 @@ export function matchesDietaryFilter(item, selectedDietary) {
 
 export function matchesOfferFilter(item, selectedOffers) {
   const selectedDelivery = selectedOffers?.[0];
-  if (!selectedDelivery || selectedDelivery === "Any Delivery") {
+  if (!selectedDelivery || selectedDelivery === "Any Delivery" || selectedDelivery === "Alle leveringer" || selectedDelivery === "Valgfri levering") {
     return true;
   }
 
-  if (selectedDelivery === "Free Delivery") {
-    return (item.offerTags ?? []).includes("Free Delivery");
+  if (selectedDelivery === "Free Delivery" || selectedDelivery === "Gratis levering") {
+    return (item.offerTags ?? []).includes("Free Delivery") || (item.offerTags ?? []).includes("Gratis levering") || extractFirstNumber(item?.vendorData?.deliveryFee) === 0;
   }
 
   const deliveryFee = extractFirstNumber(item?.vendorData?.deliveryFee);
-  if (selectedDelivery === "Delivery Fee: 0-150") return deliveryFee >= 0 && deliveryFee <= 150;
-  if (selectedDelivery === "Delivery Fee: 150-300") return deliveryFee >= 150 && deliveryFee <= 300;
-  if (selectedDelivery === "Delivery Fee: 300+") return deliveryFee >= 300;
+  if (selectedDelivery === "Delivery Fee: 0-150" || selectedDelivery.includes("0–150") || selectedDelivery.includes("0-150")) return deliveryFee >= 0 && deliveryFee <= 150;
+  if (selectedDelivery === "Delivery Fee: 150-300" || selectedDelivery.includes("150–300") || selectedDelivery.includes("150-300")) return deliveryFee >= 150 && deliveryFee <= 300;
+  if (selectedDelivery === "Delivery Fee: 300+" || selectedDelivery.includes("300+")) return deliveryFee >= 300;
   return true;
 }
 
