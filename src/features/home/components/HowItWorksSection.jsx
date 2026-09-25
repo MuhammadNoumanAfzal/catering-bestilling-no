@@ -45,7 +45,7 @@ const HowItWorks = () => {
           {/* Cards Grid */}
           <div className="relative z-10 w-full grid grid-cols-1 md:grid-cols-3 gap-6 p-6 md:p-10 lg:p-14 cursor-pointer">
             {steps.map((step) => (
-              <div key={step.id} className="flex flex-col items-center">
+              <div key={step.id} className="flex flex-col items-center h-full">
                 {/* Large Background Number */}
                 {/* <div      
  className="text-white/80 text-7xl md:text-8xl font-black mb-[20px] z-88 select-none opacity-80 drop-shadow-lg">
@@ -58,7 +58,7 @@ const HowItWorks = () => {
                 />
 
                 {/* White Content Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-xl flex flex-col items-center text-center w-full z-10 min-h-[220px] transition-transform hover:scale-105 duration-300">
+                <div className="bg-white rounded-2xl p-6 shadow-xl flex flex-col items-center text-center w-full flex-1 z-10 min-h-[220px] transition-transform hover:scale-105 duration-300">
                   <div className="mb-3 text-gray-900">
                     <img
                       src={step.icon}

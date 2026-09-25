@@ -2,7 +2,7 @@ export const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
   { label: "15%", value: 0.15 },
   { label: "20%", value: 0.2 },
-  { label: "Other", value: "other" },
+  { label: "Annet", value: "other" },
 ];
 
 export const SALES_TAX_RATE = 0.15;

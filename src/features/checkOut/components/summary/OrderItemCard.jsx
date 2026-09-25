@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   formatCurrency,
   getItemServes,
@@ -9,6 +10,14 @@ export default function OrderItemCard({
   vendorSlug,
   onRemoveItem,
 }) {
+  const { t } = useTranslation();
+  const filteredDetails = (item.details ?? []).filter(
+    (detail) =>
+      detail &&
+      !/^\d+\s*order/i.test(detail) &&
+      !/^(serves|serverer|holder til)/i.test(detail),
+  );
+
   return (
     <div className="rounded-[10px] bg-[#fffdfa] p-2.5">
       <div className="flex items-start justify-between gap-3">
@@ -18,8 +27,8 @@ export default function OrderItemCard({
           </p>
           <p className="mt-0.5 text-[12px] text-[#8b8580]">
             {item.isAddOn
-              ? `Qty ${item.quantity}`
-              : `Serves ${getItemServes(item, personCount)}`}
+              ? t("vendor.qty", { count: item.quantity })
+              : t("vendor.serves", { count: getItemServes(item, personCount) })}
           </p>
         </div>
 
@@ -32,14 +41,14 @@ export default function OrderItemCard({
             onClick={() => onRemoveItem(vendorSlug, item.id)}
             className="mt-1 cursor-pointer text-[12px] font-medium text-[#cf6e38]"
           >
-            Remove
+            {t("vendor.deleteItem")}
           </button>
         </div>
       </div>
 
-      {(item.details ?? []).length > 0 ? (
+      {filteredDetails.length > 0 ? (
         <ul className="mt-1.5 space-y-0.5 text-[12px] leading-4 text-[#8b8580]">
-          {item.details.map((detail) => (
+          {filteredDetails.map((detail) => (
             <li key={detail}>- {detail}</li>
           ))}
         </ul>

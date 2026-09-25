@@ -12,21 +12,21 @@ export const CHECKOUT_MODE_LABELS = {
 };
 
 export const CHECKOUT_PLACEHOLDERS = {
-  companyName: "ABC Company",
+  companyName: "Firmanavn",
   organizationNumber: "123 456 789",
-  invoiceReference: "PO number / reference (optional)",
-  firstName: "First name",
-  lastName: "Last name",
-  email: "name@example.com",
-  phone: "XX-XX-XXX",
-  address: "xxx-xxx-xxx",
-  addressLine2: "Suite / Floor",
-  apartment: "Apartment / Floor",
-  city: "Bergen",
-  postalCode: "1235",
-  eventName: "Event name",
-  occasion: "Occasion",
-  additionalInfo: "Add notes...",
+  invoiceReference: "PO-nummer / referanse (valgfritt)",
+  firstName: "Fornavn",
+  lastName: "Etternavn",
+  email: "navn@eksempel.no",
+  phone: "+4788888888",
+  address: "Gateadresse",
+  addressLine2: "Leilighet / etasje (valgfritt)",
+  apartment: "Leilighet / etasje (valgfritt)",
+  city: "By",
+  postalCode: "1234",
+  eventName: "Arrangementsnavn",
+  occasion: "Anledning (valgfritt)",
+  additionalInfo: "Legg til notater...",
 };
 
 export function createInitialCheckoutFormState(primaryCart) {

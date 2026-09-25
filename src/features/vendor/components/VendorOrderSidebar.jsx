@@ -131,14 +131,21 @@ export default function VendorOrderSidebar({
                   </div>
 
                   <div className="mt-2 space-y-1">
-                    {(item.details ?? []).map((detail) => (
-                      <p
-                        key={detail}
-                        className="type-para font-medium leading-5 text-[#8b8580]"
-                      >
-                        - {detail}
-                      </p>
-                    ))}
+                    {(item.details ?? [])
+                      .filter(
+                        (detail) =>
+                          detail &&
+                          !/^\d+\s*order/i.test(detail) &&
+                          !/^(serves|serverer|holder til)/i.test(detail),
+                      )
+                      .map((detail) => (
+                        <p
+                          key={detail}
+                          className="type-para font-medium leading-5 text-[#8b8580]"
+                        >
+                          - {detail}
+                        </p>
+                      ))}
                   </div>
 
                   <div className="mt-3 flex items-center justify-between gap-3">
@@ -175,9 +182,6 @@ export default function VendorOrderSidebar({
                   {formatKr(deliveryFee)}
                 </span>
               </div>
-              <p className="mt-1 type-para text-[#76706a]">
-                {t("vendor.notDriverTip")}
-              </p>
 
               {addOnsTotal > 0 ? (
                 <div className="mt-2 flex items-center justify-between gap-3">

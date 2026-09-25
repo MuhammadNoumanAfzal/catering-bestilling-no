@@ -25,7 +25,8 @@ export default function EventDetailsSection({
   minimumPersonCount = 1,
 }) {
   const { t } = useTranslation();
-  const eventLabel = mode === "corporate" ? "Event Name" : "Occasion";
+  const eventLabel =
+    mode === "corporate" ? t("checkout.eventName") : t("checkout.occasion");
   const eventKey = mode === "corporate" ? "eventName" : "occasion";
   const eventPlaceholder =
     mode === "corporate"
