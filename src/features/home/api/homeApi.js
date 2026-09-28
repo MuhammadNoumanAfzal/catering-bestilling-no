@@ -3,6 +3,7 @@ import { mapHomeResponse } from "./homeMappers";
 import { FETCH_HOME_DATA_QUERY } from "./homeQueries";
 import { hydrateRatingsForItems } from "../../../utils/ratingHydrator";
 import { fetchVendorProfiles } from "../../vendor/api/vendorService";
+import { filterVendorsByLocation } from "../../vendor";
 
 export async function fetchHomeContent(filters = {}, signal) {
   const hasLocationSearch = Boolean(filters.postCode || filters.areaName);
@@ -26,6 +27,12 @@ export async function fetchHomeContent(filters = {}, signal) {
     }
   }
 
+  const locationSearchValue = filters.postCode || filters.areaName || "";
+  const fallbackSearchedVendors =
+    hasLocationSearch && (!mapped.searchedVendors || mapped.searchedVendors.length === 0)
+      ? filterVendorsByLocation(fallbackAllVendors, locationSearchValue)
+      : mapped.searchedVendors || [];
+
   const [
     allVendors,
     searchedVendors,
@@ -34,7 +41,7 @@ export async function fetchHomeContent(filters = {}, signal) {
     popularProducts,
   ] = await Promise.all([
     hydrateRatingsForItems(fallbackAllVendors),
-    hydrateRatingsForItems(mapped.searchedVendors || []),
+    hydrateRatingsForItems(fallbackSearchedVendors),
     hydrateRatingsForItems(mapped.featuredVendors),
     hydrateRatingsForItems(mapped.popularVendors),
     hydrateRatingsForItems(mapped.popularProducts),

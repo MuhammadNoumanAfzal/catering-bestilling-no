@@ -67,8 +67,7 @@ const no = {
     terms: "Vilkår",
     privacy: "Personvern",
     headline: "Levering i hele Norge",
-    description:
-      "Bestill catering fra din favorittleverandør i hele Norge",
+    description: "Bestill catering fra din favorittleverandør i hele Norge",
     copyright: "\u00a9 2026 GoCatering",
   },
   browse: {
@@ -130,11 +129,11 @@ const no = {
     allTitle: "Alle leverandører",
     popularTitle: "Populære leverandører",
     featuredTitle: "Utvalgte leverandører",
-    allDescription:
-      "Utforsk de mest populære leverandørene innen ditt område.",
+    allDescription: "Utforsk de mest populære leverandørene innen ditt område.",
     popularDescription:
       "Utforsk leverandørene kundene bestiller mest fra til hverdagslunsj og kontorcatering.",
-    featuredDescription: "Utforsk de mest populære leverandørene innen ditt område",
+    featuredDescription:
+      "Utforsk de mest populære leverandørene innen ditt område",
     backToHome: "Tilbake til forsiden",
     showingCategory: "Viser kategori: {{category}}",
     showMore: "Vis {{count}} til",
@@ -294,7 +293,7 @@ const no = {
     heroCardThreeBody:
       "Velg menyer med fokus på presentasjon, gjesteopplevelse og trygg levering til private og familiære feiringer.",
     deliveryAddressPlaceholder: "Legg til by",
-    postalCodePlaceholder: "Legg til postnummer",
+    postalCodePlaceholder: "eller postnummer",
     search: "S\u00f8k",
     explore: "Utforsk",
     browseAllVendors: "Se alle leverandører",
@@ -556,7 +555,8 @@ const no = {
     total: "Totalt",
     checkout: "FORTSETT TIL KASSEN",
     orderDetailsRequired: "Ordredetaljer kreves",
-    unavailableSelectedTimeMessage: "Denne leverandøren er ikke tilgjengelig på valgt leveringstid. Velg en annen dato eller tid før utsjekk.",
+    unavailableSelectedTimeMessage:
+      "Denne leverandøren er ikke tilgjengelig på valgt leveringstid. Velg en annen dato eller tid før utsjekk.",
     unavailableSelectedTimeTitle: "Utilgjengelig for valgt tid",
     openForSelectedTime: "Åpen for valgt tidspunkt",
     closedOrUnavailable: "Stengt / ikke tilgjengelig",
@@ -768,7 +768,8 @@ const no = {
     futureDeliveryTimeToday: "Velg en fremtidig leveringstid for i dag.",
     minimumPersonCount: "Antall personer må være minst {{count}}.",
     deliveryPostalCode: "Skriv inn postnummer for levering.",
-    vendorPostalCodeUnavailable: "Leverandøren \"{{vendorName}}\" leverer ikke til postnummer {{postalCode}}.",
+    vendorPostalCodeUnavailable:
+      'Leverandøren "{{vendorName}}" leverer ikke til postnummer {{postalCode}}.',
     deliveryCity: "Skriv inn leveringsby.",
     invoiceAddress: "Skriv inn fakturaadresse.",
     invoicePostalCode: "Skriv inn postnummer for faktura.",
