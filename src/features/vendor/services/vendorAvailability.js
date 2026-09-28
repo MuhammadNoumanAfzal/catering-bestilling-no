@@ -1,5 +1,7 @@
 function normalizePostalCode(postalCode = "") {
-  return `${postalCode}`.replace(/\D/g, "");
+  const digits = `${postalCode}`.replace(/\D/g, "");
+
+  return /^\d{1,4}$/.test(digits) ? digits.padStart(4, "0") : digits;
 }
 
 function normalizeLocationQuery(locationQuery = "") {
