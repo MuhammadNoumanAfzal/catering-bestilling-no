@@ -19,7 +19,11 @@ export async function fetchHomeContent(filters = {}, signal) {
   const mapped = mapHomeResponse(response);
   let fallbackAllVendors = mapped.allVendors || [];
 
-  if (!hasLocationSearch && fallbackAllVendors.length === 0) {
+  const shouldLoadFallbackVendors =
+    fallbackAllVendors.length === 0 &&
+    (!hasLocationSearch || !mapped.searchedVendors || mapped.searchedVendors.length === 0);
+
+  if (shouldLoadFallbackVendors) {
     try {
       fallbackAllVendors = await fetchVendorProfiles();
     } catch {

@@ -348,6 +348,8 @@ export function adaptApiVendorToProfile(apiVendor) {
     .map((area) => ({
       id: area.id || `${area.postCode}`,
       name: area.name || "",
+      region: area.region || "",
+      city: area.city || "",
       postCode: String(area.postCode).padStart(4, "0"),
     }));
 

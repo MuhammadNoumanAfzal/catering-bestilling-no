@@ -62,6 +62,8 @@ export const FETCH_VENDORS_QUERY = `
           serviceAreas {
             id
             name
+            region
+            city
             postCode
             isActive
           }
@@ -167,6 +169,8 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       serviceAreas {
         id
         name
+        region
+        city
         postCode
         isActive
       }

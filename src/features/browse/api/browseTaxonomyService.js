@@ -160,6 +160,8 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
             serviceAreas {
               id
               name
+              region
+              city
               postCode
               isActive
             }
@@ -288,6 +290,8 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
             serviceAreas {
               id
               name
+              region
+              city
               postCode
               isActive
             }
@@ -459,6 +463,8 @@ function mapBrowseVendor(vendor) {
       .map((area) => ({
         id: area.id || `${area.postCode}`,
         name: area.name || "",
+        region: area.region || "",
+        city: area.city || "",
         postCode: `${area?.postCode ?? ""}`.trim(),
       })),
     servicePostalCodes: (vendor?.serviceAreas || [])
@@ -627,7 +633,17 @@ const BROWSE_MENUS_QUERY = `
     browseMenus(foodTypeSlug: $foodTypeSlug, occasionSlug: $occasionSlug, sort: $sort, priceRange: $priceRange, minRating: $minRating, dietaryOptionIds: $dietaryOptionIds, deliveryFilter: $deliveryFilter, first: $first, after: $after) {
       edges { cursor node {
         id slug title description imageUrl priceFrom currency publishedAt
-        vendor { id slug name logoUrl city averageRating reviewCount completedOrdersCount }
+        vendor {
+          id
+          slug
+          name
+          logoUrl
+          city
+          averageRating
+          reviewCount
+          completedOrdersCount
+
+        }
         foodTypes { id name slug }
         occasions { id name slug }
         dietaryOptions { id name slug iconUrl }
