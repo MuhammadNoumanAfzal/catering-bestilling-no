@@ -10,6 +10,7 @@ import {
 } from "../api/browseTaxonomyService";
 import { parseCategoryParamValue } from "../utils/categoryFilters";
 import { filterItemsByVendorLocation } from "../../vendor";
+import { fetchVendorProfiles } from "../../vendor/api/vendorService";
 
 const PAGE_SIZE = 24;
 
@@ -66,6 +67,32 @@ function resolveSelectedSlug(selection, categories) {
   return match?.value ?? slugify(normalizedValue);
 }
 
+function buildVendorLookup(vendors = []) {
+  return vendors.reduce((lookup, vendor) => {
+    if (vendor?.id) lookup.set(`id:${vendor.id}`, vendor);
+    if (vendor?.slug) lookup.set(`slug:${vendor.slug}`, vendor);
+    return lookup;
+  }, new Map());
+}
+
+function mergeVendorCoverage(items, vendorLookup) {
+  if (!vendorLookup.size) return items;
+
+  return items.map((item) => {
+    const vendor = item?.vendorData ?? item?.vendor ?? null;
+    const matchedVendor = vendorLookup.get(`id:${vendor?.id}`) || vendorLookup.get(`slug:${vendor?.slug}`);
+
+    if (!matchedVendor) return item;
+
+    return {
+      ...item,
+      vendorData: {
+        ...vendor,
+        ...matchedVendor,
+      },
+    };
+  });
+}
 export function useBrowseCatalogItems(mode = "food-type") {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -130,9 +157,12 @@ export function useBrowseCatalogItems(mode = "food-type") {
           first: PAGE_SIZE, after: null,
         };
         const payload = await browseMenus(variables, mode);
+        const vendorLookup = locationValue.trim()
+          ? buildVendorLookup(await fetchVendorProfiles())
+          : new Map();
         if (!isMounted) return;
         const visibleItems = filterItemsByVendorLocation(
-          payload.items,
+          mergeVendorCoverage(payload.items, vendorLookup),
           locationValue,
           (item) => item?.vendorData ?? item?.vendor ?? null,
         );
@@ -167,8 +197,11 @@ export function useBrowseCatalogItems(mode = "food-type") {
         after: pageInfo.endCursor,
       };
       const payload = await browseMenus(variables, mode);
+      const vendorLookup = locationValue.trim()
+        ? buildVendorLookup(await fetchVendorProfiles())
+        : new Map();
       const visibleItems = filterItemsByVendorLocation(
-        payload.items,
+        mergeVendorCoverage(payload.items, vendorLookup),
         locationValue,
         (item) => item?.vendorData ?? item?.vendor ?? null,
       );

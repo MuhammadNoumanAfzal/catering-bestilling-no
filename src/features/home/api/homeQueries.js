@@ -44,6 +44,8 @@ export const FETCH_HOME_DATA_QUERY = `
           serviceAreas {
             id
             name
+            region
+            city
             postCode
             isActive
           }
@@ -116,6 +118,8 @@ export const FETCH_HOME_DATA_QUERY = `
           serviceAreas {
             id
             name
+            region
+            city
             postCode
             isActive
           }
@@ -189,6 +193,8 @@ export const FETCH_HOME_DATA_QUERY = `
           serviceAreas {
             id
             name
+            region
+            city
             postCode
             isActive
           }
@@ -262,6 +268,8 @@ export const FETCH_HOME_DATA_QUERY = `
           serviceAreas {
             id
             name
+            region
+            city
             postCode
             isActive
           }
@@ -363,6 +371,8 @@ export const FETCH_HOME_DATA_QUERY = `
             serviceAreas {
               id
               name
+              region
+              city
               postCode
               isActive
             }

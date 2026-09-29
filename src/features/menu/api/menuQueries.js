@@ -97,6 +97,8 @@ export const FETCH_PRODUCT_QUERY = `
         serviceAreas {
           id
           name
+          region
+          city
           postCode
           isActive
         }
