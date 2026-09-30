@@ -190,6 +190,18 @@ export default function HomePage() {
     locationValue,
   ]);
   useEffect(() => {
+    if (!isValidPostalCode(normalizedPostalCode)) {
+      return;
+    }
+
+    if (locationValue === normalizedPostalCode) {
+      return;
+    }
+
+    // Keep the browse pages aligned with the editable home postal code field.
+    setLocationValue(normalizedPostalCode);
+  }, [locationValue, normalizedPostalCode, setLocationValue]);
+  useEffect(() => {
     let isMounted = true;
 
     async function loadFoodTypes() {
@@ -255,19 +267,6 @@ export default function HomePage() {
           search: undefined,
           first: 24,
         });
-
-  useEffect(() => {
-    if (!isValidPostalCode(normalizedPostalCode)) {
-      return;
-    }
-
-    if (locationValue === normalizedPostalCode) {
-      return;
-    }
-
-    // Keep the browse pages aligned with the editable home postal code field.
-    setLocationValue(normalizedPostalCode);
-  }, [locationValue, normalizedPostalCode, setLocationValue]);
         if (isMounted) {
           setCategoryBrowseProducts(result.items || []);
         }
