@@ -260,15 +260,15 @@ export default function VendorDashboardHomePage() {
   const localSettingsLinks = [
     {
       label: t("vendorPanel.settingsLinks.editProfile"),
-      to: "/vendor-dashboard/settings#profile",
+      to: "/client-dashboard/settings#profile",
     },
     {
       label: t("vendorPanel.settingsLinks.password"),
-      to: "/vendor-dashboard/settings#password",
+      to: "/client-dashboard/settings#password",
     },
     {
       label: t("vendorPanel.settingsLinks.notification"),
-      to: "/vendor-dashboard/settings#notifications",
+      to: "/client-dashboard/settings#notifications",
     },
   ];
 
@@ -345,7 +345,7 @@ export default function VendorDashboardHomePage() {
 
   function handleOrderClick(order) {
     const orderId = getRouteId(order);
-    navigate("/vendor-dashboard/orders", {
+    navigate("/client-dashboard/orders", {
       state: orderId ? { openOrderId: orderId } : undefined,
     });
   }
@@ -354,7 +354,7 @@ export default function VendorDashboardHomePage() {
     const invoiceId = getRouteId(invoice);
 
     if (invoiceId) {
-      navigate(`/vendor-dashboard/invoices/${encodeURIComponent(invoiceId)}`);
+      navigate(`/client-dashboard/invoices/${encodeURIComponent(invoiceId)}`);
     }
   }
 
@@ -408,7 +408,7 @@ export default function VendorDashboardHomePage() {
           <VendorSectionCard
             title={t("vendorPanel.dashboard.recentOrders")}
             icon={FiList}
-            footerTo="/vendor-dashboard/orders"
+            footerTo="/client-dashboard/orders"
           >
             <div className="divide-y divide-[#f0f0f0]">
               {filteredOrders.slice(0, 3).length > 0 ? (
@@ -462,7 +462,7 @@ export default function VendorDashboardHomePage() {
           <VendorSectionCard
             title={t("vendorPanel.nav.invoices")}
             icon={FiFileText}
-            footerTo="/vendor-dashboard/invoices"
+            footerTo="/client-dashboard/invoices"
           >
             <div className="divide-y divide-[#f0f0f0]">
               {filteredInvoices.slice(0, 6).length > 0 ? (

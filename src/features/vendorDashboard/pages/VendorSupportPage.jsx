@@ -117,7 +117,7 @@ export default function VendorSupportPage() {
 
         <Link
           className="inline-flex h-[42px] items-center justify-center gap-2 rounded-[10px] border border-[#cf6e38] bg-[#cf6e38] px-5 text-[14px] font-bold text-white no-underline shadow-sm transition hover:bg-[#b85d2b] hover:border-[#b85d2b] active:scale-[0.98]"
-          to="/vendor-dashboard/support/responses"
+          to="/client-dashboard/support/responses"
         >
           Vis innboks
         </Link>

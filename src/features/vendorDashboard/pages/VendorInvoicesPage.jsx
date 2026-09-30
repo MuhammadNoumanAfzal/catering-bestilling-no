@@ -386,7 +386,7 @@ export default function VendorInvoicesPage() {
           invoices={visibleInvoices}
           onOpenDetails={(invoice) =>
             navigate(
-              `/vendor-dashboard/invoices/${encodeURIComponent(invoice.orderId)}`,
+              `/client-dashboard/invoices/${encodeURIComponent(invoice.orderId)}`,
             )
           }
         />

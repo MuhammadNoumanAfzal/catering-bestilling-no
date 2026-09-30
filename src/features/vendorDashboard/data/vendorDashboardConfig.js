@@ -14,43 +14,43 @@ import {
 export const vendorNavigationItems = [
   {
     labelKey: "vendorPanel.nav.dashboard",
-    to: "/vendor-dashboard",
+    to: "/client-dashboard",
     end: true,
     icon: Grid2x2,
   },
   {
     labelKey: "vendorPanel.nav.orders",
-    to: "/vendor-dashboard/orders",
+    to: "/client-dashboard/orders",
     icon: ShoppingBag,
   },
   {
     labelKey: "vendorPanel.nav.restaurants",
-    to: "/vendor-dashboard/restaurants",
+    to: "/client-dashboard/restaurants",
     icon: Store,
   },
   {
     labelKey: "vendorPanel.nav.invoices",
-    to: "/vendor-dashboard/invoices",
+    to: "/client-dashboard/invoices",
     icon: FileText,
   },
   {
     labelKey: "vendorPanel.nav.notifications",
-    to: "/vendor-dashboard/notifications",
+    to: "/client-dashboard/notifications",
     icon: Bell,
   },
   {
     labelKey: "vendorPanel.nav.support",
-    to: "/vendor-dashboard/support",
+    to: "/client-dashboard/support",
     icon: LifeBuoy,
   },
   {
     labelKey: "vendorPanel.nav.address",
-    to: "/vendor-dashboard/address",
+    to: "/client-dashboard/address",
     icon: MapPin,
   },
   {
     labelKey: "vendorPanel.nav.settings",
-    to: "/vendor-dashboard/settings",
+    to: "/client-dashboard/settings",
     icon: Settings,
   },
 ];
@@ -59,12 +59,12 @@ export const vendorSettingsLinks = [
   {
     labelKey: "vendorPanel.settingsLinks.editProfile",
     icon: UserRoundPen,
-    to: "/vendor-dashboard/settings#profile",
+    to: "/client-dashboard/settings#profile",
   },
   {
     labelKey: "vendorPanel.settingsLinks.notification",
     icon: ShieldCheck,
-    to: "/vendor-dashboard/settings#notifications",
+    to: "/client-dashboard/settings#notifications",
   },
 ];
 

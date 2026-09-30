@@ -102,12 +102,12 @@ export default function HomeNavbar() {
 
   const homeProfileMenuItems = [
     { label: t("nav.home"), to: "/", icon: FiHome },
-    { label: t("nav.dashboard"), to: "/vendor-dashboard", icon: FiGrid },
+    { label: t("nav.dashboard"), to: "/client-dashboard", icon: FiGrid },
     ...vendorNavigationItems
       .filter(
         (item) =>
-          item.to !== "/vendor-dashboard" &&
-          item.to !== "/vendor-dashboard/settings",
+          item.to !== "/client-dashboard" &&
+          item.to !== "/client-dashboard/settings",
       )
       .map((item) => ({
         ...item,

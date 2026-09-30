@@ -232,18 +232,18 @@ function mapNotificationType(type) {
 
 function resolveNotificationTarget(node) {
   if (node?.invoiceId) {
-    return `/vendor-dashboard/invoices/${encodeURIComponent(node.invoiceId)}`;
+    return `/client-dashboard/invoices/${encodeURIComponent(node.invoiceId)}`;
   }
 
   if (node?.orderId) {
-    return `/vendor-dashboard/orders/${encodeURIComponent(node.orderId)}`;
+    return `/client-dashboard/orders/${encodeURIComponent(node.orderId)}`;
   }
 
   if (node?.ticketId) {
-    return "/vendor-dashboard/support/responses";
+    return "/client-dashboard/support/responses";
   }
 
-  return "/vendor-dashboard/invoices";
+  return "/client-dashboard/invoices";
 }
 
 function createLocalNotification({ id, title, message, createdAt, type, actionUrl, orderId = "", ticketId = "" }, state) {
@@ -305,7 +305,7 @@ function mapOrderNotifications(edges, state) {
         message,
         createdAt: statusChangedAt,
         type: "order-update",
-        actionUrl: "/vendor-dashboard/orders",
+        actionUrl: "/client-dashboard/orders",
         orderId: order.id || "",
       },
       state,
@@ -361,7 +361,7 @@ function mapSupportNotifications(items, state) {
           message: ticket.subject || `Support ticket ${ticket.ticketNo || "updated"}`,
           createdAt: ticket.lastMessageAt || ticket.createdAt || "",
           type: "support",
-          actionUrl: "/vendor-dashboard/support/responses",
+          actionUrl: "/client-dashboard/support/responses",
           ticketId: ticket.id || "",
         },
         state,

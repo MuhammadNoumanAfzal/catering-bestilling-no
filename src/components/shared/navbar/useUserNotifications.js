@@ -352,7 +352,7 @@ export default function useUserNotifications({ enableReviewPrompt = false } = {}
       closePopover();
     }
 
-    const target = notification.actionUrl || "/vendor-dashboard/invoices";
+    const target = notification.actionUrl || "/client-dashboard/invoices";
     navigate(target);
   };
 

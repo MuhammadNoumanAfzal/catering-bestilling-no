@@ -36,7 +36,7 @@ function resolvePostSignInDestination(state) {
 
 function shouldCheckVendorDashboardOnboarding(user, state) {
   const fromPath = `${state?.from?.pathname ?? ""}`.trim();
-  const hasVendorRouteIntent = fromPath.startsWith("/vendor-dashboard");
+  const hasVendorRouteIntent = fromPath.startsWith("/client-dashboard");
   const hasVendorStatus = Boolean(
     `${user?.vendorStatus ?? user?.applicationStatus ?? ""}`.trim(),
   );
@@ -68,12 +68,12 @@ async function resolveVendorDashboardDestination(user, state) {
     }
 
     return isVendorProfileComplete(profile)
-      ? "/vendor-dashboard"
-      : "/vendor-dashboard/settings";
+      ? "/client-dashboard"
+      : "/client-dashboard/settings";
   } catch {
     const fromPath = `${state?.from?.pathname ?? ""}`.trim();
-    return fromPath.startsWith("/vendor-dashboard")
-      ? "/vendor-dashboard/settings"
+    return fromPath.startsWith("/client-dashboard")
+      ? "/client-dashboard/settings"
       : null;
   }
 }

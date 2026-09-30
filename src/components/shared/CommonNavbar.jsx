@@ -17,7 +17,7 @@ const DEFAULT_SEARCH_ROUTE = "/vendors/all";
 const DEFAULT_FILTER_ROUTE = "/";
 
 function isVendorDashboardRoute(pathname) {
-  return pathname === "/vendor-dashboard" || pathname.startsWith("/vendor-dashboard/");
+  return pathname === "/client-dashboard" || pathname.startsWith("/client-dashboard/");
 }
 
 function resolveNavbarSearchRoute(pathname) {
@@ -253,12 +253,12 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
   const hasEventSelection = Boolean(attendeeCount > 0 || eventName.trim());
   const commonProfileMenuItems = [
     { label: t("nav.home"), to: "/", icon: FiHome },
-    { label: t("nav.dashboard"), to: "/vendor-dashboard", icon: FiGrid },
+    { label: t("nav.dashboard"), to: "/client-dashboard", icon: FiGrid },
     ...vendorNavigationItems
       .filter(
         (item) =>
-          item.to !== "/vendor-dashboard" &&
-          item.to !== "/vendor-dashboard/settings",
+          item.to !== "/client-dashboard" &&
+          item.to !== "/client-dashboard/settings",
       )
       .map((item) => ({
         ...item,

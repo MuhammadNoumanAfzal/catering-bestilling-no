@@ -180,7 +180,7 @@ export default function AppRouter() {
           </Route>
 
           {/* Vendor dashboard routes */}
-          <Route path="/vendor-dashboard" element={<VendorDashboardLayout />}>
+          <Route path="/client-dashboard" element={<VendorDashboardLayout />}>
             <Route index element={<VendorDashboardHomePage />} />
             <Route path="orders" element={<VendorOrdersPage />} />
             <Route path="restaurants" element={<VendorRestaurantsPage />} />
@@ -192,7 +192,7 @@ export default function AppRouter() {
             {/* Rewards screen disabled */}
             <Route
               path="rewards"
-              element={<Navigate to="/vendor-dashboard" replace />}
+              element={<Navigate to="/client-dashboard" replace />}
             />
             <Route path="address" element={<VendorAddressPage />} />
             <Route path="settings" element={<VendorSettingsPage />} />

@@ -145,7 +145,7 @@ export default function VendorSettingsPage() {
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button
                     className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[14px] bg-[#cf6e38] px-4 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#bb602d]"
-                    onClick={() => navigate("/vendor-dashboard/address")}
+                    onClick={() => navigate("/client-dashboard/address")}
                     type="button"
                   >
                     {st("onboardingAddressAction")}
