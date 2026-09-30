@@ -1,8 +1,10 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   createDefaultOtherFilters,
   FILTER_DEFAULTS,
 } from "../../components/shared/browseFilters/browseFilterConfig";
+import { useAuth } from "../../features/auth";
+import { readSavedSettings } from "../../utils/customerProfileStorage";
 
 const noop = () => {};
 
@@ -38,10 +40,16 @@ const defaultBrowseFiltersContextValue = {
 
 const BrowseFiltersContext = createContext(defaultBrowseFiltersContextValue);
 
+function normalizePostalCode(value) {
+  return `${value ?? ""}`.replace(/\D/g, "").slice(0, 5);
+}
+
 export function BrowseFiltersProvider({ children }) {
+  const { isLoggedIn, user } = useAuth();
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [eventName, setEventName] = useState("");
   const [locationValue, setLocationValue] = useState("");
+  const [hasAppliedUserPostalCode, setHasAppliedUserPostalCode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(null);
@@ -61,6 +69,30 @@ export function BrowseFiltersProvider({ children }) {
     setSelectedPricing(FILTER_DEFAULTS.pricing);
     setOtherFilters(createDefaultOtherFilters());
   };
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setHasAppliedUserPostalCode(false);
+      return;
+    }
+
+    if (hasAppliedUserPostalCode) {
+      return;
+    }
+
+    const savedPostalCode = readSavedSettings()?.postCode;
+    const userPostalCode = normalizePostalCode(user?.postCode || savedPostalCode);
+
+    if (!userPostalCode) {
+      return;
+    }
+
+    if (!locationValue.trim()) {
+      setLocationValue(userPostalCode);
+    }
+
+    setHasAppliedUserPostalCode(true);
+  }, [hasAppliedUserPostalCode, isLoggedIn, locationValue, user?.postCode]);
 
   const value = useMemo(
     () => ({

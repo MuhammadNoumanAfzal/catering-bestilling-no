@@ -37,6 +37,7 @@ function buildGeneralProfileVariables(formState) {
     firstName: `${formState.firstName ?? ""}`.trim(),
     lastName: `${formState.lastName ?? ""}`.trim(),
     phone: `${formState.mobilePhone ?? ""}`.trim(),
+    postCode: Number.parseInt(`${formState.postCode ?? ""}`.replace(/\D/g, "").slice(0, 5), 10) || 0,
     workPhone: `${formState.workPhone ?? ""}`.trim(),
     secondaryEmail: `${formState.secondaryEmail ?? ""}`.trim(),
     companyName: `${formState.company ?? ""}`.trim(),

@@ -10,6 +10,7 @@ export default function SettingsField({
   readOnly = false,
   type = "text",
   value,
+  ...inputProps
 }) {
   return (
     <label htmlFor={id} className="block">
@@ -25,6 +26,7 @@ export default function SettingsField({
         readOnly={readOnly}
         autoComplete={autoComplete}
         placeholder={placeholder}
+        {...inputProps}
         className="type-para h-10 w-full rounded-[4px] border border-[#d9d1c8] bg-white px-3 text-[#1f1f1f] outline-none placeholder:text-[#b4aca4] disabled:cursor-not-allowed disabled:bg-[#f5f1ed] disabled:text-[#80776e]"
       />
     </label>

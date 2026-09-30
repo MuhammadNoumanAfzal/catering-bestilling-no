@@ -305,15 +305,19 @@ const no = {
     postalCodeSummary: "postnummer {{postCode}}",
     postalCodeValidation:
       "Postnummeret må være 4 eller 5 sifre før du kan søke.",
+    postalCodePromptTitle: "Skriv inn postnummer",
+    postalCodePromptMessage:
+      "Skriv inn postnummeret ditt, så viser vi leverandører og menyer som kan leveres til deg.",
+    showDeliveryOptions: "Vis leveringsalternativer",
     categoryVendorsServing:
       "{{category}} leverandører som leverer til {{location}}",
     vendorsServing: "Leverandører som leverer til {{location}}",
-    morePopularNear: "Flere populære leverandører når {{location}}",
-    featuredNear: "Utvalgte leverandører når {{location}}",
+    morePopularNear: "Flere populære leverandører i {{location}}",
+    featuredNear: "Utvalgte leverandører i {{location}}",
     popularVendors: "Populære leverandører",
     featuredVendors: "Utvalgte leverandører",
     products: "{{category}}-produkter",
-    popularProductsNear: "Populære produkter når {{location}}",
+    popularProductsNear: "Populære produkter i {{location}}",
     popularProducts: "Populære produkter",
     howItWorks: {
       title: "Slik fungerer det",

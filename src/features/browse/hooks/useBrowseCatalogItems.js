@@ -5,7 +5,8 @@ import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { FILTER_DEFAULTS } from "../../../components/shared/browseFilters/browseFilterConfig";
 import { getBrowseFallbackIcon } from "../data/browseData";
 import {
-  browseMenus,
+  browseProductsByFoodType,
+  browseProductsByOccasion,
   fetchBrowseFilterOptions,
 } from "../api/browseTaxonomyService";
 import { parseCategoryParamValue } from "../utils/categoryFilters";
@@ -75,6 +76,12 @@ function buildVendorLookup(vendors = []) {
   }, new Map());
 }
 
+
+async function fetchBrowseProducts(variables, mode) {
+  return mode === "occasion"
+    ? browseProductsByOccasion(variables)
+    : browseProductsByFoodType(variables);
+}
 function mergeVendorCoverage(items, vendorLookup) {
   if (!vendorLookup.size) return items;
 
@@ -149,14 +156,15 @@ export function useBrowseCatalogItems(mode = "food-type") {
         const variables = {
           foodTypeSlug: mode === "food-type" ? selectedSlug : null,
           occasionSlug: mode === "occasion" ? selectedSlug : null,
-          sort: mapSortToApiValue(selectedSort),
-          priceRange: mapPriceRange(selectedPricing),
+          ...resolveLocationFilters(locationValue),
+          search: searchQuery.trim() || null,
+          sortBy: mapSortToApiValue(selectedSort),
           minRating: mapMinimumRating(selectedRating),
-          dietaryOptionIds: selectedDietary.map((value) => dietaryOptions.find((option) => option.id === value || option.slug === value || option.name === value)?.id || value),
-          deliveryFilter: mapDeliveryFilter(selectedOffers[0]),
-          first: PAGE_SIZE, after: null,
+          dietaryTagSlugs: selectedDietary,
+          first: PAGE_SIZE,
+          after: null,
         };
-        const payload = await browseMenus(variables, mode);
+        const payload = await fetchBrowseProducts(variables, mode);
         const vendorLookup = locationValue.trim()
           ? buildVendorLookup(await fetchVendorProfiles())
           : new Map();
@@ -188,15 +196,15 @@ export function useBrowseCatalogItems(mode = "food-type") {
       const variables = {
         foodTypeSlug: mode === "food-type" ? selectedSlug : null,
         occasionSlug: mode === "occasion" ? selectedSlug : null,
-        sort: mapSortToApiValue(selectedSort),
-        priceRange: mapPriceRange(selectedPricing),
+        ...resolveLocationFilters(locationValue),
+        search: searchQuery.trim() || null,
+        sortBy: mapSortToApiValue(selectedSort),
         minRating: mapMinimumRating(selectedRating),
-        dietaryOptionIds: selectedDietary.map((value) => dietaryOptions.find((option) => option.id === value || option.slug === value || option.name === value)?.id || value),
-        deliveryFilter: mapDeliveryFilter(selectedOffers[0]),
+        dietaryTagSlugs: selectedDietary,
         first: PAGE_SIZE,
         after: pageInfo.endCursor,
       };
-      const payload = await browseMenus(variables, mode);
+      const payload = await fetchBrowseProducts(variables, mode);
       const vendorLookup = locationValue.trim()
         ? buildVendorLookup(await fetchVendorProfiles())
         : new Map();
