@@ -374,7 +374,7 @@ export default function VendorInvoiceDetailsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
-            to="/vendor-dashboard/invoices"
+            to="/client-dashboard/invoices"
             className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[#edd7c8] bg-white/90 px-4 py-2 text-sm font-semibold text-[#cf6e38] shadow-[0_8px_20px_rgba(50,30,18,0.05)] transition hover:-translate-y-[1px] hover:border-[#d8aa8d] hover:text-[#b85e2a]"
           >
             <FiArrowLeft className="text-[15px]" />

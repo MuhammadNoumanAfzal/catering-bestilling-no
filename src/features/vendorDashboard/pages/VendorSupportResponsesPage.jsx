@@ -344,7 +344,7 @@ export default function VendorSupportResponsesPage() {
 
         <Link
           className="inline-flex h-[42px] items-center justify-center rounded-[10px] border border-[#dfd3c8] bg-white px-4 text-[14px] font-bold text-[#2a211b] no-underline transition hover:bg-[#faf6f2] hover:text-[#cf6e38]"
-          to="/vendor-dashboard/support"
+          to="/client-dashboard/support"
         >
           {t("vendorPanel.supportResponses.backToSupport")}
         </Link>

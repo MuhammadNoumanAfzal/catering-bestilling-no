@@ -10,19 +10,19 @@ export default function VendorPlaceholderPage() {
   const content = useMemo(
     () => {
       const knownContent = {
-        "/vendor-dashboard/orders": {
+        "/client-dashboard/orders": {
           title: t("vendorPanel.placeholderPages.orders.title"),
           description: t("vendorPanel.placeholderPages.orders.description"),
         },
-        "/vendor-dashboard/invoices": {
+        "/client-dashboard/invoices": {
           title: t("vendorPanel.placeholderPages.invoices.title"),
           description: t("vendorPanel.placeholderPages.invoices.description"),
         },
-        "/vendor-dashboard/address": {
+        "/client-dashboard/address": {
           title: t("vendorPanel.placeholderPages.address.title"),
           description: t("vendorPanel.placeholderPages.address.description"),
         },
-        "/vendor-dashboard/settings": {
+        "/client-dashboard/settings": {
           title: t("vendorPanel.placeholderPages.settings.title"),
           description: t("vendorPanel.placeholderPages.settings.description"),
         },

@@ -185,7 +185,7 @@ export default function VendorNotificationsPage() {
       }
     }
 
-    navigate(notification.actionUrl || "/vendor-dashboard/notifications");
+    navigate(notification.actionUrl || "/client-dashboard/notifications");
   }
 
   async function handleMarkAllRead() {

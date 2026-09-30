@@ -63,7 +63,7 @@ export default function VendorSidebar() {
               <Icon size={14} strokeWidth={2} />
             </div>
             <span className="flex-1">{t(labelKey)}</span>
-            {to === "/vendor-dashboard/notifications" && unreadNotificationCount > 0 ? (
+            {to === "/client-dashboard/notifications" && unreadNotificationCount > 0 ? (
               <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-white/18 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
                 {unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}
               </span>
