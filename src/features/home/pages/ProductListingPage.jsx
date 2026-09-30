@@ -23,7 +23,21 @@ export default function ProductListingPage() {
   const { productType } = useParams();
   const [searchParams] = useSearchParams();
   const { deliveryDate, deliveryTime, locationValue, searchQuery } = useBrowseFilters();
-  const { popularProducts } = useHomeData();
+  const normalizedLocationValue = `${locationValue ?? ""}`.trim();
+  const compactLocationValue = normalizedLocationValue.replace(/\s+/g, "");
+  const locationDigits = compactLocationValue.replace(/\D/g, "");
+  const listingSearchFilters = useMemo(() => {
+    if (locationDigits && locationDigits === compactLocationValue) {
+      return { postCode: locationDigits };
+    }
+
+    if (normalizedLocationValue) {
+      return { areaName: normalizedLocationValue };
+    }
+
+    return {};
+  }, [compactLocationValue, locationDigits, normalizedLocationValue]);
+  const { popularProducts } = useHomeData(listingSearchFilters);
   const [visibleCount, setVisibleCount] = useState(HOME_LISTING_PAGE_SIZE);
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
   const activeCategoryLabel = formatCategoryLabel(selectedCategory);
@@ -49,10 +63,10 @@ export default function ProductListingPage() {
         category: selectedCategory,
         deliveryDate,
         deliveryTime,
-        locationValue,
+        locationValue: "",
         searchQuery: normalizedSearchQuery,
       }),
-    [deliveryDate, deliveryTime, locationValue, normalizedSearchQuery, popularProducts, selectedCategory],
+    [deliveryDate, deliveryTime, normalizedSearchQuery, popularProducts, selectedCategory],
   );
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
