@@ -3,6 +3,7 @@ export const UPDATE_GENERAL_PROFILE_MUTATION = `
     $firstName: String!
     $lastName: String!
     $phone: String!
+    $postCode: Int!
     $workPhone: String!
     $secondaryEmail: String!
     $companyName: String!
@@ -15,6 +16,7 @@ export const UPDATE_GENERAL_PROFILE_MUTATION = `
         firstName: $firstName
         lastName: $lastName
         phone: $phone
+        postCode: $postCode
         workPhone: $workPhone
         secondaryEmail: $secondaryEmail
         companyName: $companyName
@@ -32,6 +34,7 @@ export const UPDATE_GENERAL_PROFILE_MUTATION = `
         fullName
         email
         phone
+        postCode
         workPhone
         secondaryEmail
         companyName

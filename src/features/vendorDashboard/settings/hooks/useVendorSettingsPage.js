@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { translateSettings } from "../../components/settings/settingsI18n";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../../auth/hooks/useAuth";
+import { useBrowseFilters } from "../../../../app/context/BrowseFiltersContext";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { changePassword } from "../../../auth/api";
 import {
@@ -38,6 +39,10 @@ function stripPasswordFields(formState) {
   return rest;
 }
 
+function normalizePostalCode(value) {
+  return `${value ?? ""}`.replace(/\D/g, "").slice(0, 5);
+}
+
 function hasPasswordValues(formState) {
   return [
     formState.oldPassword,
@@ -52,6 +57,7 @@ export function useVendorSettingsPage() {
   const st = (key, options) => translateSettings(t, i18n, key, options);
   const location = useLocation();
   const { accessToken, setAuthSession, user } = useAuth();
+  const { setLocationValue } = useBrowseFilters();
   const [savedFormState, setSavedFormState] = useState(() => ({
     ...vendorSettingsInitialState,
     ...readSavedSettings(),
@@ -156,6 +162,7 @@ export function useVendorSettingsPage() {
         phone: nextState.mobilePhone || user.phone,
         avatarUrl: nextState.avatarUrl || "",
         avatarThumbnailUrl: nextState.avatarThumbnailUrl || "",
+        postCode: normalizePostalCode(nextState.postCode) || user.postCode,
       },
     });
   };
@@ -198,6 +205,11 @@ export function useVendorSettingsPage() {
           newPassword: current.newPassword,
           confirmNewPassword: current.confirmNewPassword,
         }));
+        syncAuthenticatedUser(result.formState);
+        const nextPostalCode = normalizePostalCode(result.formState.postCode);
+        if (nextPostalCode) {
+          setLocationValue(nextPostalCode);
+        }
         setIsPasswordChangeStarted(false);
         setLoadWarning("");
         successMessages.push(result.message);

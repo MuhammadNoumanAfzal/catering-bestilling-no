@@ -58,9 +58,16 @@ export default function ProfileSettingsSection({ formState, updateField }) {
           id="postCode"
           label={st("postalCode")}
           value={formState.postCode}
-          onChange={(event) => updateField("postCode", event.target.value)}
+          onChange={(event) =>
+            updateField(
+              "postCode",
+              event.target.value.replace(/\D/g, "").slice(0, 5),
+            )
+          }
           placeholder=""
-          readOnly
+          inputMode="numeric"
+          maxLength={5}
+          autoComplete="postal-code"
         />
         <SettingsField
           id="company"

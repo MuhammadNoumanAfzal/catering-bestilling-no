@@ -2,7 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { showNoVendorsAlert } from "../../../utils/alerts";
+import { readSavedSettings } from "../../../utils/customerProfileStorage";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
+import { useAuth } from "../../auth";
 import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
 import { foodTypeCategories as fallbackFoodTypeCategories, getBrowseFallbackIcon } from "../../browse/data/browseData";
 import {
@@ -84,6 +86,7 @@ function removeDuplicateVendors(vendors, excludedVendorIds = new Set()) {
 export default function HomePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isLoggedIn, user } = useAuth();
   const {
     attendeeCount,
     deliveryAddress,
@@ -108,9 +111,13 @@ export default function HomePage() {
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [categoryBrowseProducts, setCategoryBrowseProducts] = useState([]);
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
+  const [isPostalCodePromptOpen, setIsPostalCodePromptOpen] = useState(false);
+  const [guestPostalCodeDraft, setGuestPostalCodeDraft] = useState("");
+  const [guestPostalCodeError, setGuestPostalCodeError] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
   const vendorResultsRef = useRef(null);
   const searchRequestStartedRef = useRef(false);
+  const userPostalCodeAppliedRef = useRef(false);
   const {
     searchedVendors,
     popularVendors,
@@ -119,6 +126,9 @@ export default function HomePage() {
     status,
   } =
     useHomeData(appliedSearchFilters);
+  const savedPostalCode = readSavedSettings()?.postCode;
+  const userPostalCode = normalizePostalCode(user?.postCode || savedPostalCode);
+  const hasUsableUserPostalCode = isValidPostalCode(userPostalCode);
   const normalizedPostalCode = normalizePostalCode(postalCode);
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
   const normalizedCategoryFilter = normalizeCategorySelection(selectedCategory);
@@ -143,6 +153,42 @@ export default function HomePage() {
     ? normalizedCategoryFilter[0] || ""
     : normalizedCategoryFilter || "";
 
+  useEffect(() => {
+    if (!isLoggedIn || !hasUsableUserPostalCode || userPostalCodeAppliedRef.current) {
+      return;
+    }
+
+    userPostalCodeAppliedRef.current = true;
+    setPostalCode(userPostalCode);
+    setDraftDeliveryAddress("");
+    setDeliveryAddress("");
+    setLocationValue(userPostalCode);
+    setAppliedSearchFilters({ postCode: userPostalCode });
+    setSearchValidationMessage("");
+  }, [
+    hasUsableUserPostalCode,
+    isLoggedIn,
+    setDeliveryAddress,
+    setLocationValue,
+    userPostalCode,
+  ]);
+
+  useEffect(() => {
+    const shouldPromptForPostalCode = !isLoggedIn;
+    const hasActivePostalCode = Boolean(locationValue.trim() || appliedSearchFilters.postCode);
+
+    if (!shouldPromptForPostalCode || hasActivePostalCode) {
+      setIsPostalCodePromptOpen(false);
+      return;
+    }
+
+    setIsPostalCodePromptOpen(true);
+  }, [
+    appliedSearchFilters.postCode,
+    hasUsableUserPostalCode,
+    isLoggedIn,
+    locationValue,
+  ]);
   useEffect(() => {
     let isMounted = true;
 
@@ -210,6 +256,18 @@ export default function HomePage() {
           first: 24,
         });
 
+  useEffect(() => {
+    if (!isValidPostalCode(normalizedPostalCode)) {
+      return;
+    }
+
+    if (locationValue === normalizedPostalCode) {
+      return;
+    }
+
+    // Keep the browse pages aligned with the editable home postal code field.
+    setLocationValue(normalizedPostalCode);
+  }, [locationValue, normalizedPostalCode, setLocationValue]);
         if (isMounted) {
           setCategoryBrowseProducts(result.items || []);
         }
@@ -262,6 +320,29 @@ export default function HomePage() {
     () => (foodTypeCategories.length > 8 ? foodTypeCategories.slice(8) : []),
     [foodTypeCategories],
   );
+
+  const applyPostalCodeSearch = (nextPostalCode) => {
+    setPostalCode(nextPostalCode);
+    setDraftDeliveryAddress("");
+    setDeliveryAddress("");
+    setLocationValue(nextPostalCode);
+    setAppliedSearchFilters({ postCode: nextPostalCode });
+    setSearchValidationMessage("");
+  };
+
+  const handleGuestPostalCodeSubmit = () => {
+    const nextPostalCode = normalizePostalCode(guestPostalCodeDraft);
+
+    if (!isValidPostalCode(nextPostalCode)) {
+      setGuestPostalCodeError(t("home.postalCodeValidation"));
+      return;
+    }
+
+    applyPostalCodeSearch(nextPostalCode);
+    setGuestPostalCodeDraft(nextPostalCode);
+    setGuestPostalCodeError("");
+    setIsPostalCodePromptOpen(false);
+  };
 
   const handleHomeSearch = () => {
     const nextPostalCode = normalizePostalCode(postalCode);
@@ -430,11 +511,63 @@ export default function HomePage() {
 
   return (
     <div>
+      {isPostalCodePromptOpen ? (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-4">
+          <div className="w-full max-w-[430px] rounded-[18px] bg-[#fffaf6] p-6 text-center shadow-[0_28px_70px_rgba(28,18,12,0.24)]">
+            <h2 className="text-[24px] font-extrabold text-[#241815]">
+              {t("home.postalCodePromptTitle", {
+                defaultValue: "Enter your postal code",
+              })}
+            </h2>
+            <p className="mt-3 text-[15px] leading-6 text-[#6f6258]">
+              {t("home.postalCodePromptMessage", {
+                defaultValue:
+                  "Please enter your postal code so we can show vendors and menu items available for delivery to you.",
+              })}
+            </p>
+            <input
+              autoFocus
+              inputMode="numeric"
+              type="text"
+              value={guestPostalCodeDraft}
+              onChange={(event) => {
+                setGuestPostalCodeDraft(
+                  event.target.value.replace(/\D/g, "").slice(0, 5),
+                );
+                if (guestPostalCodeError) {
+                  setGuestPostalCodeError("");
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleGuestPostalCodeSubmit();
+                }
+              }}
+              placeholder={t("home.postalCodePlaceholder")}
+              className="mt-5 h-12 w-full rounded-xl border border-[#e7d8cd] bg-white px-4 text-center text-[16px] font-semibold text-[#241815] outline-none placeholder:font-normal placeholder:text-[#b6a79c] focus:border-[#d46f38]"
+            />
+            {guestPostalCodeError ? (
+              <p className="mt-2 text-sm font-medium text-[#b6542c]">
+                {guestPostalCodeError}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              onClick={handleGuestPostalCodeSubmit}
+              className="mt-5 inline-flex h-12 min-w-[180px] items-center justify-center rounded-xl bg-[#d46f38] px-6 text-[15px] font-bold text-white transition hover:bg-[#bf5f2d]"
+            >
+              {t("home.showDeliveryOptions", {
+                defaultValue: "Show delivery options",
+              })}
+            </button>
+          </div>
+        </div>
+      ) : null}
       <HeroSection
         deliveryAddress={draftDeliveryAddress}
         onDeliveryAddressChange={setDraftDeliveryAddress}
         onBrowseVendors={() => navigate(`/vendors/all${menuQuery}`)}
-        postalCode={normalizedPostalCode}
+        postalCode={postalCode}
         onPostalCodeChange={(value) => {
           setPostalCode(value);
 
