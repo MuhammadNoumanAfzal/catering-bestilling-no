@@ -657,14 +657,14 @@ const no = {
     save: "Lagre",
     saved: "Lagret",
     orderSummary: "HANDLEKURV",
-    reviewBeforeCheckout: "Se gjennom før utsjekk",
+    reviewBeforeCheckout: "Se gjennom før bestilling",
     summaryDescription:
       "Valgt vare, antall og leveringsdetaljer vil vises her mens du setter opp bestillingen.",
     scrollToTop: "Rull til toppen",
     unavailableAddonBody:
-      "Legg til hovedretten i handlekurven først. Tilvalg kan ikke bestilles alene.",
-    unavailableAddonTitle: "Legg til hovedrett først",
-    addonAdded: "{{name}}-tilvalg lagt til i handlekurven",
+      "Legg til menyen i handlekurven først. Tillegg kan ikke bestilles alene.",
+    unavailableAddonTitle: "Legg til meny først",
+    addonAdded: "{{name}} lagt til i handlekurven",
     unavailableForSelectedTime:
       "Denne catereren er ikke tilgjengelig på valgt leveringstid. Velg en annen dato eller tid.",
     unavailableForSelectedTimeTitle: "Ikke tilgjengelig for valgt tid",
@@ -693,7 +693,7 @@ const no = {
     notAvailable: "Ikke tilgjengelig",
     visibleBeforeCheckout: "Synlig før utsjekk",
     timing: "Tidspunkt",
-    deliverySchedule: "Leveringsplan",
+    deliverySchedule: "Leveringstider",
     deliveryScheduleDesc:
       "Leveringsvinduer vises nedenfor slik at kunder raskt kan se når leverandøren er tilgjengelig.",
     deliveryScheduleUnavailable: "Leveringsplan er ikke tilgjengelig.",
@@ -761,9 +761,9 @@ const no = {
     addOnsIntro:
       "Legg til ekstra varer eller sideretter for å tilpasse menyen til teamet ditt.",
     addOnsLocked:
-      "Velg tilleggene du vil ha, og legg deretter hovedretten i handlekurven. Tillegg kan ikke bestilles alene.",
+      "Velg tilleggene du vil ha, og legg deretter menyen i handlekurven. Tillegg kan ikke bestilles alene.",
     add: "Legg til",
-    addMainDishFirst: "Legg til hovedrett først",
+    addMainDishFirst: "Legg til meny først",
   },
   orderValidation: {
     selectDeliveryDate: "Velg leveringsdato.",
