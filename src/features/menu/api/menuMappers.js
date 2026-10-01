@@ -1,4 +1,11 @@
 import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
+
+function cleanAddOnName(value) {
+  return String(value || "")
+    .replace(/\s*\((?:add[-\s]?on|addon|tillegg)\)\s*$/i, "")
+    .trim();
+}
+
 export function attachAddOnsToMenuItem(menuItem, addOns) {
   if (!menuItem || !Array.isArray(addOns) || addOns.length === 0) {
     return menuItem;
@@ -14,7 +21,7 @@ export function attachAddOnsToMenuItem(menuItem, addOns) {
           options: addOns.map((item) => ({
             id: item.id,
             productId: item.id,
-            label: item.name,
+            label: cleanAddOnName(item.name),
             price: toCustomerVatInclusivePrice(item.priceWithTax),
             image: item.coverImage?.fileUrl || "",
           })),

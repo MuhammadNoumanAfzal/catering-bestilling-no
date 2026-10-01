@@ -619,14 +619,14 @@ const en = {
     save: "Save",
     saved: "Saved",
     orderSummary: "CART",
-    reviewBeforeCheckout: "Review before checkout",
+    reviewBeforeCheckout: "Review before ordering",
     summaryDescription:
       "Your selected item, quantities, and delivery details will stay visible here while you configure the order.",
     scrollToTop: "Scroll to top",
     unavailableAddonBody:
-      "Please add the main dish to cart first. Add-ons cannot be ordered on their own.",
-    unavailableAddonTitle: "Add main dish first",
-    addonAdded: "{{name}} add-on added to cart",
+      "Please add the menu to cart first. Add-ons cannot be ordered on their own.",
+    unavailableAddonTitle: "Add menu first",
+    addonAdded: "{{name}} added to cart",
     unavailableForSelectedTime:
       "This caterer is unavailable at your selected delivery time. Please choose another date or time.",
     unavailableForSelectedTimeTitle: "Unavailable for selected time",
@@ -654,7 +654,7 @@ const en = {
     notAvailable: "Not available",
     visibleBeforeCheckout: "Visible before checkout",
     timing: "Timing",
-    deliverySchedule: "Delivery schedule",
+    deliverySchedule: "Delivery times",
     deliveryScheduleDesc:
       "Delivery windows are shown below so customers can quickly understand when this vendor is available.",
     deliveryScheduleUnavailable: "Delivery schedule not available.",
@@ -721,9 +721,9 @@ const en = {
     addOnsTitle: "Add-ons",
     addOnsIntro: "Add extras or side items to tailor the menu for your team.",
     addOnsLocked:
-      "Select any add-ons you want, then add the main dish to cart. Add-ons cannot be ordered alone.",
+      "Select any add-ons you want, then add the menu to cart. Add-ons cannot be ordered alone.",
     add: "Add",
-    addMainDishFirst: "Add main dish first",
+    addMainDishFirst: "Add menu first",
   },
   orderValidation: {
     selectDeliveryDate: "Please select a delivery date.",
