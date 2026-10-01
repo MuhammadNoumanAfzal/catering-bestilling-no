@@ -35,8 +35,8 @@ const CATEGORY_STRIP_VARIANTS = {
   preview: {
     wrapper: "relative w-full",
     scrollArea:
-      "mx-auto mt-4 w-full max-w-[1120px] overflow-x-auto px-1 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:mt-8 sm:px-4",
-    grid: "flex min-w-max gap-3 sm:gap-5 md:gap-6",
+      "mx-auto mt-4 flex w-full max-w-[1120px] justify-start overflow-x-auto px-1 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:mt-8 sm:justify-center sm:px-4",
+    grid: "mx-auto flex w-max min-w-max gap-3 sm:gap-5 md:gap-6",
     button:
       "flex w-[64px] shrink-0 cursor-pointer flex-col items-center gap-1.5 text-center sm:w-[76px] md:w-[82px]",
     iconWrapper:

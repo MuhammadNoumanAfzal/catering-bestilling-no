@@ -533,7 +533,7 @@ const no = {
     linkCopied: "Restaurantlenken ble kopiert",
     sharingUnsupported: "Deling støttes ikke på denne enheten",
     backToSearch: "Tilbake til søk",
-    cateringMenu: "Cateringmeny",
+    cateringMenu: "Sorter etter meny eller anledning",
     menuCategory: "Menykategori",
     feeds: "Holder til {{count}}",
     allergens: "Allergener: {{allergens}}",
@@ -715,7 +715,7 @@ const no = {
       "Den endelige sammensetningen kan variere litt etter leverandørtilgjengelighet, men denne delen viser forventet oppsett og serveringskomponenter for valgt meny.",
     minimumOrderText:
       "Denne menyen er satt opp for gruppebestilling og kan ikke bestilles under minimum antall gjester.",
-    bookingSetup: "Bestillingsoppsett",
+    bookingSetup: "Bestillingsdetaljer",
     deliveryDateTime: "Leveringsdato og tid",
     bookingIntro:
       "Velg leveringsdag, lås et tilgjengelig servicevindu og angi antall gjester før du legger menyen i handlekurven.",
@@ -753,7 +753,7 @@ const no = {
     minimumLabel: "Minimum {{count}} personer",
     addVendorNote: "Legg til notat for leverandør",
     addVendorNoteDesc:
-      "Del adkomstnotater, oppsettsinstruksjoner eller annet kjøkkenet bør vite før levering.",
+      "Del gjerne informasjon som f.eks. ønsket tidspunkt eller annet kjøkkenet bør vite før levering.",
     addNotePlaceholder: "Legg til notat...",
     addToCart: "Legg i handlekurv",
     addOnsEyebrow: "Tilpass bestillingen",
