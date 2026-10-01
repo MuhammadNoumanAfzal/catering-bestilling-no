@@ -535,7 +535,7 @@ const no = {
     backToSearch: "Tilbake til søk",
     cateringMenu: "Sorter etter meny eller anledning",
     menuCategory: "Menykategori",
-    feeds: "Holder til {{count}}",
+    feeds: "Antall gjester: {{count}}",
     allergens: "Allergener: {{allergens}}",
     itemTags: {
       popular: "Populær",
@@ -545,7 +545,7 @@ const no = {
     orderSummary: "HANDLEKURV",
     deleteItem: "Slett",
     qty: "Ant. {{count}}",
-    serves: "Holder til {{count}}",
+    serves: "Antall gjester: {{count}}",
     subtotal: "Delsum",
     deliveryFee: "Leveringsgebyr",
     notDriverTip: "Dette er ikke tips til sjåføren",
@@ -1403,8 +1403,7 @@ const no = {
       onboardingBadge: "Fullfør kontooppsettet",
       onboardingTitle: "Fullfør kontooppsettet",
       onboardingDescription:
-        "Fullfør kontoinformasjonen din på innstillingssiden, inkludert profilbildet ditt. Gå deretter til adressesiden for å legge til leverings- og fakturaadresse.",
-      onboardingPhotoStep: "Legg til profilbilde",
+        "Fullfør kontoinformasjonen din på innstillingssiden. Gå deretter til adressesiden for å legge til leverings- og fakturaadresse.",
       onboardingAddressStep: "Fyll inn adresseinformasjon",
       onboardingAddressAction: "Gå til adresser",
       onboardingLaterAction: "Jeg gjør dette senere",

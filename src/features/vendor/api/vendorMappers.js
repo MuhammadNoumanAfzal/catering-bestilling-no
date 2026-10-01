@@ -276,6 +276,7 @@ export function adaptApiVendorToProfile(apiVendor) {
   const freeDeliveryOver = apiVendor.deliverySettings?.freeDeliveryOver ?? "";
   const pickupAddress = apiVendor.deliverySettings?.pickupAddress || "";
   const pickupInstructions = apiVendor.deliverySettings?.pickupInstructions || "";
+  const minimumOrderNoticeHours = Number(apiVendor.deliverySettings?.minimumOrderNoticeHours ?? 0) || 0;
   const banner =
     apiVendor.coverPhotoUrl ||
     apiVendor.businessSettings?.coverPhotoUrl ||
@@ -336,6 +337,7 @@ export function adaptApiVendorToProfile(apiVendor) {
       end: deliveryEnd,
       slots: deliverySlots,
       label: deliveryLabel,
+      minimumOrderNoticeHours,
     },
     takeout: {
       days: [],
@@ -416,6 +418,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     serviceAreas,
     servicePostalCodes,
     specialClosures,
+    minimumOrderNoticeHours,
     deliveryFeeAmount: Number.parseFloat(fee || 0) || 0,
     freeDeliveryOverAmount: Number.parseFloat(freeDeliveryOver || 0) || 0,
     deliveryFee: `${parseFloat(fee).toFixed(0)},-`,

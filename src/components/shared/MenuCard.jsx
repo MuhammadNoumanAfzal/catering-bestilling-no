@@ -1,23 +1,46 @@
 import { FiStar } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { usePostalCodePrompt } from "../../features/location/PostalCodePromptContext";
 
 export default function MenuCard({
+  id,
   image,
   title,
   vendor,
   vendorSlug,
+  vendorData,
   rating,
   price,
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
+  const { requirePostalCodeForMenu } = usePostalCodePrompt();
+  const menuPath = vendorSlug && id
+    ? `/vendor/${encodeURIComponent(vendorSlug)}/menu/${encodeURIComponent(id)}`
+    : vendorSlug
+      ? `/vendor/${encodeURIComponent(vendorSlug)}`
+      : "";
+
+  const handleClick = () => {
+    if (!menuPath) {
+      return;
+    }
+
+    requirePostalCodeForMenu({
+      vendor: vendorData,
+      onAvailable: () => navigate(menuPath, {
+        state: { from: `${location.pathname}${location.search}${location.hash}` },
+      }),
+    });
+  };
 
   return (
     <article
       className="group cursor-pointer"
-      onClick={() => vendorSlug && navigate(`/vendor/${vendorSlug}`)}
+      onClick={handleClick}
     >
       <div className="overflow-hidden rounded-[22px] bg-[#f2f2f2]">
         <img

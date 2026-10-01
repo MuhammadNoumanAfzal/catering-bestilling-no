@@ -3,31 +3,45 @@ import { FiStar } from "react-icons/fi";
 import { LiaBicycleSolid } from "react-icons/lia";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
 
 const DEFAULT_VENDOR_IMAGE = "/home/hero1.webp";
 
-export default function VendorCard({
-  image,
-  name,
-  slug,
-  rating,
-  deliveryFee,
-  discount,
-  hasPublicActiveMenus,
-  publicActiveMenuCount,
-}) {
+export default function VendorCard(props) {
+  const {
+    image,
+    name,
+    slug,
+    rating,
+    deliveryFee,
+    discount,
+    hasPublicActiveMenus,
+    publicActiveMenuCount,
+  } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { requirePostalCodeForMenu } = usePostalCodePrompt();
   const [displayImage, setDisplayImage] = useState(image || DEFAULT_VENDOR_IMAGE);
 
   useEffect(() => {
     setDisplayImage(image || DEFAULT_VENDOR_IMAGE);
   }, [image]);
 
+  const handleClick = () => {
+    if (!slug) {
+      return;
+    }
+
+    requirePostalCodeForMenu({
+      vendor: props,
+      onAvailable: () => navigate(`/vendor/${slug}`),
+    });
+  };
+
   return (
     <article
       className="group cursor-pointer"
-      onClick={() => navigate(`/vendor/${slug}`)}
+      onClick={handleClick}
     >
       <div className="overflow-hidden rounded-[22px] bg-[#f2f2f2]">
         <img

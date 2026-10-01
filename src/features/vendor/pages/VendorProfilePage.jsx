@@ -31,6 +31,7 @@ import {
 } from "../components";
 import { useVendorProfile } from "../hooks/useVendorProfile";
 import { useSavedVendorStatus } from "../hooks/useSavedVendorStatus";
+import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
 
 function VendorPageStatus({ message, onRetry }) {
   const { t } = useTranslation();
@@ -93,6 +94,7 @@ export default function VendorProfilePage() {
   const categoryBarInnerRef = useRef(null);
   const menuSectionsRef = useRef(null);
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
+  const { requirePostalCodeForMenu } = usePostalCodePrompt();
 
   useEffect(() => {
     if (!vendor) {

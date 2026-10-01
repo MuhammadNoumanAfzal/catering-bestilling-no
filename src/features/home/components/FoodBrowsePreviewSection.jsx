@@ -15,6 +15,7 @@ export default function FoodBrowsePreviewSection({
   totalItems,
   activeCategoryLabel,
   onSeeAllClick,
+  showPreviewMenu = true,
 }) {
   const { t } = useTranslation();
   const [showMorePanel, setShowMorePanel] = useState(false);
@@ -46,7 +47,7 @@ export default function FoodBrowsePreviewSection({
         />
       </div>
 
-      {shouldShowPreviewMenu ? (
+      {showPreviewMenu && shouldShowPreviewMenu ? (
         <BrowseMenuSection
           sectionId="home-browse-results"
           title={

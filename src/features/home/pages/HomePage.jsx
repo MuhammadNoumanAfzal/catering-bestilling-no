@@ -111,9 +111,6 @@ export default function HomePage() {
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [categoryBrowseProducts, setCategoryBrowseProducts] = useState([]);
   const [searchValidationMessage, setSearchValidationMessage] = useState("");
-  const [isPostalCodePromptOpen, setIsPostalCodePromptOpen] = useState(false);
-  const [guestPostalCodeDraft, setGuestPostalCodeDraft] = useState("");
-  const [guestPostalCodeError, setGuestPostalCodeError] = useState("");
   const [pendingSearchScroll, setPendingSearchScroll] = useState(false);
   const vendorResultsRef = useRef(null);
   const searchRequestStartedRef = useRef(false);
@@ -173,22 +170,7 @@ export default function HomePage() {
     userPostalCode,
   ]);
 
-  useEffect(() => {
-    const shouldPromptForPostalCode = !isLoggedIn;
-    const hasActivePostalCode = Boolean(locationValue.trim() || appliedSearchFilters.postCode);
 
-    if (!shouldPromptForPostalCode || hasActivePostalCode) {
-      setIsPostalCodePromptOpen(false);
-      return;
-    }
-
-    setIsPostalCodePromptOpen(true);
-  }, [
-    appliedSearchFilters.postCode,
-    hasUsableUserPostalCode,
-    isLoggedIn,
-    locationValue,
-  ]);
   useEffect(() => {
     if (!isValidPostalCode(normalizedPostalCode)) {
       return;
@@ -198,9 +180,9 @@ export default function HomePage() {
       return;
     }
 
-    // Keep the browse pages aligned with the editable home postal code field.
     setLocationValue(normalizedPostalCode);
   }, [locationValue, normalizedPostalCode, setLocationValue]);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -236,7 +218,13 @@ export default function HomePage() {
         );
       } catch {
         if (isMounted) {
-          setFoodTypeCategories(fallbackFoodTypeCategories.map((item) => ({ ...item, value: slugifyCategory(item.name), slug: slugifyCategory(item.name) })));
+          setFoodTypeCategories(
+            fallbackFoodTypeCategories.map((item) => ({
+              ...item,
+              value: slugifyCategory(item.name),
+              slug: slugifyCategory(item.name),
+            })),
+          );
         }
       }
     }
@@ -320,37 +308,12 @@ export default function HomePage() {
     [foodTypeCategories],
   );
 
-  const applyPostalCodeSearch = (nextPostalCode) => {
-    setPostalCode(nextPostalCode);
-    setDraftDeliveryAddress("");
-    setDeliveryAddress("");
-    setLocationValue(nextPostalCode);
-    setAppliedSearchFilters({ postCode: nextPostalCode });
-    setSearchValidationMessage("");
-  };
-
-  const handleGuestPostalCodeSubmit = () => {
-    const nextPostalCode = normalizePostalCode(guestPostalCodeDraft);
-
-    if (!isValidPostalCode(nextPostalCode)) {
-      setGuestPostalCodeError(t("home.postalCodeValidation"));
-      return;
-    }
-
-    applyPostalCodeSearch(nextPostalCode);
-    setGuestPostalCodeDraft(nextPostalCode);
-    setGuestPostalCodeError("");
-    setIsPostalCodePromptOpen(false);
-  };
-
   const handleHomeSearch = () => {
     const nextPostalCode = normalizePostalCode(postalCode);
     const hasPostalCodeInput = Boolean(nextPostalCode);
 
     if (hasPostalCodeInput && !isValidPostalCode(nextPostalCode)) {
-      setSearchValidationMessage(
-        t("home.postalCodeValidation"),
-      );
+      setSearchValidationMessage(t("home.postalCodeValidation"));
       return;
     }
 
@@ -372,6 +335,7 @@ export default function HomePage() {
       status !== "loading";
     setPendingSearchScroll(hasSearchInput);
   };
+
   const sharedFilters = useMemo(
     () => ({
       attendeeCount,
@@ -402,7 +366,6 @@ export default function HomePage() {
       selectedSort,
     ],
   );
-
   const filteredMenuItems = useMemo(
     () =>
       filterHomePreviewMenuItems(
@@ -510,58 +473,6 @@ export default function HomePage() {
 
   return (
     <div>
-      {isPostalCodePromptOpen ? (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-4">
-          <div className="w-full max-w-[430px] rounded-[18px] bg-[#fffaf6] p-6 text-center shadow-[0_28px_70px_rgba(28,18,12,0.24)]">
-            <h2 className="text-[24px] font-extrabold text-[#241815]">
-              {t("home.postalCodePromptTitle", {
-                defaultValue: "Enter your postal code",
-              })}
-            </h2>
-            <p className="mt-3 text-[15px] leading-6 text-[#6f6258]">
-              {t("home.postalCodePromptMessage", {
-                defaultValue:
-                  "Please enter your postal code so we can show vendors and menu items available for delivery to you.",
-              })}
-            </p>
-            <input
-              autoFocus
-              inputMode="numeric"
-              type="text"
-              value={guestPostalCodeDraft}
-              onChange={(event) => {
-                setGuestPostalCodeDraft(
-                  event.target.value.replace(/\D/g, "").slice(0, 5),
-                );
-                if (guestPostalCodeError) {
-                  setGuestPostalCodeError("");
-                }
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  handleGuestPostalCodeSubmit();
-                }
-              }}
-              placeholder={t("home.postalCodePlaceholder")}
-              className="mt-5 h-12 w-full rounded-xl border border-[#e7d8cd] bg-white px-4 text-center text-[16px] font-semibold text-[#241815] outline-none placeholder:font-normal placeholder:text-[#b6a79c] focus:border-[#d46f38]"
-            />
-            {guestPostalCodeError ? (
-              <p className="mt-2 text-sm font-medium text-[#b6542c]">
-                {guestPostalCodeError}
-              </p>
-            ) : null}
-            <button
-              type="button"
-              onClick={handleGuestPostalCodeSubmit}
-              className="mt-5 inline-flex h-12 min-w-[180px] items-center justify-center rounded-xl bg-[#d46f38] px-6 text-[15px] font-bold text-white transition hover:bg-[#bf5f2d]"
-            >
-              {t("home.showDeliveryOptions", {
-                defaultValue: "Show delivery options",
-              })}
-            </button>
-          </div>
-        </div>
-      ) : null}
       <HeroSection
         deliveryAddress={draftDeliveryAddress}
         onDeliveryAddressChange={setDraftDeliveryAddress}
@@ -588,6 +499,7 @@ export default function HomePage() {
         totalItems={filteredMenuItems.length}
         activeCategoryLabel={activeCategoryLabel}
         onSeeAllClick={() => navigate(`/browse/food-type${menuQuery}`)}
+        showPreviewMenu={false}
       />
       <div ref={vendorResultsRef}>
         {hasAppliedLocationSearch ? (

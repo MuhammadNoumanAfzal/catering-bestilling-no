@@ -4,6 +4,7 @@ import BackLinkButton from "../../../components/shared/BackLinkButton";
 
 export default function MenuHeroBanner({
   vendorSlug,
+  backTo,
   image,
   title,
   isSaved,
@@ -20,7 +21,7 @@ export default function MenuHeroBanner({
       />
 
       <BackLinkButton
-        to={`/vendor/${vendorSlug}`}
+        to={backTo || `/vendor/${vendorSlug}`}
         className="absolute left-4 top-4 bg-white/95"
       >
         {t("menu.back")}

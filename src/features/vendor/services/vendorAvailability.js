@@ -118,6 +118,123 @@ function createSlotLabel(start, end) {
   return `${start} - ${end}`;
 }
 
+function parseTimeParts(time) {
+  const match = `${time ?? ""}`.trim().match(/^(\d{1,2}):(\d{2})/);
+
+  if (!match) {
+    return null;
+  }
+
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+    return null;
+  }
+
+  return { hours, minutes };
+}
+
+function createLocalDateTime(date, time) {
+  const selectedDate = normalizeSelectedDate(date);
+  const timeParts = parseTimeParts(time);
+
+  if (!selectedDate || !timeParts) {
+    return null;
+  }
+
+  return new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate(),
+    timeParts.hours,
+    timeParts.minutes,
+    0,
+    0,
+  );
+}
+
+function formatTimeValue(date) {
+  return `${date.getHours()}`.padStart(2, "0") + `:${date.getMinutes()}`.padStart(2, "0");
+}
+
+function roundDateUpToStep(date, stepMinutes = 15) {
+  const nextDate = new Date(date.getTime());
+  const stepMs = stepMinutes * 60 * 1000;
+  const roundedTime = Math.ceil(nextDate.getTime() / stepMs) * stepMs;
+  nextDate.setTime(roundedTime);
+  nextDate.setSeconds(0, 0);
+  return nextDate;
+}
+
+function resolveMinimumOrderNoticeHours(vendor) {
+  const candidates = [
+    vendor?.minimumOrderNoticeHours,
+    vendor?.availability?.delivery?.minimumOrderNoticeHours,
+    vendor?.deliverySettings?.minimumOrderNoticeHours,
+  ];
+  const noticeHours = candidates
+    .map((value) => Number(value))
+    .find((value) => Number.isFinite(value) && value > 0);
+
+  return noticeHours || 0;
+}
+
+function getMinimumDeliveryDateTime(vendor, now = new Date()) {
+  const noticeHours = resolveMinimumOrderNoticeHours(vendor);
+
+  if (noticeHours <= 0) {
+    return null;
+  }
+
+  return new Date(now.getTime() + noticeHours * 60 * 60 * 1000);
+}
+
+function getLeadTimeAdjustedSlot(slot, vendor, date, now = new Date()) {
+  const minimumDateTime = getMinimumDeliveryDateTime(vendor, now);
+
+  if (!minimumDateTime) {
+    return slot;
+  }
+
+  const slotEndDateTime = createLocalDateTime(date, slot?.end);
+
+  if (!slotEndDateTime || slotEndDateTime < minimumDateTime) {
+    return null;
+  }
+
+  const slotStartDateTime = createLocalDateTime(date, slot?.start);
+
+  if (!slotStartDateTime || slotStartDateTime >= minimumDateTime) {
+    return slot;
+  }
+
+  const adjustedStartDateTime = roundDateUpToStep(minimumDateTime);
+
+  if (adjustedStartDateTime > slotEndDateTime) {
+    return null;
+  }
+
+  const adjustedStart = formatTimeValue(adjustedStartDateTime);
+
+  return {
+    ...slot,
+    start: adjustedStart,
+    label: createSlotLabel(adjustedStart, slot.end),
+  };
+}
+
+function satisfiesMinimumOrderNotice(vendor, date, time) {
+  const minimumDateTime = getMinimumDeliveryDateTime(vendor);
+  const selectedDateTime = createLocalDateTime(date, time);
+
+  if (!minimumDateTime || !selectedDateTime) {
+    return true;
+  }
+
+  return selectedDateTime >= minimumDateTime;
+}
+
 function normalizeSlotDay(day) {
   const normalized = `${day ?? ""}`.trim().toLowerCase();
 
@@ -259,6 +376,10 @@ export function isVendorDeliverySlotAvailable(vendor, date, time) {
     vendor?.availability?.delivery ?? matchedVendor?.availability?.delivery;
 
   if (isVendorClosedOnDate(matchedVendor, date)) {
+    return false;
+  }
+
+  if (time && !satisfiesMinimumOrderNotice(matchedVendor, date, time)) {
     return false;
   }
 
@@ -407,16 +528,17 @@ export function filterDeliverySlotsForDate(slots, vendor, date) {
   const seenRanges = new Set();
 
   return normalizedSlots
-    .filter((slot) => {
+    .map((slot) => {
       const rangeKey = `${slot?.start ?? ""}-${slot?.end ?? ""}`;
 
       if (!allowedRanges.has(rangeKey) || seenRanges.has(rangeKey)) {
-        return false;
+        return null;
       }
 
       seenRanges.add(rangeKey);
-      return true;
+      return getLeadTimeAdjustedSlot(slot, vendor, date);
     })
+    .filter(Boolean)
     .map((slot) => ({
       ...slot,
       label: createSlotLabel(slot.start, slot.end),

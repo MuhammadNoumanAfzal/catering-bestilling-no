@@ -7,6 +7,7 @@ import {
   fetchVendorProfileBySlug,
   fetchVendorProfiles,
   getAvailableVendorsForSlot,
+  getConfiguredDeliverySlotsForDate,
   getVendorClosureForDate,
   isVendorDeliverySlotAvailable,
 } from "../../vendor";
@@ -36,9 +37,26 @@ import {
 } from "../components";
 import { useMenuDetails } from "../hooks/useMenuDetails";
 import { useSavedVendorStatus } from "../../vendor/hooks/useSavedVendorStatus";
+import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
 import { fetchAvailableDeliverySlots } from "../../checkOut/api";
 import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
 
+function resolveDeliverySlotsForDate(liveSlots, vendor, date) {
+  const normalizedLiveSlots = Array.isArray(liveSlots) ? liveSlots : [];
+  const filteredLiveSlots = filterDeliverySlotsForDate(
+    normalizedLiveSlots,
+    vendor,
+    date,
+  );
+
+  if (filteredLiveSlots.length > 0 || normalizedLiveSlots.length > 0) {
+    return filteredLiveSlots;
+  }
+
+  const configuredSlots = getConfiguredDeliverySlotsForDate(vendor, date);
+
+  return filterDeliverySlotsForDate(configuredSlots, vendor, date);
+}
 function resetDerivedOrderSummaryState(summary) {
   if (!summary) {
     return summary;
@@ -59,6 +77,7 @@ export default function MenuDetailsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isLoggedIn } = useAuth();
+  const { requirePostalCodeForMenu } = usePostalCodePrompt();
   const {
     menuItem,
     vendor,
@@ -212,7 +231,7 @@ export default function MenuDetailsPage() {
         let latestVendor = null;
         let didRefreshVendor = false;
 
-        const filteredLiveSlots = filterDeliverySlotsForDate(nextSlots, vendor, date);
+        const filteredLiveSlots = resolveDeliverySlotsForDate(nextSlots, vendor, date);
 
         if (filteredLiveSlots.length === 0 && vendorSlug) {
           try {
@@ -227,7 +246,7 @@ export default function MenuDetailsPage() {
         const slotVendor = latestVendor || vendor;
         const refreshedFilteredLiveSlots =
           latestVendor && filteredLiveSlots.length === 0
-            ? filterDeliverySlotsForDate(nextSlots, latestVendor, date)
+            ? resolveDeliverySlotsForDate(nextSlots, latestVendor, date)
             : filteredLiveSlots;
         const resolvedSlots = refreshedFilteredLiveSlots;
 
@@ -272,7 +291,7 @@ export default function MenuDetailsPage() {
               orderSummary.deliveryTime <= slot.end,
           );
 
-          if (!matchesExistingSlot && resolvedSlots.length > 0) {
+          if (!matchesExistingSlot) {
             setOrderSummary((current) => ({
               ...current,
               deliveryTime: "",
@@ -471,7 +490,7 @@ export default function MenuDetailsPage() {
     });
   };
 
-  const handleAddToCart = async () => {
+  const continueAddToCart = async () => {
     if (!isLoggedIn) {
       const result = await promptSignInRequired();
 
@@ -596,6 +615,12 @@ export default function MenuDetailsPage() {
     vendor.slug,
   );
 
+  const handleAddToCart = () => {
+    requirePostalCodeForMenu({
+      vendor,
+      onAvailable: continueAddToCart,
+    });
+  };
   const scrollAddOns = (direction) => {
     if (!addOnsSliderRef.current) {
       return;
@@ -626,6 +651,9 @@ export default function MenuDetailsPage() {
     }
   };
 
+  const backTarget = typeof location.state?.from === "string" && location.state.from
+    ? location.state.from
+    : `/vendor/${vendor?.slug || vendorSlug}`;
   const handleScrollToTop = () => {
     window.scrollTo({
       top: 0,
