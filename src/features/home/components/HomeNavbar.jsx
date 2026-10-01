@@ -17,23 +17,6 @@ import useUserNotifications from "../../../components/shared/navbar/useUserNotif
 import { vendorNavigationItems } from "../../vendorDashboard/data/vendorDashboardConfig";
 import { confirmLogout, showSuccessToast } from "../../../utils/alerts";
 
-function getUserAvatarUrl(user) {
-  return user?.avatarThumbnailUrl || user?.avatarUrl || "";
-}
-
-function getUserInitials(user) {
-  const source =
-    user?.name ||
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-    user?.email ||
-    "U";
-
-  return source
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-}
 
 export default function HomeNavbar() {
   const { t } = useTranslation();
@@ -53,8 +36,6 @@ export default function HomeNavbar() {
   const desktopNotificationRef = useRef(null);
   const mobileNotificationRef = useRef(null);
   const profileMenuRef = useRef(null);
-  const avatarUrl = getUserAvatarUrl(user);
-  const userInitials = getUserInitials(user);
 
   const closeMenu = () => setOpen(false);
 
@@ -202,17 +183,6 @@ export default function HomeNavbar() {
                   aria-label={t("nav.openProfileMenu")}
                   aria-expanded={isProfileMenuOpen}
                 >
-                  <div className="flex h-8 w-10 items-center justify-center overflow-hidden rounded-full bg-[#fff1e9] text-[11px] font-bold text-[#c85f33]">
-                    {avatarUrl ? (
-                      <img
-                        alt={user?.name || "User"}
-                        className="h-full w-full object-cover"
-                        src={avatarUrl}
-                      />
-                    ) : (
-                      userInitials
-                    )}
-                  </div>
                   <div className="min-w-0">
                     <p className="type-h6 truncate text-[#2f2f2f]">
                       {user?.name}

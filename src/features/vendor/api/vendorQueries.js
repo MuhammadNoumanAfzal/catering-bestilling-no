@@ -23,6 +23,7 @@ export const FETCH_VENDORS_QUERY = `
             freeDeliveryOver
             pickupAddress
             pickupInstructions
+            minimumOrderNoticeHours
             deliveryDays
             deliveryTimeSlots {
               day
@@ -180,6 +181,7 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
         freeDeliveryOver
         pickupAddress
         pickupInstructions
+        minimumOrderNoticeHours
         deliveryDays
         deliveryTimeSlots {
           day

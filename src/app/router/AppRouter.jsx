@@ -8,6 +8,7 @@ import {
 } from "../../features/auth";
 import VendorDashboardLayout from "../../features/vendorDashboard/layouts/VendorDashboardLayout";
 import { BrowseFiltersProvider } from "../context/BrowseFiltersContext";
+import { PostalCodePromptProvider } from "../../features/location/PostalCodePromptContext";
 
 const SignUpPage = lazy(() =>
   import("../../features/auth").then((module) => ({
@@ -130,9 +131,10 @@ function RouteLoader() {
 export default function AppRouter() {
   return (
     <BrowseFiltersProvider>
-      <RouteScrollManager />
+      <PostalCodePromptProvider>
+        <RouteScrollManager />
 
-      <Suspense fallback={<RouteLoader />}>
+        <Suspense fallback={<RouteLoader />}>
         <Routes>
           {/* Authentication routes */}
           <Route element={<AuthLayout />}>
@@ -198,7 +200,8 @@ export default function AppRouter() {
             <Route path="settings" element={<VendorSettingsPage />} />
           </Route>
         </Routes>
-      </Suspense>
+        </Suspense>
+      </PostalCodePromptProvider>
     </BrowseFiltersProvider>
   );
 }

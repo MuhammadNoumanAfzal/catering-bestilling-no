@@ -8,7 +8,6 @@ import NotificationSettingsSection from "../components/settings/NotificationSett
 import PasswordSettingsSection from "../components/settings/PasswordSettingsSection";
 import ProfileSettingsSection from "../components/settings/ProfileSettingsSection";
 import SettingsActions from "../components/settings/SettingsActions";
-import VendorProfilePhotoSection from "../components/settings/VendorProfilePhotoSection";
 import DashboardLoadingState from "../components/DashboardLoadingState";
 import { useVendorSettingsPage } from "../settings/hooks/useVendorSettingsPage";
 import { fetchAddressBook } from "../address/api";
@@ -21,13 +20,8 @@ function hasSavedAddress(addresses) {
   );
 }
 
-function hasCompletedVendorSetup(formState, addressBook) {
-  const hasProfilePhoto = Boolean(
-    `${formState?.avatarThumbnailUrl ?? formState?.avatarUrl ?? ""}`.trim(),
-  );
-
+function hasCompletedVendorSetup(addressBook) {
   return (
-    hasProfilePhoto &&
     hasSavedAddress(addressBook?.delivery) &&
     hasSavedAddress(addressBook?.invoice)
   );
@@ -41,13 +35,10 @@ export default function VendorSettingsPage() {
   const {
     formState,
     handleReset,
-    handleRemoveAvatar,
     handleSave,
-    handleUploadAvatar,
     isDirty,
     isLoading,
     isSaving,
-    isUploadingAvatar,
     loadWarning,
     startPasswordChange,
     updateField,
@@ -74,7 +65,7 @@ export default function VendorSettingsPage() {
           return;
         }
 
-        if (hasCompletedVendorSetup(formState, addressBook)) {
+        if (hasCompletedVendorSetup(addressBook)) {
           window.sessionStorage.removeItem(VENDOR_ONBOARDING_NOTICE_KEY);
           setShowOnboardingGuide(false);
           return;
@@ -95,7 +86,7 @@ export default function VendorSettingsPage() {
     return () => {
       isMounted = false;
     };
-  }, [formState.avatarThumbnailUrl, formState.avatarUrl, isLoading]);
+  }, [isLoading]);
 
   function handleDismissOnboardingGuide() {
     if (typeof window !== "undefined") {
@@ -133,10 +124,6 @@ export default function VendorSettingsPage() {
                   {st("onboardingDescription")}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#edd7c8] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#614f43]">
-                    <Sparkles size={13} />
-                    {st("onboardingPhotoStep")}
-                  </span>
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-[#edd7c8] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#614f43]">
                     <MapPin size={13} />
                     {st("onboardingAddressStep")}
@@ -180,12 +167,6 @@ export default function VendorSettingsPage() {
           </div>
         ) : null}
         <ClientLanguageSettingsSection />
-        <VendorProfilePhotoSection
-          formState={formState}
-          isUploading={isUploadingAvatar}
-          onRemoveAvatar={handleRemoveAvatar}
-          onUploadAvatar={handleUploadAvatar}
-        />
         <ProfileSettingsSection formState={formState} updateField={updateField} />
         <NotificationSettingsSection
           formState={formState}

@@ -60,6 +60,7 @@ export const FETCH_PRODUCT_QUERY = `
           id
           baseDeliveryFee
           freeDeliveryOver
+          minimumOrderNoticeHours
           deliveryDays
           deliveryTimeSlots {
             day

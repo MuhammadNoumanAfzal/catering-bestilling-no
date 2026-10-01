@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 import { formatTimeTo24Hour } from "../../../components/shared/navbar/navbarDateUtils";
-import { getConfiguredDeliverySlotsForDate } from "../../vendor/services/vendorAvailability";
+import {
+  filterDeliverySlotsForDate,
+  getConfiguredDeliverySlotsForDate,
+} from "../../vendor/services/vendorAvailability";
 
 function getSlotStatusTone(slot) {
   if (slot.isFullyBooked) {
@@ -28,6 +31,10 @@ function formatDateValue(date) {
   return `${year}-${month}-${day}`;
 }
 
+function getLeadTimeAvailableSlotsForDate(vendor, date) {
+  const configuredSlots = getConfiguredDeliverySlotsForDate(vendor, date);
+  return filterDeliverySlotsForDate(configuredSlots, vendor, date);
+}
 function formatDateLabel(dateValue, locale, emptyLabel) {
   if (!dateValue) {
     return emptyLabel;
@@ -141,7 +148,7 @@ export default function MenuDeliveryForm({
   }
 
   function handleDeliveryDateSelect(nextDate) {
-    if (hasDeliverySchedule && getConfiguredDeliverySlotsForDate(vendor, nextDate).length === 0) {
+    if (hasDeliverySchedule && getLeadTimeAvailableSlotsForDate(vendor, nextDate).length === 0) {
       setDateAvailabilityError(t("menu.dateUnavailable"));
       return;
     }
@@ -161,7 +168,7 @@ export default function MenuDeliveryForm({
       const isAvailable =
         isCurrentMonth &&
         value >= getTodayDateValue() &&
-        (!hasDeliverySchedule || getConfiguredDeliverySlotsForDate(vendor, value).length > 0);
+        (!hasDeliverySchedule || getLeadTimeAvailableSlotsForDate(vendor, value).length > 0);
 
       return { date, value, isCurrentMonth, isAvailable };
     },

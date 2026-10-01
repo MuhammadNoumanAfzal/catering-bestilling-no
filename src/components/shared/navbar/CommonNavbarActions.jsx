@@ -10,23 +10,6 @@ import { Bell } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import NotificationPopover from "./NotificationPopover";
 
-function getUserAvatarUrl(user) {
-  return user?.avatarThumbnailUrl || user?.avatarUrl || "";
-}
-
-function getUserInitials(user) {
-  const source =
-    user?.name ||
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-    user?.email ||
-    "U";
-
-  return source
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-}
 
 export default function CommonNavbarActions({
   actionMenuRef,
@@ -50,8 +33,6 @@ export default function CommonNavbarActions({
 }) {
   const location = useLocation();
   const { t } = useTranslation();
-  const avatarUrl = getUserAvatarUrl(user);
-  const userInitials = getUserInitials(user);
 
   return (
     <div className="ml-auto shrink-0 lg:border-l lg:border-[#ebe4de] lg:pl-3" ref={actionMenuRef}>
@@ -108,21 +89,6 @@ export default function CommonNavbarActions({
             aria-label={t("nav.openMenu")}
             aria-expanded={isActionMenuOpen}
           >
-            <div
-              className={`flex items-center justify-center overflow-hidden rounded-full bg-[#fff1e9] font-bold text-[#c85f33] ${
-                isAdminStyle ? "h-10 w-10 text-[13px]" : "h-7 w-7 text-[10px] sm:h-8 sm:w-8 sm:text-[11px]"
-              }`}
-            >
-              {avatarUrl ? (
-                <img
-                  alt={user?.name || "User"}
-                  className="h-full w-full object-cover"
-                  src={avatarUrl}
-                />
-              ) : (
-                userInitials
-              )}
-            </div>
             {isLoggedIn ? (
               <span className={isAdminStyle ? "hidden min-w-0 text-left sm:block" : "type-h6 hidden text-[#2f2f2f] sm:inline"}>
                 {isAdminStyle ? (
