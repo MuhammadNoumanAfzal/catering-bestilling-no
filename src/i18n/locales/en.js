@@ -504,7 +504,7 @@ const en = {
     linkCopied: "Restaurant link copied to clipboard",
     sharingUnsupported: "Sharing is not supported on this device",
     backToSearch: "Back to search",
-    cateringMenu: "Catering Menu",
+    cateringMenu: "Sort by menu or occasion",
     menuCategory: "Menu Category",
     feeds: "Feeds {{count}}",
     allergens: "Allergens: {{allergens}}",
@@ -676,7 +676,7 @@ const en = {
       "The final mix may vary slightly by vendor availability, but this section shows the expected structure and serving components for the selected menu.",
     minimumOrderText:
       "This menu is configured for group ordering and cannot be booked below the minimum guest count.",
-    bookingSetup: "Booking setup",
+    bookingSetup: "Order details",
     deliveryDateTime: "Delivery Date & Time",
     bookingIntro:
       "Choose your delivery day, lock in an available service window, and set the guest count before adding this menu to the cart.",
@@ -714,7 +714,7 @@ const en = {
     minimumLabel: "Minimum {{count}} people",
     addVendorNote: "Add Note for Vendor",
     addVendorNoteDesc:
-      "Share access notes, setup instructions, or anything the kitchen should know before delivery.",
+      "Share details such as your preferred time or anything else the kitchen should know before delivery.",
     addNotePlaceholder: "Add Note...",
     addToCart: "Add to Cart",
     addOnsEyebrow: "Customize your order",

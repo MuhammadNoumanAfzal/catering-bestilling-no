@@ -198,42 +198,6 @@ export default function MenuDetailsPage() {
       lastSlotAuthPromptKeyRef.current = "";
       return;
     }
-
-    if (!isLoggedIn) {
-      const authMessage =
-        t("menu.signInForSlots");
-      const promptKey = `${vendorId}:${date}`;
-
-      setDeliverySlots([]);
-      setSlotAccessState({
-        requiresAuth: true,
-        message: authMessage,
-      });
-      setIsLoadingSlots(false);
-
-      if (lastSlotAuthPromptKeyRef.current !== promptKey) {
-        lastSlotAuthPromptKeyRef.current = promptKey;
-
-        Promise.resolve()
-          .then(() =>
-            promptSignInRequired({
-              title: t("menu.signInSlotsTitle"),
-              text: authMessage,
-            }),
-          )
-          .then((result) => {
-            if (result?.isConfirmed) {
-              navigate("/signin", { state: { from: location } });
-            } else if (result?.isDenied) {
-              navigate("/signup", { state: { from: location } });
-            }
-          })
-          .catch(() => {});
-      }
-
-      return;
-    }
-
     let isCancelled = false;
 
     async function loadSlots() {
@@ -318,38 +282,7 @@ export default function MenuDetailsPage() {
       } catch (error) {
         if (!isCancelled) {
           setDeliverySlots([]);
-
-          if (error?.code === "AUTH_REQUIRED" && !isLoggedIn) {
-            const authMessage =
-              error.message ||
-              "Sign in to view live delivery availability for the selected date.";
-
-            setSlotAccessState({
-              requiresAuth: true,
-              message: authMessage,
-            });
-
-            const promptKey = `${vendorId}:${date}`;
-
-            if (lastSlotAuthPromptKeyRef.current !== promptKey) {
-              lastSlotAuthPromptKeyRef.current = promptKey;
-
-              const result = await promptSignInRequired({
-                title: t("menu.signInSlotsTitle"),
-                text: authMessage,
-              });
-
-              if (isCancelled) {
-                return;
-              }
-
-              if (result.isConfirmed) {
-                navigate("/signin", { state: { from: location } });
-              } else if (result.isDenied) {
-                navigate("/signup", { state: { from: location } });
-              }
-            }
-          }
+          setSlotAccessState({ requiresAuth: false, message: "" });
         }
       } finally {
         if (!isCancelled) {
@@ -729,8 +662,8 @@ export default function MenuDetailsPage() {
                 deliverySlots={deliverySlots}
                 isLoadingSlots={isLoadingSlots}
                 hasDeliverySchedule={hasDeliverySchedule}
-                slotAccessRequiresAuth={slotAccessState.requiresAuth}
-                slotAccessMessage={slotAccessState.message}
+                slotAccessRequiresAuth={false}
+                slotAccessMessage=""
                 onDeliveryDateChange={handleDeliveryDateChange}
                 onDeliveryTimeChange={(deliveryTime) =>
                   setOrderSummary((current) =>
