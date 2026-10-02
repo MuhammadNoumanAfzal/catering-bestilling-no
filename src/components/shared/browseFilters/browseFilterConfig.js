@@ -149,7 +149,7 @@ export function translateBrowseOptionLabel(t, value) {
 export const FILTER_BAR_VARIANTS = {
   default: {
     containerClassName:
-      "relative mt-4 flex flex-col gap-3 overflow-visible rounded-[30px] border border-[#f0d3bf] bg-[linear-gradient(135deg,#fff9f5_0%,#fff2e8_45%,#fffaf6_100%)] px-3 py-3 shadow-[0_24px_50px_rgba(207,110,56,0.18)] lg:mt-5 lg:flex-row lg:items-center lg:gap-3 lg:px-4",
+      "relative mx-auto mt-4 flex w-full max-w-[1120px] flex-col gap-3 overflow-visible rounded-[30px] border border-[#f0d3bf] bg-[linear-gradient(135deg,#fff9f5_0%,#fff2e8_45%,#fffaf6_100%)] px-3 py-3 shadow-[0_24px_50px_rgba(207,110,56,0.18)] lg:mt-5 lg:flex-row lg:items-center lg:justify-center lg:gap-3 lg:px-4",
     chipsWrapperClassName:
       "grid w-full grid-cols-1 gap-2 sm:grid-cols-2 xl:flex xl:min-w-0 xl:flex-1 xl:items-center xl:gap-3",
     chipContainerClassName: "relative min-w-0 xl:flex-1",
