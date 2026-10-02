@@ -182,6 +182,34 @@ export default function HomePage() {
 
     setLocationValue(normalizedPostalCode);
   }, [locationValue, normalizedPostalCode, setLocationValue]);
+  useEffect(() => {
+    if (appliedSearchFilters.postCode || appliedSearchFilters.areaName) {
+      return;
+    }
+
+    const restoredLocation = `${locationValue ?? ""}`.trim();
+
+    if (!restoredLocation) {
+      return;
+    }
+
+    const restoredPostalCode = normalizePostalCode(restoredLocation);
+
+    if (isValidPostalCode(restoredPostalCode)) {
+      setPostalCode(restoredPostalCode);
+      setDraftDeliveryAddress("");
+      setAppliedSearchFilters({ postCode: restoredPostalCode });
+      return;
+    }
+
+    const restoredAreaName = extractAreaName(restoredLocation);
+
+    if (restoredAreaName) {
+      setPostalCode("");
+      setDraftDeliveryAddress(restoredLocation);
+      setAppliedSearchFilters({ areaName: restoredAreaName });
+    }
+  }, [appliedSearchFilters.areaName, appliedSearchFilters.postCode, locationValue]);
 
   useEffect(() => {
     let isMounted = true;

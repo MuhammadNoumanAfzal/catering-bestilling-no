@@ -34,7 +34,13 @@ export default function HeroSection({
                 {t("home.heroTitleLineTwo")}
               </h1>
 
-              <div className="mt-5 max-w-[620px] sm:mt-7">
+              <p className="mt-3 text-[15px] font-extrabold text-[#d89b00] sm:mt-4 sm:text-[18px]">
+                {t("home.deliveryChoiceHint", {
+                  defaultValue: "Choose either city or postal code for delivery:",
+                })}
+              </p>
+
+              <div className="mt-4 max-w-[620px] sm:mt-5">
                 <div className="grid gap-2.5 sm:gap-3 md:grid-cols-[1.2fr_0.75fr_0.68fr]">
                   <div className="flex h-12 items-center rounded-xl border border-[#e7d8cd] bg-white px-3.5 shadow-[0_10px_24px_rgba(97,63,39,0.06)] sm:h-14 sm:px-4">
                     <FiMapPin className="shrink-0 text-sm text-[#8b7b70]" />
