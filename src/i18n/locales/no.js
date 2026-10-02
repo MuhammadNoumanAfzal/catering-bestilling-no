@@ -4,6 +4,11 @@ const no = {
     english: "Engelsk",
     norwegian: "Norsk",
   },
+  common: {
+    cancel: "Avbryt",
+    close: "Lukk",
+    skip: "Hopp over",
+  },
   nav: {
     home: "Hjem",
     settings: "Innstillinger",
@@ -308,12 +313,18 @@ const no = {
       "Postnummeret må være 4 eller 5 sifre før du kan søke.",
     postalCodePromptTitle: "Skriv inn postnummer",
     postalCodeLabel: "Postnummer",
+    postalCodeOptionalLabel: "Postnummer (valgfritt)",
+    modalPostalCodePlaceholder: "f.eks. 0150",
+    optional: "Valgfritt",
     menuPostalCodePromptMessage:
       "Skriv inn postnummeret ditt for å sjekke om denne menyen kan leveres til området ditt.",
     checkAvailability: "Sjekk tilgjengelighet",
+    viewMenuAnyway: "Se meny likevel",
+    continueAnyway: "Fortsett likevel",
     menuUnavailableInAreaTitle: "Ikke tilgjengelig i ditt område",
     menuUnavailableInArea:
-      "Denne menyen kan ikke leveres til området ditt.",    postalCodePromptMessage:
+      "Denne menyen kan ikke leveres til området ditt.",
+    postalCodePromptMessage:
       "Skriv inn postnummeret ditt, så viser vi leverandører og menyer som kan leveres til deg.",
     showDeliveryOptions: "Vis leveringsalternativer",
     categoryVendorsServing:
