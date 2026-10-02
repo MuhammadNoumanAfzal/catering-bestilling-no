@@ -299,9 +299,9 @@ const en = {
     featuredNear: "Featured Vendors Near {{location}}",
     popularVendors: "Popular Vendors",
     featuredVendors: "Featured Vendors",
-    products: "{{category}} Products",
-    popularProductsNear: "Popular Products Near {{location}}",
-    popularProducts: "Popular Products",
+    products: "{{category}}",
+    popularProductsNear: "Popular in {{location}}",
+    popularProducts: "Popular",
     howItWorks: {
       title: "How It Works",
       steps: {

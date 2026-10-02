@@ -323,9 +323,9 @@ const no = {
     featuredNear: "Utvalgte leverandører i {{location}}",
     popularVendors: "Populære leverandører",
     featuredVendors: "Utvalgte leverandører",
-    products: "{{category}}-produkter",
-    popularProductsNear: "Populære produkter i {{location}}",
-    popularProducts: "Populære produkter",
+    products: "{{category}}",
+    popularProductsNear: "Populære i {{location}}",
+    popularProducts: "Populære",
     howItWorks: {
       title: "Slik fungerer det",
       steps: {
