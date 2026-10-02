@@ -618,6 +618,7 @@ export default function MenuDetailsPage() {
   const handleAddToCart = () => {
     requirePostalCodeForMenu({
       vendor,
+      mode: "addToCart",
       onAvailable: continueAddToCart,
     });
   };

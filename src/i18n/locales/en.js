@@ -4,6 +4,11 @@ const en = {
     english: "English",
     norwegian: "Norwegian",
   },
+  common: {
+    cancel: "Cancel",
+    close: "Close",
+    skip: "Skip",
+  },
   nav: {
     home: "Home",
     settings: "Settings",
@@ -286,14 +291,20 @@ const en = {
     postalCodeValidation: "Postal code must be 4 or 5 digits before you search.",
     postalCodePromptTitle: "Enter your postal code",
     postalCodeLabel: "Postal code",
+    postalCodeOptionalLabel: "Postal code (optional)",
+    modalPostalCodePlaceholder: "e.g. 0150",
+    optional: "Optional",
     postalCodePromptMessage:
       "Enter your postal code and we will show vendors and menus that can deliver to you.",
     menuPostalCodePromptMessage:
       "Please enter your postal code to check if this menu is available in your area.",
     checkAvailability: "Check availability",
+    viewMenuAnyway: "View menu anyway",
+    continueAnyway: "Continue anyway",
     menuUnavailableInAreaTitle: "Unavailable in your area",
     menuUnavailableInArea:
-      "This menu is not available in your area.",    categoryVendorsServing: "{{category}} Vendors Serving {{location}}",
+      "This menu is not available in your area.",
+    categoryVendorsServing: "{{category}} Vendors Serving {{location}}",
     vendorsServing: "Vendors Serving {{location}}",
     morePopularNear: "More Popular Vendors Near {{location}}",
     featuredNear: "Featured Vendors Near {{location}}",
