@@ -336,6 +336,23 @@ export default function HomePage() {
     [foodTypeCategories],
   );
 
+  const scrollToResults = useCallback((behavior = "smooth") => {
+    const resultsElement = vendorResultsRef.current;
+
+    if (!resultsElement) {
+      return;
+    }
+
+    const topOffset = 80;
+    const nextScrollTop =
+      resultsElement.getBoundingClientRect().top + window.scrollY - topOffset;
+
+    window.scrollTo({
+      top: Math.max(0, nextScrollTop),
+      behavior,
+    });
+  }, []);
+
   const handleHomeSearch = () => {
     const nextPostalCode = normalizePostalCode(postalCode);
     const hasPostalCodeInput = Boolean(nextPostalCode);
@@ -346,22 +363,20 @@ export default function HomePage() {
     }
 
     const nextAreaName = nextPostalCode ? "" : extractAreaName(draftDeliveryAddress);
-    const hasSearchInput = Boolean(nextPostalCode || draftDeliveryAddress.trim());
     const nextSearchFilters = {
       postCode: nextPostalCode || undefined,
       areaName: nextAreaName || undefined,
     };
-    const nextSearchFiltersKey = JSON.stringify(nextSearchFilters);
     setSearchValidationMessage("");
 
     setDeliveryAddress(draftDeliveryAddress.trim());
     setLocationValue(nextPostalCode || nextAreaName);
     setAppliedSearchFilters(nextSearchFilters);
-    searchRequestStartedRef.current =
-      hasSearchInput &&
-      nextSearchFiltersKey === appliedSearchFiltersKey &&
-      status !== "loading";
-    setPendingSearchScroll(hasSearchInput);
+    setPendingSearchScroll(true);
+
+    requestAnimationFrame(() => {
+      scrollToResults("smooth");
+    });
   };
 
   const sharedFilters = useMemo(
@@ -449,44 +464,32 @@ export default function HomePage() {
       return;
     }
 
-    if (!searchRequestStartedRef.current) {
-      if (status === "loading") {
-        searchRequestStartedRef.current = true;
-      }
-
-      return;
-    }
-
     if (status === "loading") {
       return;
     }
 
-    if (availableVendorCount <= 0) {
-      searchRequestStartedRef.current = false;
+    const timer = setTimeout(() => {
+      scrollToResults("smooth");
       setPendingSearchScroll(false);
-      showNoVendorsAlert(appliedSearchLabel);
-      return;
-    }
 
-    const resultsElement = vendorResultsRef.current;
+      if (
+        availableVendorCount <= 0 &&
+        (appliedSearchFilters.postCode || appliedSearchFilters.areaName)
+      ) {
+        showNoVendorsAlert(appliedSearchLabel);
+      }
+    }, 150);
 
-    if (!resultsElement) {
-      searchRequestStartedRef.current = false;
-      setPendingSearchScroll(false);
-      return;
-    }
-
-    const topOffset = 104;
-    const nextScrollTop =
-      resultsElement.getBoundingClientRect().top + window.scrollY - topOffset;
-
-    window.scrollTo({
-      top: Math.max(0, nextScrollTop),
-      behavior: "smooth",
-    });
-    searchRequestStartedRef.current = false;
-    setPendingSearchScroll(false);
-  }, [availableVendorCount, pendingSearchScroll, status]);
+    return () => clearTimeout(timer);
+  }, [
+    appliedSearchFilters.areaName,
+    appliedSearchFilters.postCode,
+    appliedSearchLabel,
+    availableVendorCount,
+    pendingSearchScroll,
+    scrollToResults,
+    status,
+  ]);
 
   const handleClearLocationSearch = () => {
     setPostalCode("");
