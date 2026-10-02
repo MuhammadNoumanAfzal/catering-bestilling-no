@@ -9,6 +9,33 @@ import { isVendorAvailableForPostalCode } from "../vendor/services";
 
 const noop = () => false;
 
+const DISMISSED_STORAGE_KEY = "gocatering_postal_code_prompt_dismissed";
+
+function readIsPromptDismissed() {
+  try {
+    return (
+      window.sessionStorage.getItem(DISMISSED_STORAGE_KEY) === "true" ||
+      window.localStorage.getItem(DISMISSED_STORAGE_KEY) === "true"
+    );
+  } catch {
+    return false;
+  }
+}
+
+function writeIsPromptDismissed(value) {
+  try {
+    if (value) {
+      window.sessionStorage.setItem(DISMISSED_STORAGE_KEY, "true");
+      window.localStorage.setItem(DISMISSED_STORAGE_KEY, "true");
+    } else {
+      window.sessionStorage.removeItem(DISMISSED_STORAGE_KEY);
+      window.localStorage.removeItem(DISMISSED_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 const PostalCodePromptContext = createContext({
   requirePostalCodeForMenu: noop,
   openPostalCodePrompt: noop,
@@ -60,11 +87,17 @@ export function PostalCodePromptProvider({ children }) {
   const [promptState, setPromptState] = useState(null);
   const [draftPostalCode, setDraftPostalCode] = useState("");
   const [postalCodeError, setPostalCodeError] = useState("");
+  const [isPromptDismissed, setIsPromptDismissed] = useState(readIsPromptDismissed);
 
   const closePrompt = useCallback(() => {
     setPromptState(null);
     setDraftPostalCode("");
     setPostalCodeError("");
+  }, []);
+
+  const dismissPromptPermanently = useCallback(() => {
+    setIsPromptDismissed(true);
+    writeIsPromptDismissed(true);
   }, []);
 
   const continueIfAvailable = useCallback(
@@ -115,9 +148,15 @@ export function PostalCodePromptProvider({ children }) {
 
   const handleProceedWithoutPostalCode = useCallback(() => {
     const onAvailable = promptState?.onAvailable;
+    dismissPromptPermanently();
     closePrompt();
     onAvailable?.();
-  }, [closePrompt, promptState]);
+  }, [closePrompt, dismissPromptPermanently, promptState]);
+
+  const handleCloseAndDismiss = useCallback(() => {
+    dismissPromptPermanently();
+    closePrompt();
+  }, [closePrompt, dismissPromptPermanently]);
 
   const requirePostalCodeForMenu = useCallback(
     ({ vendor = null, onAvailable, mode = "openMenu", dismissButtonText } = {}) => {
@@ -148,12 +187,17 @@ export function PostalCodePromptProvider({ children }) {
         return true;
       }
 
+      if (isPromptDismissed) {
+        onAvailable?.("");
+        return true;
+      }
+
       setPromptState({ vendor, onAvailable, mode, dismissButtonText });
       setDraftPostalCode("");
       setPostalCodeError("");
       return false;
     },
-    [isLoggedIn, locationValue, setLocationValue, t, user],
+    [isLoggedIn, isPromptDismissed, locationValue, setLocationValue, t, user],
   );
 
   const openPostalCodePrompt = useCallback(
@@ -212,7 +256,7 @@ export function PostalCodePromptProvider({ children }) {
           className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#1f1711]/60 px-4 backdrop-blur-[3px]"
           onClick={(event) => {
             if (event.target === event.currentTarget) {
-              closePrompt();
+              handleCloseAndDismiss();
             }
           }}
         >
@@ -305,7 +349,7 @@ export function PostalCodePromptProvider({ children }) {
             <div className="mt-3 text-center">
               <button
                 type="button"
-                onClick={closePrompt}
+                onClick={handleCloseAndDismiss}
                 className="text-[13px] font-semibold text-[#8f8076] transition hover:text-[#241815] hover:underline"
               >
                 {t("common.cancel", { defaultValue: "Avbryt" })}
