@@ -1,8 +1,10 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { FiMapPin, FiSearch, FiX } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
+import { useAuth } from "../auth";
 import { showAuthErrorAlert } from "../../utils/alerts";
+import { readSavedSettings } from "../../utils/customerProfileStorage";
 import { isVendorAvailableForPostalCode } from "../vendor/services";
 
 const noop = () => false;
@@ -24,6 +26,22 @@ function hasSelectedLocation(value) {
   return Boolean(`${value ?? ""}`.trim());
 }
 
+function resolveAccountPostalCode(user) {
+  const savedSettings = readSavedSettings();
+  const candidates = [
+    user?.postCode,
+    user?.postalCode,
+    user?.post_code,
+    user?.postal_code,
+    savedSettings?.postCode,
+    savedSettings?.postalCode,
+  ];
+
+  return candidates
+    .map((value) => normalizePostalCode(value))
+    .find((value) => isValidPostalCode(value)) || "";
+}
+
 async function showUnavailableMessage(t) {
   await showAuthErrorAlert(
     t("home.menuUnavailableInArea", {
@@ -37,6 +55,7 @@ async function showUnavailableMessage(t) {
 
 export function PostalCodePromptProvider({ children }) {
   const { t } = useTranslation();
+  const { isLoggedIn, user } = useAuth();
   const { locationValue, setLocationValue } = useBrowseFilters();
   const [promptState, setPromptState] = useState(null);
   const [draftPostalCode, setDraftPostalCode] = useState("");
@@ -61,6 +80,39 @@ export function PostalCodePromptProvider({ children }) {
     [t],
   );
 
+  useEffect(() => {
+    if (!promptState || !isLoggedIn) {
+      return;
+    }
+
+    const accountPostalCode = resolveAccountPostalCode(user);
+
+    if (!accountPostalCode) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    async function continueFromAccountPostalCode() {
+      setLocationValue(accountPostalCode);
+      const didContinue = await continueIfAvailable({
+        vendor: promptState.vendor,
+        postalCode: accountPostalCode,
+        onAvailable: promptState.onAvailable,
+      });
+
+      if (!isCancelled && didContinue) {
+        closePrompt();
+      }
+    }
+
+    continueFromAccountPostalCode();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [closePrompt, continueIfAvailable, isLoggedIn, promptState, setLocationValue, user]);
+
   const requirePostalCodeForMenu = useCallback(
     ({ vendor = null, onAvailable } = {}) => {
       if (hasSelectedLocation(locationValue)) {
@@ -75,12 +127,27 @@ export function PostalCodePromptProvider({ children }) {
         return true;
       }
 
+      const savedPostalCode = readSavedSettings()?.postCode;
+      const accountPostalCode = normalizePostalCode(user?.postCode || savedPostalCode);
+
+      if (isLoggedIn && isValidPostalCode(accountPostalCode)) {
+        setLocationValue(accountPostalCode);
+
+        if (vendor && !isVendorAvailableForPostalCode(vendor, accountPostalCode)) {
+          showUnavailableMessage(t);
+          return false;
+        }
+
+        onAvailable?.(accountPostalCode);
+        return true;
+      }
+
       setPromptState({ vendor, onAvailable });
       setDraftPostalCode("");
       setPostalCodeError("");
       return false;
     },
-    [locationValue, t],
+    [isLoggedIn, locationValue, setLocationValue, t, user],
   );
 
   const openPostalCodePrompt = useCallback(
