@@ -31,9 +31,13 @@ export default function MenuCard({
 
     requirePostalCodeForMenu({
       vendor: vendorData,
-      onAvailable: () => navigate(menuPath, {
-        state: { from: `${location.pathname}${location.search}${location.hash}` },
-      }),
+      onAvailable: () => {
+        const returnPath = `${location.pathname}${location.search}${location.hash}`;
+        window.sessionStorage.setItem("gocatering-menu-back-target", returnPath);
+        navigate(menuPath, {
+          state: { from: returnPath },
+        });
+      },
     });
   };
 

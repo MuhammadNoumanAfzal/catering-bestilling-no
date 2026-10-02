@@ -306,7 +306,13 @@ const no = {
     postalCodeValidation:
       "Postnummeret må være 4 eller 5 sifre før du kan søke.",
     postalCodePromptTitle: "Skriv inn postnummer",
-    postalCodePromptMessage:
+    postalCodeLabel: "Postnummer",
+    menuPostalCodePromptMessage:
+      "Skriv inn postnummeret ditt for å sjekke om denne menyen kan leveres til området ditt.",
+    checkAvailability: "Sjekk tilgjengelighet",
+    menuUnavailableInAreaTitle: "Ikke tilgjengelig i ditt område",
+    menuUnavailableInArea:
+      "Denne menyen kan ikke leveres til området ditt.",    postalCodePromptMessage:
       "Skriv inn postnummeret ditt, så viser vi leverandører og menyer som kan leveres til deg.",
     showDeliveryOptions: "Vis leveringsalternativer",
     categoryVendorsServing:

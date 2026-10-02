@@ -32,9 +32,13 @@ export function ProductItem({
 
     requirePostalCodeForMenu({
       vendor: vendorData,
-      onAvailable: () => navigate(productPath, {
-        state: { from: `${location.pathname}${location.search}${location.hash}` },
-      }),
+      onAvailable: () => {
+        const returnPath = `${location.pathname}${location.search}${location.hash}`;
+        window.sessionStorage.setItem("gocatering-menu-back-target", returnPath);
+        navigate(productPath, {
+          state: { from: returnPath },
+        });
+      },
     });
   };
 
