@@ -293,6 +293,7 @@ const no = {
     heroCardThreeBody:
       "Velg menyer med fokus på presentasjon, gjesteopplevelse og trygg levering til private og familiære feiringer.",
     deliveryAddressPlaceholder: "Legg til by",
+    deliveryChoiceHint: "Velg enten by eller postnummer for levering:",
     postalCodePlaceholder: "eller postnummer",
     search: "S\u00f8k",
     explore: "Utforsk",

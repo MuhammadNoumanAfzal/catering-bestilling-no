@@ -273,6 +273,7 @@ const en = {
     heroCardThreeBody:
       "Choose menus designed for guest experience, presentation, and dependable setup for family and private celebrations.",
     deliveryAddressPlaceholder: "Add city",
+    deliveryChoiceHint: "Choose either city or postal code for delivery:",
     postalCodePlaceholder: "Add Postal Code",
     search: "Search",
     explore: "Explore",
