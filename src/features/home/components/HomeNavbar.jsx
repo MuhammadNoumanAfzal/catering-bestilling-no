@@ -272,21 +272,23 @@ export default function HomeNavbar() {
               {t("nav.contactUs")}
             </Link>
 
-            <Link
-              to="/checkout/corporate"
-              onClick={closeMenu}
-              className="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 transition hover:text-black"
-            >
-              <span className="relative text-lg">
-                <FiShoppingCart />
-                {cartItemCount > 0 ? (
-                  <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
-                    {cartItemCount}
-                  </span>
-                ) : null}
-              </span>
-              {t("nav.cart")}
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                to="/checkout/corporate"
+                onClick={closeMenu}
+                className="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700 transition hover:text-black"
+              >
+                <span className="relative text-lg">
+                  <FiShoppingCart />
+                  {cartItemCount > 0 ? (
+                    <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#c85f33] px-1 text-[10px] font-bold leading-none text-white">
+                      {cartItemCount}
+                    </span>
+                  ) : null}
+                </span>
+                {t("nav.cart")}
+              </Link>
+            ) : null}
 
             {isLoggedIn ? (
               <>

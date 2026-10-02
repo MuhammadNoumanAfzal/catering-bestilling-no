@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { FiMapPin, FiSearch, FiX } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 import { showAuthErrorAlert } from "../../utils/alerts";
@@ -124,9 +125,21 @@ export function PostalCodePromptProvider({ children }) {
     <PostalCodePromptContext.Provider value={contextValue}>
       {children}
       {promptState ? (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/45 px-4">
-          <div className="w-full max-w-[430px] rounded-[18px] bg-[#fffaf6] p-6 text-center shadow-[0_28px_70px_rgba(28,18,12,0.24)]">
-            <h2 className="text-[24px] font-extrabold text-[#241815]">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#1f1711]/55 px-4 backdrop-blur-[2px]">
+          <div className="relative w-full max-w-[440px] overflow-hidden rounded-[28px] border border-[#eadfd5] bg-[#fffaf6] p-6 text-left shadow-[0_32px_90px_rgba(28,18,12,0.28)] sm:p-7">
+            <button
+              type="button"
+              onClick={closePrompt}
+              className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#eadfd5] bg-white text-[#7a6c62] transition hover:border-[#d46f38] hover:text-[#bf5f2d]"
+              aria-label={t("common.cancel", { defaultValue: "Cancel" })}
+            >
+              <FiX />
+            </button>
+
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1e9] text-[#d46f38] shadow-[0_10px_24px_rgba(212,111,56,0.16)]">
+              <FiMapPin className="text-[24px]" />
+            </div>
+            <h2 className="mt-5 pr-10 text-[26px] font-extrabold leading-tight text-[#241815]">
               {t("home.postalCodePromptTitle", {
                 defaultValue: "Enter your postal code",
               })}
@@ -137,6 +150,9 @@ export function PostalCodePromptProvider({ children }) {
                   "Please enter your postal code to check if this menu is available in your area.",
               })}
             </p>
+            <label className="mt-5 block text-[12px] font-bold uppercase tracking-[0.14em] text-[#a36d4e]">
+              {t("home.postalCodeLabel", { defaultValue: "Postal code" })}
+            </label>
             <input
               autoFocus
               inputMode="numeric"
@@ -154,19 +170,20 @@ export function PostalCodePromptProvider({ children }) {
                 }
               }}
               placeholder={t("home.postalCodePlaceholder")}
-              className="mt-5 h-12 w-full rounded-xl border border-[#e7d8cd] bg-white px-4 text-center text-[16px] font-semibold text-[#241815] outline-none placeholder:font-normal placeholder:text-[#b6a79c] focus:border-[#d46f38]"
+              className="mt-2 h-14 w-full rounded-2xl border border-[#e7d8cd] bg-white px-4 text-center text-[18px] font-bold tracking-[0.08em] text-[#241815] outline-none transition placeholder:font-normal placeholder:tracking-normal placeholder:text-[#b6a79c] focus:border-[#d46f38] focus:ring-4 focus:ring-[#d46f38]/10"
             />
             {postalCodeError ? (
-              <p className="mt-2 text-sm font-medium text-[#b6542c]">
+              <p className="mt-2 rounded-xl bg-[#fff1e9] px-3 py-2 text-sm font-semibold text-[#b6542c]">
                 {postalCodeError}
               </p>
             ) : null}
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="inline-flex h-12 min-w-[180px] items-center justify-center rounded-xl bg-[#d46f38] px-6 text-[15px] font-bold text-white transition hover:bg-[#bf5f2d]"
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#d46f38] px-6 text-[15px] font-bold text-white shadow-[0_14px_26px_rgba(212,111,56,0.24)] transition hover:bg-[#bf5f2d]"
               >
+                <FiSearch />
                 {t("home.checkAvailability", {
                   defaultValue: "Check availability",
                 })}
@@ -174,7 +191,7 @@ export function PostalCodePromptProvider({ children }) {
               <button
                 type="button"
                 onClick={closePrompt}
-                className="inline-flex h-12 min-w-[120px] items-center justify-center rounded-xl border border-[#e7d8cd] bg-white px-5 text-[15px] font-bold text-[#6f6258] transition hover:border-[#d46f38] hover:text-[#bf5f2d]"
+                className="inline-flex h-12 items-center justify-center rounded-2xl border border-[#e7d8cd] bg-white px-5 text-[15px] font-bold text-[#6f6258] transition hover:border-[#d46f38] hover:text-[#bf5f2d] sm:min-w-[124px]"
               >
                 {t("common.cancel", { defaultValue: "Cancel" })}
               </button>

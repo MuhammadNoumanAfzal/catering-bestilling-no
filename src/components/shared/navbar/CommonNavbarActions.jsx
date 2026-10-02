@@ -61,7 +61,7 @@ export default function CommonNavbarActions({
           ) : null}
         </div>
 
-        {!isAdminStyle ? (
+        {!isAdminStyle && isLoggedIn ? (
           <button
             type="button"
             onClick={onCheckoutClick}

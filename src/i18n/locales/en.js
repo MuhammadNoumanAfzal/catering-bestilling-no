@@ -283,7 +283,16 @@ const en = {
     menuTitleWithCategory: "{{category}} Menus",
     postalCodeSummary: "postal code {{postCode}}",
     postalCodeValidation: "Postal code must be 4 or 5 digits before you search.",
-    categoryVendorsServing: "{{category}} Vendors Serving {{location}}",
+    postalCodePromptTitle: "Enter your postal code",
+    postalCodeLabel: "Postal code",
+    postalCodePromptMessage:
+      "Enter your postal code and we will show vendors and menus that can deliver to you.",
+    menuPostalCodePromptMessage:
+      "Please enter your postal code to check if this menu is available in your area.",
+    checkAvailability: "Check availability",
+    menuUnavailableInAreaTitle: "Unavailable in your area",
+    menuUnavailableInArea:
+      "This menu is not available in your area.",    categoryVendorsServing: "{{category}} Vendors Serving {{location}}",
     vendorsServing: "Vendors Serving {{location}}",
     morePopularNear: "More Popular Vendors Near {{location}}",
     featuredNear: "Featured Vendors Near {{location}}",
