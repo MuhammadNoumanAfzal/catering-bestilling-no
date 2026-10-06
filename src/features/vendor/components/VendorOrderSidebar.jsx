@@ -7,6 +7,7 @@ import {
   getItemPrice,
   getItemServes,
   getVendorTotals,
+  formatCurrency,
   sortSummaryItems,
 } from "../../checkOut/components/summary/checkoutSummaryUtils";
 import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
@@ -18,17 +19,6 @@ const TIP_OPTIONS = [
   { label: "Other", value: "other" },
 ];
 
-function formatCurrency(value) {
-  const amount = Number(value ?? 0);
-  const normalizedAmount = Math.abs(amount - Math.round(amount)) < 0.005
-    ? Math.round(amount)
-    : amount;
-
-  return new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: Number.isInteger(normalizedAmount) ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(normalizedAmount);
-}
 
 function formatKr(value) {
   return formatCurrency(value);
@@ -106,7 +96,7 @@ export default function VendorOrderSidebar({
           <div className="flex min-h-[720px] flex-col items-center justify-center text-center">
             <LuUtensilsCrossed className="text-[64px] text-[#9d9d9d]" />
             <p className="mt-4 type-h3 font-semibold text-[#1f1f1f]">
-              {t("vendor.addItemsToCart")}
+              {t("vendor.cartTitle", { defaultValue: "Handlekurv" })}
             </p>
           </div>
         ) : (
@@ -123,7 +113,7 @@ export default function VendorOrderSidebar({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-[14px] font-medium leading-5 type-h5 ">
-                      {item.quantity} {item.name}
+                      {item.name}
                     </p>
                     <p className="shrink-0 text-[14px] font-semibold ">
                       {formatKr(item.price)}

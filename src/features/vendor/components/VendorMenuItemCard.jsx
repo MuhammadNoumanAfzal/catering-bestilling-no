@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { formatCurrency } from "../../menu/utils/formatters";
 
 export default function VendorMenuItemCard({ item, onClick }) {
   const { t } = useTranslation();
@@ -75,7 +76,7 @@ export default function VendorMenuItemCard({ item, onClick }) {
         </div>
 
         <p className="text-[1rem] font-semibold text-[#121212] sm:text-[1.08rem]">
-          {item.price.toFixed(2)}
+          {formatCurrency(item.price)}
         </p>
       </div>
     </article>

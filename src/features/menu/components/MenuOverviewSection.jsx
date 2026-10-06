@@ -177,9 +177,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
     maximumFractionDigits: 2,
     minimumFractionDigits: Number.isInteger(unitPrice) ? 0 : 2,
   }).format(unitPrice);
-  const priceText = Number.isInteger(unitPrice)
-    ? `${formattedUnitPrice},-`
-    : `${formattedUnitPrice}`;
+  const priceText = formattedUnitPrice;
   const minimumPersons = Number(menuItem?.serves ?? 1);
   const cuisineBadge =
     menuItem?.modal?.badge || menuItem?.badge || menuItem?.category || "Chef's pick";

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { formatCurrency } from "../../menu/utils/formatters";
 import { FiChevronDown, FiMinusCircle, FiPlusCircle, FiX } from "react-icons/fi";
 
 function OptionRow({ option, type = "radio", selected, onToggle }) {
@@ -26,7 +27,7 @@ function OptionRow({ option, type = "radio", selected, onToggle }) {
         </span>
         {option.price ? (
           <span className="mt-1 block text-[13px] text-[#666]">
-            +{option.price.toFixed(2)}
+            +{formatCurrency(option.price)}
           </span>
         ) : null}
       </span>
@@ -114,7 +115,7 @@ export default function VendorMenuItemModal({ item, onClose }) {
               {item.modal.heading}
             </h2>
             <p className="mt-2 text-[16px] text-[#151515]">
-              <span className="font-bold">{unitPrice.toFixed(2)}</span> {priceLabel}
+              <span className="font-bold">{formatCurrency(unitPrice)}</span> {priceLabel}
             </p>
             <span className="mt-4 inline-flex rounded-[8px] bg-[#efefef] px-3 py-1 text-[14px] font-semibold text-[#1f1f1f]">
               {item.modal.badge}
@@ -247,10 +248,10 @@ export default function VendorMenuItemModal({ item, onClose }) {
             </span>
             <span className="text-right">
               <span className="block text-[18px] font-bold">
-                {unitPrice.toFixed(2)}
+                {formatCurrency(unitPrice)}
               </span>
               <span className="block text-[14px]">
-                {unitPrice.toFixed(2)} {priceLabel}
+                {formatCurrency(unitPrice)} {priceLabel}
               </span>
             </span>
           </button>

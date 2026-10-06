@@ -7,6 +7,7 @@ export default function ContactInfoSection({
   mode,
   formState,
   updateField,
+  fieldErrors = {},
 }) {
   const { t } = useTranslation();
   return (
@@ -19,6 +20,8 @@ export default function ContactInfoSection({
             onChange={(event) => updateField("companyName", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.companyName}
             className="sm:col-span-2"
+          required={true}
+            error={fieldErrors.companyName}
           />
           <CheckoutField
             label={t("checkout.organizationNumber")}
@@ -27,6 +30,8 @@ export default function ContactInfoSection({
               updateField("organizationNumber", event.target.value)
             }
             placeholder={CHECKOUT_PLACEHOLDERS.organizationNumber}
+          required={true}
+            error={fieldErrors.organizationNumber}
           />
           <CheckoutField
             label={t("checkout.invoiceReference")}

@@ -389,8 +389,12 @@ function extractCityFromAddress(address) {
 }
 
 function formatDeliveryFee(value) {
-  const amount = Number.parseFloat(value || 0);
-  return Number.isFinite(amount) ? `${amount} Delivery fee` : "";
+  const amount = Number(value ?? 0);
+  if (!Number.isFinite(amount)) return "";
+  if (Math.abs(amount - Math.round(amount)) < 0.005) {
+    return `${new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 0 }).format(Math.round(amount))} ${"leveringsgebyr"}`;
+  }
+  return `${new Intl.NumberFormat("nb-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount)} ${"leveringsgebyr"}`;
 }
 
 function normalizeDeliverySlots(deliveryTimeSlots = []) {

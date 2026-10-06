@@ -22,6 +22,7 @@ export default function CheckoutPage() {
     deliveryAddresses,
     deliverySlots,
     formState,
+    fieldErrors,
     handlePlaceOrder,
     handleRemoveItem,
     handleTipChange,
@@ -90,6 +91,7 @@ export default function CheckoutPage() {
                   mode={normalizedType}
                   formState={formState}
                   updateField={updateField}
+                fieldErrors={fieldErrors}
                 />
 
                 {isAutofilling ? (

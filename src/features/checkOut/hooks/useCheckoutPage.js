@@ -18,7 +18,6 @@ import {
   writeSavedSettings,
 } from "../../../utils/customerProfileStorage";
 import {
-  confirmPlaceOrder,
   confirmRemoveItem,
   showAuthErrorAlert,
   showOrderPlacedSuccess,
@@ -207,9 +206,16 @@ export function useCheckoutPage() {
   const [isLoadingPricing, setIsLoadingPricing] = useState(false);
   const [pricingError, setPricingError] = useState("");
   const [checkoutErrorMessage, setCheckoutErrorMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const updateField = (key, value) => {
     setCheckoutErrorMessage("");
+    setFieldErrors((current) => {
+      if (!current[key]) return current;
+      const nextErrors = { ...current };
+      delete nextErrors[key];
+      return nextErrors;
+    });
     setFormState((current) => {
       const nextState = { ...current, [key]: value };
 
@@ -877,12 +883,39 @@ export function useCheckoutPage() {
         .filter((cart) => cart.orderSummary.items.length > 0),
     );
   };
+  const getInlineFieldErrors = () => {
+    if (normalizedType !== "corporate") {
+      return {};
+    }
 
+    const nextErrors = {};
+
+    if (!`${formState.companyName ?? ""}`.trim()) {
+      nextErrors.companyName = i18n.t("checkout.companyNameRequired");
+    }
+
+    if (!`${formState.organizationNumber ?? ""}`.trim()) {
+      nextErrors.organizationNumber = i18n.t("checkout.organizationNumberRequired");
+    }
+
+    return nextErrors;
+  };
   const handlePlaceOrder = async () => {
+    const inlineErrors = getInlineFieldErrors();
+    setFieldErrors(inlineErrors);
+
+    if (Object.keys(inlineErrors).length > 0) {
+      const message = Object.values(inlineErrors)[0];
+      setCheckoutErrorMessage(message);
+      await showAuthErrorAlert(message, i18n.t("checkout.detailsRequiredTitle"));
+      return;
+    }
+
     const validationError = validateCheckoutForm({
       formState,
       checkoutType: normalizedType,
       carts,
+      t: i18n.t.bind(i18n),
     });
 
     if (validationError) {
@@ -929,9 +962,7 @@ export function useCheckoutPage() {
 
     setCheckoutErrorMessage("");
 
-    const result = await confirmPlaceOrder();
-
-    if (!result.isConfirmed || !normalizedType) {
+    if (!normalizedType) {
       return;
     }
 
@@ -952,7 +983,11 @@ export function useCheckoutPage() {
       });
       clearCheckoutFormDraft(normalizedType);
       clearAllStoredOrderSummaries();
-      await showOrderPlacedSuccess();
+      const successVendorName = carts
+        .map((cart) => cart.vendor?.name)
+        .filter(Boolean)
+        .join(", ");
+      await showOrderPlacedSuccess(successVendorName);
       navigate("/order-confirmed");
     } catch (error) {
       const successfulOrders = error?.successfulOrders ?? [];
@@ -988,6 +1023,7 @@ export function useCheckoutPage() {
     deliveryAddresses,
     deliverySlots,
     formState,
+    fieldErrors,
     handlePlaceOrder,
     handleRemoveItem,
     handleTipChange,

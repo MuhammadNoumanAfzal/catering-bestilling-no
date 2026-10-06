@@ -106,10 +106,10 @@ export default function OrderStatusSummary({
       </div>
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-          Invoice
+          {t("orderConfirmed.invoice")}
         </p>
         <p className="mt-2 text-[15px] font-semibold text-[#201b17]">
-          {invoiceNumber || "Will appear in invoices"}
+          {invoiceNumber || t("orderConfirmed.invoiceWillAppear")}
         </p>
       </div>
     </div>
