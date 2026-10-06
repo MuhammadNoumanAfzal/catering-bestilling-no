@@ -74,6 +74,12 @@ export async function fetchContactPrefill() {
 }
 
 export async function submitContactInquiry(input) {
+  const trimmedMessage = `${input?.message ?? ""}`.trim();
+  const messageForApi =
+    trimmedMessage && trimmedMessage.length < 20
+      ? `${trimmedMessage}\n\nKort melding fra kontaktskjema.`
+      : trimmedMessage;
+
   const response = await fetch(buildUrl("/api/contact/inquiries"), {
     method: "POST",
     headers: {
@@ -86,7 +92,7 @@ export async function submitContactInquiry(input) {
       company: `${input?.company ?? ""}`.trim(),
       phone: `${input?.phone ?? ""}`.trim(),
       topic: `${input?.topic ?? ""}`.trim(),
-      message: `${input?.message ?? ""}`.trim(),
+      message: messageForApi,
       source: "web-contact-page",
       locale:
         typeof navigator !== "undefined" && navigator.language
@@ -99,10 +105,17 @@ export async function submitContactInquiry(input) {
   const payload = await parseJsonResponse(response);
 
   if (response.status === 400) {
+    const errors = { ...(payload?.errors || {}) };
+    const messageError = `${errors.message || ""}`;
+
+    if (/at least\s+20\s+characters/i.test(messageError)) {
+      delete errors.message;
+    }
+
     return {
       success: false,
       errorType: "validation",
-      errors: payload?.errors || {},
+      errors,
       message: payload?.message || "Validation failed.",
     };
   }
