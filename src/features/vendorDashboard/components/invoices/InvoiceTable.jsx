@@ -3,6 +3,35 @@ import { FiMoreHorizontal } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { getInvoiceStatusClasses } from "./invoiceUtils";
 
+function translateInvoiceStatus(t, status) {
+  const normalizedStatus = `${status ?? ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const keyMap = {
+    accepted: "vendorPanel.dashboard.statuses.accepted",
+    approved: "vendorPanel.dashboard.statuses.approved",
+    cancelled: "vendorPanel.dashboard.statuses.cancelled",
+    canceled: "vendorPanel.dashboard.statuses.canceled",
+    completed: "vendorPanel.dashboard.statuses.completed",
+    confirmed: "vendorPanel.dashboard.statuses.confirmed",
+    delivered: "vendorPanel.dashboard.statuses.delivered",
+    failed: "vendorPanel.dashboard.statuses.failed",
+    overdue: "vendorPanel.dashboard.statuses.overdue",
+    paid: "vendorPanel.dashboard.statuses.paid",
+    pending: "vendorPanel.dashboard.statuses.pending",
+    "payment reported": "vendorPanel.dashboard.statuses.paymentReported",
+    rejected: "vendorPanel.dashboard.statuses.rejected",
+    reported: "vendorPanel.dashboard.statuses.reported",
+    unpaid: "vendorPanel.dashboard.statuses.unpaid",
+  };
+
+  const key = keyMap[normalizedStatus];
+  return key ? t(key, { defaultValue: status }) : status;
+}
+
 export default function InvoiceTable({ invoices, onOpenDetails }) {
   const { t } = useTranslation();
   const [openMenuKey, setOpenMenuKey] = useState(null);
@@ -56,7 +85,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
                   <span
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getInvoiceStatusClasses(invoice.status)}`}
                   >
-                    {invoice.status}
+                    {translateInvoiceStatus(t, invoice.status)}
                   </span>
                 </td>
                 <td className="rounded-r-2xl px-3 py-3">
@@ -169,7 +198,7 @@ export default function InvoiceTable({ invoices, onOpenDetails }) {
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getInvoiceStatusClasses(invoice.status)}`}
               >
-                {invoice.status}
+                {translateInvoiceStatus(t, invoice.status)}
               </span>
 
               <button

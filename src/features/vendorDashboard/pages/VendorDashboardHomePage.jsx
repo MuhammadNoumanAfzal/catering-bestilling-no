@@ -359,7 +359,7 @@ export default function VendorDashboardHomePage() {
   }
 
   if (isLoading) {
-    return <DashboardLoadingState title="Loading dashboard" description="Gathering your latest orders, invoices, and account activity." rows={4} columns={4} />;
+    return <DashboardLoadingState title="Laster oversikt" description="Henter de nyeste bestillingene, fakturaene og kontoaktiviteten din." rows={4} columns={4} />;
   }
 
   if (error) {

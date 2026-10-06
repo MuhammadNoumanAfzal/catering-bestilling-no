@@ -150,18 +150,18 @@ function markAllLocalNotificationsRead() {
 
 function formatNotificationTime(createdAt) {
   if (!createdAt) {
-    return "Just now";
+    return "Akkurat nå";
   }
 
   const createdDate = new Date(createdAt);
 
   if (Number.isNaN(createdDate.getTime())) {
-    return "Just now";
+    return "Akkurat nå";
   }
 
   const diffInSeconds = Math.round((createdDate.getTime() - Date.now()) / 1000);
   const absSeconds = Math.abs(diffInSeconds);
-  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat("nb-NO", { numeric: "auto" });
 
   if (absSeconds < 60) {
     return rtf.format(diffInSeconds, "second");
@@ -182,16 +182,16 @@ function formatNotificationTime(createdAt) {
 
 function formatDayLabel(createdAt) {
   if (!createdAt) {
-    return "Unknown date";
+    return "Ukjent dato";
   }
 
   const createdDate = new Date(createdAt);
 
   if (Number.isNaN(createdDate.getTime())) {
-    return "Unknown date";
+    return "Ukjent dato";
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("nb-NO", {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -204,6 +204,76 @@ function sanitizeNotificationMessage(message) {
     .replace(/\s{2,}/g, " ");
 }
 
+
+function normalizeStatusLabel(status) {
+  const normalizedStatus = `${status ?? ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const labels = {
+    accepted: "Godtatt",
+    approved: "Godkjent",
+    cancelled: "Avbrutt",
+    canceled: "Avbrutt",
+    completed: "Fullført",
+    confirmed: "Bekreftet",
+    delivered: "Levert",
+    draft: "Utkast",
+    failed: "Mislyktes",
+    modified: "Endret",
+    new: "Ny",
+    overdue: "Forfalt",
+    paid: "Betalt",
+    pending: "Ventende",
+    placed: "Bestilt",
+    preparing: "Forberedes",
+    ready: "Klar",
+    rejected: "Avvist",
+    reported: "Rapportert",
+    scheduled: "Planlagt",
+    unpaid: "Ubetalt",
+    updated: "oppdatert",
+    "out for delivery": "Ute for levering",
+    "payment reported": "Betaling rapportert",
+    "ready to deliver": "Klar til levering",
+  };
+
+  return labels[normalizedStatus] || normalizedStatus || "oppdatert";
+}
+
+function normalizeNotificationTitle(title, type) {
+  const rawTitle = `${title || ""}`.trim();
+  const normalizedTitle = rawTitle.toLowerCase();
+  const normalizedType = `${type || ""}`.toLowerCase();
+
+  if (!rawTitle) {
+    return normalizedType.includes("invoice") || normalizedType.includes("payment")
+      ? "Betalingsvarsel"
+      : "Varsel";
+  }
+
+  if (normalizedTitle.includes("order") && normalizedTitle.includes("updated")) {
+    return rawTitle
+      .replace(/^order\s+/i, "Bestilling ")
+      .replace(/[-–]?\s*updated$/i, " oppdatert");
+  }
+
+  if (normalizedTitle === "finance notification") {
+    return "Betalingsvarsel";
+  }
+
+  if (normalizedTitle === "order placed") {
+    return "Bestilling lagt inn";
+  }
+
+  if (normalizedTitle.includes("payment")) {
+    return rawTitle.replace(/payment/gi, "Betaling");
+  }
+
+  return rawTitle;
+}
 function mapNotificationType(type) {
   const normalizedType = `${type ?? ""}`.toLowerCase();
 
@@ -289,14 +359,15 @@ function mapOrderNotifications(edges, state) {
           new Date(right?.createdOn || 0).getTime() - new Date(left?.createdOn || 0).getTime(),
       )[0];
     const statusChangedAt = latestStatusEvent?.createdOn || order.createdOn || order.eventDate || "";
-    const reference = order.invoiceNumber ? `Order ${order.invoiceNumber}` : "Your order";
-    const vendorName = order.vendor?.name ? ` from ${order.vendor.name}` : "";
+    const reference = order.invoiceNumber ? `Bestilling ${order.invoiceNumber}` : "Bestillingen din";
+    const vendorName = order.vendor?.name ? ` fra ${order.vendor.name}` : "";
     const hasChange = order.hasPendingVendorAdjustment || order.hasPendingModificationRequest;
-    const modificationStatus = `${order.latestModificationRequest?.status || ""}`.replaceAll("_", " ").toLowerCase();
-    const title = hasChange ? `${reference} needs your review` : `${reference} update`;
+    const modificationStatus = normalizeStatusLabel(order.latestModificationRequest?.status || "");
+    const orderStatus = normalizeStatusLabel(order.status || "updated");
+    const title = hasChange ? `${reference} må gjennomgås` : `${reference} oppdatert`;
     const message = hasChange
-      ? `A change has been requested${vendorName}.`
-      : `${reference}${vendorName} is ${`${order.status || "updated"}`.replaceAll("_", " ").toLowerCase()}${modificationStatus ? ` (${modificationStatus})` : ""}.`;
+      ? `En endring er forespurt${vendorName}.`
+      : `${reference}${vendorName} er ${orderStatus}${modificationStatus !== "oppdatert" ? ` (${modificationStatus})` : ""}.`;
 
     return createLocalNotification(
       {
@@ -357,8 +428,8 @@ function mapSupportNotifications(items, state) {
       createLocalNotification(
         {
           id: `support-${ticket.id}`,
-          title: "New support reply",
-          message: ticket.subject || `Support ticket ${ticket.ticketNo || "updated"}`,
+          title: "Nytt svar fra support",
+          message: ticket.subject || `Supportsak ${ticket.ticketNo || "oppdatert"}`,
           createdAt: ticket.lastMessageAt || ticket.createdAt || "",
           type: "support",
           actionUrl: "/client-dashboard/support/responses",
@@ -373,20 +444,20 @@ function mapNotificationNode(node) {
   const messageParts = [sanitizeNotificationMessage(node?.message)];
 
   if (node?.note) {
-    messageParts.push(`Note: ${node.note}`);
+    messageParts.push(`Notat: ${node.note}`);
   }
 
   if (node?.rejectionReason) {
-    messageParts.push(`Reason: ${node.rejectionReason}`);
+    messageParts.push(`Årsak: ${node.rejectionReason}`);
   }
 
   if (node?.transferReference) {
-    messageParts.push(`Reference: ${node.transferReference}`);
+    messageParts.push(`Referanse: ${node.transferReference}`);
   }
 
   return {
     id: node?.id ?? "",
-    title: node?.title || "Finance notification",
+    title: normalizeNotificationTitle(node?.title, node?.type),
     message: messageParts.filter(Boolean).join(" "),
     timeLabel: formatNotificationTime(node?.createdAt),
     unread: !node?.isRead,
@@ -406,7 +477,7 @@ function mapNotificationNode(node) {
     receiptUrl: node?.receiptUrl || "",
     transferReference: node?.transferReference || "",
     paymentDate: node?.paymentDate || "",
-    paymentStatus: node?.paymentStatus || "",
+    paymentStatus: normalizeStatusLabel(node?.paymentStatus || ""),
     actorName: node?.actorName || "",
   };
 }

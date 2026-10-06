@@ -3,6 +3,37 @@ import { FiMoreHorizontal, FiStar } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { getOrderStatusClasses } from "./orderUtils";
 
+function translateOrderStatus(t, status) {
+  const normalizedStatus = `${status ?? ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const keyMap = {
+    accepted: "vendorPanel.dashboard.statuses.accepted",
+    cancelled: "vendorPanel.dashboard.statuses.cancelled",
+    canceled: "vendorPanel.dashboard.statuses.canceled",
+    completed: "vendorPanel.dashboard.statuses.completed",
+    confirmed: "vendorPanel.dashboard.statuses.confirmed",
+    delivered: "vendorPanel.dashboard.statuses.delivered",
+    draft: "vendorPanel.dashboard.statuses.draft",
+    modified: "vendorPanel.dashboard.statuses.modified",
+    new: "vendorPanel.dashboard.statuses.new",
+    pending: "vendorPanel.dashboard.statuses.pending",
+    placed: "vendorPanel.dashboard.statuses.placed",
+    preparing: "vendorPanel.dashboard.statuses.preparing",
+    ready: "vendorPanel.dashboard.statuses.ready",
+    "ready to deliver": "vendorPanel.dashboard.statuses.readyToDeliver",
+    rejected: "vendorPanel.dashboard.statuses.rejected",
+    scheduled: "vendorPanel.dashboard.statuses.scheduled",
+    "out for delivery": "vendorPanel.dashboard.statuses.outForDelivery",
+  };
+
+  const key = keyMap[normalizedStatus];
+  return key ? t(key, { defaultValue: status }) : status;
+}
+
 export default function OrdersTable({ orders, onOpenDetails, onViewChangeRequest }) {
   const { t } = useTranslation();
   const [openMenuKey, setOpenMenuKey] = useState(null);
@@ -66,7 +97,7 @@ export default function OrdersTable({ orders, onOpenDetails, onViewChangeRequest
                 <span
                   className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getOrderStatusClasses(order.status)}`}
                 >
-                  {order.status}
+                  {translateOrderStatus(t, order.status)}
                 </span>
               </td>
               <td className="rounded-r-2xl px-3 py-3">
@@ -105,7 +136,7 @@ export default function OrdersTable({ orders, onOpenDetails, onViewChangeRequest
                           }}
                           className="mt-1 w-full cursor-pointer rounded-[10px] border-t border-[#f0e8e1] px-3 py-2 text-left text-sm font-semibold text-[#cf6e38] transition hover:bg-[#fff5ef]"
                         >
-                          View change request
+                          {t("vendorPanel.orders.viewChangeRequest", { defaultValue: "Se endringsforespørsel" })}
                         </button>
                       ) : null}
                     </div>
@@ -190,7 +221,7 @@ export default function OrdersTable({ orders, onOpenDetails, onViewChangeRequest
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getOrderStatusClasses(order.status)}`}
               >
-                {order.status}
+                {translateOrderStatus(t, order.status)}
               </span>
 
               <button
@@ -207,7 +238,7 @@ export default function OrdersTable({ orders, onOpenDetails, onViewChangeRequest
                 onClick={() => onViewChangeRequest(order)}
                 className="mt-3 w-full rounded-xl border border-[#f0c9b6] bg-[#fff8f3] px-4 py-2.5 text-sm font-semibold text-[#cf6e38] transition hover:bg-[#ffefe5]"
               >
-                View change request
+                {t("vendorPanel.orders.viewChangeRequest", { defaultValue: "Se endringsforespørsel" })}
               </button>
             ) : null}
           </article>
