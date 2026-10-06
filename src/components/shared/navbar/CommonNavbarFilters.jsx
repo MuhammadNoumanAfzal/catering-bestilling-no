@@ -46,7 +46,7 @@ export default function CommonNavbarFilters({
     <div className="flex min-w-0 items-center gap-3 xl:gap-6">
       <div className="relative min-w-0">
         <div className="flex h-8 min-w-0 items-center overflow-hidden rounded-full border border-[#d9d1c7] bg-white px-2">
-          <label className="type-subpara flex h-full items-center gap-1.5 font-semibold text-[#434343]">
+          <label className="type-subpara flex h-full items-center gap-1.5 text-[15px] font-semibold text-black xl:text-[16px]">
             <FiMapPin
               className={`text-[14px] ${
                 locationValue.trim() ? "text-[#CF3A00]" : "text-[#8f8f8f]"
@@ -63,7 +63,7 @@ export default function CommonNavbarFilters({
                 }
               }}
               placeholder={t("nav.enterLocation")}
-              className="w-[112px] bg-transparent text-[15px] text-[#434343] outline-none placeholder:text-[#a7a099] xl:w-[150px] xl:text-[16px]"
+              className="w-[112px] bg-transparent text-[15px] font-semibold text-black outline-none placeholder:text-black xl:w-[150px] xl:text-[16px]"
             />
           </label>
 
@@ -83,10 +83,10 @@ export default function CommonNavbarFilters({
           <button
             type="button"
             onClick={() => toggleDropdown("delivery")}
-            className={`type-subpara flex h-full min-w-[150px] cursor-pointer items-center justify-between gap-2 px-2.5 font-semibold transition xl:min-w-[185px] xl:gap-3 xl:px-3 ${
+            className={`type-subpara flex h-full min-w-[150px] cursor-pointer items-center justify-between gap-2 px-2.5 text-[15px] font-semibold transition xl:min-w-[185px] xl:gap-3 xl:px-3 xl:text-[16px] ${
               openDropdown === "delivery" || hasDeliverySelection
                 ? "text-[#CF3A00]"
-                : "text-[#5d5d5d]"
+                : "text-black"
             }`}
           >
             <span className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -129,10 +129,10 @@ export default function CommonNavbarFilters({
           <button
             type="button"
             onClick={() => toggleDropdown("event")}
-            className={`type-subpara flex h-full min-w-[138px] cursor-pointer items-center justify-between gap-2 px-2.5 font-semibold transition xl:min-w-[165px] xl:gap-3 xl:px-3 ${
+            className={`type-subpara flex h-full min-w-[138px] cursor-pointer items-center justify-between gap-2 px-2.5 text-[15px] font-semibold transition xl:min-w-[165px] xl:gap-3 xl:px-3 xl:text-[16px] ${
               openDropdown === "event" || hasEventSelection
                 ? "text-[#CF3A00]"
-                : "text-[#5d5d5d]"
+                : "text-black"
             }`}
           >
             <span className="truncate whitespace-nowrap text-[15px] xl:text-[16px]">
@@ -201,7 +201,7 @@ export default function CommonNavbarFilters({
             }
           }}
           placeholder={t("nav.searchRestaurants")}
-          className="text-[10px] w-full bg-transparent text-[#5c5c5c] outline-none placeholder:text-[#b8b1a9]"
+          className="w-full bg-transparent text-[15px] font-semibold text-black outline-none placeholder:text-black xl:text-[16px]"
         />
 
         {searchValue ? (

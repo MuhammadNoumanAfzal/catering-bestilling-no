@@ -45,7 +45,7 @@ const no = {
     searchRestaurants: "S\u00f8k restaurant...",
     clearSearch: "Fjern s\u00f8k",
     searchAction: "S\u00f8k",
-    anyTime: "Når som helst",
+    anyTime: "Tidspunkt",
     anyDay: "Valgfri dag",
     eventDetails: "Antall personer",
     attendees: "{{count}} deltakere",
@@ -54,8 +54,7 @@ const no = {
     clear: "Fjern",
     previousMonth: "Forrige måned",
     nextMonth: "Neste måned",
-    deliveryTimeHint:
-      "Velg nåyaktig tidspunkt du foretrekker. Vi kan komme opptil 15 minutter tidligere for å sikre smidig levering og oppsett.",
+    deliveryTimeHint: "",
     selectPreferredTime: "Velg ønsket tid",
     updateResults: "Oppdater resultater",
     numberOfAttendees: "Antall deltakere",
@@ -322,8 +321,7 @@ const no = {
     viewMenuAnyway: "Se meny likevel",
     continueAnyway: "Fortsett likevel",
     menuUnavailableInAreaTitle: "Ikke tilgjengelig i ditt område",
-    menuUnavailableInArea:
-      "Denne menyen kan ikke leveres til området ditt.",
+    menuUnavailableInArea: "Denne menyen kan ikke leveres til området ditt.",
     postalCodePromptMessage:
       "Skriv inn postnummeret ditt, så viser vi leverandører og menyer som kan leveres til deg.",
     showDeliveryOptions: "Vis leveringsalternativer",
@@ -829,7 +827,8 @@ const no = {
     logoutConfirm: "Logg ut",
     staySignedIn: "Forbli innlogget",
     orderPlacedTitle: "Takk for din bestilling",
-    orderPlacedText: "Bestillingen leveres av {{vendorName}}. Bekreftelse er sendt på e-post.",
+    orderPlacedText:
+      "Bestillingen leveres av {{vendorName}}. Bekreftelse er sendt på e-post.",
     reviewDeliveredTitle: "Bestillingen er levert",
     reviewDeliveredText:
       "Bestillingen din fra {{vendorName}} er levert. Vil du legge igjen en vurdering nÃ¥?",
@@ -1654,8 +1653,7 @@ const no = {
     },
     restaurants: {
       title: "Lagrede leverandører",
-      description:
-        "Se alle lagrede leverandører du liker å bestille fra igjen",
+      description: "Se alle lagrede leverandører du liker å bestille fra igjen",
       signInTitle: "Logg inn for å se lagrede leverandører",
       signInMessage:
         "De lagrede leverandørene er knyttet til kontoen din og lastes fra API-et etter innlogging.",
