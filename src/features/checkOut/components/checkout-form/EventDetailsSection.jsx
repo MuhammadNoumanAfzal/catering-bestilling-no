@@ -99,6 +99,8 @@ export default function EventDetailsSection({
           value={formState[eventKey]}
           onChange={(event) => updateField(eventKey, event.target.value)}
           placeholder={eventPlaceholder}
+        optional={mode === "corporate"}
+          optionalLabel={t("checkout.optional")}
         />
         <div>
           <span className="mb-1.5 block text-[13px] font-medium text-[#2d2d2d]">

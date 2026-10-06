@@ -1,11 +1,47 @@
 import { useTranslation } from "react-i18next";
 
+function formatNorwegianDate(value, locale = "nb-NO") {
+  const normalized = `${value ?? ""}`.trim();
+
+  if (!normalized) {
+    return "";
+  }
+
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(normalized)
+    ? new Date(`${normalized}T00:00:00`)
+    : new Date(normalized);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return normalized;
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(parsed);
+}
+
+function buildFullAddress(orderPreview) {
+  return [
+    orderPreview.address,
+    orderPreview.addressLine2,
+    [orderPreview.postalCode, orderPreview.city].filter(Boolean).join(" "),
+  ]
+    .map((part) => `${part ?? ""}`.trim())
+    .filter(Boolean)
+    .join(", ");
+}
+
 export default function OrderDetailsSummary({ orderPreview }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formattedDate = formatNorwegianDate(orderPreview.date, i18n.language?.startsWith("en") ? "en-GB" : "nb-NO");
+  const dateTime = [formattedDate, orderPreview.time].filter(Boolean).join(` ${t("orderConfirmed.at")} `);
+  const fullAddress = buildFullAddress(orderPreview);
   const details = [
-    ["date", [orderPreview.date, orderPreview.time].filter(Boolean).join(` ${t("orderConfirmed.at")} `)],
+    ["date", dateTime],
     ["personCount", orderPreview.personCount],
-    ["address", orderPreview.address],
+    ["address", fullAddress],
   ].filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== "");
 
   return (

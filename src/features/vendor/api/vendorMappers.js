@@ -421,7 +421,7 @@ export function adaptApiVendorToProfile(apiVendor) {
     minimumOrderNoticeHours,
     deliveryFeeAmount: Number.parseFloat(fee || 0) || 0,
     freeDeliveryOverAmount: Number.parseFloat(freeDeliveryOver || 0) || 0,
-    deliveryFee: `${parseFloat(fee).toFixed(0)},-`,
+    deliveryFee: parseFloat(fee).toFixed(0),
     freeDeliveryOver: freeDeliveryOver ? parseFloat(freeDeliveryOver).toFixed(0) : "",
     availability,
     categories,

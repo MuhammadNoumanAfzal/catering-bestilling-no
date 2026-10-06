@@ -100,12 +100,12 @@ export function confirmLogout() {
   );
 }
 
-export function showOrderPlacedSuccess() {
+export function showOrderPlacedSuccess(vendorName) {
   return Swal.fire(
     withBaseOptions({
       icon: "success",
       title: i18n.t("alerts.orderPlacedTitle"),
-      text: i18n.t("alerts.orderPlacedText"),
+      text: i18n.t("alerts.orderPlacedText", { vendorName }),
       confirmButtonText: i18n.t("alerts.continue"),
     }),
   );

@@ -321,12 +321,6 @@ export default function MenuDeliveryForm({
                         <p className="mt-1 text-[15px] font-semibold text-[#1d1713]">
                           {t("menu.fineTuneTime")}
                         </p>
-                        <p className="mt-1 text-[12px] leading-5 text-[#8a5a3a]">
-                          {t("menu.timeBetween", {
-                            start: editableSlot.start,
-                            end: editableSlot.end,
-                          })}
-                        </p>
                       </div>
                       <div className="rounded-[14px] border border-[#efd8ca] bg-white px-3 py-2 text-right shadow-[0_8px_16px_rgba(55,34,19,0.04)]">
                         <p className="text-[11px] uppercase tracking-[0.1em] text-[#a19084]">

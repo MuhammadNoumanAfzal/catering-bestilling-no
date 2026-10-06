@@ -299,7 +299,5 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     occasion: formState.occasion,
   };
 
-  validateRequiredFields(privatePayload, ["occasion"]);
-
   return privatePayload;
 }

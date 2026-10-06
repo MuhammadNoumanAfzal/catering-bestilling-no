@@ -1,17 +1,21 @@
 export function formatCurrency(value) {
   const amount = Number(value ?? 0);
-  return new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
 
-export function formatDistance(addressLine = "") {
-  const firstDigit = addressLine.match(/\d+/)?.[0];
-
-  if (!firstDigit) {
-    return "2.1 km away";
+  if (!Number.isFinite(amount)) {
+    return "0";
   }
 
-  return `${(Number(firstDigit) / 4).toFixed(1)} km away`;
+  const roundedAmount = Math.round(amount);
+
+  if (Math.abs(amount - roundedAmount) < 0.005) {
+    return new Intl.NumberFormat("nb-NO", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(roundedAmount);
+  }
+
+  return new Intl.NumberFormat("nb-NO", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 }

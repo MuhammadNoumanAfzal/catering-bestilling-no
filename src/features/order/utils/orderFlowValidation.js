@@ -245,6 +245,7 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [], t })
     deliveryAddress: formState.deliveryAddress,
     personCount: formState.personCount,
     minimumPersons: 1,
+    t,
   });
 
   if (commonError) {
@@ -308,15 +309,11 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [], t })
 
   if (checkoutType === "corporate") {
     if (!`${formState.companyName ?? ""}`.trim()) {
-      return message("companyName", "Please enter the company name.");
+      return message("companyName", "Firmanavn er påkrevd.");
     }
 
     if (!`${formState.organizationNumber ?? ""}`.trim()) {
-      return message("organizationNumber", "Please enter the organization number.");
-    }
-
-    if (!`${formState.eventName ?? ""}`.trim()) {
-      return message("eventName", "Please enter the event name.");
+      return message("organizationNumber", "Organisasjonsnummer er påkrevd.");
     }
   } else {
     if (!`${formState.firstName ?? ""}`.trim()) {
@@ -325,10 +322,6 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [], t })
 
     if (!`${formState.lastName ?? ""}`.trim()) {
       return message("lastName", "Please enter the last name.");
-    }
-
-    if (!`${formState.occasion ?? ""}`.trim()) {
-      return message("occasion", "Please enter the occasion.");
     }
   }
 
