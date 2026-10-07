@@ -46,7 +46,7 @@ export default function CommonNavbarFilters({
     <div className="flex min-w-0 items-center gap-3 xl:gap-6">
       <div className="relative min-w-0">
         <div className="flex h-8 min-w-0 items-center overflow-hidden rounded-full border border-[#d9d1c7] bg-white px-2">
-          <label className="type-subpara flex h-full items-center gap-1.5 text-[15px] font-semibold text-black xl:text-[16px]">
+          <label className="flex h-full items-center gap-1.5 text-[16px] font-semibold leading-none text-black">
             <FiMapPin
               className={`text-[14px] ${
                 locationValue.trim() ? "text-[#CF3A00]" : "text-[#8f8f8f]"
@@ -63,7 +63,7 @@ export default function CommonNavbarFilters({
                 }
               }}
               placeholder={t("nav.enterLocation")}
-              className="w-[112px] bg-transparent text-[15px] font-semibold text-black outline-none placeholder:text-black xl:w-[150px] xl:text-[16px]"
+              className="w-[112px] bg-transparent text-[16px] font-semibold leading-none text-black outline-none placeholder:font-semibold placeholder:text-black placeholder:opacity-100 xl:w-[150px]"
             />
           </label>
 
@@ -83,7 +83,7 @@ export default function CommonNavbarFilters({
           <button
             type="button"
             onClick={() => toggleDropdown("delivery")}
-            className={`type-subpara flex h-full min-w-[150px] cursor-pointer items-center justify-between gap-2 px-2.5 text-[15px] font-semibold transition xl:min-w-[185px] xl:gap-3 xl:px-3 xl:text-[16px] ${
+            className={`flex h-full min-w-[150px] cursor-pointer items-center justify-between gap-2 px-2.5 text-[16px] font-semibold leading-none transition xl:min-w-[185px] xl:gap-3 xl:px-3 ${
               openDropdown === "delivery" || hasDeliverySelection
                 ? "text-[#CF3A00]"
                 : "text-black"
@@ -97,7 +97,7 @@ export default function CommonNavbarFilters({
                     : "text-[#8f8f8f]"
                 }`}
               />
-              <span className="truncate whitespace-nowrap text-[15px] xl:text-[16px]">
+              <span className="truncate whitespace-nowrap text-[16px] font-semibold leading-none">
                 {deliveryLabel}
               </span>
             </span>
@@ -129,13 +129,13 @@ export default function CommonNavbarFilters({
           <button
             type="button"
             onClick={() => toggleDropdown("event")}
-            className={`type-subpara flex h-full min-w-[138px] cursor-pointer items-center justify-between gap-2 px-2.5 text-[15px] font-semibold transition xl:min-w-[165px] xl:gap-3 xl:px-3 xl:text-[16px] ${
+            className={`flex h-full min-w-[138px] cursor-pointer items-center justify-between gap-2 px-2.5 text-[16px] font-semibold leading-none transition xl:min-w-[165px] xl:gap-3 xl:px-3 ${
               openDropdown === "event" || hasEventSelection
                 ? "text-[#CF3A00]"
                 : "text-black"
             }`}
           >
-            <span className="truncate whitespace-nowrap text-[15px] xl:text-[16px]">
+            <span className="truncate whitespace-nowrap text-[16px] font-semibold leading-none">
               {eventLabel}
             </span>
             <FiChevronDown
@@ -201,7 +201,7 @@ export default function CommonNavbarFilters({
             }
           }}
           placeholder={t("nav.searchRestaurants")}
-          className="w-full bg-transparent text-[15px] font-semibold text-black outline-none placeholder:text-black xl:text-[16px]"
+          className="w-full bg-transparent text-[16px] font-semibold leading-none text-black outline-none placeholder:font-semibold placeholder:text-black placeholder:opacity-100"
         />
 
         {searchValue ? (

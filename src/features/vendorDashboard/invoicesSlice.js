@@ -370,7 +370,7 @@ function formatMoney(value, currency = "NOK") {
   const amount = Number(value ?? 0);
 
   if (!Number.isFinite(amount)) {
-    return "0.00";
+    return "0";
   }
 
   try {
@@ -381,12 +381,12 @@ function formatMoney(value, currency = "NOK") {
       {
       style: "decimal",
 
-      minimumFractionDigits: 2,
+      minimumFractionDigits: 0,
       maximumFractionDigits: 2,
       },
     ).format(amount);
   } catch {
-    return amount.toFixed(2);
+    return new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 2 }).format(amount);
   }
 }
 

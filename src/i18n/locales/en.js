@@ -41,7 +41,7 @@ const en = {
     clearLocation: "Clear location",
     clearDeliveryFilter: "Clear delivery filter",
     clearEventFilter: "Clear event filter",
-    searchRestaurants: "Search restaurant...",
+    searchRestaurants: "Søk leverandør",
     clearSearch: "Clear search",
     searchAction: "Search",
     anyTime: "Any time",
@@ -110,7 +110,7 @@ const en = {
         haveDiscount: "Har rabatt",
       },
       pricing: {
-        anyPrice: "Any price",
+        anyPrice: "Alle priser",
         under500: "Under 500 NOK",
         range500To1000: "500–1,000 NOK",
         range1000To2000: "1,000–2,000 NOK",
@@ -1069,11 +1069,11 @@ const en = {
       notification: "Notification",
     },
     supportResponses: {
-      title: "Support Responses",
+      title: "Innboks",
       description:
         "Review ticket updates and continue support conversations from a separate page.",
       backToSupport: "Back To Support Form",
-      ticketListTitle: "Your Support Tickets",
+      ticketListTitle: "Dine saker",
       ticketListDescription: "Review ticket status and reply directly to support.",
       refresh: "Refresh",
       orderReference: "Order: {{orderReference}}",
@@ -1082,7 +1082,14 @@ const en = {
       next: "Next",
       pageSummary: "Page {{page}} of {{totalPages}}",
       loadingDetails: "Loading ticket details...",
-      openedOn: "Opened {{createdAtLabel}}",
+      openedOn: "Dato: {{createdAtLabel}}",
+      attachment: "Vedlegg",
+      statuses: {
+        open: "Åpen",
+        inProgress: "Pågår",
+        resolved: "Løst",
+        closed: "Lukket",
+      },
       emptyConversation: "No messages available for this ticket yet.",
       replyLabel: "Reply to support",
       replyPlaceholder: "Write your reply here...",
@@ -1512,10 +1519,10 @@ const en = {
     addressPage: {
       deliveryTitle: "Delivery Addresses",
       deliveryDescription:
-        "Save multiple delivery locations and choose which one should autofill first during checkout.",
+        "Lagre flere adresser og velg hvilken som skal benyttes fra ordre til ordre.",
       invoiceTitle: "Invoice Addresses",
       invoiceDescription:
-        "Keep separate billing locations ready so the checkout form can pull the right invoice address automatically.",
+        "Legg inn separate fakturaadresser ved behov.",
       addDelivery: "Add delivery address",
       addInvoice: "Add invoice address",
       copyFromDelivery: "Copy from delivery",
@@ -1523,7 +1530,7 @@ const en = {
       editFallbackDelivery: "Edit delivery address",
       editFallbackInvoice: "Edit invoice address",
       editDescription:
-        "Save multiple addresses and choose which one should autofill first.",
+        "Lagre flere adresser og velg hvilken som skal benyttes fra ordre til ordre.",
       defaultAddress: "Default address",
       setAsDefault: "Set as default",
       locationName: "Location name",
@@ -1535,7 +1542,7 @@ const en = {
       phoneNumber: "Phone number",
       receivingName: "Receiving name",
       instructions: "Instructions",
-      mainOffice: "Main office",
+      mainOffice: "",
       streetPlaceholder: "Enter street address",
       floorPlaceholder: "Enter floor or suite",
       cityPlaceholder: "Enter city",
@@ -1694,7 +1701,7 @@ const en = {
         premium: "Premium",
       },
       orderMinimum: {
-        anyPrice: "Any price",
+        anyPrice: "Alle priser",
         under250: "Under 250",
         range250To500: "250 - 500",
         over500: "500+",

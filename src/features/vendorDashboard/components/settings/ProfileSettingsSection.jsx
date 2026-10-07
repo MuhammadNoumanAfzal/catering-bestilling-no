@@ -76,20 +76,6 @@ export default function ProfileSettingsSection({ formState, updateField }) {
           onChange={(event) => updateField("company", event.target.value)}
           placeholder=""
         />
-        <SettingsField
-          id="jobTitle"
-          label={st("jobTitle")}
-          value={formState.jobTitle}
-          onChange={(event) => updateField("jobTitle", event.target.value)}
-          placeholder=""
-        />
-        <SettingsField
-          id="industry"
-          label={st("industry")}
-          value={formState.industry}
-          onChange={(event) => updateField("industry", event.target.value)}
-          placeholder=""
-        />
       </div>
     </SettingsSection>
   );

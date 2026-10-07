@@ -143,9 +143,6 @@ export default function VendorRestaurantsPage() {
       <section>
         <div>
           <h1 className="type-h2 text-[#191919]">{t("vendorPanel.restaurants.title")}</h1>
-          <p className="mt-2 text-sm text-[#5f5f5f]">
-            {t("vendorPanel.restaurants.description")}
-          </p>
         </div>
       </section>
 
@@ -216,7 +213,6 @@ export default function VendorRestaurantsPage() {
       ) : (
         <RestaurantsPageStatus
           title={t("vendorPanel.restaurants.emptyTitle")}
-          message={t("vendorPanel.restaurants.emptyMessage")}
         />
       )}
     </div>

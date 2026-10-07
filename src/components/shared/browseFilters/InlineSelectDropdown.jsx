@@ -4,6 +4,7 @@ export default function InlineSelectDropdown({
   label,
   value,
   options,
+  getOptionLabel = (option) => option,
   isOpen,
   onToggle,
   onSelect,
@@ -25,7 +26,7 @@ export default function InlineSelectDropdown({
             : "border-[#cfcfcf] text-black"
         }`}
       >
-        <span>{value}</span>
+        <span>{getOptionLabel(value)}</span>
         <FiChevronDown
           className={`text-[18px] ${
             isActiveValue ? "text-[#CF3A00]" : "text-[#666]"
@@ -51,7 +52,7 @@ export default function InlineSelectDropdown({
                     : "text-black hover:bg-[#f7f2ec]"
                 }`}
               >
-                <span>{option}</span>
+                <span>{getOptionLabel(option)}</span>
                 <span className="flex w-4 justify-center">
                   {isSelected ? (
                     <FiCheck className="text-[14px] text-[#CF3A00]" />

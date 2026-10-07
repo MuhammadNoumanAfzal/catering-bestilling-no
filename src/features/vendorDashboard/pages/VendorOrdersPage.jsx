@@ -645,7 +645,7 @@ export default function VendorOrdersPage() {
                     onClick={handleResetFilters}
                     className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full border border-[#e5d8cd] bg-white px-4 py-2.5 text-sm font-semibold text-[#cf5c2f] transition hover:bg-[#fff4ec]"
                   >
-                    Clear filters
+                    {t("vendorPanel.dateFilters.clear", { defaultValue: "Nullstill" })}
                   </button>
                 ) : null}
               </div>
