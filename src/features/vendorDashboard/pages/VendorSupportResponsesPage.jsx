@@ -15,14 +15,20 @@ const SUPPORT_REFRESH_INTERVAL_MS = 10000;
 const URL_PATTERN = /(https?:\/\/[^\s]+)/giu;
 const CUSTOMER_SENDER_ROLES = new Set(["vendor", "client", "customer", "user"]);
 
-function formatStatusLabel(value) {
-  return `${value ?? ""}`
-    .trim()
-    .toLowerCase()
-    .split("_")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+function formatStatusLabel(value, t) {
+  const normalized = `${value ?? ""}`.trim().toUpperCase();
+  const keyMap = {
+    OPEN: "vendorPanel.supportResponses.statuses.open",
+    IN_PROGRESS: "vendorPanel.supportResponses.statuses.inProgress",
+    RESOLVED: "vendorPanel.supportResponses.statuses.resolved",
+    CLOSED: "vendorPanel.supportResponses.statuses.closed",
+  };
+  const key = keyMap[normalized];
+  if (key) {
+    return t(key);
+  }
+
+  return `${value ?? ""}`.trim();
 }
 
 function getStatusClasses(status) {
@@ -44,7 +50,7 @@ function parseMessageContent(message) {
   const rawMessage = `${message ?? ""}`.trim();
   const urls = Array.from(rawMessage.matchAll(URL_PATTERN)).map((match) => match[0]);
   const cleanedMessage = rawMessage
-    .replace(/\n?Attachments:\s*/giu, "\n")
+    .replace(/\n?Attachments?:\s*/giu, "\n")
     .replace(URL_PATTERN, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
@@ -56,6 +62,7 @@ function parseMessageContent(message) {
 }
 
 function MessageBubble({ item }) {
+  const { t } = useTranslation();
   const normalizedSide = `${item.side ?? ""}`.trim().toLowerCase();
   const normalizedRole = `${item.author?.role ?? ""}`.trim().toLowerCase();
   const isOwnReply =
@@ -95,7 +102,7 @@ function MessageBubble({ item }) {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <span>Open attachment</span>
+                <span>{t("vendorPanel.supportResponses.attachment")}</span>
               </a>
             ))}
           </div>
@@ -406,7 +413,7 @@ export default function VendorSupportResponsesPage() {
                             getStatusClasses(ticket.status),
                           ].join(" ")}
                         >
-                          {formatStatusLabel(ticket.status)}
+                        {formatStatusLabel(ticket.status, t)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-3 text-xs text-[#8d8074]">
@@ -483,12 +490,18 @@ export default function VendorSupportResponsesPage() {
                           getStatusClasses(selectedTicket.status),
                         ].join(" ")}
                       >
-                        {formatStatusLabel(selectedTicket.status)}
+                        {formatStatusLabel(selectedTicket.status, t)}
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-[#746b63]">
-                      Opened {selectedTicket.createdAtLabel}
-                      {selectedTicket.orderReference ? ` | Order ${selectedTicket.orderReference}` : ""}
+                      {t("vendorPanel.supportResponses.openedOn", {
+                        createdAtLabel: selectedTicket.createdAtLabel,
+                      })}
+                      {selectedTicket.orderReference
+                        ? ` | ${t("vendorPanel.supportResponses.orderReference", {
+                            orderReference: selectedTicket.orderReference,
+                          })}`
+                        : ""}
                     </p>
                   </div>
 

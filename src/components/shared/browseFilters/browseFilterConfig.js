@@ -112,6 +112,7 @@ export function translateBrowseChipLabel(t, key) {
 }
 
 const NORWEGIAN_OPTION_FALLBACKS = {
+  "Any price": "Alle priser",
   "Any Delivery": "Alle leveringer",
   "Free Delivery": "Gratis levering",
   "Delivery Fee: 0-150": "Leveringsgebyr: 0–150 kr",
@@ -123,6 +124,7 @@ const NORWEGIAN_OPTION_FALLBACKS = {
 
 export function translateBrowseOptionLabel(t, value) {
   if (!value) return value;
+  if (value === "Any price") return "Alle priser";
   const fallback = NORWEGIAN_OPTION_FALLBACKS[value] || value;
   for (const group of BROWSE_LABEL_KEY_GROUPS) {
     if (group[value]) {

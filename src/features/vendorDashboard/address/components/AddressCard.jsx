@@ -33,7 +33,7 @@ export default function AddressCard({
               {address.label || at("untitledAddress")}
             </p>
             <p className="mt-1 text-[13px] leading-5 text-[#6a625b]">
-              {[address.addressLine1, address.city, address.postalCode]
+              {[address.addressLine1, [address.postalCode, address.city].filter(Boolean).join(" ")]
                 .filter(Boolean)
                 .join(", ") || at("noAddressAdded")}
             </p>

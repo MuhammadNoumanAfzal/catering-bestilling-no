@@ -81,15 +81,6 @@ export default function AddressBookSection({
       <div className="mt-5 rounded-[22px] border border-[#eadfd5] bg-[#fffdfa] p-4 md:p-5">
         <div className="flex flex-col gap-3 border-b border-[#ece2d9] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-[16px] font-semibold text-[#1f1f1f]">
-              {at("editAddress", {
-                label:
-                  activeAddress.label ||
-                  (type === "delivery"
-                    ? at("editFallbackDelivery")
-                    : at("editFallbackInvoice")),
-              })}
-            </p>
             <p className="mt-1 text-[13px] text-[#7b7269]">
               {at("editDescription")}
             </p>
@@ -113,7 +104,7 @@ export default function AddressBookSection({
             onChange={(event) =>
               onChangeField(activeAddress.id, "label", event.target.value)
             }
-            placeholder={at("mainOffice")}
+            placeholder=""
             className="sm:col-span-2 lg:col-span-6"
           />
 
@@ -144,16 +135,6 @@ export default function AddressBookSection({
               onChangeField(activeAddress.id, "city", event.target.value)
             }
             placeholder={at("cityPlaceholder")}
-            className="lg:col-span-2"
-          />
-
-          <AddressField
-            label={at("state")}
-            value={activeAddress.state}
-            onChange={(event) =>
-              onChangeField(activeAddress.id, "state", event.target.value)
-            }
-            placeholder={at("statePlaceholder")}
             className="lg:col-span-2"
           />
 

@@ -32,8 +32,8 @@ function parseMoneyValue(value) {
 }
 
 function formatMoneyValue(value, currency = "NOK") {
-  return `${Number(value || 0).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
+  return `${Number(value || 0).toLocaleString("nb-NO", {
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   })}`;
 }

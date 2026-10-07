@@ -329,7 +329,13 @@ const formatDate = (dateStr) => {
 
 const formatAmount = (val) => {
   const num = parseFloat(val || 0);
-  return num.toFixed(2);
+  if (!Number.isFinite(num)) {
+    return "0";
+  }
+
+  return new Intl.NumberFormat("nb-NO", {
+    maximumFractionDigits: 0,
+  }).format(num);
 };
 
 const formatNumber = (value, fallback = 0) => {

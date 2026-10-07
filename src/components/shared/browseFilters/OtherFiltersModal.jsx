@@ -103,8 +103,9 @@ export default function OtherFiltersModal({
               <div className="space-y-3">
                 <InlineSelectDropdown
                   label={t("browse.otherFilters.orderMinimum")}
-                  value={translateBrowseOptionLabel(t, otherFilters.orderMinimum)}
+                  value={otherFilters.orderMinimum}
                   options={orderMinimumOptions}
+                  getOptionLabel={(option) => translateBrowseOptionLabel(t, option)}
                   isOpen={openInlineDropdown === "orderMinimum"}
                   onToggle={() =>
                     setOpenInlineDropdown((current) =>
@@ -123,8 +124,9 @@ export default function OtherFiltersModal({
 
                 <InlineSelectDropdown
                   label={t("browse.otherFilters.distance")}
-                  value={translateBrowseOptionLabel(t, otherFilters.distance)}
+                  value={otherFilters.distance}
                   options={distanceOptions}
+                  getOptionLabel={(option) => translateBrowseOptionLabel(t, option)}
                   isOpen={openInlineDropdown === "distance"}
                   onToggle={() =>
                     setOpenInlineDropdown((current) =>
