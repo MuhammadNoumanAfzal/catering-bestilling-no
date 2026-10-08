@@ -185,6 +185,10 @@ function mapVendorNode(node) {
     city: extractCityFromAddress(address),
     pickupAddress,
     pickupInstructions,
+    minimumOrderNoticeHours: Number(node?.deliverySettings?.minimumOrderNoticeHours ?? 0) || 0,
+    specialClosures: (node?.specialClosures?.edges || [])
+      .map((edge) => edge?.node)
+      .filter(Boolean),
     freeDeliveryOver:
       freeDeliveryOver !== "" && freeDeliveryOver != null
         ? Number.parseFloat(freeDeliveryOver || 0).toFixed(0)
