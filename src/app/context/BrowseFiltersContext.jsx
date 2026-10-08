@@ -1,10 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   createDefaultOtherFilters,
   FILTER_DEFAULTS,
 } from "../../components/shared/browseFilters/browseFilterConfig";
 import { useAuth } from "../../features/auth";
-import { readSavedSettings } from "../../utils/customerProfileStorage";
 
 const noop = () => {};
 
@@ -49,7 +48,7 @@ export function BrowseFiltersProvider({ children }) {
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [eventName, setEventName] = useState("");
   const [locationValue, setLocationValue] = useState("");
-  const [hasAppliedUserPostalCode, setHasAppliedUserPostalCode] = useState(false);
+  const previousAccount = useRef(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryDate, setDeliveryDate] = useState(null);
@@ -71,28 +70,20 @@ export function BrowseFiltersProvider({ children }) {
   };
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      setHasAppliedUserPostalCode(false);
-      return;
+    const account = isLoggedIn ? {
+      id: user?.id || user?.email,
+      postalCode: normalizePostalCode(user?.postCode ?? user?.postalCode ?? ""),
+    } : null;
+    const previous = previousAccount.current;
+    if (account && (!previous || account.id !== previous.id)) {
+      setLocationValue((current) => current || account.postalCode);
+    } else if (account && account.postalCode !== previous?.postalCode) {
+      setLocationValue(account.postalCode);
+    } else if (!account && previous) {
+      setLocationValue("");
     }
-
-    if (hasAppliedUserPostalCode) {
-      return;
-    }
-
-    const savedPostalCode = readSavedSettings()?.postCode;
-    const userPostalCode = normalizePostalCode(user?.postCode || savedPostalCode);
-
-    if (!userPostalCode) {
-      return;
-    }
-
-    if (!locationValue.trim()) {
-      setLocationValue(userPostalCode);
-    }
-
-    setHasAppliedUserPostalCode(true);
-  }, [hasAppliedUserPostalCode, isLoggedIn, locationValue, user?.postCode]);
+    previousAccount.current = account;
+  }, [isLoggedIn, user?.id, user?.email, user?.postCode, user?.postalCode]);
 
   const value = useMemo(
     () => ({

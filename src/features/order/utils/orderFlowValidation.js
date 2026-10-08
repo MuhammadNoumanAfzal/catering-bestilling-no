@@ -252,7 +252,11 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [], t })
     return commonError;
   }
 
-  if (!`${formState.deliveryPostalCode ?? ""}`.trim()) {
+  if (!`${formState.deliveryAddress ?? ""}`.trim()) {
+    return message("deliveryAddress", "Please enter the delivery address.");
+  }
+
+  if (!/^\d{4}$/.test(`${formState.deliveryPostalCode ?? ""}`.trim())) {
     return message("deliveryPostalCode", "Please enter the delivery postal code.");
   }
 
@@ -269,10 +273,7 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [], t })
         if (servicePostalCodes.length > 0) {
           const isMatched = servicePostalCodes.some((candidate) => {
             const normalizedCandidate = `${candidate}`.replace(/\D/g, "");
-            return (
-              normalizedCandidate.startsWith(normalizedInput) ||
-              normalizedInput.startsWith(normalizedCandidate)
-            );
+            return normalizedCandidate === normalizedInput;
           });
 
           if (!isMatched) {
@@ -291,7 +292,7 @@ export function validateCheckoutForm({ formState, checkoutType, carts = [], t })
     return message("invoiceAddress", "Please enter the invoice address.");
   }
 
-  if (!`${formState.invoicePostalCode ?? ""}`.trim()) {
+  if (!/^\d{4}$/.test(`${formState.invoicePostalCode ?? ""}`.trim())) {
     return message("invoicePostalCode", "Please enter the invoice postal code.");
   }
 
