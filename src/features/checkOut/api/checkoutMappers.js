@@ -276,6 +276,9 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     "eventDate",
     "eventTime",
   ]);
+  if (!/^\d{4}$/.test(`${payload.deliveryPostalCode ?? ""}`.trim())) {
+    throw new Error("A valid four-digit delivery postal code is required.");
+  }
 
   if (checkoutType === "corporate") {
     const corporatePayload = {
@@ -288,7 +291,6 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     validateRequiredFields(corporatePayload, [
       "corporateName",
       "organizationNumber",
-      "eventName",
     ]);
 
     return corporatePayload;

@@ -1,5 +1,8 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import i18n from "../../../i18n";
+import { fetchVendors } from "../../vendor/api/vendorService";
+import { adaptApiVendorToProfile } from "../../vendor/api/vendorMappers";
+import { isVendorAvailableForPostalCode } from "../../vendor/services/vendorAvailability";
 import {
   buildCheckoutPreviewPayload,
   buildPlaceOrderPayload,
@@ -184,6 +187,22 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
 }
 
 export async function placeCheckoutOrders({ carts, checkoutType, formState }) {
+  const postalCode = `${formState.deliveryPostalCode ?? ""}`.trim();
+  if (!/^\d{4}$/.test(postalCode)) {
+    throw new Error(i18n.t("checkout.postalCodeRequiredForDelivery"));
+  }
+  // Re-fetch coverage before submission; cart snapshots are not authoritative.
+  const vendors = (await fetchVendors()).map(adaptApiVendorToProfile).filter(Boolean);
+  for (const cart of carts) {
+    const vendor = vendors.find((candidate) => `${candidate.id}` === `${cart.vendor.id}`);
+    if (!vendor || !isVendorAvailableForPostalCode(vendor, postalCode)) {
+      throw new Error(i18n.t("checkout.vendorOutsideDeliveryArea"));
+    }
+    const preview = await fetchCheckoutPreview({ cart, checkoutType, formState });
+    if (preview.availability?.isValid !== true) {
+      throw new Error(preview.availability?.errors?.[0]?.message || i18n.t("checkout.unavailable"));
+    }
+  }
   const successfulOrders = [];
 
   for (const cart of carts) {

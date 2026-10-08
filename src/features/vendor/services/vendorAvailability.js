@@ -314,6 +314,7 @@ function getSelectedDayCode(date) {
 }
 
 export function isVendorAvailableForPostalCode(vendor, postalCode) {
+  if (`${postalCode ?? ""}`.trim() && !/^\d{4}$/.test(`${postalCode}`.trim())) return false;
   const normalizedInput = normalizePostalCode(postalCode);
 
   if (!normalizedInput) {
@@ -332,7 +333,9 @@ export function filterVendorsByPostalCode(vendors, postalCode) {
 }
 
 export function isVendorAvailableForLocation(vendor, locationQuery) {
-  const normalizedPostalCode = normalizePostalCode(locationQuery);
+  const normalizedPostalCode = /^\d+$/.test(`${locationQuery ?? ""}`.trim())
+    ? `${locationQuery}`.trim()
+    : "";
   const matchedVendor = resolveVendorReference(vendor);
 
   if (normalizedPostalCode) {

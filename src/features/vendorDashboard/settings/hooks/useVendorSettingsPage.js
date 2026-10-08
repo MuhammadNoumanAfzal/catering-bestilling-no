@@ -162,7 +162,7 @@ export function useVendorSettingsPage() {
         phone: nextState.mobilePhone || user.phone,
         avatarUrl: nextState.avatarUrl || "",
         avatarThumbnailUrl: nextState.avatarThumbnailUrl || "",
-        postCode: normalizePostalCode(nextState.postCode) || user.postCode,
+        postCode: normalizePostalCode(nextState.postCode),
       },
     });
   };
@@ -207,9 +207,7 @@ export function useVendorSettingsPage() {
         }));
         syncAuthenticatedUser(result.formState);
         const nextPostalCode = normalizePostalCode(result.formState.postCode);
-        if (nextPostalCode) {
-          setLocationValue(nextPostalCode);
-        }
+        setLocationValue(nextPostalCode);
         setIsPasswordChangeStarted(false);
         setLoadWarning("");
         successMessages.push(result.message);

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import i18n from "../../../i18n";
 import { useAuth } from "../../auth";
+import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import {
   filterDeliverySlotsForDate,
 } from "../../vendor";
@@ -19,6 +20,7 @@ import {
 } from "../../../utils/customerProfileStorage";
 import {
   confirmRemoveItem,
+  promptSignInRequired,
   showAuthErrorAlert,
   showOrderPlacedSuccess,
 } from "../../../utils/alerts";
@@ -56,6 +58,20 @@ function collectAvailabilityMessages(availability) {
       return "";
     })
     .filter(Boolean);
+}
+
+function applyDeliveryLocation(form, locationValue) {
+  const postalCode = `${locationValue ?? ""}`.trim();
+  if (!/^\d{4}$/.test(postalCode) || postalCode === form.deliveryPostalCode) return form;
+  const next = {
+    ...form,
+    deliveryPostalCode: postalCode,
+    deliveryAddress: "",
+    deliveryAddressLine2: "",
+    deliveryCity: "",
+    selectedDeliveryAddressId: "",
+  };
+  return form.invoiceSameAsDelivery ? { ...next, ...getMirroredInvoiceFields(next) } : next;
 }
 
 const CHECKOUT_DRAFT_STORAGE_KEY = "checkout-form-draft";
@@ -189,6 +205,7 @@ export function useCheckoutPage() {
     ? checkoutType
     : null;
   const { isLoggedIn } = useAuth();
+  const { locationValue } = useBrowseFilters();
   const [carts, setCarts] = useState([]);
   const [formState, setFormState] = useState(() => createInitialCheckoutFormState());
   const [deliveryAddresses, setDeliveryAddresses] = useState(() =>
@@ -271,13 +288,13 @@ export function useCheckoutPage() {
     const savedDraft = readCheckoutFormDraft(normalizedType);
 
     setCarts(storedCarts);
-    setFormState((current) => ({
+    setFormState((current) => applyDeliveryLocation({
       ...current,
       ...createInitialCheckoutFormState(storedCarts[0]),
       ...(savedDraft ?? {}),
       ...(prefilledFormState ?? {}),
-    }));
-  }, [location.state, normalizedType]);
+    }, locationValue));
+  }, [location.state, locationValue, normalizedType]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -306,10 +323,10 @@ export function useCheckoutPage() {
         setInvoiceAddresses(profile.invoiceAddresses);
 
         if (!hasSavedDraft) {
-          setFormState((current) => ({
+          setFormState((current) => applyDeliveryLocation({
             ...current,
             ...profile.formState,
-          }));
+          }, locationValue));
         }
       } catch {
         // Keep existing locally saved checkout defaults if autofill fails.
@@ -325,7 +342,7 @@ export function useCheckoutPage() {
     return () => {
       isMounted = false;
     };
-  }, [isLoggedIn, normalizedType]);
+  }, [isLoggedIn, locationValue, normalizedType]);
 
   useEffect(() => {
     setFormState((current) => {
@@ -971,6 +988,14 @@ export function useCheckoutPage() {
     setCheckoutErrorMessage("");
 
     if (!normalizedType) {
+      return;
+    }
+
+    if (!isLoggedIn) {
+      const result = await promptSignInRequired();
+      if (result.isConfirmed || result.isDenied) {
+        navigate(result.isConfirmed ? "/signin" : "/signup", { state: { from: location } });
+      }
       return;
     }
 

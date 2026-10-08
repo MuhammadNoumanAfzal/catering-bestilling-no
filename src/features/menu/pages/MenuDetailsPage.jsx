@@ -19,7 +19,6 @@ import {
 import { useAuth } from "../../auth";
 import {
   confirmRemoveItem,
-  promptSignInRequired,
   showAuthErrorAlert,
   showSuccessToast,
   showVendorClosureAlert,
@@ -300,7 +299,9 @@ export default function MenuDetailsPage() {
         }
       } catch (error) {
         if (!isCancelled) {
-          setDeliverySlots([]);
+          setDeliverySlots(error?.code === "AUTH_REQUIRED"
+            ? filterDeliverySlotsForDate(getConfiguredDeliverySlotsForDate(vendor, date), vendor, date)
+            : []);
           setSlotAccessState({ requiresAuth: false, message: "" });
         }
       } finally {
@@ -491,18 +492,6 @@ export default function MenuDetailsPage() {
   };
 
   const continueAddToCart = async () => {
-    if (!isLoggedIn) {
-      const result = await promptSignInRequired();
-
-      if (result.isConfirmed) {
-        navigate("/signin", { state: { from: location } });
-      } else if (result.isDenied) {
-        navigate("/signup", { state: { from: location } });
-      }
-
-      return;
-    }
-
     if (
       !vendorAvailableForSelection
     ) {

@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useBrowseFilters } from "../../app/context/BrowseFiltersContext";
 import { useAuth } from "../auth";
 import { showAuthErrorAlert } from "../../utils/alerts";
-import { readSavedSettings } from "../../utils/customerProfileStorage";
 import { isVendorAvailableForPostalCode } from "../vendor/services";
 
 const noop = () => false;
@@ -46,7 +45,7 @@ function normalizePostalCode(value) {
 }
 
 function isValidPostalCode(value) {
-  return /^\d{4,5}$/.test(`${value ?? ""}`.trim());
+  return /^\d{4}$/.test(`${value ?? ""}`.trim());
 }
 
 function hasSelectedLocation(value) {
@@ -54,14 +53,11 @@ function hasSelectedLocation(value) {
 }
 
 function resolveAccountPostalCode(user) {
-  const savedSettings = readSavedSettings();
   const candidates = [
     user?.postCode,
     user?.postalCode,
     user?.post_code,
     user?.postal_code,
-    savedSettings?.postCode,
-    savedSettings?.postalCode,
   ];
 
   return candidates
@@ -104,86 +100,49 @@ export function PostalCodePromptProvider({ children }) {
     async ({ vendor, postalCode, onAvailable }) => {
       if (vendor && postalCode && !isVendorAvailableForPostalCode(vendor, postalCode)) {
         await showUnavailableMessage(t);
-        return false;
+        if (promptState?.mode === "checkout") return false;
       }
 
       onAvailable?.(postalCode);
       return true;
     },
-    [t],
+    [promptState?.mode, t],
   );
 
   useEffect(() => {
-    if (!promptState || !isLoggedIn) {
+    if (!promptState || !isLoggedIn || promptState.mode === "checkout") {
       return;
     }
 
-    const accountPostalCode = resolveAccountPostalCode(user);
+    const accountPostalCode = isValidPostalCode(locationValue)
+      ? locationValue.trim()
+      : resolveAccountPostalCode(user);
 
     if (!accountPostalCode) {
       return;
     }
 
-    let isCancelled = false;
-
-    async function continueFromAccountPostalCode() {
-      setLocationValue(accountPostalCode);
-      const didContinue = await continueIfAvailable({
-        vendor: promptState.vendor,
-        postalCode: accountPostalCode,
-        onAvailable: promptState.onAvailable,
-      });
-
-      if (!isCancelled && didContinue) {
-        closePrompt();
-      }
-    }
-
-    continueFromAccountPostalCode();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [closePrompt, continueIfAvailable, isLoggedIn, promptState, setLocationValue, user]);
+    closePrompt();
+    promptState.onAvailable?.(accountPostalCode);
+  }, [closePrompt, isLoggedIn, locationValue, promptState, user]);
 
   const handleProceedWithoutPostalCode = useCallback(() => {
     const onAvailable = promptState?.onAvailable;
     dismissPromptPermanently();
     closePrompt();
-    onAvailable?.();
+    if (promptState?.mode !== "checkout") onAvailable?.();
   }, [closePrompt, dismissPromptPermanently, promptState]);
 
   const handleCloseAndDismiss = useCallback(() => {
-    dismissPromptPermanently();
-    closePrompt();
-  }, [closePrompt, dismissPromptPermanently]);
+    handleProceedWithoutPostalCode();
+  }, [handleProceedWithoutPostalCode]);
 
   const requirePostalCodeForMenu = useCallback(
     ({ vendor = null, onAvailable, mode = "openMenu", dismissButtonText } = {}) => {
       if (hasSelectedLocation(locationValue)) {
         const activePostalCode = normalizePostalCode(locationValue);
 
-        if (activePostalCode && vendor && !isVendorAvailableForPostalCode(vendor, activePostalCode)) {
-          showUnavailableMessage(t);
-          return false;
-        }
-
         onAvailable?.(activePostalCode || locationValue.trim());
-        return true;
-      }
-
-      const savedPostalCode = readSavedSettings()?.postCode;
-      const accountPostalCode = normalizePostalCode(user?.postCode || savedPostalCode);
-
-      if (isLoggedIn && isValidPostalCode(accountPostalCode)) {
-        setLocationValue(accountPostalCode);
-
-        if (vendor && !isVendorAvailableForPostalCode(vendor, accountPostalCode)) {
-          showUnavailableMessage(t);
-          return false;
-        }
-
-        onAvailable?.(accountPostalCode);
         return true;
       }
 
@@ -197,7 +156,7 @@ export function PostalCodePromptProvider({ children }) {
       setPostalCodeError("");
       return false;
     },
-    [isLoggedIn, isPromptDismissed, locationValue, setLocationValue, t, user],
+    [isPromptDismissed, locationValue],
   );
 
   const openPostalCodePrompt = useCallback(
@@ -234,6 +193,7 @@ export function PostalCodePromptProvider({ children }) {
     if (promptState?.dismissButtonText) {
       return promptState.dismissButtonText;
     }
+    if (promptState?.mode === "checkout") return t("common.cancel");
     if (promptState?.mode === "addToCart") {
       return t("home.continueAnyway", { defaultValue: "Fortsett likevel" });
     }
@@ -280,7 +240,7 @@ export function PostalCodePromptProvider({ children }) {
               })}
             </h2>
             <p className="mt-2 text-[14px] leading-relaxed text-[#6f6258]">
-              {t("home.menuPostalCodePromptMessage", {
+              {t(promptState?.mode === "checkout" ? "checkout.postalCodeRequiredForDelivery" : "home.menuPostalCodePromptMessage", {
                 defaultValue:
                   "Skriv inn postnummeret ditt for å sjekke om denne menyen kan leveres til området ditt.",
               })}
@@ -293,19 +253,19 @@ export function PostalCodePromptProvider({ children }) {
                 >
                   {t("home.postalCodeLabel", { defaultValue: "Postnummer" })}
                 </label>
-                <span className="text-[12px] font-medium text-[#9c8c82]">
+                {promptState?.mode !== "checkout" ? <span className="text-[12px] font-medium text-[#9c8c82]">
                   ({t("home.optional", { defaultValue: "Valgfritt" }).toLowerCase()})
-                </span>
+                </span> : null}
               </div>
               <input
                 id="postal-code-input"
                 autoFocus
                 inputMode="numeric"
                 type="text"
-                maxLength={5}
+                maxLength={4}
                 value={draftPostalCode}
                 onChange={(event) => {
-                  setDraftPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5));
+                  setDraftPostalCode(event.target.value.replace(/\D/g, "").slice(0, 4));
                   if (postalCodeError) {
                     setPostalCodeError("");
                   }

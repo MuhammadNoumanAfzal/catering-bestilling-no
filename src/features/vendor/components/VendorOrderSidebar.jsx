@@ -11,6 +11,9 @@ import {
   sortSummaryItems,
 } from "../../checkOut/components/summary/checkoutSummaryUtils";
 import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
+import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
+import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
+import { isVendorAvailableForPostalCode } from "../services/vendorAvailability";
 
 const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
@@ -62,6 +65,10 @@ export default function VendorOrderSidebar({
   const location = useLocation();
   const { isLoggedIn } = useAuth();
   const { t } = useTranslation();
+  const { locationValue } = useBrowseFilters();
+  const { openPostalCodePrompt } = usePostalCodePrompt();
+  const postalCode = /^\d{4}$/.test(locationValue.trim()) ? locationValue.trim() : "";
+  const outsideDeliveryArea = postalCode && !isVendorAvailableForPostalCode(vendor, postalCode);
   const items = sortSummaryItems(orderSummary.items).map((item) => ({
     ...item,
     price: getItemPrice(item, orderSummary.personCount),
@@ -309,11 +316,29 @@ export default function VendorOrderSidebar({
                 </div>
               </div>
 
+              {outsideDeliveryArea ? <p role="alert" className="mt-3 text-[13px] text-[#b43d20]">{t("checkout.vendorOutsideDeliveryArea")}</p> : null}
               <button
                 type="button"
                 onClick={async () => {
+                  if (!postalCode || outsideDeliveryArea) {
+                    openPostalCodePrompt({
+                      vendor,
+                      mode: "checkout",
+                      onAvailable: async () => {
+                        if (isLoggedIn) {
+                          navigate("/checkout/corporate");
+                          return;
+                        }
+                        const result = await promptSignInRequired({ title: t("checkout.loginRequiredTitle"), text: t("checkout.loginRequiredMessage") });
+                        if (result.isConfirmed || result.isDenied) {
+                          navigate(result.isConfirmed ? "/signin" : "/signup", { state: { from: { pathname: "/checkout/corporate" } } });
+                        }
+                      },
+                    });
+                    return;
+                  }
                   if (!isLoggedIn) {
-                    const result = await promptSignInRequired();
+                    const result = await promptSignInRequired({ title: t("checkout.loginRequiredTitle"), text: t("checkout.loginRequiredMessage") });
 
                     if (result.isConfirmed) {
                       navigate("/signin", {

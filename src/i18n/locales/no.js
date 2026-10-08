@@ -309,7 +309,7 @@ const no = {
     menuTitleWithCategory: "{{category}}-menyer",
     postalCodeSummary: "postnummer {{postCode}}",
     postalCodeValidation:
-      "Postnummeret må være 4 eller 5 sifre før du kan søke.",
+      "Skriv inn et gyldig firesifret postnummer.",
     postalCodePromptTitle: "Skriv inn postnummer",
     postalCodeLabel: "Postnummer",
     postalCodeOptionalLabel: "Postnummer (valgfritt)",
@@ -782,12 +782,13 @@ const no = {
     addMainDishFirst: "Legg til meny først",
   },
   orderValidation: {
+    deliveryAddress: "Skriv inn leveringsadressen.",
     selectDeliveryDate: "Velg leveringsdato.",
     futureDeliveryDate: "Velg dagens dato eller en fremtidig leveringsdato.",
     selectDeliveryTime: "Velg leveringstid.",
     futureDeliveryTimeToday: "Velg en fremtidig leveringstid for i dag.",
     minimumPersonCount: "Antall personer må være minst {{count}}.",
-    deliveryPostalCode: "Skriv inn postnummer for levering.",
+    deliveryPostalCode: "Skriv inn et gyldig firesifret postnummer for levering.",
     vendorPostalCodeUnavailable:
       'Leverandøren "{{vendorName}}" leverer ikke til postnummer {{postalCode}}.',
     deliveryCity: "Skriv inn leveringsby.",
@@ -879,6 +880,10 @@ const no = {
     rejectionReasonRequired: "En avvisningsgrunn er påkrevd.",
   },
   checkout: {
+    loginRequiredTitle: "Logg inn før utsjekk",
+    loginRequiredMessage: "Du må logge inn eller opprette en konto før du går til utsjekk. Varene blir liggende i handlekurven.",
+    postalCodeRequiredForDelivery: "Skriv inn et gyldig firesifret postnummer for å sjekke leveringstilgjengelighet.",
+    vendorOutsideDeliveryArea: "Denne leverandøren leverer ikke til postnummeret ditt. Endre leveringssted eller velg en annen leverandør.",
     title: "Utsjekk",
     goBack: "Gå tilbake",
     pricingUnavailable:
