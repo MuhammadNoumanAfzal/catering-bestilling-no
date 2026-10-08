@@ -28,9 +28,7 @@ export default function CheckoutPage() {
     handleTipChange,
     handleTypeChange,
     handleDateChange,
-    hasBlockingAvailabilityIssues,
     hasItems,
-    hasLivePricing,
     invoiceAddresses,
     isAutofilling,
     checkoutErrorMessage,
@@ -211,7 +209,6 @@ export default function CheckoutPage() {
               {hasItems ? (
                 <CheckoutSummaryPanel
                   carts={carts}
-                  canPlaceOrder={hasLivePricing && !hasBlockingAvailabilityIssues}
                   buttonLabel={checkoutActionLabel}
                   buttonHelpText={checkoutAvailabilityMessage}
                   isSubmitting={isSubmittingOrder}

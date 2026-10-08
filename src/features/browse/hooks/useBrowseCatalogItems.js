@@ -12,6 +12,7 @@ import {
 import { parseCategoryParamValue } from "../utils/categoryFilters";
 import { filterItemsByVendorLocation } from "../../vendor";
 import { fetchVendorProfiles } from "../../vendor/api/vendorService";
+import { isVendorDeliverySlotAvailable } from "../../vendor/services/vendorAvailability";
 
 const PAGE_SIZE = 24;
 
@@ -103,7 +104,13 @@ function mergeVendorCoverage(items, vendorLookup) {
 export function useBrowseCatalogItems(mode = "food-type") {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { locationValue, searchQuery, selectedSort, selectedRating, selectedDietary, selectedOffers, selectedPricing } = useBrowseFilters();
+  const { deliveryDate, deliveryTime, locationValue, searchQuery, selectedSort, selectedRating, selectedDietary, selectedOffers, selectedPricing } = useBrowseFilters();
+
+  function matchesDeliverySelection(item) {
+    if (!deliveryDate && !deliveryTime) return true;
+    const vendor = item?.vendorData ?? item?.vendor;
+    return Boolean(vendor) && isVendorDeliverySlotAvailable(vendor, deliveryDate, deliveryTime);
+  }
   const [categories, setCategories] = useState([]);
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [items, setItems] = useState([]);
@@ -165,7 +172,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
           after: null,
         };
         const payload = await fetchBrowseProducts(variables, mode);
-        const vendorLookup = locationValue.trim()
+        const vendorLookup = locationValue.trim() || deliveryDate || deliveryTime
           ? buildVendorLookup(await fetchVendorProfiles())
           : new Map();
         if (!isMounted) return;
@@ -173,9 +180,9 @@ export function useBrowseCatalogItems(mode = "food-type") {
           mergeVendorCoverage(payload.items, vendorLookup),
           locationValue,
           (item) => item?.vendorData ?? item?.vendor ?? null,
-        );
+        ).filter(matchesDeliverySelection);
         setItems(visibleItems);
-        setTotalCount(locationValue.trim() ? visibleItems.length : payload.totalCount);
+        setTotalCount(locationValue.trim() || deliveryDate || deliveryTime ? visibleItems.length : payload.totalCount);
         setPageInfo(payload.pageInfo || { hasNextPage: false, endCursor: null });
       } catch (loadError) {
         if (!isMounted) return;
@@ -187,7 +194,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
     }
     loadItems();
     return () => { isMounted = false; };
-  }, [dietaryOptions, locationValue, mode, searchQuery, selectedDietary, selectedOffers, selectedPricing, selectedRating, selectedSlug, selectedSort]);
+  }, [deliveryDate, deliveryTime, dietaryOptions, locationValue, mode, searchQuery, selectedDietary, selectedOffers, selectedPricing, selectedRating, selectedSlug, selectedSort]);
 
   const loadMore = async () => {
     if (isLoadingMore || !pageInfo.hasNextPage || !pageInfo.endCursor) return;
@@ -205,16 +212,16 @@ export function useBrowseCatalogItems(mode = "food-type") {
         after: pageInfo.endCursor,
       };
       const payload = await fetchBrowseProducts(variables, mode);
-      const vendorLookup = locationValue.trim()
+      const vendorLookup = locationValue.trim() || deliveryDate || deliveryTime
         ? buildVendorLookup(await fetchVendorProfiles())
         : new Map();
       const visibleItems = filterItemsByVendorLocation(
         mergeVendorCoverage(payload.items, vendorLookup),
         locationValue,
         (item) => item?.vendorData ?? item?.vendor ?? null,
-      );
+      ).filter(matchesDeliverySelection);
       setItems((current) => [...current, ...visibleItems]);
-      if (locationValue.trim()) {
+      if (locationValue.trim() || deliveryDate || deliveryTime) {
         setTotalCount((current) => current + visibleItems.length);
       }
       setPageInfo(payload.pageInfo || { hasNextPage: false, endCursor: null });

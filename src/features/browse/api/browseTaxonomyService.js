@@ -180,6 +180,7 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
               }
             }
             deliverySettings {
+              minimumOrderNoticeHours
               baseDeliveryFee
               freeDeliveryOver
               pickupAddress
@@ -310,6 +311,7 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
               }
             }
             deliverySettings {
+              minimumOrderNoticeHours
               baseDeliveryFee
               freeDeliveryOver
               pickupAddress
@@ -483,6 +485,7 @@ function mapBrowseVendor(vendor) {
         : "",
     pickupAddress: vendor?.deliverySettings?.pickupAddress || "",
     pickupInstructions: vendor?.deliverySettings?.pickupInstructions || "",
+    minimumOrderNoticeHours: Number(vendor?.deliverySettings?.minimumOrderNoticeHours ?? 0) || 0,
     specialClosures: normalizeSpecialClosures(vendor?.specialClosures),
     availability: {
       delivery: {

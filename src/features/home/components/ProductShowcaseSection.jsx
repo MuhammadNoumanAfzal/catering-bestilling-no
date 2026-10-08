@@ -1,5 +1,4 @@
 import { FiStar } from "react-icons/fi";
-import { LiaBicycleSolid } from "react-icons/lia";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
@@ -10,13 +9,11 @@ export function ProductItem({
   name,
   vendorSlug,
   rating,
-  deliveryFee,
   discount,
   vendorData,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation();
   const { requirePostalCodeForMenu } = usePostalCodePrompt();
   const productPath =
     vendorSlug && id
@@ -63,13 +60,6 @@ export function ProductItem({
           <span>{rating}</span>
         </div>
       </div>
-
-      {deliveryFee ? (
-        <div className="type-subpara mt-2 flex items-center gap-1.5 text-[#666]">
-          <LiaBicycleSolid className="text-[11px] text-[#888]" />
-          <span>{deliveryFee.replace(/delivery fee/gi, t("browse.deliveryFee"))}</span>
-        </div>
-      ) : null}
 
       {discount ? (
         <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#fff1eb] px-2 py-1 text-[#ff6a3d]">

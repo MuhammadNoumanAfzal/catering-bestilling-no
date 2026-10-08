@@ -901,11 +901,12 @@ export function useCheckoutPage() {
     return nextErrors;
   };
   const handlePlaceOrder = async () => {
+    if (isSubmittingOrder) return;
     const inlineErrors = getInlineFieldErrors();
     setFieldErrors(inlineErrors);
 
     if (Object.keys(inlineErrors).length > 0) {
-      const message = Object.values(inlineErrors)[0];
+      const message = Object.values(inlineErrors).join("\n");
       setCheckoutErrorMessage(message);
       await showAuthErrorAlert(message, i18n.t("checkout.detailsRequiredTitle"));
       return;
@@ -957,6 +958,13 @@ export function useCheckoutPage() {
         message,
         i18n.t("checkout.selectedSlotUnavailableTitle"),
       );
+      return;
+    }
+
+    if (isLoadingPricing || !hasLivePricing) {
+      const message = i18n.t(isLoadingPricing ? "checkout.updatingTotals" : "checkout.unavailable");
+      setCheckoutErrorMessage(message);
+      await showAuthErrorAlert(message, i18n.t("checkout.detailsRequiredTitle"));
       return;
     }
 
