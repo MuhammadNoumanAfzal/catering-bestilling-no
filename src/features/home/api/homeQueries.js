@@ -57,13 +57,25 @@ export const FETCH_HOME_DATA_QUERY = `
               productType
             }
           }
+          specialClosures {
+            edges {
+              node {
+                id
+                startDate
+                endDate
+                status
+              }
+            }
+          }
           deliverySettings {
+            minimumOrderNoticeHours
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
             pickupInstructions
             deliveryDays
             deliveryTimeSlots {
+              day
               start
               end
             }
@@ -131,13 +143,25 @@ export const FETCH_HOME_DATA_QUERY = `
               productType
             }
           }
+          specialClosures {
+            edges {
+              node {
+                id
+                startDate
+                endDate
+                status
+              }
+            }
+          }
           deliverySettings {
+            minimumOrderNoticeHours
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
             pickupInstructions
             deliveryDays
             deliveryTimeSlots {
+              day
               start
               end
             }
@@ -206,13 +230,25 @@ export const FETCH_HOME_DATA_QUERY = `
               productType
             }
           }
+          specialClosures {
+            edges {
+              node {
+                id
+                startDate
+                endDate
+                status
+              }
+            }
+          }
           deliverySettings {
+            minimumOrderNoticeHours
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
             pickupInstructions
             deliveryDays
             deliveryTimeSlots {
+              day
               start
               end
             }
@@ -281,13 +317,25 @@ export const FETCH_HOME_DATA_QUERY = `
               productType
             }
           }
+          specialClosures {
+            edges {
+              node {
+                id
+                startDate
+                endDate
+                status
+              }
+            }
+          }
           deliverySettings {
+            minimumOrderNoticeHours
             baseDeliveryFee
             freeDeliveryOver
             pickupAddress
             pickupInstructions
             deliveryDays
             deliveryTimeSlots {
+              day
               start
               end
             }
@@ -384,13 +432,25 @@ export const FETCH_HOME_DATA_QUERY = `
                 productType
               }
             }
+            specialClosures {
+              edges {
+                node {
+                  id
+                  startDate
+                  endDate
+                  status
+                }
+              }
+            }
             deliverySettings {
+              minimumOrderNoticeHours
               baseDeliveryFee
               freeDeliveryOver
               pickupAddress
               pickupInstructions
               deliveryDays
               deliveryTimeSlots {
+                day
                 start
                 end
               }
