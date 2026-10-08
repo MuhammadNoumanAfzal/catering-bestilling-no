@@ -1,5 +1,4 @@
 import { FiStar } from "react-icons/fi";
-import { LiaBicycleSolid } from "react-icons/lia";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { usePostalCodePrompt } from "../../features/location/PostalCodePromptContext";
@@ -65,9 +64,8 @@ export default function MenuCard({
 
       <div className="type-subpara mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[#666]">
         <span className="min-w-0 truncate">{vendor}</span>
-        <LiaBicycleSolid className="shrink-0 text-[12px] text-[#888]" />
-        <span className="shrink-0">{price}</span>
       </div>
+      <p className="mt-2 text-[20px] font-semibold text-[#191919]">{price}</p>
 
       <div className="type-subpara mt-2 inline-flex items-center rounded-full bg-[#fff1eb] px-2.5 py-1 text-[#ff6a3d]">
         {t("browse.availableNow")}

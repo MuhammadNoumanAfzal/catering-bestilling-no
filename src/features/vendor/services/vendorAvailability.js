@@ -371,6 +371,11 @@ export function filterItemsByVendorLocation(
 }
 
 export function isVendorDeliverySlotAvailable(vendor, date, time) {
+  if (date && !time) {
+    return getConfiguredDeliverySlotsForDate(vendor, date).some(
+      (slot) => Boolean(getLeadTimeAdjustedSlot(slot, vendor, date)),
+    );
+  }
   const matchedVendor = resolveVendorReference(vendor);
   const deliverySchedule =
     vendor?.availability?.delivery ?? matchedVendor?.availability?.delivery;

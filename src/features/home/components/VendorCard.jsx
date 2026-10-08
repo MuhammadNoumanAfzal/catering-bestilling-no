@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { FiStar } from "react-icons/fi";
-import { LiaBicycleSolid } from "react-icons/lia";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
@@ -13,7 +12,6 @@ export default function VendorCard(props) {
     name,
     slug,
     rating,
-    deliveryFee,
     discount,
     hasPublicActiveMenus,
     publicActiveMenuCount,
@@ -64,13 +62,6 @@ export default function VendorCard(props) {
           <span>{rating}</span>
         </div>
       </div>
-
-      {deliveryFee ? (
-        <div className="type-subpara mt-1 flex items-center gap-1.5 text-[#666]">
-          <LiaBicycleSolid className="text-[12px] text-[#888]" />
-          <span>{deliveryFee.replace(/delivery fee/gi, t("browse.deliveryFee"))}</span>
-        </div>
-      ) : null}
 
       {discount ? (
         <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#fff1eb] px-2 py-1 text-[#ff6a3d]">

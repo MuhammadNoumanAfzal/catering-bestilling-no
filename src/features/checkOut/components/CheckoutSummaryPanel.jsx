@@ -8,7 +8,6 @@ import {
 
 export default function CheckoutSummaryPanel({
   carts,
-  canPlaceOrder = true,
   buttonLabel = "Place Order",
   buttonHelpText = "",
   isSubmitting = false,
@@ -93,7 +92,7 @@ export default function CheckoutSummaryPanel({
             <button
               type="button"
               onClick={onPlaceOrder}
-              disabled={isSubmitting || !canPlaceOrder}
+              disabled={isSubmitting}
               className="mt-3 w-full rounded-[10px] bg-[#cf6e38] px-4 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {buttonLabel}
