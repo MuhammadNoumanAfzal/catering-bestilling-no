@@ -11,7 +11,10 @@ export function ProductItem({
   rating,
   discount,
   vendorData,
+  price,
+  pricingType,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { requirePostalCodeForMenu } = usePostalCodePrompt();
@@ -60,6 +63,12 @@ export function ProductItem({
           <span>{rating}</span>
         </div>
       </div>
+
+      {price ? (
+        <p className="mt-2 text-[20px] font-semibold text-[#191919]">
+          {price} {t(pricingType === "per-person" ? "products.pricePerPerson" : "products.pricePerOrder")}
+        </p>
+      ) : null}
 
       {discount ? (
         <div className="type-subpara mt-1.5 inline-flex items-center rounded-full bg-[#fff1eb] px-2 py-1 text-[#ff6a3d]">

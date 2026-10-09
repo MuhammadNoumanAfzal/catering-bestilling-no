@@ -1,3 +1,4 @@
+import { formatMoney } from "../../../pricing/formatMoney.js";
 import { FiArrowRight, FiStar, FiX } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { getOrderStatusClasses } from "./orderUtils";
@@ -629,7 +630,7 @@ export default function OrderDetailsModal({
                         </p>
                         <p className="mt-1 font-semibold text-[#1f1f1f]">
                           {typeof visibleVendorAdjustment.oldTotal === "number"
-                            ? visibleVendorAdjustment.oldTotal.toFixed(2)
+                            ? formatMoney(visibleVendorAdjustment.oldTotal)
                             : order.total}
                         </p>
                       </div>
@@ -639,7 +640,7 @@ export default function OrderDetailsModal({
                         </p>
                         <p className="mt-1 font-semibold text-[#cf6e38]">
                           {typeof visibleVendorAdjustment.newTotal === "number"
-                            ? visibleVendorAdjustment.newTotal.toFixed(2)
+                            ? formatMoney(visibleVendorAdjustment.newTotal)
                             : order.total}
                         </p>
                       </div>

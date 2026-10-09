@@ -52,6 +52,8 @@ export const FETCH_HOME_DATA_QUERY = `
           menuCategories {
             id
             vendorProducts {
+              priceWithTax
+              pricingType
               id
               menuStatus
               productType
@@ -138,6 +140,8 @@ export const FETCH_HOME_DATA_QUERY = `
           menuCategories {
             id
             vendorProducts {
+              priceWithTax
+              pricingType
               id
               menuStatus
               productType
@@ -225,6 +229,8 @@ export const FETCH_HOME_DATA_QUERY = `
           menuCategories {
             id
             vendorProducts {
+              priceWithTax
+              pricingType
               id
               menuStatus
               productType
@@ -312,6 +318,8 @@ export const FETCH_HOME_DATA_QUERY = `
           menuCategories {
             id
             vendorProducts {
+              priceWithTax
+              pricingType
               id
               menuStatus
               productType

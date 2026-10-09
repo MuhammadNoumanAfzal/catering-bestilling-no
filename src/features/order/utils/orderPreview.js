@@ -5,14 +5,14 @@ import {
 
 function buildAmountDue(carts = [], fallbackAmount = "") {
   if (!Array.isArray(carts) || carts.length === 0) {
-    return fallbackAmount || "";
+    return fallbackAmount ? formatCurrency(fallbackAmount) : "";
   }
 
   const totals = getCheckoutTotals(carts);
   const grandTotal = Number(totals?.grandTotal ?? 0);
 
   if (!Number.isFinite(grandTotal) || grandTotal <= 0) {
-    return fallbackAmount || "";
+    return fallbackAmount ? formatCurrency(fallbackAmount) : "";
   }
 
   return `${formatCurrency(grandTotal)}`;

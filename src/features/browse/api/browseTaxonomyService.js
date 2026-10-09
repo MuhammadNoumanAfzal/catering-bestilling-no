@@ -1,3 +1,4 @@
+import { formatMoney } from "../../pricing/formatMoney.js";
 import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import { hydrateRatingsForItems } from "../../../utils/ratingHydrator";
@@ -350,16 +351,7 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
 `;
 
 function formatKrAmount(value) {
-  const amount = Number(value ?? 0);
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    return "";
-  }
-
-  return `${new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(amount)}`;
+  return Number(value) > 0 ? formatMoney(value) : "";
 }
 function formatPriceWithLabel(price, pricingType) {
   const amount = toCustomerVatInclusivePrice(price);
@@ -391,12 +383,7 @@ function extractCityFromAddress(address) {
 }
 
 function formatDeliveryFee(value) {
-  const amount = Number(value ?? 0);
-  if (!Number.isFinite(amount)) return "";
-  if (Math.abs(amount - Math.round(amount)) < 0.005) {
-    return `${new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 0 }).format(Math.round(amount))} ${"leveringsgebyr"}`;
-  }
-  return `${new Intl.NumberFormat("nb-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount)} ${"leveringsgebyr"}`;
+  return `${formatMoney(value)} leveringsgebyr`;
 }
 
 function normalizeDeliverySlots(deliveryTimeSlots = []) {

@@ -143,10 +143,13 @@ const no = {
     showMore: "Vis {{count}} til",
   },
   products: {
+    priceFrom: "Fra",
+    pricePerPerson: "per person",
+    pricePerOrder: "per bestilling",
     badge: "Produkter",
     popularTitle: "Populære produkter",
     popularDescription:
-      "Utforsk de mest bestilte måltidene og cateringfavorittene teamene velger om og om igjen.",
+      "Utforsk de mest bestilte menyene fra ulike leverandører",
   },
   auth: {
     common: {

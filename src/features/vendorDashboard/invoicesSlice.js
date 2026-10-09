@@ -1,3 +1,4 @@
+import { formatMoney, parseMoney } from "../pricing/formatMoney.js";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../lib/auth/authSession";
@@ -366,29 +367,6 @@ function formatDateTime(value) {
   }
 }
 
-function formatMoney(value, currency = "NOK") {
-  const amount = Number(value ?? 0);
-
-  if (!Number.isFinite(amount)) {
-    return "0";
-  }
-
-  try {
-    return new Intl.NumberFormat(
-      `${i18n.resolvedLanguage || i18n.language || "en"}`.startsWith("no")
-        ? "nb-NO"
-        : "en",
-      {
-      style: "decimal",
-
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-      },
-    ).format(amount);
-  } catch {
-    return new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 2 }).format(amount);
-  }
-}
 
 function translateBankInstructions(value) {
   const message = `${value ?? ""}`.trim();
@@ -422,22 +400,7 @@ function toNumber(value) {
 }
 
 function parseMoneyAmount(value) {
-  if (value && typeof value === "object") {
-    return parseMoneyAmount(value.amount ?? value.formatted);
-  }
-
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : 0;
-  }
-
-  const normalized = String(value ?? "")
-    .replace(/[^0-9,.-]/g, "")
-    .replace(/\s+/g, "")
-    .replace(/,(?=\d{1,2}$)/, ".")
-    .replace(/,/g, "");
-  const parsed = Number(normalized);
-
-  return Number.isFinite(parsed) ? parsed : 0;
+  return parseMoney(value);
 }
 
 function getPlacedDraftGrossAmount(node = {}) {
@@ -508,14 +471,6 @@ function resolveGrossInvoiceAmount(node, pricing = {}) {
 
 
 function formatFlexibleMoney(value, currency = "NOK") {
-  if (value && typeof value === "object") {
-    if (value.formatted) {
-      return value.formatted;
-    }
-
-    return formatMoney(value.amount, value.currency || currency);
-  }
-
   return formatMoney(value, currency);
 }
 
@@ -745,17 +700,15 @@ function mapInvoiceDetail(node, orderFallback = null) {
     verifiedAt: formatDateTime(node.verifiedAt),
     rejectedAt: formatDateTime(node.rejectedAt),
     subtotal:
-      node.subtotal?.formatted || formatMoney(node.subtotal?.amount, currency),
+      formatMoney(node.subtotal),
     taxAmount:
-      node.taxAmount?.formatted || formatMoney(node.taxAmount?.amount, currency),
+      formatMoney(node.taxAmount),
     deliveryFee:
-      node.deliveryFee?.formatted ||
-      formatMoney(node.deliveryFee?.amount, currency),
+      formatMoney(node.deliveryFee),
     tipAmount: fallbackOrder.tipAmount || formatMoney(0, currency),
     totalAmount: formatMoney(grossAmount, currency),
     paidAmount:
-      node.amountPaid?.formatted ||
-      formatMoney(node.amountPaid?.amount, currency),
+      formatMoney(node.amountPaid),
     dueAmount: formatMoney(parseMoneyAmount(node.amountDue) || grossAmount, currency),
     paymentType: node.paymentMethod || node.paymentType || "",
     paymentMethod: node.paymentMethod || "",
@@ -845,8 +798,7 @@ function mapInvoiceDetail(node, orderFallback = null) {
           readyForPayoutAt: formatDateTime(node.settlement.readyForPayoutAt),
           settledAt: formatDateTime(node.settlement.settledAt),
           vendorPayable:
-            node.settlement.vendorPayable?.formatted ||
-            formatMoney(node.settlement.vendorPayable?.amount, currency),
+            formatMoney(node.settlement.vendorPayable),
           commission: node.settlement.commissionRecord
             ? {
                 id: node.settlement.commissionRecord.id || "",
@@ -859,29 +811,13 @@ function mapInvoiceDetail(node, orderFallback = null) {
                     ? `${node.settlement.commissionRecord.ratePercent}%`
                     : "",
                 grossCommission:
-                  node.settlement.commissionRecord.grossCommission?.formatted ||
-                  formatMoney(
-                    node.settlement.commissionRecord.grossCommission?.amount,
-              
-                  ),
+                  formatMoney(node.settlement.commissionRecord.grossCommission),
                 fixedFee:
-                  node.settlement.commissionRecord.fixedFee?.formatted ||
-                  formatMoney(
-                    node.settlement.commissionRecord.fixedFee?.amount,
-              
-                  ),
+                  formatMoney(node.settlement.commissionRecord.fixedFee),
                 vatOnCommission:
-                  node.settlement.commissionRecord.vatOnCommission?.formatted ||
-                  formatMoney(
-                    node.settlement.commissionRecord.vatOnCommission?.amount,
-              
-                  ),
+                  formatMoney(node.settlement.commissionRecord.vatOnCommission),
                 totalCommission:
-                  node.settlement.commissionRecord.totalCommission?.formatted ||
-                  formatMoney(
-                    node.settlement.commissionRecord.totalCommission?.amount,
-              
-                  ),
+                  formatMoney(node.settlement.commissionRecord.totalCommission),
                 lockedAt: formatDateTime(
                   node.settlement.commissionRecord.lockedAt,
                 ),
