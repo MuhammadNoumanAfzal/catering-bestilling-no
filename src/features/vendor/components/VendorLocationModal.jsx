@@ -1,3 +1,4 @@
+import { formatMoney } from "../../pricing/formatMoney.js";
 import {
   FiCalendar,
   FiClock,
@@ -204,7 +205,7 @@ export default function VendorLocationModal({ vendor, onClose }) {
   const pickupInstructions = `${vendor.pickupInstructions || ""}`.trim();
   const deliveryFeeText = `${vendor.deliveryFee || ""}`.trim();
   const freeDeliveryText = vendor.freeDeliveryOver
-    ? t("vendor.freeDeliveryOver", { amount: vendor.freeDeliveryOver })
+    ? t("vendor.freeDeliveryOver", { amount: formatMoney(vendor.freeDeliveryOver) })
     : "";
   const takeoutRows = splitScheduleRows(vendor.availability?.takeout?.label);
   const deliverySchedule = buildDeliverySchedule(vendor);

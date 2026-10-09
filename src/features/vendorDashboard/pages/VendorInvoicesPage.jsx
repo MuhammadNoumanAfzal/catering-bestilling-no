@@ -1,3 +1,4 @@
+import { formatMoney, parseMoney } from "../../pricing/formatMoney.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -17,26 +18,9 @@ import {
   PAGE_SIZE,
 } from "../components/invoices/invoiceUtils";
 
-function parseMoneyValue(value) {
-  if (typeof value === "number") {
-    return Number.isFinite(value) ? value : 0;
-  }
+const parseMoneyValue = parseMoney;
 
-  const normalized = `${value ?? ""}`
-    .replace(/NOK/gi, "")
-    .replace(/\s/g, "")
-    .replace(/,/g, "");
-  const parsed = Number.parseFloat(normalized);
-
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function formatMoneyValue(value, currency = "NOK") {
-  return `${Number(value || 0).toLocaleString("nb-NO", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  })}`;
-}
+const formatMoneyValue = formatMoney;
 
 function isInvoicePaid(invoice) {
   const status = `${invoice.statusKey || invoice.status || ""}`.toLowerCase();

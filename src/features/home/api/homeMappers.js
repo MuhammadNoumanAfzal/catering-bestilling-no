@@ -1,3 +1,4 @@
+import { formatMoney } from "../../pricing/formatMoney.js";
 import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
 import {
   getPublicMenuCount,
@@ -51,28 +52,14 @@ function extractCityFromAddress(address) {
 }
 
 function formatKrAmount(value) {
-  const amount = Number(value ?? 0);
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    return "";
-  }
-
-  return `${new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(amount)}`;
+  return Number(value) > 0 ? formatMoney(value) : "";
 }
 function formatRating(value) {
   return parseFloat(value || 0).toFixed(1);
 }
 
 function formatDeliveryFee(value) {
-  const amount = Number(value ?? 0);
-  if (!Number.isFinite(amount)) return "";
-  if (Math.abs(amount - Math.round(amount)) < 0.005) {
-    return `${new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 0 }).format(Math.round(amount))} ${"leveringsgebyr"}`;
-  }
-  return `${new Intl.NumberFormat("nb-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount)} ${"leveringsgebyr"}`;
+  return `${formatMoney(value)} leveringsgebyr`;
 }
 
 function normalizeTags(tags, fallback = []) {
@@ -140,6 +127,15 @@ function mapVendorNode(node) {
     ? node.deliverySettings.deliveryTimeSlots
     : [];
   const firstMenuImage = getFirstVendorMenuImage(node);
+  const pricedMenus = (node?.menuCategories || [])
+    .flatMap((category) => category?.vendorProducts || [])
+    .filter((product) => isPrimaryMenuProduct(product) && isCustomerVisibleMenuProduct(product))
+    .filter((product) => Number(product?.priceWithTax) > 0);
+  const perPersonMenus = pricedMenus.filter((product) => product.pricingType === "per-person");
+  const startingMenus = perPersonMenus.length ? perPersonMenus : pricedMenus;
+  const startingPrice = startingMenus.length
+    ? Math.min(...startingMenus.map((product) => toCustomerVatInclusivePrice(product.priceWithTax)))
+    : 0;
   const primaryImage =
     node?.coverPhotoUrl ||
     node?.businessSettings?.coverPhotoUrl ||
@@ -152,6 +148,8 @@ function mapVendorNode(node) {
     id: node?.id || "",
     slug: node?.slug || slugify(name),
     name,
+    startingPrice: formatKrAmount(startingPrice),
+    startingPricingType: perPersonMenus.length ? "per-person" : "per-order",
     isPopular: Boolean(node?.isPopular),
     isFeatured: Boolean(node?.isFeatured),
     image: primaryImage,
@@ -235,9 +233,6 @@ export function mapProductNode(node) {
 
   const vendorBasePrice = Number.parseFloat(node?.priceWithTax || 0);
   const basePrice = toCustomerVatInclusivePrice(vendorBasePrice);
-  const guestCount = Math.max(1, Number(node?.minimumGuests ?? 1));
-  const displayPrice =
-    node?.pricingType === "per-person" ? basePrice / guestCount : basePrice;
 
   return {
     id: node?.id || "",
@@ -262,7 +257,8 @@ export function mapProductNode(node) {
     ),
     dietaryTags: normalizeTags(node?.dietaryTags),
     minimumGuests: node?.minimumGuests ?? 0,
-    price: formatKrAmount(displayPrice),
+    price: formatKrAmount(basePrice),
+    pricingType: node?.pricingType,
   };
 }
 

@@ -1,3 +1,4 @@
+import { formatMoney } from "../../pricing/formatMoney.js";
 import {
   FiClock,
   FiMapPin,
@@ -173,10 +174,7 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
   const priceLabel = ["per person", "per-person", "per_person"].includes(normalizedPriceLabel)
     ? t("menu.perPerson", { defaultValue: "pr. person" })
     : rawPriceLabel;
-  const formattedUnitPrice = new Intl.NumberFormat("nb-NO", {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: Number.isInteger(unitPrice) ? 0 : 2,
-  }).format(unitPrice);
+const formattedUnitPrice = formatMoney(unitPrice);
   const priceText = formattedUnitPrice;
   const minimumPersons = Number(menuItem?.serves ?? 1);
   const cuisineBadge =

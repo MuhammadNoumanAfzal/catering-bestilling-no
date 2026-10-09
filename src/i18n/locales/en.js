@@ -144,6 +144,9 @@ const en = {
     showMore: "Show {{count}} more",
   },
   products: {
+    priceFrom: "From",
+    pricePerPerson: "per person",
+    pricePerOrder: "per order",
     badge: "Products",
     popularTitle: "Popular Products",
     popularDescription:

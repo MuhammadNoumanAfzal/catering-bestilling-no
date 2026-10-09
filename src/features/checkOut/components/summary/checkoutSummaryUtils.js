@@ -1,3 +1,4 @@
+import { formatMoney } from "../../../pricing/formatMoney.js";
 export const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
   { label: "15%", value: 0.15 },
@@ -7,27 +8,7 @@ export const TIP_OPTIONS = [
 
 export const SALES_TAX_RATE = 0.15;
 
-export function formatCurrency(value) {
-  const amount = Number(value ?? 0);
-
-  if (!Number.isFinite(amount)) {
-    return "0";
-  }
-
-  const roundedAmount = Math.round(amount);
-
-  if (Math.abs(amount - roundedAmount) < 0.005) {
-    return new Intl.NumberFormat("nb-NO", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(roundedAmount);
-  }
-
-  return new Intl.NumberFormat("nb-NO", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
+export const formatCurrency = formatMoney;
 
 export function extractAmount(value) {
   return parseBackendAmount(value);
@@ -50,7 +31,7 @@ export function parseBackendAmount(value) {
     return Number.isFinite(value) ? value : 0;
   }
 
-  const rawValue = `${value ?? ""}`.trim();
+  const rawValue = `${value ?? ""}`.trim().replace(/,-$/, "");
 
   if (!rawValue) {
     return 0;

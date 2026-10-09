@@ -1,3 +1,4 @@
+import { formatMoney } from "../pricing/formatMoney.js";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import i18n from "../../i18n";
@@ -327,16 +328,7 @@ const formatDate = (dateStr) => {
   }
 };
 
-const formatAmount = (val) => {
-  const num = parseFloat(val || 0);
-  if (!Number.isFinite(num)) {
-    return "0";
-  }
-
-  return new Intl.NumberFormat("nb-NO", {
-    maximumFractionDigits: 0,
-  }).format(num);
-};
+const formatAmount = (val) => formatMoney(val);
 
 const formatNumber = (value, fallback = 0) => {
   const parsedValue = Number(value);
@@ -583,7 +575,7 @@ function mapListOrder(node) {
     eventDateRaw: draftOverride?.eventDate || node.eventDate || "",
     createdOnRaw: node.createdOn || "",
     person: formatNumber(draftOverride?.personCount || node.personCount, 1),
-    total: draftOverride?.total || formatAmount(resolvedGrandTotal),
+    total: formatAmount(draftOverride?.total || resolvedGrandTotal),
     status: resolveClientDisplayStatus(node, isModified),
     isModified,
     orderedDate: formatDate(node.createdOn),
@@ -802,7 +794,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           eventDateRaw: draftOverride?.eventDate || orderNode.eventDate || "",
           createdOnRaw: orderNode.createdOn || "",
           person: formatNumber(draftOverride?.personCount || orderNode.personCount, 1),
-          total: draftOverride?.total || formatAmount(resolvedGrandTotal),
+          total: formatAmount(draftOverride?.total || resolvedGrandTotal),
           subtotal: formatAmount(orderNode.pricing?.subtotal || orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),
           deliveryFee: formatAmount(orderNode.pricing?.deliveryFee ?? orderNode.deliveryFee),

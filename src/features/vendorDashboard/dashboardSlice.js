@@ -1,3 +1,4 @@
+import { formatMoney } from "../pricing/formatMoney.js";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import i18n from "../../i18n";
@@ -40,10 +41,7 @@ const formatDate = (dateStr) => {
   }
 };
 
-const formatAmount = (val) => {
-  const num = parseFloat(val || 0);
-  return num.toFixed(2);
-};
+const formatAmount = (val) => formatMoney(val);
 
 const formatId = (id) => {
   if (!id) return "";
