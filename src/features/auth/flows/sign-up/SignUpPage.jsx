@@ -18,8 +18,6 @@ import {
 } from "../../constants/authForms";
 
 const VENDOR_REGISTER_URL = "https://vendor.gocatering.no/";
-const VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY =
-  "vendor-dashboard-onboarding-guide-pending";
 
 const SIGNUP_STEP = {
   FORM: "form",
@@ -147,16 +145,9 @@ export default function SignUpPage() {
         role: AUTH_ROLE,
       });
 
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem(
-          VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY,
-          "true",
-        );
-      }
-
       await showSuccessToast(
         result.message ||
-          "Account created. After sign in, go to Settings to complete your profile and add your address during checkout.",
+          t("auth.signUp.accountCreated", { defaultValue: "Account created. Sign in to continue." }),
       );
       setFormState(SIGN_UP_INITIAL_FORM_STATE);
       setOtpCode("");

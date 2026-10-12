@@ -149,13 +149,13 @@ function translateGraphqlContractError(message) {
   return matchedTranslation?.message ?? message;
 }
 
-async function executeGraphqlRequest({ query, variables = {}, signal }) {
+async function executeGraphqlRequest({ query, variables = {}, signal, publicRequest = false }) {
   const headers = {
     "Content-Type": "application/json",
     "Accept-Language": "en",
   };
 
-  const accessToken = getStoredAccessToken();
+  const accessToken = publicRequest ? null : getStoredAccessToken();
 
   if (accessToken) {
     headers.Authorization = `JWT ${accessToken}`;
@@ -194,6 +194,7 @@ async function executeGraphqlRequest({ query, variables = {}, signal }) {
       translateGraphqlContractError(buildGraphqlErrorMessage(payload.errors)),
     );
     error.fieldErrors = extractGraphqlFieldErrors(payload.errors);
+    error.code = payload.errors[0]?.extensions?.code;
     throw error;
   }
 
@@ -217,6 +218,7 @@ export async function graphqlRequest(options) {
     if (error?.name === "AbortError") throw error;
     const friendlyError = new Error(customerErrorMessage(error), { cause: error });
     friendlyError.technicalMessage = error?.message || "";
+    friendlyError.code = error?.code;
     friendlyError.fieldErrors = error?.fieldErrors
       ? Object.fromEntries(Object.entries(error.fieldErrors).map(([field, messages]) => [
           field, messages.map((message) => customerErrorMessage(message)),

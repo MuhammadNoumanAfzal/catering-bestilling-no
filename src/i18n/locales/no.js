@@ -1,4 +1,16 @@
 const no = {
+  clientInvoice: {
+    customer: "Kunde",
+    loading: "Laster fakturadetaljer", loadError: "Kunne ikke laste fakturaen", retry: "Prøv igjen",
+    back: "Tilbake til fakturaer", title: "Fakturadetaljer", total: "Fakturabeløp",
+    vendor: "Leverandør", event: "Arrangement", issued: "Utstedt", due: "Forfaller",
+    notProvided: "Ikke oppgitt", items: "Bestilte varer", item: "Meny / tillegg",
+    quantity: "Antall", unitPrice: "Enhetspris", amount: "Beløp",
+    noItems: "Varedetaljer er ikke tilgjengelige for denne bestillingen.",
+    deliveryFee: "Leveringsgebyr", tip: "Tips", delivery: "Leveringsdetaljer",
+    date: "Leveringsdato", guests: "Antall gjester", address: "Leveringsadresse",
+    note: "Merknad", addOn: "Tillegg",
+  },
   language: {
     label: "Språk",
     english: "Engelsk",
@@ -192,6 +204,7 @@ const no = {
         "E-posten eller passordet ser ikke riktig ut. Kontroller opplysningene og prøv igjen, eller velg «Glemt passord?».",
     },
     signUp: {
+      accountCreated: "Kontoen er opprettet. Logg inn for å fortsette.",
       badge: "Opprett konto",
       title: "Opprett kontoen din",
       subtitle:
@@ -672,6 +685,7 @@ const no = {
     },
   },
   menu: {
+    availabilityAfterLogin: "Bekreftes etter innlogging",
     back: "Tilbake",
     save: "Lagre",
     saved: "Lagret",
@@ -746,6 +760,8 @@ const no = {
     time: "Tid",
     selectDateFirst: "Velg en dato først",
     checkingSlots: "Sjekker tilgjengelige leveringstider...",
+    availabilityCheckFailed: "Vi kunne ikke sjekke leveringstilgjengeligheten. Prøv igjen. Bestillingsstatus er ikke bekreftet.",
+    retryAvailability: "Prøv igjen",
     signInForSlots:
       "Logg inn for å se live leveringstilgjengelighet for valgt dato.",
     signInSlotsTitle: "Logg inn for å se leveringstider",
@@ -775,6 +791,8 @@ const no = {
       "Del gjerne informasjon som f.eks. ønsket tidspunkt eller annet kjøkkenet bør vite før levering.",
     addNotePlaceholder: "Legg til notat...",
     addToCart: "Legg i handlekurv",
+    inCart: "Lagt til i handlekurven",
+    addingToCart: "Legger til...",
     addOnsEyebrow: "Tilpass bestillingen",
     addOnsTitle: "Tillegg",
     addOnsIntro:
@@ -832,7 +850,7 @@ const no = {
     staySignedIn: "Forbli innlogget",
     orderPlacedTitle: "Takk for din bestilling",
     orderPlacedText:
-      "Bestillingen leveres av {{vendorName}}. Bekreftelse er sendt på e-post.",
+      "Bestillingen leveres av {{vendorName}}.\nBekreftelse er sendt på e-post.",
     reviewDeliveredTitle: "Bestillingen er levert",
     reviewDeliveredText:
       "Bestillingen din fra {{vendorName}} er levert. Vil du legge igjen en vurdering nÃ¥?",
@@ -883,6 +901,10 @@ const no = {
     rejectionReasonRequired: "En avvisningsgrunn er påkrevd.",
   },
   checkout: {
+    checkingAvailability: "Sjekker tilgjengelig leveringstid...",
+    chooseAnotherSlot: "Velg en annen leveringstid",
+    slotUnavailableTitle: "Leveringstiden er ikke tilgjengelig",
+    slotUnavailableMessage: "Denne leveringstiden er fullbooket eller ikke tilgjengelig. Velg en annen dato eller leveringstid f\u00f8r du g\u00e5r til utsjekk.",
     loginRequiredTitle: "Logg inn før utsjekk",
     loginRequiredMessage: "Du må logge inn eller opprette en konto før du går til utsjekk. Varene blir liggende i handlekurven.",
     postalCodeRequiredForDelivery: "Skriv inn et gyldig firesifret postnummer for å sjekke leveringstilgjengelighet.",
@@ -1120,7 +1142,7 @@ const no = {
       title: "Fakturaer",
       description: "Spor alle faktura- og betalingsoppføringer.",
       financeSnapshot: "Fakturaoversikt",
-      activityTitle: "Fakturaaktivitet på et øyeblikk",
+      activityTitle: "Fakturaoversikt",
       activityDescription:
         "Se totaler, eksporter poster og filtrer fakturaer raskere.",
       visibleCount: "{{count}} fakturaer tilgjengelig",
@@ -1764,7 +1786,7 @@ const no = {
       title: "Fakturaer",
       description: "Spor alle faktura- og betalingsoppføringer.",
       financeSnapshot: "Fakturaoversikt",
-      activityTitle: "Fakturaaktivitet på et øyeblikk",
+      activityTitle: "Fakturaoversikt",
       activityDescription:
         "Se totaler, eksporter poster og filtrer fakturaer raskere.",
       visibleCount: "{{count}} fakturaer tilgjengelig",

@@ -18,7 +18,7 @@ function normalizeAddressType(addressType) {
 function mapUserAddress(addressNode, user) {
   return {
     id: addressNode?.id || `${normalizeAddressType(addressNode?.addressType)}-${addressNode?.locationName || "address"}`,
-    label: addressNode?.locationName || "Saved address",
+    label: addressNode?.locationName || "",
     contactName: [user?.firstName, user?.lastName].filter(Boolean).join(" "),
     addressLine1: addressNode?.address || "",
     addressLine2: addressNode?.unitFloor || "",

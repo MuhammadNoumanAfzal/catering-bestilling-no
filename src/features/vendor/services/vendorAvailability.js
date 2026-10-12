@@ -155,7 +155,7 @@ function createLocalDateTime(date, time) {
 }
 
 function formatTimeValue(date) {
-  return `${date.getHours()}`.padStart(2, "0") + `:${date.getMinutes()}`.padStart(2, "0");
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
 function roundDateUpToStep(date, stepMinutes = 15) {
@@ -529,22 +529,31 @@ export function filterDeliverySlotsForDate(slots, vendor, date) {
     return [];
   }
 
-  const allowedRanges = new Set(
-    configuredSlots.map((slot) => `${slot.start}-${slot.end}`),
-  );
+  const normalizeSlotTime = (value) => {
+    const match = String(value ?? "").trim().match(/^(\d{1,2}):(\d{2})(?::\d{2}(?:\.\d+)?)?$/);
+    return match && Number(match[1]) < 24 && Number(match[2]) < 60
+      ? `${match[1].padStart(2, "0")}:${match[2]}` : "";
+  };
+  const allowedRanges = configuredSlots.map((slot) => ({
+    start: normalizeSlotTime(slot.start), end: normalizeSlotTime(slot.end),
+  }));
 
   const seenRanges = new Set();
 
   return normalizedSlots
     .map((slot) => {
-      const rangeKey = `${slot?.start ?? ""}-${slot?.end ?? ""}`;
+      const start = normalizeSlotTime(slot?.start);
+      const end = normalizeSlotTime(slot?.end);
+      const rangeKey = `${start}-${end}`;
 
-      if (!allowedRanges.has(rangeKey) || seenRanges.has(rangeKey)) {
+      if (!start || !end || start >= end || !allowedRanges.some((range) =>
+        range.start && range.end && start >= range.start && end <= range.end,
+      ) || seenRanges.has(rangeKey)) {
         return null;
       }
 
       seenRanges.add(rangeKey);
-      return getLeadTimeAdjustedSlot(slot, vendor, date);
+      return getLeadTimeAdjustedSlot({ ...slot, start, end }, vendor, date);
     })
     .filter(Boolean)
     .map((slot) => ({

@@ -21,7 +21,9 @@ export default function CheckoutAddressControls({
           >
             {savedAddresses.map((address) => (
               <option key={address.id} value={address.id}>
-                {address.label || t("checkout.savedAddress")}
+                {!address.label || address.label === "Saved address"
+                  ? t("checkout.savedAddress")
+                  : address.label}
               </option>
             ))}
           </select>

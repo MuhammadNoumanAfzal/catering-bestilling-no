@@ -1,4 +1,8 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchAvailableDeliverySlots } from "../../features/checkOut/api";
+import { readAllStoredOrderSummaries } from "../../features/vendor/utils/orderSummaryStorage";
+import { hasBookableSlot } from "../../features/vendor/services/bookingAvailability";
 import { LogIn, UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Footer from "../../components/shared/Footer";
@@ -8,6 +12,37 @@ export default function CheckoutLayout() {
   const location = useLocation();
   const { isLoggedIn } = useAuth();
   const { t } = useTranslation();
+  const [entryAvailability, setEntryAvailability] = useState({ checked: false, blockedPath: "" });
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    let cancelled = false;
+    setEntryAvailability({ checked: false, blockedPath: "" });
+    async function checkBooking() {
+      const carts = readAllStoredOrderSummaries().filter((cart) => cart.orderSummary?.items?.length);
+      for (const cart of carts) {
+        const summary = cart.orderSummary;
+        let available = false;
+        try {
+          if (summary.deliveryDate && summary.deliveryTime) {
+            const slots = await fetchAvailableDeliverySlots({ vendorId: cart.vendor?.id, date: summary.deliveryDate });
+            available = hasBookableSlot(slots, summary.deliveryTime);
+          }
+        } catch { available = false; }
+        if (!available) {
+          const menu = summary.items.find((item) => !item.isAddOn);
+          const vendorPath = `/vendor/${encodeURIComponent(cart.vendor?.slug || "")}`;
+          if (!cancelled) setEntryAvailability({
+            checked: true,
+            blockedPath: menu?.productId ? `${vendorPath}/menu/${encodeURIComponent(menu.productId)}` : vendorPath,
+          });
+          return;
+        }
+      }
+      if (!cancelled) setEntryAvailability({ checked: true, blockedPath: "" });
+    }
+    void checkBooking();
+    return () => { cancelled = true; };
+  }, [isLoggedIn, location.pathname]);
 
   if (!isLoggedIn) {
     return (
@@ -20,6 +55,21 @@ export default function CheckoutLayout() {
             <Link to="/signup" state={{ from: location }} className="flex items-center justify-center gap-2 rounded-[6px] border border-[#ddd] px-4 py-3 font-semibold text-black"><UserPlus size={18} />{t("alerts.createAccount")}</Link>
             <Link to="/" replace className="py-2 text-center font-semibold text-[#555]">{t("alerts.notNow")}</Link>
           </div>
+        </section>
+      </div>
+    );
+  }
+
+  if (!entryAvailability.checked) {
+    return <p role="status" className="p-8 text-center">{t("checkout.checkingAvailability")}</p>;
+  }
+  if (entryAvailability.blockedPath) {
+    return (
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 px-4">
+        <section role="dialog" aria-modal="true" aria-labelledby="booking-unavailable-title" className="w-full max-w-[420px] rounded-[8px] bg-white p-6 shadow-xl">
+          <h1 id="booking-unavailable-title" className="text-[22px] font-semibold">{t("checkout.slotUnavailableTitle")}</h1>
+          <p className="mt-3 text-[15px] leading-6">{t("checkout.slotUnavailableMessage")}</p>
+          <Link autoFocus to={entryAvailability.blockedPath} replace className="mt-5 block rounded-[6px] bg-[#cf6e38] px-4 py-3 text-center font-semibold text-white">{t("checkout.chooseAnotherSlot")}</Link>
         </section>
       </div>
     );

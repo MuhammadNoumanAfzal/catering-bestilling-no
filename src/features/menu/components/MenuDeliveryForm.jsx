@@ -1,12 +1,9 @@
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
+import { useBookingCalendar } from "../../vendor/hooks/useBookingCalendar";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getTodayDateValue } from "../../order/utils/orderFlowValidation";
 import { formatTimeTo24Hour } from "../../../components/shared/navbar/navbarDateUtils";
-import {
-  filterDeliverySlotsForDate,
-  getConfiguredDeliverySlotsForDate,
-} from "../../vendor/services/vendorAvailability";
 
 function getSlotStatusTone(slot) {
   if (slot.isFullyBooked) {
@@ -31,10 +28,6 @@ function formatDateValue(date) {
   return `${year}-${month}-${day}`;
 }
 
-function getLeadTimeAvailableSlotsForDate(vendor, date) {
-  const configuredSlots = getConfiguredDeliverySlotsForDate(vendor, date);
-  return filterDeliverySlotsForDate(configuredSlots, vendor, date);
-}
 function formatDateLabel(dateValue, locale, emptyLabel) {
   if (!dateValue) {
     return emptyLabel;
@@ -51,6 +44,8 @@ export default function MenuDeliveryForm({
   minimumPersons = 1,
   vendor,
   isVendorAvailable = true,
+  isInCart = false,
+  isAddingToCart = false,
   orderSummary,
   vendorNote,
   deliverySlots = [],
@@ -58,6 +53,7 @@ export default function MenuDeliveryForm({
   hasDeliverySchedule = false,
   slotAccessRequiresAuth = false,
   slotAccessMessage = "",
+  onRetrySlots,
   onDeliveryDateChange,
   onDeliveryTimeChange,
   onPersonCountChange,
@@ -77,6 +73,7 @@ export default function MenuDeliveryForm({
       : new Date();
     return new Date(selected.getFullYear(), selected.getMonth(), 1);
   });
+  const bookingDates = useBookingCalendar([vendor], calendarMonth, isCalendarOpen);
   const hasSlots = deliverySlots.length > 0;
   const selectedTime = orderSummary.deliveryTime || "";
   const personCount = Math.max(minimumPersons, Number(orderSummary.personCount) || minimumPersons);
@@ -116,6 +113,7 @@ export default function MenuDeliveryForm({
   }
 
   function getCapacityLabel(slot) {
+    if (slot.isProvisional) return t("menu.availabilityAfterLogin");
     if (slot.isFullyBooked) {
       return t("menu.fullyBooked");
     }
@@ -148,7 +146,7 @@ export default function MenuDeliveryForm({
   }
 
   function handleDeliveryDateSelect(nextDate) {
-    if (hasDeliverySchedule && getLeadTimeAvailableSlotsForDate(vendor, nextDate).length === 0) {
+    if (bookingDates[nextDate] === false) {
       setDateAvailabilityError(t("menu.dateUnavailable"));
       return;
     }
@@ -167,8 +165,8 @@ export default function MenuDeliveryForm({
       const isCurrentMonth = date.getMonth() === calendarMonth.getMonth();
       const isAvailable =
         isCurrentMonth &&
-        value >= getTodayDateValue() &&
-        (!hasDeliverySchedule || getLeadTimeAvailableSlotsForDate(vendor, value).length > 0);
+        bookingDates[value] !== false &&
+        value >= getTodayDateValue();
 
       return { date, value, isCurrentMonth, isAvailable };
     },
@@ -347,9 +345,14 @@ export default function MenuDeliveryForm({
                   </div>
                 ) : null}
               </div>
-            ) : hasDeliverySchedule ? (
+            ) : hasDeliverySchedule || slotAccessMessage ? (
               <p className="rounded-[14px] border border-[#ead8ca] bg-[#fff7f1] px-3 py-3 text-[13px] text-[#8a5a3a]">
-                {t("menu.noSlotsForDate")}
+                {slotAccessMessage || t("menu.noSlotsForDate")}
+                {slotAccessMessage && !slotAccessRequiresAuth ? (
+                  <button type="button" onClick={onRetrySlots} className="mt-2 block font-semibold underline">
+                    {t("menu.retryAvailability")}
+                  </button>
+                ) : null}
               </p>
             ) : (
               <PreferredTimePicker
@@ -445,14 +448,14 @@ export default function MenuDeliveryForm({
         <button
           type="button"
           onClick={onAddToCart}
-          disabled={!isVendorAvailable}
+          disabled={isInCart || isAddingToCart || !isVendorAvailable || isLoadingSlots || slotAccessRequiresAuth || !selectedSlot}
           className={`mt-4 block w-full rounded-[14px] px-4 py-2.5 text-center text-[14px] font-semibold text-white shadow-[0_12px_24px_rgba(207,110,56,0.16)] transition ${
-            isVendorAvailable
+            isVendorAvailable && !isInCart && !isAddingToCart && !isLoadingSlots && !slotAccessRequiresAuth && selectedSlot
               ? "cursor-pointer bg-[#cf6e38] hover:bg-[#bb602d]"
               : "cursor-not-allowed bg-[#d7c5b9] shadow-none"
           }`}
         >
-          {t("menu.addToCart")}
+          {t(isInCart ? "menu.inCart" : isAddingToCart ? "menu.addingToCart" : "menu.addToCart")}
         </button>
       </div>
     </div>

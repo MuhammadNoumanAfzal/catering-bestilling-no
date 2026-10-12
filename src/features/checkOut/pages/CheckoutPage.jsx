@@ -13,6 +13,7 @@ import {
 } from "../components";
 import { useCheckoutPage } from "../hooks/useCheckoutPage";
 import { useTranslation } from "react-i18next";
+import { getMissingCheckoutDetails } from "../utils/missingCheckoutDetails";
 
 export default function CheckoutPage() {
   const { t } = useTranslation();
@@ -45,11 +46,25 @@ export default function CheckoutPage() {
     setIsDeliveryAddressEditing,
     setIsInvoiceAddressEditing,
     updateCartField,
+    handleAddOnQuantityChange,
     updateField,
   } = useCheckoutPage();
 
   if (!normalizedType) {
     return <Navigate to="/checkout/corporate" replace />;
+  }
+
+  const missingDetails = getMissingCheckoutDetails(formState, normalizedType);
+  function handleMissingDetail(field) {
+    if (field.startsWith("delivery")) setIsDeliveryAddressEditing(true);
+    if (field.startsWith("invoice")) setIsInvoiceAddressEditing(true);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const target = document.querySelector(`[name="${field}"]`) ||
+        document.querySelector(`[data-checkout-field="${field}"]`);
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (target?.matches("input, button")) target.focus({ preventScroll: true });
+      else target?.querySelector("input, button")?.focus({ preventScroll: true });
+    }));
   }
 
   return (
@@ -188,6 +203,7 @@ export default function CheckoutPage() {
                 </CheckoutSection>
 
                 <EventDetailsSection
+                  vendors={carts.map((cart) => cart.vendor)}
                   mode={normalizedType}
                   formState={formState}
                   updateField={updateField}
@@ -209,12 +225,15 @@ export default function CheckoutPage() {
               {hasItems ? (
                 <CheckoutSummaryPanel
                   carts={carts}
+                  missingDetails={missingDetails}
+                  onMissingDetail={handleMissingDetail}
                   buttonLabel={checkoutActionLabel}
                   buttonHelpText={checkoutAvailabilityMessage}
                   isSubmitting={isSubmittingOrder}
                   isLoadingPricing={isLoadingPricing}
                   onTipChange={handleTipChange}
                   onRemoveItem={handleRemoveItem}
+                  onAddOnQuantityChange={handleAddOnQuantityChange}
                   onPlaceOrder={handlePlaceOrder}
                 />
               ) : (

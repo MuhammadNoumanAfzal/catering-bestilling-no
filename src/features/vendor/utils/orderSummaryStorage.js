@@ -106,6 +106,8 @@ function toVendorSnapshot(vendor) {
     deliveryFee: vendor.deliveryFee || "",
     freeDeliveryOver: vendor.freeDeliveryOver || "",
     availability: vendor.availability || null,
+    minimumOrderNoticeHours: vendor.minimumOrderNoticeHours ?? 0,
+    specialClosures: vendor.specialClosures || [],
     categories: Array.isArray(vendor.categories) ? vendor.categories : [],
     categoryTags: Array.isArray(vendor.categoryTags) ? vendor.categoryTags : [],
     orderSummary: vendor.orderSummary || {

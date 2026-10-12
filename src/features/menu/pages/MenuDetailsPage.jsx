@@ -3,11 +3,9 @@ import { FiArrowUp } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
-  filterDeliverySlotsForDate,
   fetchVendorProfileBySlug,
   fetchVendorProfiles,
   getAvailableVendorsForSlot,
-  getConfiguredDeliverySlotsForDate,
   getVendorClosureForDate,
   isVendorDeliverySlotAvailable,
 } from "../../vendor";
@@ -35,26 +33,15 @@ import {
   MenuOverviewSection,
 } from "../components";
 import { useMenuDetails } from "../hooks/useMenuDetails";
+import { restorePersonCount } from "../utils/restorePersonCount";
 import { useSavedVendorStatus } from "../../vendor/hooks/useSavedVendorStatus";
 import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
 import { fetchAvailableDeliverySlots } from "../../checkOut/api";
+import { hasBookableSlot } from "../../vendor/services/bookingAvailability";
 import { validateOrderSummaryBasics } from "../../order/utils/orderFlowValidation";
 
-function resolveDeliverySlotsForDate(liveSlots, vendor, date) {
-  const normalizedLiveSlots = Array.isArray(liveSlots) ? liveSlots : [];
-  const filteredLiveSlots = filterDeliverySlotsForDate(
-    normalizedLiveSlots,
-    vendor,
-    date,
-  );
-
-  if (filteredLiveSlots.length > 0 || normalizedLiveSlots.length > 0) {
-    return filteredLiveSlots;
-  }
-
-  const configuredSlots = getConfiguredDeliverySlotsForDate(vendor, date);
-
-  return filterDeliverySlotsForDate(configuredSlots, vendor, date);
+function resolveDeliverySlotsForDate(liveSlots) {
+  return liveSlots;
 }
 function resetDerivedOrderSummaryState(summary) {
   if (!summary) {
@@ -93,6 +80,9 @@ export default function MenuDetailsPage() {
     useState(false);
   const [vendorOptions, setVendorOptions] = useState([]);
   const [deliverySlots, setDeliverySlots] = useState([]);
+  const [slotRetryVersion, setSlotRetryVersion] = useState(0);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const addToCartPendingRef = useRef(false);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [slotAccessState, setSlotAccessState] = useState({
     requiresAuth: false,
@@ -120,8 +110,7 @@ export default function MenuDetailsPage() {
     setOrderSummary(
       resetDerivedOrderSummaryState({
         ...storedSummary,
-        // Each menu starts at its own serving minimum, not a previous menu's guest count.
-        personCount: minimumPersons,
+        personCount: restorePersonCount(storedSummary, minimumPersons),
       }),
     );
     setVendorNote(`${storedSummary.vendorNote ?? ""}`);
@@ -220,6 +209,7 @@ export default function MenuDetailsPage() {
 
     async function loadSlots() {
       setIsLoadingSlots(true);
+      setDeliverySlots([]);
       setSlotAccessState({ requiresAuth: false, message: "" });
 
       try {
@@ -299,10 +289,12 @@ export default function MenuDetailsPage() {
         }
       } catch (error) {
         if (!isCancelled) {
-          setDeliverySlots(error?.code === "AUTH_REQUIRED"
-            ? filterDeliverySlotsForDate(getConfiguredDeliverySlotsForDate(vendor, date), vendor, date)
-            : []);
-          setSlotAccessState({ requiresAuth: false, message: "" });
+          setDeliverySlots([]);
+          setSlotAccessState({
+            requiresAuth: error?.code === "AUTH_REQUIRED",
+            message: error?.code === "AUTH_REQUIRED" ? t("menu.signInForSlots") : t("menu.availabilityCheckFailed"),
+          });
+          setOrderSummary((current) => ({ ...current, deliveryTime: "" }));
         }
       } finally {
         if (!isCancelled) {
@@ -318,6 +310,7 @@ export default function MenuDetailsPage() {
     };
   }, [
     isLoggedIn,
+    slotRetryVersion,
     location,
     navigate,
     orderSummary?.deliveryDate,
@@ -384,20 +377,16 @@ export default function MenuDetailsPage() {
     });
   }, [menuItem, vendor]);
 
-  const vendorAvailableForSelection = isVendorDeliverySlotAvailable(
-    vendor,
-    orderSummary?.deliveryDate,
-    orderSummary?.deliveryTime,
-  );
+  const vendorAvailableForSelection = !orderSummary?.deliveryDate ||
+    (!isLoadingSlots && hasBookableSlot(deliverySlots, orderSummary?.deliveryTime));
   const hasDeliverySchedule = Boolean(
     vendor?.availability?.delivery?.days?.length ||
       vendor?.availability?.delivery?.slots?.length,
   );
   const hasNoSlotsForSelectedDate =
     Boolean(orderSummary?.deliveryDate) &&
-    hasDeliverySchedule &&
     !isLoadingSlots &&
-    deliverySlots.length === 0;
+    !deliverySlots.some((slot) => !slot.isFullyBooked && Number(slot.remainingCapacity ?? 9999) > 0);
   const isOrderableForSelection =
     vendorAvailableForSelection &&
     !hasNoSlotsForSelectedDate;
@@ -492,6 +481,14 @@ export default function MenuDetailsPage() {
   };
 
   const continueAddToCart = async () => {
+    if (addToCartPendingRef.current || hasMainDishInCart) return;
+    addToCartPendingRef.current = true;
+    setIsAddingToCart(true);
+    try {
+    if (isLoadingSlots || !isOrderableForSelection) {
+      await showAuthErrorAlert(t("checkout.slotUnavailableMessage"), t("checkout.slotUnavailableTitle"));
+      return;
+    }
     if (
       !vendorAvailableForSelection
     ) {
@@ -514,6 +511,22 @@ export default function MenuDetailsPage() {
     if (validationError) {
       await showAuthErrorAlert(validationError, t("menu.orderDetailsRequired"));
       return;
+    }
+
+    {
+      let slots;
+      try {
+        slots = await fetchAvailableDeliverySlots({ vendorId: vendor.id, date: orderSummary.deliveryDate });
+      } catch {
+        await showAuthErrorAlert(t("checkout.slotUnavailableMessage"), t("checkout.slotUnavailableTitle"));
+        return;
+      }
+      if (!hasBookableSlot(slots, orderSummary.deliveryTime)) {
+        setDeliverySlots(slots);
+        setOrderSummary((current) => ({ ...current, deliveryTime: "" }));
+        await showAuthErrorAlert(t("checkout.slotUnavailableMessage"), t("checkout.slotUnavailableTitle"));
+        return;
+      }
     }
 
     const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
@@ -586,6 +599,10 @@ export default function MenuDetailsPage() {
     }));
 
     showSuccessToast(t("menu.addedToCart", { name: itemName }));
+    } finally {
+      addToCartPendingRef.current = false;
+      setIsAddingToCart(false);
+    }
   };
 
   const handleDeliveryDateChange = (deliveryDate) => {
@@ -596,7 +613,8 @@ export default function MenuDetailsPage() {
     }));
   };
 
-  const showAvailabilityPopup = !vendorAvailableForSelection;
+  const showAvailabilityPopup = Boolean(orderSummary.deliveryDate) &&
+    !isLoadingSlots && !slotAccessState.message && !vendorAvailableForSelection;
   const availableRestaurants = getAvailableVendorsForSlot(
     vendorOptions,
     orderSummary.deliveryDate,
@@ -605,6 +623,7 @@ export default function MenuDetailsPage() {
   );
 
   const handleAddToCart = () => {
+    if (addToCartPendingRef.current || hasMainDishInCart) return;
     requirePostalCodeForMenu({
       vendor,
       mode: "addToCart",
@@ -679,6 +698,8 @@ export default function MenuDetailsPage() {
                 includedMenuItems={includedMenuItems}
               />
               <MenuDeliveryForm
+                isInCart={hasMainDishInCart}
+                isAddingToCart={isAddingToCart}
                 isVendorAvailable={isOrderableForSelection}
                 vendor={vendor}
                 orderSummary={orderSummary}
@@ -686,8 +707,9 @@ export default function MenuDetailsPage() {
                 deliverySlots={deliverySlots}
                 isLoadingSlots={isLoadingSlots}
                 hasDeliverySchedule={hasDeliverySchedule}
-                slotAccessRequiresAuth={false}
-                slotAccessMessage=""
+                slotAccessRequiresAuth={slotAccessState.requiresAuth}
+                slotAccessMessage={slotAccessState.message}
+                onRetrySlots={() => setSlotRetryVersion((version) => version + 1)}
                 onDeliveryDateChange={handleDeliveryDateChange}
                 onDeliveryTimeChange={(deliveryTime) =>
                   setOrderSummary((current) =>

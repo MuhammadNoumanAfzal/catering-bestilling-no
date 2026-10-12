@@ -22,6 +22,7 @@ export default function CheckoutAddressFields({
       <CheckoutField
         label={t("checkout.address")}
         value={formState[`${prefix}Address`]}
+        name={`${prefix}Address`}
         onChange={(event) => updateField(`${prefix}Address`, event.target.value)}
         placeholder={CHECKOUT_PLACEHOLDERS.address}
         className="sm:col-span-2"
@@ -41,6 +42,7 @@ export default function CheckoutAddressFields({
       <CheckoutField
         label={firstRowLabel}
         value={formState[firstRowKey]}
+        name={firstRowKey}
         onChange={(event) => updateField(firstRowKey, event.target.value)}
         placeholder={
           mode === "corporate"
@@ -51,6 +53,7 @@ export default function CheckoutAddressFields({
       <CheckoutField
         label={secondRowLabel}
         value={formState[secondRowKey]}
+        name={secondRowKey}
         onChange={(event) => updateField(secondRowKey, event.target.value)}
         placeholder={
           mode === "corporate"
