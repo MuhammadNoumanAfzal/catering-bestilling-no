@@ -65,8 +65,8 @@ export function ProductItem({
       </div>
 
       {price ? (
-        <p className="mt-2 text-[20px] font-semibold text-[#191919]">
-          {price} {t(pricingType === "per-person" ? "products.pricePerPerson" : "products.pricePerOrder")}
+        <p className="mt-1.5 text-[14px] font-medium leading-5 text-[#555]">
+          {price}{pricingType === "per-person" ? ` ${t("products.pricePerPerson")}` : ""}
         </p>
       ) : null}
 

@@ -1,6 +1,31 @@
 # API Names and Payloads
 
 ## Auth
+### Public Delivery Availability
+
+`availableDeliverySlots` is public. Send this query without an Authorization
+header, including when a stale login token exists in browser storage.
+
+```graphql
+query GetAvailableDeliverySlots($vendorId: ID!, $date: String!) {
+  availableDeliverySlots(vendorId: $vendorId, date: $date) {
+    start
+    end
+    isFullyBooked
+    remainingCapacity
+  }
+}
+```
+
+Variables: `{ "vendorId": "2", "date": "2026-10-18" }`.
+Numeric and Relay vendor IDs are supported by the backend.
+
+- The API owns schedule, closure, notice-time, and capacity decisions.
+- `[]` means no delivery windows. Full windows stay visible but disabled.
+- Request errors are not proof of a fully booked date; allow retry.
+- Calendar requests use three concurrent workers. The endpoint is rate-limited.
+- Add-to-cart and checkout re-check live capacity. Order creation still requires
+  authentication and atomic backend validation of postcode, notice, and capacity.
 
 ### POST `/api/auth/signup`
 

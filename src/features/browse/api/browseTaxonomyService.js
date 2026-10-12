@@ -360,9 +360,7 @@ function formatPriceWithLabel(price, pricingType) {
     return "";
   }
 
-  return `${formatKrAmount(amount)} ${
-    pricingType === "per-person" ? "per person" : "per order"
-  }`;
+  return `${formatKrAmount(amount)}${pricingType === "per-person" ? " per person" : ""}`;
 }
 
 function formatRating(value) {

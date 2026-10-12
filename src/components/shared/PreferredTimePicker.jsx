@@ -141,51 +141,11 @@ function formatTimeLabel(timeValue) {
   return `${parts.hour}:${parts.minute}`;
 }
 
-function buildQuickTimeOptions(minimumTime, maximumTime = null) {
-  const options = [];
-  const startHour = minimumTime.hour >= 24 ? 24 : minimumTime.hour;
-  let hour = startHour;
-  let minute = minimumTime.minute || 0;
-  const maxComparable = maximumTime
-    ? buildTimeValue(
-      String(maximumTime.hour).padStart(2, "0"),
-      String(maximumTime.minute).padStart(2, "0"),
-    )
-    : "";
-
-  while (minute % 30 !== 0 && hour < 24) {
-    minute += 15;
-    if (minute >= 60) {
-      hour += 1;
-      minute = 0;
-    }
-  }
-
-  while (hour < 24 && options.length < 5) {
-    const nextValue = buildTimeValue(
-      String(hour).padStart(2, "0"),
-      String(minute).padStart(2, "0"),
-    );
-
-    if (maximumTime && compareTimeValues(nextValue, maxComparable) > 0) {
-      break;
-    }
-
-    options.push(nextValue);
-    minute += 60;
-    if (minute >= 60) {
-      hour += Math.floor(minute / 60);
-      minute %= 60;
-    }
-  }
-
-  return options.filter(Boolean);
-}
 
 function WheelColumn({ label, options, selectedValue, onSelect, isDisabled }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col">
-      <span className="mb-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[#a19084]">
+      <span className="mb-2 text-center text-[11px] font-bold uppercase tracking-[0.12em] text-[#655b53]">
         {label}
       </span>
       <div className="h-32 overflow-y-auto rounded-[14px] bg-[#fffaf6] p-1">
@@ -205,11 +165,11 @@ function WheelColumn({ label, options, selectedValue, onSelect, isDisabled }) {
                 }}
                 disabled={disabled}
                 className={`flex h-9 w-full items-center justify-center rounded-[10px] text-[16px] font-semibold transition ${
-                  isSelected
-                    ? "bg-white text-[#1d1713] shadow-[0_3px_10px_rgba(44,30,16,0.08)]"
-                    : disabled
-                      ? "cursor-not-allowed text-[#ddd2c8]"
-                      : "text-[#b8aca1] hover:text-[#6b5f55]"
+                  disabled
+                    ? "cursor-not-allowed text-[#ccc4bd]"
+                    : isSelected
+                      ? "bg-[#cf6e38] text-white shadow-sm"
+                      : "text-[#29231f] hover:bg-[#f4e7dd] hover:text-[#a4481f]"
                 }`}
               >
                 {option}
@@ -352,11 +312,9 @@ export default function PreferredTimePicker({
     () => buildMinuteOptions(draftHour, effectiveMinimumTime, effectiveMaximumTime),
     [draftHour, effectiveMaximumTime, effectiveMinimumTime],
   );
-  const quickTimeOptions = useMemo(
-    () => buildQuickTimeOptions(effectiveMinimumTime, effectiveMaximumTime),
-    [effectiveMaximumTime, effectiveMinimumTime],
-  );
-  const canSave = Boolean(draftHour && draftMinute);
+  const canSave = Boolean(draftHour && draftMinute) &&
+    !isHourDisabled(draftHour) &&
+    draftMinuteOptions.includes(draftMinute);
 
   function isHourDisabled(option) {
     const optionHour = Number.parseInt(option, 10);
@@ -518,18 +476,6 @@ export default function PreferredTimePicker({
     setIsOpen(false);
   }
 
-  function handleQuickPick(timeValue) {
-    const parts = parseTimeValue(timeValue);
-    if (!parts.hour || !parts.minute) {
-      return;
-    }
-
-    setDraftHour(parts.hour);
-    setDraftMinute(parts.minute);
-    setInputValue(timeValue);
-    onChange(timeValue);
-    setIsOpen(false);
-  }
 
   const displayValue = value || "";
 
@@ -572,33 +518,6 @@ export default function PreferredTimePicker({
               {displayValue ? formatTimeLabel(displayValue) : t("timePicker.noTime")}
             </div>
           </div>
-
-          {quickTimeOptions.length ? (
-            <div className="mb-3">
-              <div className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#a19084]">
-                {t("timePicker.quickPick")}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {quickTimeOptions.map((option) => {
-                  const isSelected = option === displayValue;
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => handleQuickPick(option)}
-                      className={`rounded-full border px-3 py-1.5 text-[12px] font-semibold transition ${
-                        isSelected
-                          ? "border-[#cf6e38] bg-[#fff1e8] text-[#cf6e38]"
-                          : "border-[#eadfd6] bg-white text-[#6f6258] hover:border-[#cf6e38]/35 hover:bg-[#fff8f4]"
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
 
           <div className="flex items-start gap-2">
             <WheelColumn

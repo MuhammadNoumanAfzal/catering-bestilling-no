@@ -1,14 +1,27 @@
 import { formatCurrency } from "../utils/formatters";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 function AddOnCard({
   option,
   quantity,
   onDecrease,
   onIncrease,
+  onQuantityChange,
   canAdd = true,
 }) {
   const { t } = useTranslation();
+  const [quantityDraft, setQuantityDraft] = useState(String(quantity));
+  useEffect(() => {
+    setQuantityDraft(String(quantity));
+  }, [quantity]);
+
+  function commitQuantity(value) {
+    const parsed = Number.parseInt(value, 10);
+    const nextQuantity = Number.isSafeInteger(parsed) ? Math.max(0, parsed) : quantity;
+    setQuantityDraft(String(nextQuantity));
+    if (canAdd && nextQuantity !== quantity) onQuantityChange(nextQuantity);
+  }
   return (
     <article className="w-[164px] shrink-0 overflow-hidden rounded-[18px] border border-[#ddd3cb] bg-white shadow-[0_8px_18px_rgba(39,24,13,0.05)] sm:w-[180px] lg:w-[196px]">
       <img
@@ -34,7 +47,26 @@ function AddOnCard({
             >
               -
             </button>
-            <span>{quantity}</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              step="1"
+              aria-label={option.label}
+              disabled={!canAdd}
+              value={quantityDraft}
+              onChange={(event) => {
+                if (/^\d*$/.test(event.target.value)) setQuantityDraft(event.target.value);
+              }}
+              onBlur={(event) => commitQuantity(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  event.currentTarget.blur();
+                }
+              }}
+              className="h-7 w-14 min-w-0 bg-transparent px-1 text-center text-[12px] font-medium text-[#3e332b] outline-none focus:bg-white disabled:opacity-40"
+            />
             <button
               type="button"
               onClick={onIncrease}
@@ -122,6 +154,9 @@ export default function MenuAddOnsSection({
               option={option}
               quantity={quantity}
               canAdd={hasMainDishInCart}
+              onQuantityChange={(nextQuantity) =>
+                onUpdateOptionalQuantity(option.groupTitle, option.label, nextQuantity - quantity)
+              }
               onDecrease={() =>
                 onUpdateOptionalQuantity(option.groupTitle, option.label, -1)
               }

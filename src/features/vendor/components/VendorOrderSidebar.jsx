@@ -1,4 +1,7 @@
 import { LuUtensilsCrossed } from "react-icons/lu";
+import { useState } from "react";
+import { fetchAvailableDeliverySlots } from "../../checkOut/api";
+import { hasBookableSlot } from "../services/bookingAvailability";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
@@ -27,7 +30,7 @@ function formatKr(value) {
   return formatCurrency(value);
 }
 
-function formatDateTime(date, time) {
+function formatDateTime(date, time, language) {
   if (!date) {
     return "";
   }
@@ -38,7 +41,7 @@ function formatDateTime(date, time) {
     return [date, time].filter(Boolean).join(", ");
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(language?.startsWith("en") ? "en-GB" : "nb-NO", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -62,9 +65,39 @@ export default function VendorOrderSidebar({
   onInvoiceAddressChange,
 }) {
   const navigate = useNavigate();
+  const [isCheckingSlot, setIsCheckingSlot] = useState(false);
+  async function continueToCheckout() {
+    if (!isVendorAvailable && orderSummary.deliveryDate) {
+      await showAuthErrorAlert(t("checkout.slotUnavailableMessage"), t("checkout.slotUnavailableTitle"));
+      return;
+    }
+    const validationError = validateOrderSummaryBasics({
+      deliveryDate: orderSummary.deliveryDate, deliveryTime: orderSummary.deliveryTime,
+      deliveryAddress: orderSummary.deliveryAddress, personCount: orderSummary.personCount,
+      minimumPersons, t,
+    });
+    if (validationError) {
+      await showAuthErrorAlert(validationError, t("vendor.orderDetailsRequired"));
+      return;
+    }
+    setIsCheckingSlot(true);
+    try {
+      const slots = await fetchAvailableDeliverySlots({ vendorId: vendor.id, date: orderSummary.deliveryDate });
+      if (!hasBookableSlot(slots, orderSummary.deliveryTime)) {
+        onDeliveryTimeChange?.("");
+        await showAuthErrorAlert(t("checkout.slotUnavailableMessage"), t("checkout.slotUnavailableTitle"));
+        return;
+      }
+      navigate("/checkout/corporate");
+    } catch {
+      await showAuthErrorAlert(t("checkout.slotUnavailableMessage"), t("checkout.slotUnavailableTitle"));
+    } finally {
+      setIsCheckingSlot(false);
+    }
+  }
   const location = useLocation();
   const { isLoggedIn } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { locationValue } = useBrowseFilters();
   const { openPostalCodePrompt } = usePostalCodePrompt();
   const postalCode = /^\d{4}$/.test(locationValue.trim()) ? locationValue.trim() : "";
@@ -92,6 +125,7 @@ export default function VendorOrderSidebar({
   const formattedDateTime = formatDateTime(
     orderSummary.deliveryDate,
     orderSummary.deliveryTime,
+    i18n.resolvedLanguage || i18n.language,
   );
   const restaurantName =
     vendor?.name ?? items[0]?.vendorName ?? "Selected restaurant";
@@ -319,14 +353,19 @@ export default function VendorOrderSidebar({
               {outsideDeliveryArea ? <p role="alert" className="mt-3 text-[13px] text-[#b43d20]">{t("checkout.vendorOutsideDeliveryArea")}</p> : null}
               <button
                 type="button"
+                disabled={isCheckingSlot}
                 onClick={async () => {
+                  if (!isVendorAvailable && orderSummary.deliveryDate) {
+                    await showAuthErrorAlert(t("checkout.slotUnavailableMessage"), t("checkout.slotUnavailableTitle"));
+                    return;
+                  }
                   if (!postalCode || outsideDeliveryArea) {
                     openPostalCodePrompt({
                       vendor,
                       mode: "checkout",
                       onAvailable: async () => {
                         if (isLoggedIn) {
-                          navigate("/checkout/corporate");
+                          await continueToCheckout();
                           return;
                         }
                         const result = await promptSignInRequired({ title: t("checkout.loginRequiredTitle"), text: t("checkout.loginRequiredMessage") });
@@ -386,7 +425,7 @@ export default function VendorOrderSidebar({
                     return;
                   }
 
-                  navigate("/checkout/corporate");
+                  await continueToCheckout();
                 }}
                 className={`mt-4 w-full rounded-[4px] px-4 py-3 text-[15px] font-semibold text-white transition ${
                   isVendorAvailable

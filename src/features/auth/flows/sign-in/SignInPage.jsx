@@ -4,9 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { showAuthErrorAlert, showSuccessToast } from "../../../../utils/alerts";
 import { loginUser } from "../../api";
-import { fetchSettingsProfile } from "../../../vendorDashboard/settings/api";
-import { fetchClientSettingsProfile } from "../../../clientSettings/api/clientSettingsService";
-import { fetchCheckoutAutofillProfile } from "../../../checkOut/api";
+import { resolveAuthReturnDestination } from "../../utils/authReturnDestination";
 import {
   AuthButton,
   AuthCard,
@@ -20,86 +18,6 @@ const VENDOR_REGISTER_URL = "https://vendor.gocatering.no/";
 const VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY =
   "vendor-dashboard-onboarding-guide-pending";
 
-function resolvePostSignInDestination(state) {
-  const from = state?.from;
-
-  if (from?.pathname) {
-    return {
-      pathname: from.pathname,
-      search: from.search ?? "",
-      hash: from.hash ?? "",
-    };
-  }
-
-  return "/";
-}
-
-function shouldCheckVendorDashboardOnboarding(user, state) {
-  const fromPath = `${state?.from?.pathname ?? ""}`.trim();
-  const hasVendorRouteIntent = fromPath.startsWith("/client-dashboard");
-  const hasVendorStatus = Boolean(
-    `${user?.vendorStatus ?? user?.applicationStatus ?? ""}`.trim(),
-  );
-  const hasOnboardingFlag =
-    typeof window !== "undefined" &&
-    window.sessionStorage.getItem(VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY) ===
-    "true";
-
-  return hasVendorRouteIntent || hasVendorStatus || hasOnboardingFlag;
-}
-
-function isVendorProfileComplete(profile) {
-  return Number(profile?.profileCompletionPercent ?? 0) >= 100;
-}
-
-async function resolveVendorDashboardDestination(user, state) {
-  if (!shouldCheckVendorDashboardOnboarding(user, state)) {
-    return null;
-  }
-
-  try {
-    const profile = await fetchSettingsProfile();
-
-    if (
-      typeof window !== "undefined" &&
-      isVendorProfileComplete(profile)
-    ) {
-      window.sessionStorage.removeItem(VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY);
-    }
-
-    return isVendorProfileComplete(profile)
-      ? "/client-dashboard"
-      : "/client-dashboard/settings";
-  } catch {
-    const fromPath = `${state?.from?.pathname ?? ""}`.trim();
-    return fromPath.startsWith("/client-dashboard")
-      ? "/client-dashboard/settings"
-      : null;
-  }
-}
-
-function isClientProfileComplete(settings, checkoutProfile) {
-  const hasProfilePhoto = Boolean(
-    `${settings?.avatarUrl ?? settings?.avatarThumbnailUrl ?? ""}`.trim(),
-  );
-  const hasDeliveryAddress = checkoutProfile?.deliveryAddresses?.length > 0;
-  const hasInvoiceAddress = checkoutProfile?.invoiceAddresses?.length > 0;
-
-  return (
-    Number(settings?.profileCompletionPercent ?? 0) >= 100 &&
-    hasProfilePhoto &&
-    hasDeliveryAddress &&
-    hasInvoiceAddress
-  );
-}
-
-async function resolveCustomerDestination(state) {
-  if (state?.from?.pathname) {
-    return resolvePostSignInDestination(state);
-  }
-
-  return "/";
-}
 
 export default function SignInPage() {
   const { t } = useTranslation();
@@ -138,16 +56,10 @@ export default function SignInPage() {
         }),
       );
 
-      const vendorDashboardDestination = await resolveVendorDashboardDestination(
-        result.user,
-        location.state,
-      );
-      const customerDestination = vendorDashboardDestination
-        ? null
-        : await resolveCustomerDestination(location.state);
+      window.sessionStorage.removeItem(VENDOR_DASHBOARD_ONBOARDING_NOTICE_KEY);
 
       navigate(
-        vendorDashboardDestination || customerDestination,
+        resolveAuthReturnDestination(location.state),
         {
           replace: true,
         },

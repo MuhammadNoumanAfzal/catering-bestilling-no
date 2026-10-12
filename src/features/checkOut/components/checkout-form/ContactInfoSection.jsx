@@ -17,6 +17,7 @@ export default function ContactInfoSection({
           <CheckoutField
             label={t("checkout.companyName")}
             value={formState.companyName}
+            name="companyName"
             onChange={(event) => updateField("companyName", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.companyName}
             className="sm:col-span-2"
@@ -26,6 +27,7 @@ export default function ContactInfoSection({
           <CheckoutField
             label={t("checkout.organizationNumber")}
             value={formState.organizationNumber}
+            name="organizationNumber"
             onChange={(event) =>
               updateField("organizationNumber", event.target.value)
             }
@@ -45,12 +47,14 @@ export default function ContactInfoSection({
             label={t("checkout.email")}
             type="email"
             value={formState.email}
+            name="email"
             onChange={(event) => updateField("email", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.email}
           />
           <CheckoutField
             label={t("checkout.phone")}
             value={formState.phone}
+            name="phone"
             onChange={(event) => updateField("phone", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.phone}
           />
@@ -60,18 +64,21 @@ export default function ContactInfoSection({
           <CheckoutField
             label={t("checkout.firstName")}
             value={formState.firstName}
+            name="firstName"
             onChange={(event) => updateField("firstName", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.firstName}
           />
           <CheckoutField
             label={t("checkout.lastName")}
             value={formState.lastName}
+            name="lastName"
             onChange={(event) => updateField("lastName", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.lastName}
           />
           <CheckoutField
             label={t("checkout.phone")}
             value={formState.phone}
+            name="phone"
             onChange={(event) => updateField("phone", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.phone}
           />
@@ -79,6 +86,7 @@ export default function ContactInfoSection({
             label={t("checkout.email")}
             type="email"
             value={formState.email}
+            name="email"
             onChange={(event) => updateField("email", event.target.value)}
             placeholder={CHECKOUT_PLACEHOLDERS.email}
             className="sm:col-span-2"

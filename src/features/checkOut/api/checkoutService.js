@@ -1,5 +1,7 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import i18n from "../../../i18n";
+import { parseDeliverySlotResponse } from "./deliverySlotResponse";
+import { isAuthAvailabilityError } from "./availabilityErrors";
 import { fetchVendors } from "../../vendor/api/vendorService";
 import { adaptApiVendorToProfile } from "../../vendor/api/vendorMappers";
 import { isVendorAvailableForPostalCode } from "../../vendor/services/vendorAvailability";
@@ -48,23 +50,6 @@ function translateBankInstructions(value) {
   return message;
 }
 
-function isAuthAvailabilityError(error) {
-  const message = `${error?.technicalMessage ?? error?.message ?? ""}`.toLowerCase();
-
-  return [
-    "sign in",
-    "signin",
-    "log in",
-    "login",
-    "authentication",
-    "authenticated",
-    "credentials",
-    "permission",
-    "unauthorized",
-    "forbidden",
-  ].some((fragment) => message.includes(fragment));
-}
-
 export async function fetchCheckoutAutofillProfile() {
   const response = await graphqlRequest({ query: GET_CURRENT_USER_DETAILS_QUERY });
 
@@ -82,18 +67,10 @@ export async function fetchAvailableDeliverySlots({ vendorId, date }) {
     const response = await graphqlRequest({
       query: GET_AVAILABLE_DELIVERY_SLOTS_QUERY,
       variables: { vendorId, date },
+      publicRequest: true,
     });
 
-    const slots = response?.availableDeliverySlots;
-    if (!Array.isArray(slots)) return [];
-
-    return slots.map((slot) => ({
-      start: slot.start || "",
-      end: slot.end || "",
-      label: `${slot.start} – ${slot.end}`,
-      isFullyBooked: Boolean(slot.isFullyBooked),
-      remainingCapacity: Number(slot.remainingCapacity ?? 9999),
-    }));
+    return parseDeliverySlotResponse(response);
   } catch (error) {
     if (isAuthAvailabilityError(error)) {
       const authError = new Error(
@@ -103,7 +80,7 @@ export async function fetchAvailableDeliverySlots({ vendorId, date }) {
       throw authError;
     }
 
-    return [];
+    throw error;
   }
 }
 

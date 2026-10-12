@@ -14,7 +14,10 @@ export default function CheckoutSummaryPanel({
   isLoadingPricing = false,
   onTipChange,
   onRemoveItem,
+  onAddOnQuantityChange,
   onPlaceOrder,
+  missingDetails = [],
+  onMissingDetail,
 }) {
   const { t } = useTranslation();
   const totals = getCheckoutTotals(carts);
@@ -46,6 +49,7 @@ export default function CheckoutSummaryPanel({
                 cart={cart}
                 onTipChange={onTipChange}
                 onRemoveItem={onRemoveItem}
+                onAddOnQuantityChange={onAddOnQuantityChange}
               />
             ))}
           </div>
@@ -89,14 +93,23 @@ export default function CheckoutSummaryPanel({
               </Link>{" "}
               {t("checkout.agreeSuffix")}
             </p>
-            <button
+            {missingDetails.length > 0 ? (
+              <div className="mt-3 space-y-2" aria-live="polite">
+                {missingDetails.map(({ field, message }) => (
+                  <button key={field} type="button" onClick={() => onMissingDetail(field)}
+                    className="w-full rounded-[8px] bg-[#cf6e38] px-3 py-2.5 text-left text-[13px] font-semibold leading-5 text-white transition hover:bg-[#bb602d]">
+                    {t(`orderValidation.${message}`)}
+                  </button>
+                ))}
+              </div>
+            ) : <button
               type="button"
               onClick={onPlaceOrder}
               disabled={isSubmitting}
               className="mt-3 w-full rounded-[10px] bg-[#cf6e38] px-4 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {buttonLabel}
-            </button>
+            </button>}
             {buttonHelpText ? (
               <p className="mt-2 text-center text-[12px] text-[#8b8580]">
                 {buttonHelpText}

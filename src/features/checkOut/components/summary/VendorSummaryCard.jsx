@@ -14,6 +14,7 @@ export default function VendorSummaryCard({
   cart,
   onTipChange,
   onRemoveItem,
+  onAddOnQuantityChange,
 }) {
   const { t } = useTranslation();
   const personCount = cart.orderSummary.personCount;
@@ -76,6 +77,7 @@ export default function VendorSummaryCard({
               personCount={personCount}
               vendorSlug={cart.vendor.slug}
               onRemoveItem={onRemoveItem}
+              onAddOnQuantityChange={onAddOnQuantityChange}
             />
           ))}
         </div>

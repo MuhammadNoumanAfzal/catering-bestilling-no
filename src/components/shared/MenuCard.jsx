@@ -65,7 +65,7 @@ export default function MenuCard({
       <div className="type-subpara mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[#666]">
         <span className="min-w-0 truncate">{vendor}</span>
       </div>
-      <p className="mt-2 text-[20px] font-semibold text-[#191919]">{price}</p>
+      <p className="mt-1.5 text-[14px] font-medium leading-5 text-[#555]">{price}</p>
 
       <div className="type-subpara mt-2 inline-flex items-center rounded-full bg-[#fff1eb] px-2.5 py-1 text-[#ff6a3d]">
         {t("browse.availableNow")}

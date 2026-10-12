@@ -106,6 +106,10 @@ export function showOrderPlacedSuccess(vendorName) {
       icon: "success",
       title: i18n.t("alerts.orderPlacedTitle"),
       text: i18n.t("alerts.orderPlacedText", { vendorName }),
+      didOpen: () => {
+        const content = Swal.getHtmlContainer();
+        if (content) content.style.whiteSpace = "pre-line";
+      },
       confirmButtonText: i18n.t("alerts.continue"),
     }),
   );

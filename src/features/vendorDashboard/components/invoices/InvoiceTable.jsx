@@ -22,6 +22,7 @@ function translateInvoiceStatus(t, status) {
     overdue: "vendorPanel.dashboard.statuses.overdue",
     paid: "vendorPanel.dashboard.statuses.paid",
     pending: "vendorPanel.dashboard.statuses.pending",
+    placed: "vendorPanel.dashboard.statuses.placed",
     "payment reported": "vendorPanel.dashboard.statuses.paymentReported",
     rejected: "vendorPanel.dashboard.statuses.rejected",
     reported: "vendorPanel.dashboard.statuses.reported",

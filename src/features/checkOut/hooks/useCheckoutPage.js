@@ -3,8 +3,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import i18n from "../../../i18n";
 import { useAuth } from "../../auth";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
+import { updateAddOnQuantity } from "../utils/updateAddOnQuantity";
 import {
-  filterDeliverySlotsForDate,
 } from "../../vendor";
 import {
   clearAllStoredOrderSummaries,
@@ -272,6 +272,13 @@ export function useCheckoutPage() {
         },
       })),
     );
+  };
+
+  const handleAddOnQuantityChange = (vendorSlug, itemId, quantity) => {
+    setCheckoutErrorMessage("");
+    setCarts((current) => current.map((cart) => cart.vendor.slug !== vendorSlug ? cart : {
+      ...cart, orderSummary: updateAddOnQuantity(cart.orderSummary, itemId, quantity),
+    }));
   };
 
   const handleDateChange = (dateValue) => {
@@ -649,13 +656,7 @@ export function useCheckoutPage() {
           vendorId: primaryVendorId,
           date,
         });
-        const primaryVendor = carts[0]?.vendor;
-        const filteredLiveSlots = filterDeliverySlotsForDate(
-          slots,
-          primaryVendor,
-          date,
-        );
-        const resolvedSlots = filteredLiveSlots;
+        const resolvedSlots = slots;
 
         if (!isCancelled) {
           setDeliverySlots(resolvedSlots);
@@ -1080,6 +1081,7 @@ export function useCheckoutPage() {
     setIsInvoiceAddressEditing,
     handleDateChange,
     updateCartField,
+    handleAddOnQuantityChange,
     updateField,
     requiredMinimumPersonCount,
   };

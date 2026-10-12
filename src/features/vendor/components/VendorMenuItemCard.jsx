@@ -75,7 +75,7 @@ export default function VendorMenuItemCard({ item, onClick }) {
           ))}
         </div>
 
-        <p className="text-[20px] font-semibold text-[#121212]">
+        <p className="text-[14px] font-medium leading-5 text-[#555]">
           {formatCurrency(item.price)}
         </p>
       </div>

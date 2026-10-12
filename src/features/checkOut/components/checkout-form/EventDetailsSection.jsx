@@ -6,6 +6,7 @@ import { formatTimeTo24Hour } from "../../../../components/shared/navbar/navbarD
 import PreferredTimePicker from "../../../../components/shared/PreferredTimePicker";
 import LocalizedDatePicker from "../../../../components/LocalizedDatePicker";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 function getSlotStatusTone(slot) {
   if (slot.isFullyBooked) return "bg-[#f0e8e4] text-[#b08a7a]";
@@ -16,6 +17,7 @@ function getSlotStatusTone(slot) {
 
 export default function EventDetailsSection({
   mode,
+  vendors = [],
   formState,
   updateField,
   updateCartField,
@@ -25,6 +27,20 @@ export default function EventDetailsSection({
   minimumPersonCount = 1,
 }) {
   const { t } = useTranslation();
+  const minimumCount = Math.max(1, Number(minimumPersonCount) || 1);
+  const personCount = Math.max(minimumCount, Number(formState.personCount) || minimumCount);
+  const [personCountDraft, setPersonCountDraft] = useState(String(personCount));
+  useEffect(() => {
+    setPersonCountDraft(String(personCount));
+  }, [personCount]);
+
+  function commitPersonCount(value) {
+    const parsed = Number.parseInt(value, 10);
+    const nextCount = Number.isSafeInteger(parsed) ? Math.max(minimumCount, parsed) : minimumCount;
+    setPersonCountDraft(String(nextCount));
+    updateField("personCount", nextCount);
+    updateCartField("personCount", nextCount);
+  }
   const eventLabel =
     mode === "corporate" ? t("checkout.eventName") : t("checkout.occasion");
   const eventKey = mode === "corporate" ? "eventName" : "occasion";
@@ -34,12 +50,7 @@ export default function EventDetailsSection({
       : CHECKOUT_PLACEHOLDERS.occasion;
 
   const adjustPersonCount = (delta) => {
-    const nextPersonCount = Math.max(
-      Number(minimumPersonCount ?? 1) || 1,
-      Number(formState.personCount) + delta,
-    );
-    updateField("personCount", nextPersonCount);
-    updateCartField("personCount", nextPersonCount);
+    commitPersonCount(personCount + delta);
   };
 
   const hasSlots = deliverySlots.length > 0;
@@ -102,12 +113,13 @@ export default function EventDetailsSection({
         optional={mode === "corporate"}
           optionalLabel={t("checkout.optional")}
         />
-        <div>
+        <div data-checkout-field="date">
           <span className="mb-1.5 block text-[13px] font-medium text-[#2d2d2d]">
             {t("menu.date")}
           </span>
           <LocalizedDatePicker
             className="w-full"
+            bookingVendors={vendors}
             label={t("menu.date")}
             min={getTodayDateValue()}
             onChange={(nextDate) => {
@@ -131,16 +143,42 @@ export default function EventDetailsSection({
             <button
               type="button"
               onClick={() => adjustPersonCount(-1)}
-              className="h-full w-8 cursor-pointer border-r border-[#ded6ce] text-[14px] text-[#2d2d2d]"
+              disabled={personCount <= minimumCount}
+              aria-label={t("nav.numberOfAttendees") + " -"}
+              className="h-full w-8 cursor-pointer border-r border-[#ded6ce] text-[14px] text-[#2d2d2d] disabled:cursor-not-allowed disabled:opacity-40"
             >
               -
             </button>
-            <span className="inline-flex min-w-[48px] justify-center text-[13px] text-[#2d2d2d]">
-              {formState.personCount}
-            </span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={minimumCount}
+              step="1"
+              aria-label={t("nav.numberOfAttendees")}
+              value={personCountDraft}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (!/^\d*$/.test(value)) return;
+                setPersonCountDraft(value);
+                const parsed = Number.parseInt(value, 10);
+                if (Number.isSafeInteger(parsed) && parsed >= minimumCount) {
+                  updateField("personCount", parsed);
+                  updateCartField("personCount", parsed);
+                }
+              }}
+              onBlur={(event) => commitPersonCount(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  event.currentTarget.blur();
+                }
+              }}
+              className="h-full w-16 min-w-0 bg-transparent px-1 text-center text-[13px] text-[#2d2d2d] outline-none focus:bg-[#fff4ed]"
+            />
             <button
               type="button"
               onClick={() => adjustPersonCount(1)}
+              aria-label={t("nav.numberOfAttendees") + " +"}
               className="h-full w-8 cursor-pointer border-l border-[#ded6ce] text-[14px] text-[#2d2d2d]"
             >
               +
@@ -152,7 +190,7 @@ export default function EventDetailsSection({
         </div>
 
         {/* Time / Slot Picker */}
-        <div className="flex flex-col sm:col-span-3">
+        <div data-checkout-field="time" className="flex flex-col sm:col-span-3">
           <span className="mb-1 block text-[13px] font-medium text-[#2d2d2d]">{t("menu.time")}</span>
 
           {!formState.date ? (

@@ -631,7 +631,7 @@ function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
             ? item.selectedAddons
                 .map((addon) =>
                   addon?.name
-                    ? `${addon.name}${
+                    ? `${addon.quantity || 1} x ${addon.name}${
                         addon?.totalPrice || addon?.unitPrice
                           ? ` (+${formatMoney(
                               addon.totalPrice || addon.unitPrice,
@@ -655,7 +655,7 @@ function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
           return {
             id: item?.id || `${item?.productName || "item"}-${item?.quantity || 1}`,
             label: item?.productName || "Invoice item",
-            description: descriptionParts.join(" | "),
+            description: descriptionParts.join("\n"),
             quantity: toNumber(item?.quantity, 1),
             unitPrice: formatFlexibleMoney(item?.unitPrice, currency),
             totalPrice: formatFlexibleMoney(

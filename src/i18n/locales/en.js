@@ -1,4 +1,16 @@
 const en = {
+  clientInvoice: {
+    customer: "Customer",
+    loading: "Loading invoice details", loadError: "Could not load invoice", retry: "Try again",
+    back: "Back to invoices", title: "Invoice details", total: "Invoice amount",
+    vendor: "Vendor", event: "Event", issued: "Issued", due: "Due",
+    notProvided: "Not provided", items: "Ordered items", item: "Menu / add-on",
+    quantity: "Quantity", unitPrice: "Unit price", amount: "Amount",
+    noItems: "Item details are not available for this order.",
+    deliveryFee: "Delivery fee", tip: "Tip", delivery: "Delivery details",
+    date: "Delivery date", guests: "Guest count", address: "Delivery address",
+    note: "Note", addOn: "Add-on",
+  },
   language: {
     label: "Language",
     english: "English",
@@ -190,6 +202,7 @@ const en = {
       invalidCredentials: "The email or password does not look right. Please check them and try again, or choose Forgot password.",
     },
     signUp: {
+      accountCreated: "Account created. Sign in to continue.",
       badge: "Create Account",
       title: "Create your account",
       subtitle: "Create an account to explore menus, book caterers, and manage event orders in one place.",
@@ -639,6 +652,7 @@ const en = {
     },
   },
   menu: {
+    availabilityAfterLogin: "Confirmed after sign-in",
     back: "Back",
     save: "Save",
     saved: "Saved",
@@ -711,6 +725,8 @@ const en = {
     time: "Time",
     selectDateFirst: "Select a date first",
     checkingSlots: "Checking available delivery slots...",
+    availabilityCheckFailed: "We could not check delivery availability. Please try again. No booking status has been confirmed.",
+    retryAvailability: "Try again",
     signInForSlots:
       "Sign in to view live delivery availability for the selected date.",
     signInSlotsTitle: "Sign in to view delivery slots",
@@ -741,6 +757,8 @@ const en = {
       "Share details such as your preferred time or anything else the kitchen should know before delivery.",
     addNotePlaceholder: "Add Note...",
     addToCart: "Add to Cart",
+    inCart: "Added to cart",
+    addingToCart: "Adding...",
     addOnsEyebrow: "Customize your order",
     addOnsTitle: "Add-ons",
     addOnsIntro: "Add extras or side items to tailor the menu for your team.",
@@ -795,7 +813,7 @@ const en = {
     logoutConfirm: "Log out",
     staySignedIn: "Stay signed in",
     orderPlacedTitle: "Thank you for your order",
-    orderPlacedText: "The order is delivered by {{vendorName}}. Confirmation has been sent by email.",
+    orderPlacedText: "The order is delivered by {{vendorName}}.\nConfirmation has been sent by email.",
     reviewDeliveredTitle: "Order delivered",
     reviewDeliveredText:
       "Your order from {{vendorName}} has been delivered. Would you like to leave a review now?",
@@ -846,6 +864,10 @@ const en = {
     rejectionReasonRequired: "A rejection reason is required.",
   },
   checkout: {
+    checkingAvailability: "Checking delivery availability...",
+    chooseAnotherSlot: "Choose another delivery time",
+    slotUnavailableTitle: "Delivery time unavailable",
+    slotUnavailableMessage: "This delivery slot is fully booked or unavailable. Choose another date or delivery time before checkout.",
     loginRequiredTitle: "Sign in before checkout",
     loginRequiredMessage: "Please sign in or create an account before checkout. Your items will stay in your cart.",
     postalCodeRequiredForDelivery: "Please enter a valid four-digit postal code to check delivery availability.",
