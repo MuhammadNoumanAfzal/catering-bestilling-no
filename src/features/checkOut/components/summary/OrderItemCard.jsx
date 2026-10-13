@@ -25,6 +25,8 @@ export default function OrderItemCard({
     (detail) =>
       detail &&
       !/^\d+\s*order/i.test(detail) &&
+      !/^qty\s*:/i.test(detail) &&
+      !/^add[- ]on item\s*$/i.test(detail) &&
       !/^(serves|serverer|holder til)/i.test(detail),
   );
 
@@ -33,7 +35,7 @@ export default function OrderItemCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[13px] font-semibold text-[#2c2c2c]">
-            {item.quantity} x {item.name}
+            {item.name}
           </p>
           <p className="mt-0.5 text-[12px] text-[#8b8580]">
             {item.isAddOn

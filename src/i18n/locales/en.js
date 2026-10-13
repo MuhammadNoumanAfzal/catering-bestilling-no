@@ -555,6 +555,7 @@ const en = {
     orderSummary: "CART",
     deleteItem: "Delete",
     qty: "Qty {{count}}",
+    otherTip: "Other",
     serves: "Antall gjester: {{count}}",
     subtotal: "Subtotal",
     deliveryFee: "Delivery fee",

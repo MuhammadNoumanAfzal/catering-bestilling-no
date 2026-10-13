@@ -167,6 +167,8 @@ export default function VendorOrderSidebar({
                         (detail) =>
                           detail &&
                           !/^\d+\s*order/i.test(detail) &&
+                          !/^qty\s*:/i.test(detail) &&
+                          !/^add[- ]on item\s*$/i.test(detail) &&
                           !/^(serves|serverer|holder til)/i.test(detail),
                       )
                       .map((detail) => (
@@ -257,7 +259,7 @@ export default function VendorOrderSidebar({
                         : "border-[#d4cfc8] bg-white text-[#555555] hover:border-[#cf6e38]/40 hover:bg-[#fffaf6]"
                     }`}
                   >
-                    {option.label}
+                    {option.value === "other" ? t("vendor.otherTip") : option.label}
                   </button>
                 ))}
               </div>
@@ -286,10 +288,6 @@ export default function VendorOrderSidebar({
             </div>
 
             <div className="border-b border-[#e2ddd8] py-4">
-              <h3 className="text-center type-h3 font-extrabold uppercase tracking-[0.04em] text-[#1d1d1d]">
-                {t("menu.eventDetails")}
-              </h3>
-
               <div className="mt-4">
                 <p className="type-para font-semibold ">
                   {t("vendor.deliveryDateTime")}
