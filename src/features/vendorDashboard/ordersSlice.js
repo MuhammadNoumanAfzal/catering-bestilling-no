@@ -1,4 +1,5 @@
 import { formatMoney } from "../pricing/formatMoney.js";
+import { buildInvoiceRows } from "./components/invoices/invoiceAmounts";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import i18n from "../../i18n";
@@ -520,22 +521,10 @@ function resolveClientDisplayStatus(node, isModified) {
 
 function mapListOrder(node) {
   const draftOverride = buildPlacedOrderDraftOverride(node?.id);
-  const mappedItems = (node.items || []).map((item) => ({
-    id: item.id || "",
-    quantity: item.quantity || 1,
-    name: item.productName || "Catering Meal",
-    price: formatAmount(parseFloat(item.lineTotal || item.totalPrice || 0)),
-    details: [
-      item.specialInstructions ? `Note: ${item.specialInstructions}` : "",
-      ...Object.entries(item.selectedOptions || {}).map(
-        ([key, value]) => `${key}: ${value}`,
-      ),
-      ...(item.selectedAddons || []).map((addon) =>
-        addon?.name
-          ? `Add-on: ${addon.name}${addon.totalPrice || addon.price ? ` (+${formatAmount(addon.totalPrice || addon.price)})` : ""}`
-          : "",
-      ),
-    ].filter(Boolean),
+  const mappedItems = buildInvoiceRows(node).map((item) => ({
+    id: item.id, quantity: item.quantity, name: item.label,
+    price: formatAmount(item.totalPrice),
+    details: item.description ? item.description.split("\n") : [],
   }));
 
   const itemsList = Array.isArray(node.items) ? node.items : [];
@@ -575,7 +564,7 @@ function mapListOrder(node) {
     eventDateRaw: draftOverride?.eventDate || node.eventDate || "",
     createdOnRaw: node.createdOn || "",
     person: formatNumber(draftOverride?.personCount || node.personCount, 1),
-    total: formatAmount(draftOverride?.total || resolvedGrandTotal),
+    total: formatAmount(resolvedGrandTotal),
     status: resolveClientDisplayStatus(node, isModified),
     isModified,
     orderedDate: formatDate(node.createdOn),
@@ -717,27 +706,15 @@ export const fetchClientOrderDetail = createAsyncThunk(
         modificationsResponse?.clientOrder?.order?.statuses ||
         [];
 
-      const items = (orderNode.items || []).map((item) => {
-        const itemAddons = Array.isArray(item.selectedAddons) ? item.selectedAddons : [];
-        const itemOptions = item.selectedOptions || {};
-
+      const items = buildInvoiceRows(orderNode).map((item) => {
+        const original = orderNode.items?.find((source) => source.id === item.id);
         return {
-          id: item.id || "",
-          quantity: formatNumber(item.quantity, 1),
-          name: item.productName || item.product?.name || "Catering Meal",
-          price: formatAmount(parseFloat(item.lineTotal || item.totalPrice || 0)),
+          id: item.id, quantity: item.quantity, name: item.label,
+          price: formatAmount(item.totalPrice),
           details: [
-            item.specialInstructions ? `Note: ${item.specialInstructions}` : "",
-            item.product?.description || "",
-            ...Object.entries(itemOptions).map(([key, value]) => `${key}: ${value}`),
-            ...itemAddons.map((addon) =>
-              addon?.name
-                ? `Add-on: ${addon.name}${addon.totalPrice || addon.price ? ` (+${formatAmount(addon.totalPrice || addon.price)})` : ""}`
-                : "",
-            ),
-            ...((item.product?.menuItems || []).map((menuItem) =>
-              menuItem?.title ? `Included: ${menuItem.title}` : "",
-            )),
+            ...(item.description ? item.description.split("\n") : []),
+            original?.product?.description,
+            ...(original?.product?.menuItems || []).map((included) => included.title ? `Included: ${included.title}` : ""),
           ].filter(Boolean),
         };
       });
@@ -794,7 +771,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           eventDateRaw: draftOverride?.eventDate || orderNode.eventDate || "",
           createdOnRaw: orderNode.createdOn || "",
           person: formatNumber(draftOverride?.personCount || orderNode.personCount, 1),
-          total: formatAmount(draftOverride?.total || resolvedGrandTotal),
+          total: formatAmount(resolvedGrandTotal),
           subtotal: formatAmount(orderNode.pricing?.subtotal || orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),
           deliveryFee: formatAmount(orderNode.pricing?.deliveryFee ?? orderNode.deliveryFee),

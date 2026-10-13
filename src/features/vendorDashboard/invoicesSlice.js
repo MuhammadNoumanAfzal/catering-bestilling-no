@@ -4,8 +4,8 @@ import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../lib/auth/authSession";
 import i18n from "../../i18n";
 import { customerInvoiceHistory } from "./customerInvoiceHistory.js";
-import { readPlacedOrderDraft } from "../order/services";
-import { getVendorTotals } from "../checkOut/components/summary/checkoutSummaryUtils";
+import { buildInvoiceRows, mapInvoiceApiRows, resolveInvoiceAmount } from "./components/invoices/invoiceAmounts";
+import { formatInvoiceDeliveryAddress } from "./components/invoices/invoiceDeliveryAddress";
 
 const DEFAULT_RECEIPT_UPLOAD_ENDPOINT =
   "https://api.gocatering.no/api/upload-receipt/";
@@ -59,6 +59,8 @@ const FETCH_INVOICES_QUERY = `
           currency
           pdfUrl
           pricing {
+            pricesIncludeVat
+            taxRate
             subtotal
             taxAmount
             deliveryFee
@@ -80,6 +82,8 @@ const FETCH_INVOICES_QUERY = `
             dueDate
             finalPrice
             pricing {
+              pricesIncludeVat
+              taxRate
               grandTotal
               amountDue
             }
@@ -100,6 +104,14 @@ const GET_INVOICE_DETAIL_QUERY = `
       id
       invoiceNumber
       paymentStatus
+      lineItems {
+        id
+        label
+        description
+        quantity
+        unitPrice
+        totalPrice
+      }
       paymentMethod
       paymentReference
       dueDate
@@ -248,12 +260,21 @@ const GET_INVOICE_ORDER_FALLBACK_QUERY = `
       id
       eventName
       finalPrice
+      grandTotal
       personCount
       deliveryAddressStr
+      deliveryAddress
+      deliverySuite
+      deliveryPostalCode
+      deliveryCity
       orderNotes
       eventDate
       eventTime
       pricing {
+        pricesIncludeVat
+        taxRate
+        discountAmount
+        serviceFee
         subtotal
         taxAmount
         deliveryFee
@@ -267,7 +288,11 @@ const GET_INVOICE_ORDER_FALLBACK_QUERY = `
         id
         productName
         quantity
+        pricingType
         unitPrice
+        totalPrice
+        lineSubtotal
+        lineTax
         lineTotal
         specialInstructions
         selectedOptions
@@ -403,71 +428,7 @@ function parseMoneyAmount(value) {
   return parseMoney(value);
 }
 
-function getPlacedDraftGrossAmount(node = {}) {
-  const draft = readPlacedOrderDraft();
-
-  if (!draft) {
-    return 0;
-  }
-
-  const identifiers = new Set(
-    [node.id, node.orderId, node.invoiceNumber, node.orderNumber, node.order?.id]
-      .filter(Boolean)
-      .map((value) => String(value)),
-  );
-  const placedOrder = (draft.placedOrders || []).find((order) =>
-    [order.orderId, order.orderNumber, order.invoiceId, order.invoiceNumber]
-      .filter(Boolean)
-      .some((value) => identifiers.has(String(value))),
-  );
-  const placedGross = parseMoneyAmount(
-    placedOrder?.pricing?.grandTotal ?? placedOrder?.pricing?.amountDue ?? placedOrder?.pricing?.formattedTotal,
-  );
-
-  if (placedGross > 0) {
-    return placedGross;
-  }
-
-  const cart =
-    (draft.carts || []).find((entry) => {
-      const vendorSlug = String(entry?.vendor?.slug || "");
-      const vendorName = String(entry?.vendor?.name || entry?.vendor?.businessName || "");
-      return (
-        vendorSlug && vendorSlug === String(node.vendor?.slug || node.vendorSlug || "")
-      ) || (
-        vendorName && vendorName === String(node.vendor?.name || node.vendorName || "")
-      );
-    }) || ((draft.carts || []).length === 1 ? draft.carts[0] : null);
-
-  if (!cart) {
-    return 0;
-  }
-
-  return parseMoneyAmount(getVendorTotals(cart).grandTotal);
-}
-function resolveGrossInvoiceAmount(node, pricing = {}) {
-  const subtotal = toNumber(pricing.subtotal ?? node.subtotal);
-  const taxAmount = toNumber(pricing.taxAmount ?? node.taxAmount);
-  const deliveryFee = toNumber(pricing.deliveryFee ?? node.deliveryFee);
-  const addOnsTotal = toNumber(pricing.addOnsTotal ?? node.addOnsTotal);
-  const tipAmount = toNumber(pricing.tipAmount ?? node.tipAmount);
-  const discountAmount = toNumber(pricing.discountAmount ?? node.discountAmount);
-  const serviceFee = toNumber(pricing.serviceFee ?? node.serviceFee);
-  const grossFromParts = subtotal + deliveryFee + addOnsTotal + tipAmount + serviceFee - discountAmount;
-  const candidates = [
-    getPlacedDraftGrossAmount(node),
-    toNumber(pricing.grandTotal),
-    toNumber(pricing.amountDue),
-    toNumber(node.order?.finalPrice),
-    toNumber(node.order?.pricing?.grandTotal),
-    toNumber(node.order?.pricing?.amountDue),
-    toNumber(node.grandTotal),
-    toNumber(node.totalAmount),
-    grossFromParts,
-  ].filter((amount) => Number.isFinite(amount) && amount > 0);
-
-  return candidates.length ? Math.max(...candidates) : 0;
-}
+const resolveGrossInvoiceAmount = resolveInvoiceAmount;
 
 
 function formatFlexibleMoney(value, currency = "NOK") {
@@ -621,50 +582,13 @@ function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
     eventName: orderNode?.eventName || "",
     eventDate: formatDate(orderNode?.eventDate),
     personCount: toNumber(orderNode?.personCount, 0),
-    deliveryAddressStr: orderNode?.deliveryAddressStr || "",
+    deliveryAddressStr: formatInvoiceDeliveryAddress(orderNode),
     orderNotes: orderNode?.orderNotes || "",
     tipAmount: formatFlexibleMoney(pricing?.tipAmount, currency),
-    lineItems: Array.isArray(orderNode?.items)
-      ? orderNode.items.map((item) => {
-          const selectedOptions = item?.selectedOptions || {};
-          const addOns = Array.isArray(item?.selectedAddons)
-            ? item.selectedAddons
-                .map((addon) =>
-                  addon?.name
-                    ? `${addon.quantity || 1} x ${addon.name}${
-                        addon?.totalPrice || addon?.unitPrice
-                          ? ` (+${formatMoney(
-                              addon.totalPrice || addon.unitPrice,
-                        
-                            )})`
-                          : ""
-                      }`
-                    : "",
-                )
-                .filter(Boolean)
-            : [];
-
-          const descriptionParts = [
-            item?.specialInstructions ? `Note: ${item.specialInstructions}` : "",
-            ...Object.entries(selectedOptions).map(
-              ([key, value]) => `${key}: ${value}`,
-            ),
-            ...addOns.map((addon) => `Add-on: ${addon}`),
-          ].filter(Boolean);
-
-          return {
-            id: item?.id || `${item?.productName || "item"}-${item?.quantity || 1}`,
-            label: item?.productName || "Invoice item",
-            description: descriptionParts.join("\n"),
-            quantity: toNumber(item?.quantity, 1),
-            unitPrice: formatFlexibleMoney(item?.unitPrice, currency),
-            totalPrice: formatFlexibleMoney(
-              item?.lineTotal || item?.totalPrice || item?.unitPrice,
-        
-            ),
-          };
-        })
-      : [],
+    lineItems: buildInvoiceRows(orderNode).map((item) => ({
+      ...item, unitPrice: formatMoney(item.unitPrice), totalPrice: formatMoney(item.totalPrice),
+      amountRaw: item.totalPrice,
+    })),
   };
 }
 
@@ -678,6 +602,11 @@ function mapInvoiceDetail(node, orderFallback = null) {
     node.subtotal?.currency ||
     "NOK";
   const fallbackOrder = mapInvoiceOrderFallback(orderFallback, currency);
+  const lineItems = Array.isArray(node.lineItems) && node.lineItems.length
+    ? mapInvoiceApiRows(node.lineItems, orderFallback || {}).map((item) => ({
+      ...item, amountRaw: item.totalPrice, unitPrice: formatMoney(item.unitPrice), totalPrice: formatMoney(item.totalPrice),
+    }))
+    : fallbackOrder.lineItems;
   const grossAmount = resolveGrossInvoiceAmount({
     ...node,
     order: orderFallback || node.order,
@@ -707,6 +636,11 @@ function mapInvoiceDetail(node, orderFallback = null) {
       formatMoney(node.deliveryFee),
     tipAmount: fallbackOrder.tipAmount || formatMoney(0, currency),
     totalAmount: formatMoney(grossAmount, currency),
+    amountMismatch: lineItems.length > 0 && Math.abs(
+      lineItems.reduce((sum, item) => sum + item.amountRaw, 0) +
+      parseMoney(node.deliveryFee) + parseMoney(orderFallback?.pricing?.tipAmount) +
+      parseMoney(orderFallback?.pricing?.serviceFee) - parseMoney(orderFallback?.pricing?.discountAmount) - grossAmount
+    ) > 0.01,
     paidAmount:
       formatMoney(node.amountPaid),
     dueAmount: formatMoney(parseMoneyAmount(node.amountDue) || grossAmount, currency),
@@ -753,6 +687,10 @@ function mapInvoiceDetail(node, orderFallback = null) {
       eventDate: fallbackOrder.eventDate || formatDate(node.dueDate),
       personCount: fallbackOrder.personCount || 0,
       deliveryAddressStr: fallbackOrder.deliveryAddressStr || "",
+      deliveryStreet: orderFallback?.deliveryAddress || "",
+      deliverySuite: orderFallback?.deliverySuite || "",
+      deliveryPostalCode: orderFallback?.deliveryPostalCode || "",
+      deliveryCity: orderFallback?.deliveryCity || "",
     },
     billingAddress: {
       address: "",
@@ -825,7 +763,7 @@ function mapInvoiceDetail(node, orderFallback = null) {
             : null,
         }
       : null,
-    lineItems: fallbackOrder.lineItems,
+    lineItems,
   };
 }
 

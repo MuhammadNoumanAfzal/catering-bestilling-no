@@ -1,5 +1,7 @@
 const no = {
   clientInvoice: {
+    street: "Gateadresse", postalCode: "Postnummer", city: "By", suite: "Leilighet / etasje",
+    amountMismatch: "Varebeløpene stemmer ikke med fakturabeløpet. Kontakt Go Catering for å få beløpet kontrollert.",
     customer: "Kunde",
     loading: "Laster fakturadetaljer", loadError: "Kunne ikke laste fakturaen", retry: "Prøv igjen",
     back: "Tilbake til fakturaer", title: "Fakturadetaljer", total: "Fakturabeløp",
@@ -901,6 +903,7 @@ const no = {
     rejectionReasonRequired: "En avvisningsgrunn er påkrevd.",
   },
   checkout: {
+    priceMismatch: "Prisene i menyen og bestillingsberegningen stemmer ikke overens. Bestillingen kan ikke sendes før prisene er kontrollert av Go Catering.",
     checkingAvailability: "Sjekker tilgjengelig leveringstid...",
     chooseAnotherSlot: "Velg en annen leveringstid",
     slotUnavailableTitle: "Leveringstiden er ikke tilgjengelig",

@@ -81,6 +81,9 @@ export default function VendorInvoiceDetailsPage() {
       </div>
 
       <section className="min-w-0 py-7">
+        {invoice.amountMismatch ? (
+          <p role="status" className="mb-4 border-l-4 border-[#cf6e38] bg-[#fff6ed] px-4 py-3 text-sm leading-6 text-[#803d19]">{label("amountMismatch")}</p>
+        ) : null}
         <h2 className="mb-4 text-[16px] font-semibold">{label("items")}</h2>
         {invoice.lineItems.length ? (
           <>
@@ -137,7 +140,12 @@ export default function VendorInvoiceDetailsPage() {
         <dl className="mt-4 grid gap-5 sm:grid-cols-[1fr_1fr_2fr] [&_dt]:text-[13px] [&_dt]:text-[#62676e] [&_dd]:text-sm [&_dd]:font-medium [&_dd]:leading-6">
           <div><dt>{label("date")}</dt><dd className="mt-1">{invoice.order.eventDate || label("notProvided")}</dd></div>
           <div><dt>{label("guests")}</dt><dd className="mt-1">{invoice.order.personCount || label("notProvided")}</dd></div>
-          <div><dt>{label("address")}</dt><dd className="mt-1 break-words">{invoice.order.deliveryAddressStr || label("notProvided")}</dd></div>
+          <div className="grid gap-4 sm:col-span-3 sm:grid-cols-3">
+            <div><dt>{label("street")}</dt><dd className="mt-1 break-words">{invoice.order.deliveryStreet || invoice.order.deliveryAddressStr || label("notProvided")}</dd></div>
+            <div><dt>{label("postalCode")}</dt><dd className="mt-1">{invoice.order.deliveryPostalCode || label("notProvided")}</dd></div>
+            <div><dt>{label("city")}</dt><dd className="mt-1 break-words">{invoice.order.deliveryCity || label("notProvided")}</dd></div>
+            {invoice.order.deliverySuite ? <div><dt>{label("suite")}</dt><dd className="mt-1 break-words">{invoice.order.deliverySuite}</dd></div> : null}
+          </div>
         </dl>
         {invoice.note ? <p className="mt-4 whitespace-pre-line text-sm leading-6"><span className="font-semibold">{label("note")}: </span>{invoice.note}</p> : null}
       </section>

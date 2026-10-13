@@ -1,5 +1,7 @@
 const en = {
   clientInvoice: {
+    street: "Street address", postalCode: "Postal code", city: "City", suite: "Apartment / floor",
+    amountMismatch: "The item amounts do not match the invoice total. Contact Go Catering to have the amount checked.",
     customer: "Customer",
     loading: "Loading invoice details", loadError: "Could not load invoice", retry: "Try again",
     back: "Back to invoices", title: "Invoice details", total: "Invoice amount",
@@ -864,6 +866,7 @@ const en = {
     rejectionReasonRequired: "A rejection reason is required.",
   },
   checkout: {
+    priceMismatch: "Menu prices and the order calculation do not match. The order cannot be submitted until Go Catering has checked the prices.",
     checkingAvailability: "Checking delivery availability...",
     chooseAnotherSlot: "Choose another delivery time",
     slotUnavailableTitle: "Delivery time unavailable",
