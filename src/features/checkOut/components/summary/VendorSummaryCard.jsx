@@ -5,7 +5,7 @@ import OrderItemCard from "./OrderItemCard";
 import PriceDetailsCard from "./PriceDetailsCard";
 import TipSelector from "./TipSelector";
 import {
-  getItemPrice,
+  getPreviewItemPrice,
   getVendorTotals,
   sortSummaryItems,
 } from "./checkoutSummaryUtils";
@@ -20,7 +20,7 @@ export default function VendorSummaryCard({
   const personCount = cart.orderSummary.personCount;
   const items = sortSummaryItems(cart.orderSummary.items).map((item) => ({
     ...item,
-    effectivePrice: getItemPrice(item, personCount),
+    effectivePrice: getPreviewItemPrice(item, cart.orderSummary),
   }));
   const {
     subtotal,

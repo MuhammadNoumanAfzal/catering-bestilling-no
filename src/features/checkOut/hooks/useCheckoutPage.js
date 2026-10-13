@@ -4,6 +4,7 @@ import i18n from "../../../i18n";
 import { useAuth } from "../../auth";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { updateAddOnQuantity } from "../utils/updateAddOnQuantity";
+import { getVendorTotals } from "../components/summary/checkoutSummaryUtils";
 import {
 } from "../../vendor";
 import {
@@ -493,6 +494,7 @@ export function useCheckoutPage() {
     () =>
       carts.flatMap((cart) => {
         const messages = collectAvailabilityMessages(cart?.orderSummary?.availability);
+        if (getVendorTotals(cart).pricingMismatch) messages.push(i18n.t("checkout.priceMismatch"));
 
         if (messages.length === 0) {
           return [];

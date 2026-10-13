@@ -42,6 +42,8 @@ export const CREATE_ORDER_MUTATION = `
           taxAmount
           pricesIncludeVat
           deliveryFee
+          addOnsTotal
+          tipAmount
           grandTotal
           amountPaid
           amountDue

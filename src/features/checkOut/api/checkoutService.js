@@ -2,6 +2,7 @@ import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import i18n from "../../../i18n";
 import { parseDeliverySlotResponse } from "./deliverySlotResponse";
 import { isAuthAvailabilityError } from "./availabilityErrors";
+import { getVendorTotals } from "../components/summary/checkoutSummaryUtils";
 import { fetchVendors } from "../../vendor/api/vendorService";
 import { adaptApiVendorToProfile } from "../../vendor/api/vendorMappers";
 import { isVendorAvailableForPostalCode } from "../../vendor/services/vendorAvailability";
@@ -146,6 +147,8 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
       taxAmount: invoice.pricing?.taxAmount ?? null,
       pricesIncludeVat: invoice.pricing?.pricesIncludeVat ?? true,
       deliveryFee: invoice.pricing?.deliveryFee ?? null,
+      addOnsTotal: invoice.pricing?.addOnsTotal ?? null,
+      tipAmount: invoice.pricing?.tipAmount ?? null,
       grandTotal: invoice.pricing?.grandTotal ?? null,
       amountPaid: invoice.pricing?.amountPaid ?? null,
       amountDue: invoice.pricing?.amountDue ?? null,
@@ -176,6 +179,11 @@ export async function placeCheckoutOrders({ carts, checkoutType, formState }) {
       throw new Error(i18n.t("checkout.vendorOutsideDeliveryArea"));
     }
     const preview = await fetchCheckoutPreview({ cart, checkoutType, formState });
+    if (!preview.pricing || getVendorTotals({ ...cart, orderSummary: {
+      ...cart.orderSummary, pricing: preview.pricing,
+    } }).pricingMismatch) {
+      throw new Error(i18n.t("checkout.priceMismatch"));
+    }
     if (preview.availability?.isValid !== true) {
       throw new Error(preview.availability?.errors?.[0]?.message || i18n.t("checkout.unavailable"));
     }

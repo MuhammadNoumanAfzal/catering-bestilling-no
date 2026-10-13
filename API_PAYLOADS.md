@@ -1,5 +1,33 @@
 # API Names and Payloads
 
+## Pricing Consistency Requirement
+
+Updated backend contract: add-on customer prices are gross (`price_with_tax`).
+Read `checkoutPreview.pricing` directly, including subtotal, addOnsTotal,
+tipAmount, included taxAmount, and grandTotal. Never add included VAT to the total.
+Read `invoice.lineItems` directly for separate menu/add-on quantities and prices;
+use saved order items only as a compatibility fallback. Do not recalculate or
+VAT-convert persisted financial amounts. The reported backend migration
+`0034_heal_addon_pricing.py` handles historical corrections on the server.
+
+Checkout preview, createOrder, saved clientOrder, and invoice must use the same
+customer-facing pricing calculation. The frontend now uses API totals and blocks
+submission when catalogue prices differ from the checkout preview.
+
+Reproduction: 30 guests at 600 NOK, 12 add-ons at 89 NOK, and a 3813.60 NOK tip.
+Expected: menu 18000, add-ons 1068, total 22881.60.
+Reported persisted values: add-on unit 77.39, add-ons 928.68, total 22742.28.
+Difference: 139.32 NOK. Verify whether the backend is removing VAT from add-ons
+without adding it back into customer totals. Do not fix by adding VAT twice.
+
+Backend requirements:
+- Persist immutable gross and net unit/line prices with an explicit VAT basis.
+- Use the same pricing service in preview, createOrder, order, and invoice resolvers.
+- Keep menu-only line totals separate from selected add-on totals.
+- Return pricingType, guest count, and add-on quantity explicitly.
+- Review historical orders/invoices separately; frontend changes do not repair
+  persisted financial records or externally issued invoices.
+
 ## Auth
 ### Public Delivery Availability
 
