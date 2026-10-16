@@ -1,5 +1,22 @@
 # API Names and Payloads
 
+## Smartsupp Client Chat
+
+Client-only widget loads once after the initial render, using the public chat key.
+Optional deployment variables: `VITE_SMARTSUPP_KEY` overrides the account key;
+`VITE_SMARTSUPP_ENABLED=false` disables the integration.
+
+Widget language is Norwegian. Privacy notice links to `/privacy-policy` and
+requires acknowledgement inside the chat. This is not a full cookie consent
+manager; review third-party loading against the site's approved privacy policy.
+No account identity, order details, passwords, or private API tokens are sent
+automatically. Vendor and admin apps are unchanged.
+
+Smartsupp dashboard configuration remains separate: enable/configure the AI
+agent, approved Norwegian knowledge sources, live-agent availability, and
+offline responses. This frontend installation does not activate a paid plan or
+make human agents available 24/7.
+
 ## Pricing Consistency Requirement
 
 Updated backend contract: add-on customer prices are gross (`price_with_tax`).
