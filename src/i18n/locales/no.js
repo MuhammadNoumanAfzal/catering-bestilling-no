@@ -364,12 +364,12 @@ const no = {
         food: {
           title: "Velg mat",
           description:
-            "Utforsk buffeter, serveringsfat, fingermat og cateringpakker laget for møter, feiringer og arrangementer med mange gjester.",
+            "Utforsk buffeter, kaker, fingermat og cateringpakker laget for møter, feiringer og arrangementer",
         },
         delivery: {
           title: "Få levert",
           description:
-            "Bestill med trygghet og få cateringen levert til rett tid for teamet ditt, gjestene dine eller arrangementsstedet.",
+            "Bestill med trygghet og få levert til rett tid for teamet ditt, gjestene dine eller arrangementet.",
         },
       },
     },
