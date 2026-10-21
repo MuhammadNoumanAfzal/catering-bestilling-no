@@ -72,6 +72,7 @@ export const GET_CHECKOUT_PREVIEW_QUERY = `
         pricingType
         unitPrice
         quantity
+        personCount
         serves
         lineSubtotal
         lineTax

@@ -1,4 +1,5 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
+import { independentAddOnsEnabled, isIndependentAddOn, isDirectlyOrderableProduct } from "../utils/addOnTypes";
 import {
   adaptApiProductToMenuItem,
   adaptApiVendorToProfile,
@@ -24,6 +25,7 @@ function mapVendorAddOns(edges) {
     .map((node) => {
       return {
         id: node.id,
+        addOnType: node.addOnType,
         name: node.title || node.name,
         description: node.description || "",
         priceWithTax: node.priceWithTax,
@@ -62,13 +64,14 @@ function enrichProductAddOnImages(product, vendorAddOns) {
             String(option.label || option.name || "").toLowerCase(),
           );
 
+          if (isIndependentAddOn(matchedAddOn)) return null;
           return {
             ...option,
             productId: matchedAddOn?.id || option.productId || option.id,
             image: matchedAddOn?.coverImage?.fileUrl || option.image || "",
           };
-        }),
-      })),
+        }).filter(Boolean),
+      })).filter((group) => group.options.length > 0),
     },
   };
 }
@@ -125,16 +128,26 @@ async function hydrateMenuVendorRating(vendorProfile, vendorSlug) {
 }
 
 export async function fetchMenuDetails({ itemId, vendorSlug }) {
-  const response = await graphqlRequest({
+  let response = await graphqlRequest({
     query: FETCH_PRODUCT_QUERY,
-    variables: { id: itemId },
+    variables: { id: itemId, includeMenuContents: !independentAddOnsEnabled },
+    publicRequest: true,
   });
+
+  // Standalone products have no menu contents or menu-attached add-ons.
+  if (independentAddOnsEnabled && response.product && !isIndependentAddOn(response.product)) {
+    response = await graphqlRequest({
+      query: FETCH_PRODUCT_QUERY,
+      variables: { id: itemId, includeMenuContents: true },
+      publicRequest: true,
+    });
+  }
 
   if (!response.product) {
     throw new Error("Product not found.");
   }
 
-  if (`${response.product.menuStatus ?? ""}`.toLowerCase() !== "active") {
+  if (`${response.product.menuStatus ?? ""}`.toLowerCase() !== "active" || !isDirectlyOrderableProduct(response.product)) {
     throw new Error("Product is not available.");
   }
 
@@ -174,7 +187,7 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
   const hasProductLevelAddOns =
     Array.isArray(productResult?.modal?.optionalSelections) &&
     productResult.modal.optionalSelections.length > 0;
-  const product = hasProductLevelAddOns
+  const product = isIndependentAddOn(productResult) ? productResult : hasProductLevelAddOns
     ? enrichProductAddOnImages(productResult, vendorAddOns)
     : attachAddOnsToMenuItem(productResult, vendorAddOns);
 

@@ -1,4 +1,5 @@
 import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
+import { independentAddOnsEnabled, isIndependentAddOn, isDirectlyOrderableProduct } from "../../menu/utils/addOnTypes";
 import { getPublicMenuCount, isPublicVendorVisible } from "./publicVisibility";
 
 const DAY_MAP = {
@@ -36,7 +37,7 @@ const DAY_NAMES_SHORT = {
 const DAY_CODE_BY_INDEX = ["su", "mo", "tu", "we", "th", "fr", "sa"];
 
 function isPrimaryMenuProduct(node) {
-  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
+  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu" || (independentAddOnsEnabled && isIndependentAddOn(node));
 }
 
 function isCustomerVisibleMenuProduct(node) {
@@ -145,6 +146,7 @@ function formatDaysRange(days) {
 }
 
 function buildOptionalSelections(product) {
+  if (isIndependentAddOn(product)) return [];
   return (product.optionalAddOns || []).map((group) => ({
     title: group.name || group.title || "Add-ons",
     options: (group.options || group.items || []).map((option) => ({
@@ -201,6 +203,7 @@ function unwrapSpecialClosures(specialClosures) {
 }
 
 function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
+  const minimumQuantity = isIndependentAddOn(product) ? 1 : Math.max(1, Number(product.minimumQuantity) || 1);
   const vendorBasePrice = parseFloat(product.priceWithTax || 0);
   const price = toCustomerVatInclusivePrice(vendorBasePrice);
   const serves = product.minimumGuests || 1;
@@ -220,6 +223,9 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
 
   return {
     id: product.id || fallbackId,
+    addOnType: product.addOnType || null,
+    productType: product.productType || "menu",
+    minimumQuantity,
     title: product.name,
     image: product.coverImage?.fileUrl || "",
     serves,
@@ -246,7 +252,7 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
       pricePerPerson: unitPrice.toFixed(2),
       priceLabel: pricingType === "per-person" ? "per person" : "per order",
       badge: subcategory,
-      quantityOptions: ["1 order", "2 orders", "5 orders", "10 orders"],
+      quantityOptions: [...new Set([minimumQuantity, Math.max(2, minimumQuantity), Math.max(5, minimumQuantity), Math.max(10, minimumQuantity)])].map((quantity) => `${quantity} ${quantity === 1 ? "order" : "orders"}`),
       requiredSelection: null,
       optionalSelections: buildOptionalSelections(product),
       instructionPlaceholder: "",
@@ -255,7 +261,7 @@ function buildMenuItem(product, subcategory = "Menu Item", fallbackId) {
 }
 
 export function adaptApiProductToMenuItem(product, subcategory = "Menu Item") {
-  if (!product || !isCustomerVisibleMenuProduct(product)) {
+  if (!product || !isCustomerVisibleMenuProduct(product) || !isDirectlyOrderableProduct(product)) {
     return null;
   }
 

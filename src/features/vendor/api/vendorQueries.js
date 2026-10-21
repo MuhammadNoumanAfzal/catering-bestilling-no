@@ -1,3 +1,5 @@
+import { standaloneProductFields } from "../../menu/utils/addOnTypes.js";
+
 export const FETCH_VENDORS_QUERY = `
   query FetchVendors {
     vendors {
@@ -77,6 +79,7 @@ export const FETCH_VENDORS_QUERY = `
               name
               menuStatus
               productType
+              ${standaloneProductFields}
               description
               priceWithTax
               averageRating
@@ -113,7 +116,7 @@ export const FETCH_VENDORS_QUERY = `
 `;
 
 export const FETCH_VENDOR_BY_SLUG_QUERY = `
-  query GetVendorBySlug($slug: String!) {
+  query GetVendorBySlug($slug: String!, $includeReviewPermissions: Boolean! = false) {
     vendor(slug: $slug) {
       id
       slug
@@ -126,8 +129,8 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
       publicActiveMenuCount
       rating
       reviewsCount
-      canReview
-      hasReviewed
+      canReview @include(if: $includeReviewPermissions)
+      hasReviewed @include(if: $includeReviewPermissions)
       reviewSummary {
         averageRating
         totalCount
@@ -199,6 +202,7 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
           name
           menuStatus
           productType
+          ${standaloneProductFields}
           description
           priceWithTax
           averageRating
@@ -224,18 +228,6 @@ export const FETCH_VENDOR_BY_SLUG_QUERY = `
           coverImage {
             id
             fileUrl
-          }
-          optionalAddOns {
-            id
-            name
-            minSelect
-            maxSelect
-            isRequired
-            options {
-              id
-              name
-              price
-            }
           }
         }
       }

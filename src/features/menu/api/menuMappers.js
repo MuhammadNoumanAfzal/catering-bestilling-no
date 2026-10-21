@@ -1,4 +1,5 @@
 import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
+import { isIndependentAddOn } from "../utils/addOnTypes";
 
 function cleanAddOnName(value) {
   return String(value || "")
@@ -7,6 +8,8 @@ function cleanAddOnName(value) {
 }
 
 export function attachAddOnsToMenuItem(menuItem, addOns) {
+  if (isIndependentAddOn(menuItem)) return menuItem;
+  addOns = Array.isArray(addOns) ? addOns.filter((item) => !isIndependentAddOn(item)) : [];
   if (!menuItem || !Array.isArray(addOns) || addOns.length === 0) {
     return menuItem;
   }

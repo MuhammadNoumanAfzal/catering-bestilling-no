@@ -1,3 +1,5 @@
+import { normalizeStandaloneItem } from "../../menu/utils/standaloneCart.js";
+
 const STORAGE_PREFIX = "vendor-order-summary:";
 const ORDER_SUMMARY_UPDATED_EVENT = "vendor-order-summary-updated";
 
@@ -142,7 +144,7 @@ export function readOrderSummary(vendor) {
     return {
       ...fallback,
       ...orderSummary,
-      items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
+      items: Array.isArray(orderSummary?.items) ? orderSummary.items.map(normalizeStandaloneItem) : [],
       pricing: null,
       previewItems: [],
       pricingCurrency: "NOK",
@@ -216,7 +218,7 @@ export function readAllStoredOrderSummaries() {
           orderSummary: {
             ...createInitialOrderSummary(vendor),
             ...orderSummary,
-            items: Array.isArray(orderSummary?.items) ? orderSummary.items : [],
+            items: Array.isArray(orderSummary?.items) ? orderSummary.items.map(normalizeStandaloneItem) : [],
             pricing: null,
             previewItems: [],
             pricingCurrency: "NOK",

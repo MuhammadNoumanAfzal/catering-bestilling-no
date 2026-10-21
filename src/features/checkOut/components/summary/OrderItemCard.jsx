@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import StandaloneItemControls from "../../../menu/components/StandaloneItemControls";
 import { useEffect, useState } from "react";
 import {
   formatCurrency,
@@ -11,6 +12,7 @@ export default function OrderItemCard({
   vendorSlug,
   onRemoveItem,
   onAddOnQuantityChange,
+  onStandaloneItemChange,
 }) {
   const { t } = useTranslation();
   const [quantityDraft, setQuantityDraft] = useState(String(item.quantity));
@@ -42,6 +44,7 @@ export default function OrderItemCard({
               ? t("vendor.qty", { count: item.quantity })
               : t("vendor.serves", { count: getItemServes(item, personCount) })}
           </p>
+          {item.addOnType === "INDEPENDENT" && item.pricingType !== "per-person" && <p className="mt-0.5 text-[12px] text-[#8b8580]">{t("vendor.qty", { count: item.quantity })}</p>}
         </div>
 
         <div className="text-right">
@@ -58,6 +61,7 @@ export default function OrderItemCard({
         </div>
       </div>
 
+      {item.addOnType === "INDEPENDENT" && onStandaloneItemChange && <StandaloneItemControls item={item} onChange={(changes) => onStandaloneItemChange(vendorSlug, item.id, changes)} />}
       {item.isAddOn && onAddOnQuantityChange ? (
         <div className="mt-2 inline-flex h-8 items-center rounded-[8px] border border-[#ded6ce] bg-white">
           <button type="button" aria-label={`${item.name} -`} onClick={() => commitQuantity(item.quantity - 1)} className="h-full w-8 border-r border-[#ded6ce] text-[#555]">-</button>

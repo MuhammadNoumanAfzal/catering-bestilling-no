@@ -47,6 +47,7 @@ export default function CheckoutPage() {
     setIsInvoiceAddressEditing,
     updateCartField,
     handleAddOnQuantityChange,
+    handleStandaloneItemChange,
     updateField,
   } = useCheckoutPage();
 
@@ -203,6 +204,7 @@ export default function CheckoutPage() {
                 </CheckoutSection>
 
                 <EventDetailsSection
+                  showMenuGuestCount={carts.some((cart) => cart.orderSummary.items.some((item) => !item.isAddOn && item.addOnType !== "INDEPENDENT"))}
                   vendors={carts.map((cart) => cart.vendor)}
                   mode={normalizedType}
                   formState={formState}
@@ -234,6 +236,7 @@ export default function CheckoutPage() {
                   onTipChange={handleTipChange}
                   onRemoveItem={handleRemoveItem}
                   onAddOnQuantityChange={handleAddOnQuantityChange}
+                  onStandaloneItemChange={handleStandaloneItemChange}
                   onPlaceOrder={handlePlaceOrder}
                 />
               ) : (

@@ -1,4 +1,5 @@
 import { LuUtensilsCrossed } from "react-icons/lu";
+import StandaloneItemControls from "../../menu/components/StandaloneItemControls";
 import { useState } from "react";
 import { fetchAvailableDeliverySlots } from "../../checkOut/api";
 import { hasBookableSlot } from "../services/bookingAvailability";
@@ -61,6 +62,7 @@ export default function VendorOrderSidebar({
   onDeliveryDateChange,
   onDeliveryTimeChange,
   onPersonCountChange,
+  onStandaloneItemChange,
   onDeliveryAddressChange,
   onInvoiceAddressChange,
 }) {
@@ -186,6 +188,7 @@ export default function VendorOrderSidebar({
                       {item.isAddOn
                         ? t("vendor.qty", { count: item.quantity })
                         : t("vendor.serves", { count: item.effectiveServes })}
+                      {item.addOnType === "INDEPENDENT" && item.pricingType !== "per-person" && <span className="block">{t("vendor.qty", { count: item.quantity })}</span>}
                     </p>
                     <button
                       type="button"
@@ -195,6 +198,7 @@ export default function VendorOrderSidebar({
                       {t("vendor.deleteItem")}
                     </button>
                   </div>
+                  {item.addOnType === "INDEPENDENT" && onStandaloneItemChange && <StandaloneItemControls item={item} onChange={(changes) => onStandaloneItemChange(item.id, changes)} />}
                 </div>
               ))}
 
@@ -297,7 +301,7 @@ export default function VendorOrderSidebar({
                 </div>
               </div>
 
-              <div className="mt-4">
+              {items.some((item) => !item.isAddOn && item.addOnType !== "INDEPENDENT") && <div className="mt-4">
                 <p className="type-para font-semibold ">{t("menu.personsLabel")}</p>
                 <div className="mt-2 inline-flex items-center border border-[#d7d1ca] text-[14px] text-[#3a3a3a]">
                   <button
@@ -324,7 +328,7 @@ export default function VendorOrderSidebar({
                     +
                   </button>
                 </div>
-              </div>
+              </div>}
 
               <div className="mt-4 text-center type-para text-[#55514d]">
                 <p>

@@ -15,6 +15,7 @@ export default function CheckoutSummaryPanel({
   onTipChange,
   onRemoveItem,
   onAddOnQuantityChange,
+  onStandaloneItemChange,
   onPlaceOrder,
   missingDetails = [],
   onMissingDetail,
@@ -50,6 +51,7 @@ export default function CheckoutSummaryPanel({
                 onTipChange={onTipChange}
                 onRemoveItem={onRemoveItem}
                 onAddOnQuantityChange={onAddOnQuantityChange}
+                onStandaloneItemChange={onStandaloneItemChange}
               />
             ))}
           </div>
