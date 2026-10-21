@@ -2,6 +2,29 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildInvoiceRows, mapInvoiceApiRows, resolveInvoiceAmount } from "./invoiceAmounts.js";
 import { formatInvoiceDeliveryAddress } from "./invoiceDeliveryAddress.js";
+test("invoices still render when the optional order lookup returns null", () => {
+  assert.deepEqual(buildInvoiceRows(null), []);
+  assert.equal(formatInvoiceDeliveryAddress(null), "");
+  const rows = mapInvoiceApiRows([{ label: "Standalone", quantity: 1, personCount: 21, unitPrice: 10, totalPrice: 210 }]);
+  assert.equal(rows[0].totalPrice, 210);
+  assert.equal(rows[0].personCount, 21);
+});
+test("standalone per-person lines use their own guests, including multiple units", () => {
+  const item = { addOnType: "INDEPENDENT", personCount: 5, quantity: 2, pricingType: "per-person", unitPrice: 89, lineTotal: 890 };
+  const row = buildInvoiceRows({ personCount: 30, items: [item] })[0];
+  assert.equal(row.quantity, 10);
+  assert.equal(row.personCount, 5);
+  assert.equal(row.totalPrice, 890);
+  assert.equal(buildInvoiceRows({ personCount: 30, items: [{ ...item, pricingType: "fixed", lineTotal: 178 }] })[0].quantity, 2);
+});
+test("invoice API standalone counts do not inherit order guests or multiply billed units twice", () => {
+  const rows = mapInvoiceApiRows([
+    { quantity: 2, personCount: 5, unitPrice: 89, totalPrice: 890 },
+    { quantity: 10, personCount: 5, unitPrice: 89, totalPrice: 890 },
+    { quantity: 2, personCount: 5, unitPrice: 89, totalPrice: 178 },
+  ], { personCount: 30 });
+  assert.deepEqual(rows.map((item) => item.quantity), [10, 10, 2]);
+});
 test("menus and add-ons have separate quantities and consistent amounts", () => {
   const rows = buildInvoiceRows({ items: [{ id: "1", productName: "Tapas", quantity: 148, unitPrice: 700,
     lineSubtotal: 103600, lineTotal: 106270, selectedAddons: [{ name: "Crema catalana", quantity: 30, unitPrice: 89, totalPrice: 2670 }] }] });

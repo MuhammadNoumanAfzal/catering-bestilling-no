@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import i18n from "../../../i18n";
+import { updateStandaloneItem } from "../../menu/utils/standaloneCart.js";
+import { getCheckoutValidationFieldErrors } from "../api/checkoutValidationErrors.js";
 import { useAuth } from "../../auth";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { updateAddOnQuantity } from "../utils/updateAddOnQuantity";
@@ -181,7 +183,7 @@ function getCartMinimumPersonCount(cart) {
 
   return (
     items
-      .filter((item) => !item?.isAddOn)
+      .filter((item) => !item?.isAddOn && item?.addOnType !== "INDEPENDENT")
       .reduce((highestMinimum, item) => {
         const nextMinimum = Math.max(
           1,
@@ -279,6 +281,13 @@ export function useCheckoutPage() {
     setCheckoutErrorMessage("");
     setCarts((current) => current.map((cart) => cart.vendor.slug !== vendorSlug ? cart : {
       ...cart, orderSummary: updateAddOnQuantity(cart.orderSummary, itemId, quantity),
+    }));
+  };
+
+  const handleStandaloneItemChange = (vendorSlug, itemId, changes) => {
+    setCheckoutErrorMessage("");
+    setCarts((current) => current.map((cart) => cart.vendor.slug !== vendorSlug ? cart : {
+      ...cart, orderSummary: updateStandaloneItem(cart.orderSummary, itemId, changes),
     }));
   };
 
@@ -1027,6 +1036,12 @@ export function useCheckoutPage() {
       navigate("/order-confirmed");
     } catch (error) {
       const successfulOrders = error?.successfulOrders ?? [];
+      setCheckoutErrorMessage(error.message || i18n.t("checkout.placeOrderFailedMessage"));
+      const serverFieldErrors = getCheckoutValidationFieldErrors(error);
+      setFieldErrors((current) => ({ ...current, ...serverFieldErrors }));
+      if (["deliveryAddress", "deliveryPostalCode", "deliveryCity"].some((field) => serverFieldErrors[field])) {
+        setIsDeliveryAddressEditing(true);
+      }
 
       if (successfulOrders.length > 0) {
         const successfulVendorSlugs = new Set(
@@ -1084,6 +1099,7 @@ export function useCheckoutPage() {
     handleDateChange,
     updateCartField,
     handleAddOnQuantityChange,
+    handleStandaloneItemChange,
     updateField,
     requiredMinimumPersonCount,
   };

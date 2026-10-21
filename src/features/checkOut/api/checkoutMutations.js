@@ -3,6 +3,10 @@ export const CREATE_ORDER_MUTATION = `
     createOrder(input: $input) {
       success
       message
+      availability {
+        isValid
+        errors { code message field meta }
+      }
       order {
         id
         orderNumber
@@ -31,6 +35,7 @@ export const CREATE_ORDER_MUTATION = `
       invoice {
         id
         invoiceNumber
+        lineItems { id label description quantity personCount unitPrice totalPrice }
         status
         issueDate
         dueDate

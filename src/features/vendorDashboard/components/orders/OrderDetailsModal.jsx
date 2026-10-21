@@ -227,7 +227,7 @@ export default function OrderDetailsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(31,22,15,0.45)] px-4 py-6 backdrop-blur-[6px]">
-      <div className="relative max-h-[92vh] w-full max-w-[760px] overflow-hidden rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,#fffdfa_0%,#ffffff_100%)] shadow-[0_30px_80px_rgba(24,18,14,0.24)]">
+      <div className="relative flex max-h-[92vh] w-full max-w-[760px] flex-col overflow-hidden rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,#fffdfa_0%,#ffffff_100%)] shadow-[0_30px_80px_rgba(24,18,14,0.24)]">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top,#ffd8bf_0%,rgba(255,216,191,0)_72%)]" />
 
         <button
@@ -239,7 +239,7 @@ export default function OrderDetailsModal({
           <FiX className="text-[18px]" />
         </button>
 
-        <div className="hide-scrollbar max-h-[92vh] overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto">
           <div className="relative border-b border-[#efe6de] px-6 py-6 text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-[#c67a4d]">
               {t("vendorPanel.orderDetails.overview")}
@@ -741,7 +741,7 @@ export default function OrderDetailsModal({
             </section>
           </div>
 
-          <div className="sticky bottom-0 flex items-center justify-between border-t border-[#ece4dc] bg-white/95 px-6 py-4 backdrop-blur-sm">
+          <div className="sticky bottom-0 flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-[#ece4dc] bg-white/95 px-6 py-4 backdrop-blur-sm">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9a8572]">
                 {t("vendorPanel.orderDetails.grandTotal")}

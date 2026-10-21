@@ -1,5 +1,7 @@
+import { independentAddOnsEnabled, isIndependentAddOn } from "../../menu/utils/addOnTypes.js";
+
 export function isPrimaryMenuProduct(node) {
-  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu";
+  return `${node?.productType ?? "menu"}`.toLowerCase() === "menu" || (independentAddOnsEnabled && isIndependentAddOn(node));
 }
 
 export function isCustomerVisibleMenuProduct(node) {

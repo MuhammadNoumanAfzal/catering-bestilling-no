@@ -2,6 +2,7 @@ import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import i18n from "../../../i18n";
 import { parseDeliverySlotResponse } from "./deliverySlotResponse";
 import { isAuthAvailabilityError } from "./availabilityErrors";
+import { createCheckoutValidationError } from "./checkoutValidationErrors.js";
 import { getVendorTotals } from "../components/summary/checkoutSummaryUtils";
 import { fetchVendors } from "../../vendor/api/vendorService";
 import { adaptApiVendorToProfile } from "../../vendor/api/vendorMappers";
@@ -109,8 +110,8 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
   });
   const result = response?.createOrder;
 
-  if (!result?.success) {
-    throw new Error(
+  if (!result?.success || result?.availability?.isValid === false) {
+    throw createCheckoutValidationError(result?.availability,
       result?.message || `Failed to place order for ${cart.vendor.name}.`,
     );
   }
@@ -128,6 +129,7 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
     message: result.message || "Order placed successfully.",
     invoiceId: invoice.id || "",
     invoiceNumber: invoice.invoiceNumber || "",
+    invoiceLineItems: invoice.lineItems || [],
     invoiceStatus: invoice.status || "",
     invoiceIssueDate: invoice.issueDate || "",
     invoiceDueDate: invoice.dueDate || "",
@@ -179,13 +181,13 @@ export async function placeCheckoutOrders({ carts, checkoutType, formState }) {
       throw new Error(i18n.t("checkout.vendorOutsideDeliveryArea"));
     }
     const preview = await fetchCheckoutPreview({ cart, checkoutType, formState });
+    if (preview.availability?.isValid !== true) {
+      throw createCheckoutValidationError(preview.availability, i18n.t("checkout.unavailable"));
+    }
     if (!preview.pricing || getVendorTotals({ ...cart, orderSummary: {
       ...cart.orderSummary, pricing: preview.pricing,
     } }).pricingMismatch) {
       throw new Error(i18n.t("checkout.priceMismatch"));
-    }
-    if (preview.availability?.isValid !== true) {
-      throw new Error(preview.availability?.errors?.[0]?.message || i18n.t("checkout.unavailable"));
     }
   }
   const successfulOrders = [];
@@ -205,6 +207,10 @@ export async function placeCheckoutOrders({ carts, checkoutType, formState }) {
           : error.message;
 
       const partialError = new Error(message);
+      partialError.code = error.code;
+      partialError.field = error.field;
+      partialError.issues = error.issues;
+      partialError.availability = error.availability;
       partialError.successfulOrders = successfulOrders;
       throw partialError;
     }

@@ -1,4 +1,5 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
+import { getStoredAccessToken } from "../../../lib/auth/authSession";
 import { adaptApiVendorReview, adaptApiVendorToProfile } from "./vendorMappers";
 import {
   FETCH_SAVED_VENDORS_QUERY,
@@ -99,7 +100,7 @@ export async function fetchVendorProfileBySlug(vendorSlug) {
   try {
     const response = await graphqlRequest({
       query: FETCH_VENDOR_BY_SLUG_QUERY,
-      variables: { slug: vendorSlug },
+      variables: { slug: vendorSlug, includeReviewPermissions: Boolean(getStoredAccessToken()) },
     });
     const matchedVendor = await hydrateVendorRatingFromReviews(
       adaptApiVendorToProfile(response.vendor),

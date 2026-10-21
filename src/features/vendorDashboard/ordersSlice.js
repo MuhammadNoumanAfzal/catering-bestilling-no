@@ -1,4 +1,5 @@
 import { formatMoney } from "../pricing/formatMoney.js";
+import { getIncludedOrderDishes, getOrderDisplayGuestCount } from "./orderItemDetails.js";
 import { buildInvoiceRows } from "./components/invoices/invoiceAmounts";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
@@ -48,6 +49,9 @@ const FETCH_CLIENT_ORDERS_QUERY = `
           items {
             id
             productName
+            personCount
+            addOnType
+            pricingType
             quantity
             unitPrice
             lineTotal
@@ -143,6 +147,9 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
       items {
         id
         productName
+        personCount
+        addOnType
+        pricingType
         quantity
         unitPrice
         lineTotal
@@ -156,6 +163,7 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         }
         product {
           id
+          addOnType
           name
           description
           coverImage {
@@ -163,9 +171,9 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
             fileUrl
           }
           menuItems {
-            id
-            title
-            description
+            edges {
+              node { id title description }
+            }
           }
         }
       }
@@ -563,7 +571,7 @@ function mapListOrder(node) {
     date: formatDate(draftOverride?.eventDate || node.eventDate),
     eventDateRaw: draftOverride?.eventDate || node.eventDate || "",
     createdOnRaw: node.createdOn || "",
-    person: formatNumber(draftOverride?.personCount || node.personCount, 1),
+    person: formatNumber(getOrderDisplayGuestCount(node, draftOverride?.personCount), 1),
     total: formatAmount(resolvedGrandTotal),
     status: resolveClientDisplayStatus(node, isModified),
     isModified,
@@ -710,11 +718,14 @@ export const fetchClientOrderDetail = createAsyncThunk(
         const original = orderNode.items?.find((source) => source.id === item.id);
         return {
           id: item.id, quantity: item.quantity, name: item.label,
+          personCount: item.personCount,
+          image: original?.product?.coverImage?.fileUrl || "",
           price: formatAmount(item.totalPrice),
           details: [
+            ...(item.personCount ? [i18n.t("orders.lineGuests", { count: item.personCount, defaultValue: "{{count}} guests" })] : []),
             ...(item.description ? item.description.split("\n") : []),
             original?.product?.description,
-            ...(original?.product?.menuItems || []).map((included) => included.title ? `Included: ${included.title}` : ""),
+            ...getIncludedOrderDishes(original?.product).map((included) => included.title ? `Included: ${included.title}` : ""),
           ].filter(Boolean),
         };
       });
@@ -770,7 +781,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           date: formatDate(draftOverride?.eventDate || orderNode.eventDate),
           eventDateRaw: draftOverride?.eventDate || orderNode.eventDate || "",
           createdOnRaw: orderNode.createdOn || "",
-          person: formatNumber(draftOverride?.personCount || orderNode.personCount, 1),
+          person: formatNumber(getOrderDisplayGuestCount(orderNode, draftOverride?.personCount), 1),
           total: formatAmount(resolvedGrandTotal),
           subtotal: formatAmount(orderNode.pricing?.subtotal || orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),

@@ -1,4 +1,5 @@
 import { formatMoney } from "../../../pricing/formatMoney.js";
+import { getLineGuestCount } from "../../../menu/utils/addOnTypes.js";
 export const TIP_OPTIONS = [
   { label: "10%", value: 0.1 },
   { label: "15%", value: 0.15 },
@@ -83,6 +84,7 @@ export function getLocalMerchandiseTotal(orderSummary) {
 }
 
 export function getItemServes(item, personCount) {
+  if (item.addOnType === "INDEPENDENT") return getLineGuestCount(item, personCount);
   const baseServes = Number(item.totalServes ?? item.serves ?? 0);
   const normalizedPersonCount = Math.max(1, Number(personCount ?? 0) || 1);
 
@@ -97,8 +99,8 @@ export function getItemPrice(item, personCount) {
   const pricingType = item.pricingType === "fixed" ? "fixed" : "per-person";
   const storedPrice = Number(item.price ?? 0);
   const unitPrice = Number(item.unitPrice ?? 0);
-  const quantity = Math.max(1, Number(item.quantity ?? 1));
-  const normalizedPersonCount = Math.max(1, Number(personCount ?? 0) || 1);
+  const quantity = item.addOnType === "INDEPENDENT" && pricingType === "per-person" ? 1 : Math.max(1, Number(item.quantity ?? 1));
+  const normalizedPersonCount = getLineGuestCount(item, personCount);
 
   if (pricingType === "fixed") {
     if (storedPrice > 0) {

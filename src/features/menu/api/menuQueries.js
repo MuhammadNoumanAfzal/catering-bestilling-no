@@ -1,7 +1,11 @@
+import { standaloneProductFields } from "../utils/addOnTypes.js";
+
 export const FETCH_PRODUCT_QUERY = `
-  query FetchProduct($id: ID!) {
+  query FetchProduct($id: ID!, $includeMenuContents: Boolean! = true) {
     product(id: $id) {
       id
+      productType
+      ${standaloneProductFields}
       name
       title
       description
@@ -25,7 +29,7 @@ export const FETCH_PRODUCT_QUERY = `
         id
         fileUrl
       }
-      optionalAddOns {
+      optionalAddOns @include(if: $includeMenuContents) {
         id
         name
         minSelect
@@ -37,7 +41,7 @@ export const FETCH_PRODUCT_QUERY = `
           price
         }
       }
-      menuItems {
+      menuItems @include(if: $includeMenuContents) {
         id
         title
         description
@@ -114,6 +118,7 @@ export const FETCH_VENDOR_ADD_ONS_QUERY = `
       edges {
         node {
           id
+          ${standaloneProductFields}
           name
           title
           description

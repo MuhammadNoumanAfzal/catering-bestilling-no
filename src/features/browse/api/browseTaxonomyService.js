@@ -1,4 +1,5 @@
 import { formatMoney } from "../../pricing/formatMoney.js";
+import { independentAddOnsEnabled, isIndependentAddOn, standaloneProductFields, orderableProductFilter } from "../../menu/utils/addOnTypes";
 import { toCustomerVatInclusivePrice } from "../../pricing/customerPricing";
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import { hydrateRatingsForItems } from "../../../utils/ratingHydrator";
@@ -115,7 +116,7 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
       postCode: $postCode
       areaName: $areaName
       search: $search
-      productType: "menu"
+      ${orderableProductFilter}
       menuStatus: "published"
       sortBy: $sortBy
       priceMin: $priceMin
@@ -136,6 +137,7 @@ const BROWSE_PRODUCTS_BY_FOOD_TYPE_QUERY = `
           slug
           name
           productType
+          ${standaloneProductFields}
           description
           priceWithTax
           pricingType
@@ -248,7 +250,7 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
       postCode: $postCode
       areaName: $areaName
       search: $search
-      productType: "menu"
+      ${orderableProductFilter}
       menuStatus: "published"
       sortBy: $sortBy
       priceMin: $priceMin
@@ -269,6 +271,7 @@ const BROWSE_PRODUCTS_BY_OCCASION_QUERY = `
           slug
           name
           productType
+          ${standaloneProductFields}
           description
           priceWithTax
           pricingType
@@ -499,6 +502,7 @@ function isAddOnCatalogItem(node) {
 }
 
 function isPrimaryMenuProduct(node) {
+  if (independentAddOnsEnabled && isIndependentAddOn(node)) return true;
   const productType = normalizeCatalogText(node?.productType || node?.type || node?.itemType || "menu");
 
   if (isAddOnCatalogItem(node)) {

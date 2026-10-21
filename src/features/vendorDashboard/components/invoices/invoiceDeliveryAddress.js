@@ -1,4 +1,5 @@
 export function formatInvoiceDeliveryAddress(order = {}) {
+  order = order || {};
   const clean = (value) => `${value || ""}`.trim();
   const street = clean(order.deliveryAddress);
   const suite = clean(order.deliverySuite);

@@ -1,4 +1,5 @@
 import { buildCheckoutAddressFields } from "../../../utils/customerProfileStorage";
+import { normalizeStandaloneItem } from "../../menu/utils/standaloneCart.js";
 import {
   getLocalMerchandiseTotal,
   getTipValue,
@@ -161,6 +162,7 @@ function validateRequiredFields(payload, requiredKeys) {
 
 function buildOrderItems(items) {
   return items
+    .map(normalizeStandaloneItem)
     .filter((item) => !item?.isAddOn)
     .map((item) => {
       const productId = resolveProductId(item);
@@ -178,6 +180,7 @@ function buildOrderItems(items) {
       return {
         product: productId,
         quantity: Math.max(1, Number(item.quantity ?? 1)),
+        ...(item.addOnType === "INDEPENDENT" ? { personCount: Math.max(1, Number(item.personCount) || 1) } : {}),
         ...(Object.keys(selectedOptions).length > 0
           ? { selectedOptions }
           : {}),
@@ -191,6 +194,7 @@ function buildCheckoutPreviewItems(items) {
   return buildOrderItems(items).map((item) => ({
     productId: item.product,
     quantity: item.quantity,
+    ...(item.personCount ? { personCount: item.personCount } : {}),
     ...(item.selectedAddons ? { selectedAddons: item.selectedAddons } : {}),
   }));
 }
@@ -222,6 +226,8 @@ export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
     eventTime: formatEventTime(formState.time),
     personCount: Number(cart.orderSummary.personCount ?? formState.personCount ?? 1),
     deliveryAddress: formState.deliveryAddress,
+    deliveryPostalCode: formState.deliveryPostalCode,
+    deliveryCity: formState.deliveryCity,
     tipAmount: tipAmount.toFixed(2),
     items,
   };

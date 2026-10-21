@@ -1,3 +1,5 @@
+import { standaloneProductFields } from "../../menu/utils/addOnTypes.js";
+
 export const FETCH_HOME_DATA_QUERY = `
   query FetchHomeData($postCode: String, $areaName: String, $includeSearchVendors: Boolean! = false) {
     allVendors: vendors {
@@ -57,6 +59,7 @@ export const FETCH_HOME_DATA_QUERY = `
               id
               menuStatus
               productType
+              ${standaloneProductFields}
             }
           }
           specialClosures {
@@ -145,6 +148,7 @@ export const FETCH_HOME_DATA_QUERY = `
               id
               menuStatus
               productType
+              ${standaloneProductFields}
             }
           }
           specialClosures {
@@ -234,6 +238,7 @@ export const FETCH_HOME_DATA_QUERY = `
               id
               menuStatus
               productType
+              ${standaloneProductFields}
             }
           }
           specialClosures {
@@ -323,6 +328,7 @@ export const FETCH_HOME_DATA_QUERY = `
               id
               menuStatus
               productType
+              ${standaloneProductFields}
             }
           }
           specialClosures {
@@ -358,6 +364,7 @@ export const FETCH_HOME_DATA_QUERY = `
           name
           menuStatus
           productType
+          ${standaloneProductFields}
           description
           averageRating
           ordersCount
@@ -438,6 +445,7 @@ export const FETCH_HOME_DATA_QUERY = `
                 id
                 menuStatus
                 productType
+                ${standaloneProductFields}
               }
             }
             specialClosures {

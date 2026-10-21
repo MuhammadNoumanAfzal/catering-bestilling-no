@@ -4,6 +4,7 @@ import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../lib/auth/authSession";
 import i18n from "../../i18n";
 import { customerInvoiceHistory } from "./customerInvoiceHistory.js";
+import { getOrderDisplayGuestCount } from "./orderItemDetails.js";
 import { buildInvoiceRows, mapInvoiceApiRows, resolveInvoiceAmount } from "./components/invoices/invoiceAmounts";
 import { formatInvoiceDeliveryAddress } from "./components/invoices/invoiceDeliveryAddress";
 
@@ -109,6 +110,7 @@ const GET_INVOICE_DETAIL_QUERY = `
         label
         description
         quantity
+        personCount
         unitPrice
         totalPrice
       }
@@ -124,6 +126,24 @@ const GET_INVOICE_DETAIL_QUERY = `
       customerPhone
       orderId
       orderNumber
+      order {
+        id
+        eventName
+        eventDate
+        personCount
+        deliveryAddress
+        deliverySuite
+        deliveryPostalCode
+        deliveryCity
+        deliveryAddressStr
+        orderNotes
+        pricing { tipAmount serviceFee discountAmount }
+        items {
+          id productName personCount addOnType quantity pricingType unitPrice
+          lineSubtotal lineTotal specialInstructions selectedOptions
+          selectedAddons { name unitPrice quantity totalPrice }
+        }
+      }
       vendorId
       vendorName
       canViewInvoice
@@ -287,6 +307,8 @@ const GET_INVOICE_ORDER_FALLBACK_QUERY = `
       items {
         id
         productName
+        personCount
+        addOnType
         quantity
         pricingType
         unitPrice
@@ -581,12 +603,13 @@ function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
   return {
     eventName: orderNode?.eventName || "",
     eventDate: formatDate(orderNode?.eventDate),
-    personCount: toNumber(orderNode?.personCount, 0),
+    personCount: orderNode ? getOrderDisplayGuestCount(orderNode) : 0,
     deliveryAddressStr: formatInvoiceDeliveryAddress(orderNode),
     orderNotes: orderNode?.orderNotes || "",
     tipAmount: formatFlexibleMoney(pricing?.tipAmount, currency),
     lineItems: buildInvoiceRows(orderNode).map((item) => ({
-      ...item, unitPrice: formatMoney(item.unitPrice), totalPrice: formatMoney(item.totalPrice),
+      ...item, description: [item.description, item.personCount ? i18n.t("orders.lineGuests", { count: item.personCount, defaultValue: "{{count}} guests" }) : ""].filter(Boolean).join("\n"),
+      unitPrice: formatMoney(item.unitPrice), totalPrice: formatMoney(item.totalPrice),
       amountRaw: item.totalPrice,
     })),
   };
@@ -601,10 +624,11 @@ function mapInvoiceDetail(node, orderFallback = null) {
     node.amountPaid?.currency ||
     node.subtotal?.currency ||
     "NOK";
-  const fallbackOrder = mapInvoiceOrderFallback(orderFallback, currency);
+  const fallbackOrder = mapInvoiceOrderFallback(orderFallback || {}, currency);
   const lineItems = Array.isArray(node.lineItems) && node.lineItems.length
     ? mapInvoiceApiRows(node.lineItems, orderFallback || {}).map((item) => ({
-      ...item, amountRaw: item.totalPrice, unitPrice: formatMoney(item.unitPrice), totalPrice: formatMoney(item.totalPrice),
+      ...item, description: [item.description, item.personCount ? i18n.t("orders.lineGuests", { count: item.personCount, defaultValue: "{{count}} guests" }) : ""].filter(Boolean).join("\n"),
+      amountRaw: item.totalPrice, unitPrice: formatMoney(item.unitPrice), totalPrice: formatMoney(item.totalPrice),
     }))
     : fallbackOrder.lineItems;
   const grossAmount = resolveGrossInvoiceAmount({
@@ -902,9 +926,9 @@ export const fetchInvoiceDetail = createAsyncThunk(
         throw new Error("Invoice details not found.");
       }
 
-      let orderFallback = null;
+      let orderFallback = response.invoice.order || null;
 
-      if (response.invoice?.orderId) {
+      if (!orderFallback && response.invoice?.orderId) {
         orderFallback = await graphqlRequest({
           query: GET_INVOICE_ORDER_FALLBACK_QUERY,
           variables: { orderId: response.invoice.orderId },

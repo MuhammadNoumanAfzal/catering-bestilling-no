@@ -25,6 +25,7 @@ export default function EventDetailsSection({
   deliverySlots = [],
   isLoadingSlots = false,
   minimumPersonCount = 1,
+  showMenuGuestCount = true,
 }) {
   const { t } = useTranslation();
   const minimumCount = Math.max(1, Number(minimumPersonCount) || 1);
@@ -135,7 +136,7 @@ export default function EventDetailsSection({
           />
         </div>
 
-        <div>
+        {showMenuGuestCount && <div>
           <span className="mb-1.5 block text-[13px] font-medium text-[#2d2d2d]">
             {t("nav.numberOfAttendees")}
           </span>
@@ -187,7 +188,7 @@ export default function EventDetailsSection({
           <p className="mt-1 text-[11px] text-[#7e7469]">
             {t("menu.minimumLabel", { count: minimumPersonCount })}
           </p>
-        </div>
+        </div>}
 
         {/* Time / Slot Picker */}
         <div data-checkout-field="time" className="flex flex-col sm:col-span-3">

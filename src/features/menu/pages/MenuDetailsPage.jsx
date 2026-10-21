@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import StandaloneItemControls from "../components/StandaloneItemControls";
+import { normalizeStandaloneItem, updateStandaloneItem } from "../utils/standaloneCart.js";
 import { FiArrowUp } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
@@ -73,6 +75,7 @@ export default function MenuDetailsPage() {
   
   const [orderSummary, setOrderSummary] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState("1 order");
+  const [standalonePersonCount, setStandalonePersonCount] = useState(1);
   const [selectedRequired, setSelectedRequired] = useState("");
   const [selectedOptional, setSelectedOptional] = useState({});
   const [vendorNote, setVendorNote] = useState("");
@@ -94,6 +97,11 @@ export default function MenuDetailsPage() {
   const lastSlotAuthPromptKeyRef = useRef("");
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
   const minimumPersons = menuItem?.serves ?? 1;
+  const isStandalone = menuItem?.addOnType === "INDEPENDENT";
+  const selectedPersonCount = isStandalone ? standalonePersonCount : orderSummary?.personCount;
+  const sidebarMinimumPersons = Math.max(isStandalone ? 1 : minimumPersons,
+    ...(orderSummary?.items || []).filter((item) => !item.isAddOn && item.addOnType !== "INDEPENDENT")
+      .map((item) => Number(item.minimumGuests ?? item.serves) || 1));
   const baseItemPricingType = menuItem?.modal?.pricingType ?? menuItem?.pricingType ?? "per-person";
   const baseItemPrice = Number(menuItem?.price ?? 0);
   const baseItemUnitPrice = Number(
@@ -110,11 +118,13 @@ export default function MenuDetailsPage() {
     setOrderSummary(
       resetDerivedOrderSummaryState({
         ...storedSummary,
-        personCount: restorePersonCount(storedSummary, minimumPersons),
+        personCount: restorePersonCount(storedSummary, isStandalone ? 1 : minimumPersons),
       }),
     );
     setVendorNote(`${storedSummary.vendorNote ?? ""}`);
-    setSelectedQuantity(menuItem.modal.quantityOptions[0] ?? "1 order");
+    const storedProduct = storedSummary.items?.find((item) => item.productId === menuItem.id && !item.isAddOn);
+    setStandalonePersonCount(Math.max(minimumPersons, Number(storedProduct?.personCount) || minimumPersons));
+    setSelectedQuantity(isStandalone ? String(menuItem.pricingType === "per-person" ? 1 : storedProduct?.quantity || 1) : menuItem.modal.quantityOptions[0] ?? "1 order");
     setSelectedRequired(menuItem.modal.requiredSelection?.options?.[0] ?? "");
     setSelectedOptional(
       (storedSummary.items || []).reduce((accumulator, item) => {
@@ -131,7 +141,7 @@ export default function MenuDetailsPage() {
       }, {}),
     );
     setIsAvailabilityPopupDismissed(false);
-  }, [menuItem, minimumPersons, vendor]);
+  }, [menuItem, minimumPersons, vendor, isStandalone]);
 
   useEffect(() => {
     let isMounted = true;
@@ -396,6 +406,26 @@ export default function MenuDetailsPage() {
     ),
   );
 
+  function changeStandaloneCartItem(id, changes) {
+    const original = orderSummary?.items.find((item) => item.id === id);
+    if (!original || original.addOnType !== "INDEPENDENT") return;
+    const next = normalizeStandaloneItem({ ...original, ...changes });
+    if (original.productId === menuItem.id) {
+      setStandalonePersonCount(next.personCount);
+      setSelectedQuantity(String(next.quantity));
+    }
+    setOrderSummary((current) => updateStandaloneItem(current, id, changes));
+  }
+
+  function changeStandaloneSelection(changes) {
+    const next = normalizeStandaloneItem({ addOnType: "INDEPENDENT", pricingType: baseItemPricingType,
+      minimumGuests: minimumPersons, personCount: standalonePersonCount, quantity: Number.parseInt(selectedQuantity, 10) || 1, ...changes });
+    setStandalonePersonCount(next.personCount);
+    setSelectedQuantity(String(next.quantity));
+    const line = orderSummary?.items.find((item) => item.productId === menuItem.id && item.addOnType === "INDEPENDENT");
+    if (line) setOrderSummary((current) => updateStandaloneItem(current, line.id, { ...changes, minimumGuests: minimumPersons }));
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-[#fffaf6]">
@@ -503,7 +533,7 @@ export default function MenuDetailsPage() {
       deliveryDate: orderSummary.deliveryDate,
       deliveryTime: orderSummary.deliveryTime,
       deliveryAddress: orderSummary.deliveryAddress,
-      personCount: orderSummary.personCount,
+      personCount: selectedPersonCount,
       minimumPersons,
       t,
     });
@@ -529,7 +559,7 @@ export default function MenuDetailsPage() {
       }
     }
 
-    const quantityCount = Number.parseInt(selectedQuantity, 10) || 1;
+    const quantityCount = isStandalone && baseItemPricingType === "per-person" ? 1 : Math.max(isStandalone ? 1 : menuItem.minimumQuantity || 1, Number.parseInt(selectedQuantity, 10) || 1);
     const totalServes = menuItem.serves * quantityCount;
       const itemName = menuItem.modal?.heading ?? menuItem.title ?? t("menu.item");
     const linePrice =
@@ -562,6 +592,9 @@ export default function MenuDetailsPage() {
     const summaryItem = {
       id: `${menuItem.id}-${Date.now()}`,
       productId: menuItem.id,
+      addOnType: menuItem.addOnType,
+      minimumGuests: minimumPersons,
+      ...(isStandalone ? { personCount: Math.max(minimumPersons, Number(standalonePersonCount) || 1) } : {}),
       name: itemName,
       quantity: quantityCount,
       serves: menuItem.serves,
@@ -582,8 +615,8 @@ export default function MenuDetailsPage() {
     setOrderSummary((current) => ({
       ...resetDerivedOrderSummaryState(current),
       personCount: Math.max(
-        minimumPersons,
-        Number(current.personCount ?? minimumPersons),
+        isStandalone ? 1 : minimumPersons,
+        Number(current.personCount ?? (isStandalone ? 1 : minimumPersons)),
       ),
       items: [
         summaryItem,
@@ -692,17 +725,20 @@ export default function MenuDetailsPage() {
           <div className="min-w-0 border-r border-[#e7dfd6] bg-white">
             <div className="space-y-6 p-4 sm:p-5 lg:p-6">
               <MenuOverviewSection vendor={vendor} menuItem={menuItem} />
-              <MenuIncludedSection
+              {menuItem.addOnType !== "INDEPENDENT" && <MenuIncludedSection
                 vendorSlug={vendor.slug}
                 menuItem={menuItem}
                 includedMenuItems={includedMenuItems}
-              />
+              />}
+              {isStandalone && baseItemPricingType === "fixed" && <div className="max-w-sm"><StandaloneItemControls
+                item={{ pricingType: baseItemPricingType, personCount: standalonePersonCount, minimumGuests: minimumPersons, quantity: Number.parseInt(selectedQuantity, 10) || 1 }}
+                showGuests={false} onChange={changeStandaloneSelection} disabled={isAddingToCart} /></div>}
               <MenuDeliveryForm
                 isInCart={hasMainDishInCart}
                 isAddingToCart={isAddingToCart}
                 isVendorAvailable={isOrderableForSelection}
                 vendor={vendor}
-                orderSummary={orderSummary}
+                orderSummary={isStandalone ? { ...orderSummary, personCount: standalonePersonCount } : orderSummary}
                 vendorNote={vendorNote}
                 deliverySlots={deliverySlots}
                 isLoadingSlots={isLoadingSlots}
@@ -719,12 +755,16 @@ export default function MenuDetailsPage() {
                     }),
                   )
                 }
-                onPersonCountChange={(personCount) =>
+                onPersonCountChange={(personCount) => {
+                  if (isStandalone) {
+                    changeStandaloneSelection({ personCount });
+                    return;
+                  }
                   setOrderSummary((current) => resetDerivedOrderSummaryState({
                     ...current,
                     personCount: Math.max(minimumPersons, personCount),
-                  }))
-                }
+                  }));
+                }}
                 onDeliveryAddressChange={(deliveryAddress) =>
                   setOrderSummary((current) =>
                     resetDerivedOrderSummaryState({
@@ -771,6 +811,7 @@ export default function MenuDetailsPage() {
               </div>
 
               <VendorOrderSidebar
+            onStandaloneItemChange={changeStandaloneCartItem}
             vendor={vendor}
             orderSummary={orderSummary}
             isVendorAvailable={isOrderableForSelection}
@@ -818,7 +859,7 @@ export default function MenuDetailsPage() {
             onPersonCountChange={(personCount) =>
               setOrderSummary((current) => resetDerivedOrderSummaryState({
                 ...current,
-                personCount: Math.max(minimumPersons, personCount),
+                personCount: Math.max(sidebarMinimumPersons, personCount),
               }))
             }
             onDeliveryAddressChange={(deliveryAddress) =>
@@ -837,7 +878,7 @@ export default function MenuDetailsPage() {
                 }),
               )
             }
-            minimumPersons={minimumPersons}
+            minimumPersons={sidebarMinimumPersons}
               />
             </div>
           </div>
