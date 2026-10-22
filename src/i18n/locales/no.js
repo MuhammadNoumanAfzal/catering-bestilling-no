@@ -79,6 +79,7 @@ const no = {
     optional: "(valgfritt)",
   },
   footer: {
+    becomeVendor: "Bli leverandør",
     menus: "Menyer",
     occasions: "Anledninger",
     vendors: "Leverandører",

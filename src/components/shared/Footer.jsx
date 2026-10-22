@@ -71,6 +71,15 @@ export default function Footer() {
                   <FiArrowUpRight className="text-[13px]" />
                 </Link>
               ))}
+              <a
+                href="https://vendor.gocatering.no/auth/register"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-white bg-white px-4 py-2 text-[13px] font-semibold text-[#823b22] transition hover:bg-[#fff3eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              >
+                <span>{t("footer.becomeVendor")}</span>
+                <FiArrowUpRight aria-hidden="true" className="shrink-0 text-[15px]" />
+              </a>
             </div>
           </div>
 

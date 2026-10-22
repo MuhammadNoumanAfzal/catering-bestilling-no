@@ -79,6 +79,7 @@ const en = {
     optional: "(optional)",
   },
   footer: {
+    becomeVendor: "Become a Vendor",
     menus: "Menus",
     occasions: "Occasions",
     vendors: "Vendors",
