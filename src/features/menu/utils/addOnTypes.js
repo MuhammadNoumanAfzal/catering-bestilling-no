@@ -1,4 +1,4 @@
-export const independentAddOnsEnabled = import.meta.env?.VITE_INDEPENDENT_ADDONS_ENABLED === "true";
+export const independentAddOnsEnabled = import.meta.env?.VITE_INDEPENDENT_ADDONS_ENABLED !== "false";
 export const standaloneProductFields = independentAddOnsEnabled ? "addOnType minimumQuantity" : "";
 export const orderableProductFilter = independentAddOnsEnabled ? "orderableOnly: true" : 'productType: "menu"';
 
