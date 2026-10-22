@@ -60,6 +60,11 @@ function isExplicitlyVisibleVendorStatus(node) {
   const status = `${node?.status ?? ""}`.trim().toUpperCase();
   const applicationStatus = `${node?.applicationStatus ?? ""}`.trim().toUpperCase();
 
+  // Account restrictions take precedence over an approved application.
+  if (["SUSPENDED", "DEACTIVATED", "INACTIVE", "REJECTED"].includes(status)) {
+    return false;
+  }
+
   if (applicationStatus) {
     if (["ACTIVE", "APPROVED"].includes(applicationStatus)) {
       return true;
@@ -108,14 +113,13 @@ function isExplicitlyVisibleVendorStatus(node) {
 }
 
 export function isPublicVendorVisible(node) {
-  if (typeof node?.isPubliclyVisible === "boolean") {
-    return node.isPubliclyVisible;
-  }
-
   const statusVisibility = isExplicitlyVisibleVendorStatus(node);
-
   if (statusVisibility === false) {
     return false;
+  }
+
+  if (typeof node?.isPubliclyVisible === "boolean") {
+    return node.isPubliclyVisible;
   }
 
   return true;
