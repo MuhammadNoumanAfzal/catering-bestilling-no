@@ -11,7 +11,6 @@ import {
   SUBMIT_VENDOR_REVIEW_MUTATION,
 } from "./vendorQueries";
 
-let vendorProfilesCache = null;
 let vendorProfilesPromise = null;
 
 function slugify(text) {
@@ -69,10 +68,6 @@ export async function fetchVendors() {
 }
 
 export async function fetchVendorProfiles() {
-  if (vendorProfilesCache) {
-    return vendorProfilesCache;
-  }
-
   if (!vendorProfilesPromise) {
     vendorProfilesPromise = fetchVendors()
       .then((vendors) => vendors.map((vendor) => adaptApiVendorToProfile(vendor)))
@@ -84,10 +79,6 @@ export async function fetchVendorProfiles() {
           ),
         ),
       )
-      .then((profiles) => {
-        vendorProfilesCache = profiles;
-        return profiles;
-      })
       .finally(() => {
         vendorProfilesPromise = null;
       });

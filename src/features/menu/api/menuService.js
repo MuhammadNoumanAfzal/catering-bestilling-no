@@ -1,4 +1,5 @@
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
+import { isPublicVendorVisible } from "../../vendor/api/publicVisibility";
 import { independentAddOnsEnabled, isIndependentAddOn, isDirectlyOrderableProduct } from "../utils/addOnTypes";
 import {
   adaptApiProductToMenuItem,
@@ -147,6 +148,10 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
     throw new Error("Product not found.");
   }
 
+  if (!response.product.vendor || !isPublicVendorVisible(response.product.vendor)) {
+    throw new Error("Vendor is not available.");
+  }
+
   if (`${response.product.menuStatus ?? ""}`.toLowerCase() !== "active" || !isDirectlyOrderableProduct(response.product)) {
     throw new Error("Product is not available.");
   }
@@ -183,6 +188,10 @@ export async function fetchMenuDetails({ itemId, vendorSlug }) {
       .then((vendorProfile) => hydrateMenuVendorRating(vendorProfile, vendorSlug)),
     fetchVendorAddOns(response.product.vendor?.id),
   ]);
+
+  if (!vendorProfileResult) {
+    throw new Error("Vendor is not available.");
+  }
 
   const hasProductLevelAddOns =
     Array.isArray(productResult?.modal?.optionalSelections) &&

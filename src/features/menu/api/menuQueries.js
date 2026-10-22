@@ -54,6 +54,9 @@ export const FETCH_PRODUCT_QUERY = `
       }
       vendor {
         id
+        status
+        applicationStatus
+        isPubliclyVisible
         slug
         name
         logoUrl
