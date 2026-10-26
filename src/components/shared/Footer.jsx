@@ -21,8 +21,9 @@ const socialLinks = COMPANY_SOCIAL_LINKS.map((link) => ({
 }));
 
 export default function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const footerLinks = [
+    { label: i18n.resolvedLanguage?.startsWith("en") ? "Business catering" : "Catering til bedrifter", to: "/catering-for-business" },
     { label: t("footer.menus"), to: "/browse/food-type" },
     { label: t("footer.occasions"), to: "/browse/occasion" },
     { label: t("footer.vendors"), to: "/vendors/featured" },
