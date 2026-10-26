@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { normalizeModifyOrderTime } from "../utils/modifyOrderTime.js";
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
 import {
   formatCurrency,
@@ -58,21 +59,7 @@ function formatDateValue(date) {
 }
 
 function normalizeTime24h(value) {
-  const normalized = `${value ?? ""}`.trim();
-  const match = normalized.match(/^(\d{1,2}):(\d{2})$/);
-
-  if (!match) {
-    return "";
-  }
-
-  const hours = Number.parseInt(match[1], 10);
-  const minutes = Number.parseInt(match[2], 10);
-
-  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-    return "";
-  }
-
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  return normalizeModifyOrderTime(value);
 }
 
 function parseTimeToMinutes(value) {
@@ -550,6 +537,12 @@ export default function ModifyOrderModal({
                 <div className="h-10 rounded-[10px] border border-[#dad1c8] bg-[#faf7f4] px-3 py-2.5 text-sm text-[#9b8f84]">
                   Select an available date first
                 </div>
+              ) : isLoading || isVendorAvailabilityLoading || !vendorProfile ? (
+                <div className="rounded-[10px] border border-[#dad1c8] bg-[#faf7f4] px-3 py-2 text-sm text-[#8b8177]">
+                  {isLoading || isVendorAvailabilityLoading
+                    ? t("modifyOrder.loading")
+                    : t("modifyOrder.loadFailed")}
+                </div>
               ) : deliverySlots.length === 0 ? (
                 <div className="rounded-[10px] border border-[#f1c8bb] bg-[#fff5f1] px-3 py-2 text-sm text-[#8a5642]">
                   This vendor has no delivery time available on the selected date.
@@ -743,7 +736,13 @@ export default function ModifyOrderModal({
           </label>
         </div>
 
-        <div className="flex shrink-0 justify-end gap-2 border-t border-[#eee4da] bg-white px-4 py-3 sm:px-6">
+        <div className="shrink-0 border-t border-[#eee4da] bg-white px-4 py-3 sm:px-6">
+          {validationError || error ? (
+            <p role="alert" aria-live="assertive" className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+              {validationError || error}
+            </p>
+          ) : null}
+          <div className="flex justify-end gap-2">
           <button
             type="button"
             onClick={onCancel}
@@ -756,10 +755,11 @@ export default function ModifyOrderModal({
             type="button"
             onClick={handleSubmit}
             disabled={isLoading || isSaving || isVendorAvailabilityLoading}
-            className="w-full rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] sm:w-auto"
+            className="w-full cursor-pointer rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             {isSaving ? t("modifyOrder.sending") : t("modifyOrder.sendRequest")}
           </button>
+          </div>
         </div>
       </div>
     </div>

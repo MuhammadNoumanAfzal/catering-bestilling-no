@@ -212,7 +212,7 @@ export default function VendorInvoicesPage() {
 
       <section className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {filteredOverview.map((item) => (
-          <InvoiceOverviewCard key={item.label} {...item} />
+          <InvoiceOverviewCard key={item.labelKey} {...item} />
         ))}
       </section>
 
@@ -240,7 +240,7 @@ export default function VendorInvoicesPage() {
         <div className="px-4 py-4 md:px-5">
         <div className="grid grid-cols-2 gap-3 border-b border-[#ece4dc] pb-4 xl:grid-cols-4">
           {filteredTotals.map((item) => (
-            <InvoiceTotalCard key={item.label} {...item} />
+            <InvoiceTotalCard key={item.labelKey} {...item} />
           ))}
         </div>
 

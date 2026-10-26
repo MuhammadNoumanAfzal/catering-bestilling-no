@@ -20,6 +20,8 @@ const FETCH_CLIENT_ORDERS_QUERY = `
         node {
           id
           invoiceNumber
+          invoiceRevision
+          finalPrice
           status
           statuses {
             status
@@ -110,6 +112,8 @@ const FETCH_CLIENT_ORDER_DETAIL_QUERY = `
         createdOn
       }
       canModify
+      invoiceRevision
+      finalPrice
       canceledAt
       cancellationReason
       hasPendingVendorAdjustment
@@ -465,7 +469,7 @@ const REJECTED_VENDOR_ADJUSTMENT_STATUSES = new Set([
   "CANCELLED",
 ]);
 
-const PENDING_CLIENT_MODIFICATION_STATUSES = new Set(["PENDING"]);
+const PENDING_CLIENT_MODIFICATION_STATUSES = new Set(["PENDING", "PENDING_VENDOR_APPROVAL"]);
 
 function hasOpenPendingVendorAdjustment(node) {
   const backendFlag = node?.hasPendingVendorAdjustment;
@@ -566,6 +570,7 @@ function mapListOrder(node) {
   return {
     id: formatId(node.id),
     rawId: node.id || "",
+    invoiceRevision: node.invoiceRevision ?? null,
     vendor: node.vendor?.name || "Catering partner",
     eventName: node.eventName || i18n.t("checkout.customerTypes.Corporate", { defaultValue: "Bedriftskunde" }),
     date: formatDate(draftOverride?.eventDate || node.eventDate),

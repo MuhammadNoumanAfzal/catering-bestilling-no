@@ -1,4 +1,5 @@
 import { formatMoney, parseMoney } from "../pricing/formatMoney.js";
+import { invoiceRevisionsMatch } from "../order/utils/invoiceRevision.js";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { graphqlRequest } from "../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../lib/auth/authSession";
@@ -53,6 +54,7 @@ const FETCH_INVOICES_QUERY = `
         node {
           id
           invoiceNumber
+          invoiceRevision
           status
           issuedOn
           dueDate
@@ -104,6 +106,7 @@ const GET_INVOICE_DETAIL_QUERY = `
     invoice(id: $invoiceId) {
       id
       invoiceNumber
+      invoiceRevision
       paymentStatus
       lineItems {
         id
@@ -218,6 +221,7 @@ const GET_INVOICE_DETAIL_COMPATIBILITY_QUERY = `
     invoice(id: $invoiceId) {
       id
       invoiceNumber
+      invoiceRevision
       paymentStatus
       paymentMethod
       paymentReference
@@ -337,6 +341,7 @@ const REPORT_INVOICE_PAYMENT_MUTATION = `
       invoice {
         id
         invoiceNumber
+        invoiceRevision
         paymentStatus
         canReportPayment
         canPayInvoice
@@ -616,6 +621,11 @@ function mapInvoiceOrderFallback(orderNode = {}, currency = "NOK") {
 }
 
 function mapInvoiceDetail(node, orderFallback = null) {
+  if (!invoiceRevisionsMatch(node.invoiceRevision, orderFallback?.invoiceRevision)) {
+    throw new Error(i18n.resolvedLanguage?.startsWith("en")
+      ? "The invoice is updating after an order change. Please try again."
+      : "Fakturaen oppdateres etter en bestillingsendring. Prøv igjen.");
+  }
   const bankDetails = node.bankDetails || {};
   const status = mapInvoiceStatus(node.paymentStatus || node.status);
   const currency =

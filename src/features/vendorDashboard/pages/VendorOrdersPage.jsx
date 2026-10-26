@@ -5,6 +5,7 @@ import { FiSearch } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
 import { ModifyOrderModal } from "../../order";
+import { fetchInvoices } from "../invoicesSlice";
 import {
   approveVendorOrderAdjustment,
   mapOrderToModifyForm,
@@ -421,6 +422,7 @@ export default function VendorOrdersPage() {
       await Promise.all([
         dispatch(fetchClientOrders()),
         dispatch(fetchClientOrderDetail(orderId)),
+        dispatch(fetchInvoices()),
       ]);
       await showSuccessToast(result.message);
       setIsModifyModalOpen(false);

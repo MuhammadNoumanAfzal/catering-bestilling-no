@@ -13,11 +13,15 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
       eventDate
       eventTime
       personCount
+      finalPrice
+      invoiceRevision
+      pricing { subtotal taxAmount deliveryFee tipAmount grandTotal }
       orderNotes
       canModify
       pendingModificationRequest {
         id
         status
+        requestedBy oldTotal newTotal priceDelta appliedInvoiceRevision
         requestedChanges {
           eventDate
           eventTime
@@ -38,6 +42,7 @@ const GET_CLIENT_ORDER_MODIFY_QUERY = `
       latestModificationRequest {
         id
         status
+        requestedBy oldTotal newTotal priceDelta appliedInvoiceRevision
         createdOn
       }
       pendingVendorAdjustment {
@@ -83,6 +88,9 @@ const UPDATE_CLIENT_ORDER_BEFORE_ACCEPTANCE_MUTATION = `
       order {
         id
         status
+        finalPrice
+        invoiceRevision
+        pricing { subtotal taxAmount deliveryFee tipAmount grandTotal }
         eventDate
         eventTime
         personCount
@@ -106,6 +114,8 @@ const REQUEST_CLIENT_ORDER_MODIFICATION_MUTATION = `
       request {
         id
         status
+        requestedBy oldTotal newTotal priceDelta appliedInvoiceRevision
+        proposedSnapshot { personCount pricing { subtotal taxAmount deliveryFee tipAmount grandTotal } }
         requestedChanges {
           eventDate
           eventTime
@@ -201,6 +211,12 @@ function mapModificationRequest(request) {
   return {
     id: request.id,
     status: request.status || "",
+    requestedBy: request.requestedBy || "",
+    oldTotal: request.oldTotal ?? null,
+    newTotal: request.newTotal ?? null,
+    priceDelta: request.priceDelta ?? null,
+    appliedInvoiceRevision: request.appliedInvoiceRevision ?? null,
+    proposedSnapshot: request.proposedSnapshot || null,
     createdOn: request.createdOn || "",
     resolvedOn: request.resolvedOn || request.createdOn || "",
     requestedChanges: {
@@ -296,6 +312,9 @@ export async function fetchOrderModificationDetails(orderId) {
     date: order.eventDate || "",
     time: order.eventTime || "",
     personCount: Math.max(1, Number(order.personCount ?? 1) || 1),
+    finalPrice: order.finalPrice ?? null,
+    invoiceRevision: order.invoiceRevision ?? null,
+    pricing: order.pricing || null,
     additionalDetails: order.orderNotes || "",
     canModify: order.canModify !== false,
     status: order.status || "",

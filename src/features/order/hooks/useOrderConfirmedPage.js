@@ -16,6 +16,8 @@ import {
   savePlacedOrderDraftModificationRequest,
 } from "../services";
 import { formatOrderPreview } from "../utils/orderPreview";
+import { currentOrderPreview } from "../utils/currentOrderPreview.js";
+import { formatCurrency } from "../../checkOut/components/summary/checkoutSummaryUtils";
 
 export function useOrderConfirmedPage() {
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
@@ -30,10 +32,15 @@ export function useOrderConfirmedPage() {
     readPlacedOrderDraft(),
   );
 
-  const orderPreview = useMemo(
-    () => formatOrderPreview(placedOrderDraft),
-    [placedOrderDraft],
-  );
+  const orderPreview = useMemo(() => {
+    const base = formatOrderPreview(placedOrderDraft);
+    const count = placedOrderDraft?.placedOrders?.length;
+    const preview = currentOrderPreview(base, orderWorkflow, count);
+    const total = orderWorkflow?.pricing?.grandTotal ?? orderWorkflow?.finalPrice;
+    return total != null && count === 1
+      ? { ...preview, amountDue: formatCurrency(total) }
+      : preview;
+  }, [placedOrderDraft, orderWorkflow]);
   const primaryOrderId = orderPreview.orderIds[0] || "#23459";
   const rawPrimaryOrderId = placedOrderDraft?.placedOrders?.[0]?.orderId || "";
 
@@ -41,6 +48,7 @@ export function useOrderConfirmedPage() {
     let isMounted = true;
 
     async function loadOrderWorkflow() {
+      if (isModifyModalOpen) return;
       if (!rawPrimaryOrderId) {
         setOrderWorkflow(null);
         return;
@@ -72,7 +80,7 @@ export function useOrderConfirmedPage() {
     return () => {
       isMounted = false;
     };
-  }, [rawPrimaryOrderId]);
+  }, [rawPrimaryOrderId, isModifyModalOpen]);
 
   useEffect(() => {
     let isMounted = true;
@@ -83,7 +91,7 @@ export function useOrderConfirmedPage() {
       }
 
       setModifyError("");
-      setModifyInitialValue(orderPreview);
+      setModifyInitialValue(formatOrderPreview(placedOrderDraft));
 
       if (!rawPrimaryOrderId) {
         return;
@@ -126,7 +134,7 @@ export function useOrderConfirmedPage() {
     return () => {
       isMounted = false;
     };
-  }, [isModifyModalOpen, orderPreview, rawPrimaryOrderId]);
+  }, [isModifyModalOpen, placedOrderDraft, rawPrimaryOrderId]);
 
   const handleModifySave = async (nextValues) => {
     if (!placedOrderDraft) {
@@ -254,6 +262,7 @@ export function useOrderConfirmedPage() {
 
       setPlacedOrderDraft(nextPlacedOrderDraft);
       setOrderWorkflow(nextWorkflow);
+      setOrderWorkflow(await fetchOrderModificationDetails(rawPrimaryOrderId));
       await showSuccessToast(result.message);
     } catch (error) {
       await showAuthErrorAlert(

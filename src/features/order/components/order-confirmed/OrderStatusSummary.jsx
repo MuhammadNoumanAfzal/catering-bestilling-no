@@ -14,7 +14,7 @@ function getModificationSummary({
       .trim()
       .toUpperCase();
 
-  if (normalizedVendorAdjustmentStatus === "PENDING") {
+  if (["PENDING", "PENDING_CUSTOMER_APPROVAL"].includes(normalizedVendorAdjustmentStatus)) {
     return {
       statusLabel: t("orderConfirmed.vendorAdjustmentRequested"),
       nextStepLabel: t("orderConfirmed.reviewVendorChanges"),
@@ -35,7 +35,7 @@ function getModificationSummary({
     };
   }
 
-  if (normalizedStatus === "PENDING") {
+  if (["PENDING", "PENDING_VENDOR_APPROVAL"].includes(normalizedStatus)) {
     return {
       statusLabel: t("orderConfirmed.modificationRequested"),
       nextStepLabel: t("orderConfirmed.vendorReviewPending"),

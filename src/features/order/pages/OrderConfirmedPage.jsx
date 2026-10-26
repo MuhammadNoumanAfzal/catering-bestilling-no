@@ -37,7 +37,7 @@ export default function OrderConfirmedPage() {
   const normalizedModificationStatus = `${pendingModificationRequest?.status ?? ""}`
     .trim()
     .toUpperCase();
-  const hasPendingModificationRequest = normalizedModificationStatus === "PENDING";
+  const hasPendingModificationRequest = ["PENDING", "PENDING_VENDOR_APPROVAL"].includes(normalizedModificationStatus);
   const pendingVendorAdjustmentStatus =
     `${pendingVendorAdjustment?.status ?? ""}`.trim().toUpperCase();
   const hasPendingVendorAdjustment =
