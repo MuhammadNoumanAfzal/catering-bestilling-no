@@ -13,8 +13,6 @@ dist-ssr
 *.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
@@ -27,10 +25,10 @@ temp_auto_push.bat
 temp_interactive_push.bat
 
 # Local credentials and environment files
-.env
-.env.*
 !.env.example
 *.pem
 *.key
 *.p12
 *.pfx
+.gitignore
+config.bat
