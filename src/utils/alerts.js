@@ -1,3 +1,4 @@
+import { escapeHtml } from "./escapeHtml.js";
 import Swal from "sweetalert2";
 import i18n from "../i18n";
 import { customerErrorMessage } from "./customerErrorMessage.js";
@@ -23,7 +24,7 @@ export function showSuccessToast(title) {
       toast: true,
       position: "top-end",
       icon: "success",
-      title,
+      titleText: title,
       showConfirmButton: false,
       timer: 2200,
       timerProgressBar: true,
@@ -49,7 +50,7 @@ export function showAuthErrorAlert(
   return Swal.fire(
     withBaseOptions({
       icon: "error",
-      title,
+      titleText: title,
       text: message,
       confirmButtonText: i18n.t("alerts.tryAgain"),
     }),
@@ -138,7 +139,7 @@ export function promptSignInRequired({
   return Swal.fire(
     withBaseOptions({
       icon: "info",
-      title,
+      titleText: title,
       text,
       showCancelButton: true,
       showDenyButton: true,
@@ -194,14 +195,14 @@ export function showMenuUnavailableAlert({
         <div style="text-align:left;padding-top:6px">
           <div style="margin-bottom:12px;border:1px solid #f1ddcf;background:#fff4ec;border-radius:16px;padding:14px 16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cf6e38;margin-bottom:6px">
-              ${subtitle}
+              ${escapeHtml(subtitle)}
             </div>
             <div style="font-size:20px;font-weight:800;color:#201b17;line-height:1.25">
-              ${safeTitle}
+              ${escapeHtml(safeTitle)}
             </div>
           </div>
           <div style="font-size:15px;line-height:1.6;color:#5b4d42">
-            ${message}
+            ${escapeHtml(message)}
           </div>
         </div>
       `,
@@ -250,22 +251,22 @@ export function showVendorClosureAlert({
         <div style="text-align:left;padding-top:6px">
           <div style="margin-bottom:12px;border:1px solid #f1ddcf;background:#fff4ec;border-radius:16px;padding:14px 16px">
             <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#cf6e38;margin-bottom:6px">
-              ${vendorName || i18n.t("alerts.thisVendor")}
+              ${escapeHtml(vendorName || i18n.t("alerts.thisVendor"))}
             </div>
             <div style="font-size:20px;font-weight:800;color:#201b17;line-height:1.25">
-              ${dateLabel || i18n.t("alerts.selectedDateUnavailable")}
+              ${escapeHtml(dateLabel || i18n.t("alerts.selectedDateUnavailable"))}
             </div>
           </div>
           <div style="font-size:15px;line-height:1.6;color:#5b4d42">
             ${
               closureReason
-                ? `${i18n.t("alerts.closedReason", { closureReason })}<br /><br />`
+                ? `${escapeHtml(i18n.t("alerts.closedReason", { closureReason }))}<br /><br />`
                 : ""
             }
             ${
               rangeLabel
-                ? i18n.t("alerts.vendorNotAcceptingRange", { rangeLabel })
-                : i18n.t("alerts.vendorNotAcceptingSelectedDate")
+                ? escapeHtml(i18n.t("alerts.vendorNotAcceptingRange", { rangeLabel }))
+                : escapeHtml(i18n.t("alerts.vendorNotAcceptingSelectedDate"))
             }
           </div>
         </div>
