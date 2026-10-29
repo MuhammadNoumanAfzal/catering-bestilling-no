@@ -135,6 +135,12 @@ export function useBrowseCatalogItems(mode = "food-type") {
         setCategories(nextCategories);
         setDietaryOptions(filterOptions.dietaryOptions);
         const selected = parseCategoryParamValue(categoryParam);
+        if (["more", "__more__", "mer"].includes(String(selected || "").toLowerCase()) && !nextCategories.some((item) => item.value === selected)) {
+          const nextParams = new URLSearchParams(searchParams);
+          nextParams.delete("category");
+          setSearchParams(nextParams, { replace: true });
+          return;
+        }
         const resolvedSlug = resolveSelectedSlug(selected, nextCategories);
         if (resolvedSlug && resolvedSlug !== selected) {
           const nextParams = new URLSearchParams(searchParams);
@@ -230,7 +236,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
       setIsLoadingMore(false);
     }
   };
-  const primaryCategories = useMemo(() => categories.length <= 8 ? categories : [...categories.slice(0, 8), { name: t("browse.more", { defaultValue: "More" }), value: "__more__" }], [categories, t]);
+  const primaryCategories = useMemo(() => [...categories.slice(0, 8), { name: t("browse.more", { defaultValue: "More" }), value: "__more__" }], [categories, t]);
   const moreOptions = useMemo(() => categories.length > 8 ? categories.slice(8) : [], [categories]);
   const hasMenuContent = items.length > 0 || totalCount > 0;
 

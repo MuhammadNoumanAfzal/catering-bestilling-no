@@ -57,6 +57,7 @@ const BrowseOccasionPage = lazy(() =>
   import("../../features/browse/pages/BrowseOccasionPage"),
 );
 const ContactPage = lazy(() => import("../../features/contact/pages/ContactPage"));
+const CateringPartnerPage = lazy(() => import("../../features/business/pages/CateringPartnerPage"));
 const BusinessCateringPage = lazy(() => import("../../features/business/pages/BusinessCateringPage"));
 const ClientSettingsPage = lazy(() =>
   import("../../features/clientSettings/pages/ClientSettingsPage"),
@@ -153,6 +154,7 @@ export default function AppRouter() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/catering-for-business" element={<BusinessCateringPage />} />
+            <Route path="/become-a-partner" element={<CateringPartnerPage />} />
             <Route path="/products/:productType" element={<ProductListingPage />} />
             <Route path="/vendors/:vendorType" element={<VendorListingPage />} />
             <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />

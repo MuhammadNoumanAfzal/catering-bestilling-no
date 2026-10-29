@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FiMoreHorizontal } from "react-icons/fi";
+import { FiCheck, FiGrid, FiMoreHorizontal, FiX } from "react-icons/fi";
 
 const CATEGORY_STRIP_VARIANTS = {
   default: {
@@ -81,7 +81,19 @@ export default function BrowseCategoryStrip({
   );
 
   const showMorePanel = isOpen ?? internalOpen;
-  const hasSelectedMoreOptions = selectedMoreOptions.length > 0;
+  const panelId = useId();
+  const dialogRef = useRef(null);
+  useEffect(() => {
+    if (!showMorePanel) return;
+    const dialog = dialogRef.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    if (dialog && !dialog.open) dialog.showModal();
+    return () => {
+      if (dialog?.open) dialog.close();
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [showMorePanel]);
   const shouldScroll = categories.length > 6;
 
   const getItemLabel = (item) =>
@@ -91,6 +103,11 @@ export default function BrowseCategoryStrip({
     typeof item === "string"
       ? item
       : item?.value ?? item?.slug ?? item?.name ?? "";
+
+  const isMoreItem = (item) => getItemValue(item) === "__more__" || getItemValue(item) === "More";
+  const panelOptions = [...new Map([...categories.filter((item) => !isMoreItem(item)), ...moreOptions].map((item) => [getItemValue(item), item])).values()];
+  const activeValues = Array.isArray(activeCategory) ? activeCategory : [activeCategory];
+  const hasActiveExtraCategory = moreOptions.some((item) => activeValues.includes(getItemValue(item)));
 
   const renderIcon = (item) => {
     if (typeof item.icon === "string") {
@@ -119,10 +136,10 @@ export default function BrowseCategoryStrip({
   };
 
   const handleCategoryClick = (item) => {
-    const itemLabel = getItemLabel(item);
     const itemValue = getItemValue(item);
 
-    if (itemLabel === "More") {
+    if (isMoreItem(item)) {
+      if (!showMorePanel) setSelectedMoreOptions(activeValues.filter(Boolean).slice(0, 1));
       setPanelOpen(!showMorePanel);
       return;
     }
@@ -170,9 +187,9 @@ export default function BrowseCategoryStrip({
           {categories.map((item) => {
             const itemLabel = getItemLabel(item);
             const itemValue = getItemValue(item);
-            const isMore = itemLabel === "More";
+            const isMore = isMoreItem(item);
             const isMoreActive =
-              isMore && (showMorePanel || hasSelectedMoreOptions);
+              isMore && (showMorePanel || hasActiveExtraCategory);
             const isActiveCategory =
               !isMore &&
               (Array.isArray(activeCategory)
@@ -183,8 +200,11 @@ export default function BrowseCategoryStrip({
               <button
                 key={itemValue || itemLabel}
                 type="button"
+                aria-expanded={isMore ? showMorePanel : undefined}
+                aria-controls={isMore ? panelId : undefined}
+                aria-pressed={isMore ? undefined : isActiveCategory}
                 onClick={() => handleCategoryClick(item)}
-                className={`${styles.button} transition ${
+                className={`${styles.button} rounded-xl outline-none transition focus-visible:ring-2 focus-visible:ring-[#cf6e38] focus-visible:ring-offset-4 ${
                   isMoreActive || isActiveCategory ? "text-[#CF3A00]" : ""
                 }`}
               >
@@ -212,50 +232,35 @@ export default function BrowseCategoryStrip({
       </div>
 
       {showMorePanel && (
-        <div className={styles.panel}>
-          <span className={styles.panelPointer} />
-
-          <div className={styles.panelGrid}>
-            {moreOptions.map((option) => {
-              const optionValue = getItemValue(option);
-              const optionLabel = getItemLabel(option);
-              const isSelected = selectedMoreOptions.includes(optionValue);
-
-              return (
-                <button
-                  key={optionValue}
-                  type="button"
-                  onClick={() => toggleMoreOption(option)}
-                  className={`${styles.optionButton} ${
-                    isSelected
-                      ? "border-[#CF3A00] bg-[#fff1eb] text-[#CF3A00]"
-                      : ""
-                  }`}
-                >
-                  {optionLabel}
-                </button>
-              );
-            })}
+        <dialog ref={dialogRef} id={panelId} aria-labelledby={panelId + "-title"} className="fixed inset-0 m-auto flex max-h-[85dvh] w-[calc(100%-2rem)] max-w-[780px] flex-col overflow-hidden rounded-[22px] border border-[#eadfd7] bg-white p-0 text-[#29211d] shadow-[0_24px_80px_rgba(35,22,15,0.24)] backdrop:bg-[#241b16]/40 backdrop:backdrop-blur-[3px]" onCancel={() => setPanelOpen(false)} onClick={(event) => { if (event.target === event.currentTarget) { const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) setPanelOpen(false); } }}>
+          <div className="flex shrink-0 items-center gap-3 border-b border-[#f0e9e3] px-4 py-4 sm:px-6 sm:py-5">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-[#fff1e8] text-[#c65e30]"><FiGrid size={18} /></span>
+            <div className="min-w-0 flex-1">
+              <h3 id={panelId + "-title"} className="text-[16px] font-semibold text-[#29211d]">{t("browse.categoryPickerTitle")}</h3>
+              <p className="mt-1 text-xs leading-5 text-[#89796e]">{t("browse.categoryPickerHint")}</p>
+            </div>
+            <button type="button" aria-label={t("common.close")} onClick={() => setPanelOpen(false)} className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-[#f7f4f1] text-[#76675d] transition hover:bg-[#eee6df] focus-visible:outline-2 focus-visible:outline-[#cf6e38]"><FiX size={18} /></button>
           </div>
-
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={clearFilters}
-              className={styles.clearButton}
-            >
-              {t("browse.clearFilter")}
-            </button>
-
-            <button
-              type="button"
-              onClick={applyFilters}
-              className={styles.applyButton}
-            >
-              {t("browse.apply")}
-            </button>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-4 py-4 sm:px-6 sm:py-5">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              {panelOptions.map((option) => {
+                const optionValue = getItemValue(option);
+                const optionLabel = getItemLabel(option);
+                const isSelected = selectedMoreOptions.includes(optionValue);
+                return (
+                  <button key={optionValue} type="button" aria-pressed={isSelected} onClick={() => toggleMoreOption(option)} className={"flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-3 text-left text-[13px] leading-5 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#cf6e38] " + (isSelected ? "border-[#cf6e38] bg-[#fff3eb] font-semibold text-[#b55028] shadow-[0_0_0_1px_rgba(207,110,56,0.1)]" : "border-[#ece5df] bg-white text-[#5d5149] hover:border-[#dfb89e] hover:bg-[#fcf8f5]")}>
+                    <span className="min-w-0 flex-1 break-words">{optionLabel}</span>
+                    <span className={"flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border " + (isSelected ? "border-[#cf6e38] bg-[#cf6e38] text-white" : "border-[#ded5cd] bg-white")} aria-hidden="true">{isSelected && <FiCheck size={12} />}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-[#eee6df] bg-[#fcfaf8] px-4 py-3 sm:px-6 sm:py-4">
+            <button type="button" onClick={clearFilters} className="min-h-11 cursor-pointer rounded-xl px-3 py-2 text-[13px] font-medium text-[#827267] transition hover:bg-[#f1eae4] focus-visible:outline-2 focus-visible:outline-[#cf6e38]">{t("browse.clearFilter")}</button>
+            <button type="button" onClick={applyFilters} className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#c65e30] px-6 py-2.5 text-[13px] font-semibold text-white shadow-[0_4px_12px_rgba(198,94,48,0.17)] transition hover:bg-[#ad4e26] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#cf6e38]">{t("browse.apply")}<FiCheck size={15} /></button>
+          </div>
+        </dialog>
       )}
     </div>
   );

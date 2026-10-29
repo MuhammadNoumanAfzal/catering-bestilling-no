@@ -43,7 +43,7 @@ export const foodTypeCategories = [
   { name: "BBQ", icon: Flame },
   { name: "Healthy", icon: Apple },
   { name: "Italian", icon: Pizza },
-  { name: "More", icon: null },
+  { name: "More", value: "__more__", icon: null },
 ];
 
 export const occasionCategories = [
@@ -55,7 +55,7 @@ export const occasionCategories = [
   { name: "Networking", icon: Network },
   { name: "Party", icon: PartyPopper },
   { name: "Reception", icon: GlassWater },
-  { name: "More", icon: null },
+  { name: "More", value: "__more__", icon: null },
 ];
 
 export const browseFilterChips = [

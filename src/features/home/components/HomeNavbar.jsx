@@ -98,7 +98,7 @@ export default function HomeNavbar() {
 
   return (
     <header className="relative z-50 w-full">
-      <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 md:px-10">
+      <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-12">
         <Link to="/" className="flex shrink-0 items-center">
           <img
             src="/home/logo (2).png"
@@ -107,7 +107,9 @@ export default function HomeNavbar() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-5 md:flex lg:gap-6">
+        <nav className="hidden items-center gap-2 md:flex lg:gap-3">
+          <Link to="/catering-for-business" className="inline-flex min-h-11 items-center whitespace-nowrap rounded-xl px-4 py-2 text-[14px] font-medium text-[#51443b] transition hover:bg-[#f4ebe3] hover:text-[#b6532c] focus-visible:outline-2 focus-visible:outline-[#c85f33]">{t("nav.businessCatering")}</Link>
+          <Link to="/contact" className="inline-flex min-h-11 items-center rounded-xl px-4 py-2 text-[14px] font-medium text-[#51443b] transition hover:bg-[#f4ebe3] hover:text-[#b6532c] focus-visible:outline-2 focus-visible:outline-[#c85f33]">{t("nav.contact")}</Link>
           {isLoggedIn ? (
             <>
               <div className="relative" ref={desktopNotificationRef}>
@@ -229,18 +231,13 @@ export default function HomeNavbar() {
             <Link
               to="/signin"
               state={{ from: location }}
-              className="type-h6 cursor-pointer rounded-full bg-[#c85f33] px-6 py-2 text-white transition hover:opacity-90"
+              className="ml-2 inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl bg-[#c85f33] px-6 py-2.5 text-[14px] font-semibold text-white shadow-[0_4px_12px_rgba(200,95,51,0.12)] transition hover:bg-[#b4522b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c85f33]"
             >
               {t("nav.signIn")}
             </Link>
           )}
 
-          <Link
-            to="/contact"
-            className="type-h5 cursor-pointer rounded-full px-2 py-1 text-[#3d3d3d] transition hover:text-[#c85f33]"
-          >
-            {t("nav.contactUs")}
-          </Link>
+
         </nav>
 
         <button
@@ -264,10 +261,11 @@ export default function HomeNavbar() {
       >
         <div className="mx-4 rounded-2xl border border-gray-100 bg-white px-4 py-4 shadow-lg">
           <nav className="flex flex-col gap-3">
+            <Link to="/catering-for-business" onClick={closeMenu} className="cursor-pointer rounded-xl px-3 py-3 text-sm font-medium text-[#51443b] transition hover:bg-[#faf4ee] hover:text-[#c85f33]">{t("nav.businessCatering")}</Link>
             <Link
               to="/contact"
               onClick={closeMenu}
-              className="cursor-pointer text-sm font-medium text-gray-700 transition hover:text-black"
+              className="cursor-pointer rounded-xl px-3 py-3 text-sm font-medium text-[#51443b] transition hover:bg-[#faf4ee] hover:text-[#c85f33]"
             >
               {t("nav.contactUs")}
             </Link>

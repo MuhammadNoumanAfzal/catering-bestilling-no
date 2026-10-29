@@ -24,6 +24,8 @@ const en = {
     skip: "Skip",
   },
   nav: {
+    businessCatering: "Business catering",
+    howItWorks: "How it works",
     home: "Home",
     settings: "Settings",
     dashboard: "Dashboard",
@@ -79,7 +81,7 @@ const en = {
     optional: "(optional)",
   },
   footer: {
-    becomeVendor: "Become a Vendor",
+    becomeVendor: "Become a catering partner",
     menus: "Menus",
     occasions: "Occasions",
     vendors: "Vendors",
@@ -1785,6 +1787,8 @@ const en = {
     noVendorsGeneric: "No vendors are available for this location yet.",
     noProductsGeneric: "No products are available right now.",
     clearAllFilters: "Clear all filters",
+    categoryPickerTitle: "Choose a category",
+    categoryPickerHint: "Select a category to find matching menus.",
     clearFilter: "Clear filter",
     applyFilter: "Apply filter",
     apply: "Apply",

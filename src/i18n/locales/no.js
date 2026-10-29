@@ -24,6 +24,8 @@ const no = {
     skip: "Hopp over",
   },
   nav: {
+    businessCatering: "Catering til bedrifter",
+    howItWorks: "Slik fungerer det",
     home: "Hjem",
     settings: "Innstillinger",
     dashboard: "Oversikt",
@@ -79,7 +81,7 @@ const no = {
     optional: "(valgfritt)",
   },
   footer: {
-    becomeVendor: "Bli leverandør",
+    becomeVendor: "Bli cateringpartner",
     menus: "Menyer",
     occasions: "Anledninger",
     vendors: "Leverandører",
@@ -1940,6 +1942,8 @@ const no = {
       "Ingen leverandører er tilgjengelige for dette området ennå.",
     noProductsGeneric: "Ingen produkter er tilgjengelige akkurat nå.",
     clearAllFilters: "Fjern alle filtre",
+    categoryPickerTitle: "Velg en kategori",
+    categoryPickerHint: "Velg en kategori for å finne passende menyer.",
     clearFilter: "Fjern filter",
     applyFilter: "Bruk filter",
     apply: "Bruk",

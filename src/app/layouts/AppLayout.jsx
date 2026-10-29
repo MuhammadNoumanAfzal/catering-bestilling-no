@@ -5,7 +5,7 @@ import { Outlet, useLocation } from "react-router-dom";
 export default function AppLayout() {
   const location = useLocation();
   const hideSharedShell =
-    location.pathname === "/" || location.pathname === "/order-confirmed" || location.pathname === "/catering-for-business";
+    location.pathname === "/" || location.pathname === "/order-confirmed" || location.pathname === "/catering-for-business" || location.pathname === "/become-a-partner";
   const showCommonNavbar = !hideSharedShell;
 
   return (
