@@ -1,3 +1,4 @@
+import {menuPath} from "../../menu/utils/menuRoutes.js";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -431,7 +432,7 @@ export default function VendorProfilePage() {
                       section={section}
                       onItemClick={(item) =>
                         navigate(
-                          `/vendor/${vendor.slug}/menu/${encodeURIComponent(item.id)}`,
+                          menuPath(vendor.slug,item),
                         )
                       }
                     />

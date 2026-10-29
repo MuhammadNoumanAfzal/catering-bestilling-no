@@ -158,6 +158,8 @@ const no = {
     showMore: "Vis {{count}} til",
   },
   products: {
+    clearCategory: "Fjern kategori",
+    clearLocation: "Fjern sted",
     priceFrom: "Fra",
     pricePerPerson: "per person",
     pricePerOrder: "per bestilling",
@@ -845,7 +847,7 @@ const no = {
     keepIt: "Behold den",
     placeOrderTitle: "Legg inn bestilling nå?",
     placeOrderText:
-      "Vi sender cateringbestillingen din og tømmer den nåvårende handlekurven.",
+      "Vi sender cateringbestillingen din og tømmer den nåværende handlekurven.",
     placeOrderConfirm: "Legg inn bestilling",
     notYet: "Ikke ennå",
     logoutTitle: "Logge ut nå?",

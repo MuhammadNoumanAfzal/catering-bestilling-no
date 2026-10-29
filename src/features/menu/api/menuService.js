@@ -1,3 +1,4 @@
+import {resolveMenuName} from "../utils/menuRoutes.js";
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import { isPublicVendorVisible } from "../../vendor/api/publicVisibility";
 import { independentAddOnsEnabled, isIndependentAddOn, isDirectlyOrderableProduct } from "../utils/addOnTypes";
@@ -129,6 +130,11 @@ async function hydrateMenuVendorRating(vendorProfile, vendorSlug) {
 }
 
 export async function fetchMenuDetails({ itemId, vendorSlug }) {
+  if (!/^\d+$/.test(itemId)) {
+    const profile=await fetchVendorProfileBySlug(vendorSlug);
+    const items=(profile?.menuSections||[]).flatMap(section=>section.items||section.menuItems||[]);
+    itemId=resolveMenuName(items,itemId);
+  }
   let response = await graphqlRequest({
     query: FETCH_PRODUCT_QUERY,
     variables: { id: itemId, includeMenuContents: !independentAddOnsEnabled },

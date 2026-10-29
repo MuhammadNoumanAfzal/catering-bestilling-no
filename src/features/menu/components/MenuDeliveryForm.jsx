@@ -268,17 +268,18 @@ export default function MenuDeliveryForm({
                     ) : null}
                   </div>
 
-                  <div className="mt-3 grid gap-3 xl:grid-cols-2 2xl:grid-cols-3">
+                  <div className="mt-3 grid max-h-[280px] grid-cols-2 gap-2 overflow-y-auto overscroll-contain p-1 sm:grid-cols-3">
                     {deliverySlots.map((slot) => {
                       const isSelected = isTimeInSlot(selectedTime, slot);
 
                       return (
                         <button
+                          aria-pressed={isSelected}
                           key={`${slot.start}-${slot.end}`}
                           type="button"
                           disabled={slot.isFullyBooked}
                           onClick={() => handleSelectSlot(slot)}
-                          className={`rounded-[16px] border p-3 text-left transition ${
+                          className={`rounded-[10px] border p-2.5 text-left transition ${
                             slot.isFullyBooked
                               ? "cursor-not-allowed border-[#e4ddd7] bg-[#f5f2ef] text-[#b0a49a]"
                               : isSelected
@@ -286,7 +287,7 @@ export default function MenuDeliveryForm({
                                 : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/45 hover:bg-[#fdf8f4]"
                           }`}
                         >
-                          <div className="flex min-w-0 flex-col items-start gap-3">
+                          <div className="flex min-w-0 flex-col items-start gap-1">
                             <div className="min-w-0">
                               <p className="text-[15px] font-semibold leading-6 break-words">
                                 {slot.label}

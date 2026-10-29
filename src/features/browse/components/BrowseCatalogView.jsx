@@ -1,3 +1,4 @@
+import {BROWSE_PAGE_SIZE} from "../utils/browsePagination.js";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
@@ -25,7 +26,7 @@ import {
   sortCatalogItems,
 } from "../utils/catalogFilters";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = BROWSE_PAGE_SIZE;
 
 function BrowsePageLoader() {
   const { t } = useTranslation();

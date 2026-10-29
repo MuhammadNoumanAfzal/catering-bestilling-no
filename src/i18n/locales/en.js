@@ -55,7 +55,7 @@ const en = {
     clearLocation: "Clear location",
     clearDeliveryFilter: "Clear delivery filter",
     clearEventFilter: "Clear event filter",
-    searchRestaurants: "Søk leverandør",
+    searchRestaurants: "Search vendors",
     clearSearch: "Clear search",
     searchAction: "Search",
     anyTime: "Any time",
@@ -159,6 +159,8 @@ const en = {
     showMore: "Show {{count}} more",
   },
   products: {
+    clearCategory: "Clear category",
+    clearLocation: "Clear location",
     priceFrom: "From",
     pricePerPerson: "per person",
     pricePerOrder: "per order",

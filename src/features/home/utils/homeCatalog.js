@@ -207,7 +207,7 @@ export function filterProductListingItems(
   products,
   { category, deliveryDate, deliveryTime, locationValue, searchQuery },
 ) {
-  return filterItemsByVendorLocation(products, locationValue).filter((product) => {
+  return filterItemsByVendorLocation(products, locationValue, product => product?.vendorData ?? product?.vendor ?? null).filter((product) => {
     if (
       !isVendorDeliverySlotAvailable(
         product?.vendorData ?? product?.vendor,

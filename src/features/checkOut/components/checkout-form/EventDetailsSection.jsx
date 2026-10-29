@@ -222,12 +222,13 @@ export default function EventDetailsSection({
                   ) : null}
                 </div>
 
-                <div className="mt-2 grid gap-2 xl:grid-cols-2">
+                <div className="mt-2 grid max-h-[280px] grid-cols-2 gap-2 overflow-y-auto overscroll-contain p-1">
                   {deliverySlots.map((slot) => {
                     const isSelected = isTimeInSlot(selectedTime, slot);
                     const isBooked = slot.isFullyBooked;
                     return (
                       <button
+                        aria-pressed={isSelected}
                         key={`${slot.start}-${slot.end}`}
                         type="button"
                         disabled={isBooked}
@@ -240,7 +241,7 @@ export default function EventDetailsSection({
                               : "cursor-pointer border-[#d9d1c7] bg-white text-[#2d2d2d] hover:border-[#cf6e38]/45 hover:bg-[#fdf8f4]"
                         }`}
                       >
-                        <div className="flex min-w-0 flex-col items-start gap-2">
+                        <div className="flex min-w-0 flex-col items-start gap-1">
                           <div className="min-w-0">
                             <p className="text-[13px] font-semibold leading-5 break-words">
                               {slot.label}

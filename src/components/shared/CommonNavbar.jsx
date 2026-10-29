@@ -1,3 +1,4 @@
+import {menuPath} from "../../features/menu/utils/menuRoutes.js";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiGrid, FiHome, FiSearch } from "react-icons/fi";
@@ -411,7 +412,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
             id: `menu-${vendor.slug}-${item.id}`,
             label: item.name || item.title || "Menu item",
             description: ["Menu", vendor.name].filter(Boolean).join(" • "),
-            to: `/vendor/${encodeURIComponent(vendor.slug)}/menu/${encodeURIComponent(item.id)}`,
+            to: menuPath(vendor.slug,item),
           }));
 
         setDashboardSearchResults([...vendorResults, ...menuResults]);

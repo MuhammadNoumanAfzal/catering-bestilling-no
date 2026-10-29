@@ -1,3 +1,4 @@
+import {menuPath} from "../utils/menuRoutes.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import StandaloneItemControls from "../components/StandaloneItemControls";
 import { normalizeStandaloneItem, updateStandaloneItem } from "../utils/standaloneCart.js";
@@ -69,6 +70,7 @@ export default function MenuDetailsPage() {
   const {
     menuItem,
     vendor,
+    status,
     isLoading: loading,
     error,
   } = useMenuDetails({ itemId, vendorSlug });
@@ -98,6 +100,11 @@ export default function MenuDetailsPage() {
   const { isSaved, toggle: toggleSavedState } = useSavedVendorStatus(vendor);
   const minimumPersons = menuItem?.serves ?? 1;
   const isStandalone = menuItem?.addOnType === "INDEPENDENT";
+  useEffect(()=>{
+    if(status !== "succeeded" || !vendor || !menuItem || String(menuItem.id)!==String(itemId))return;
+    const path=menuPath(vendor.slug||vendorSlug,menuItem);
+    if(path)navigate({pathname:path,search:location.search,hash:location.hash},{replace:true,state:location.state});
+  },[status,vendor,menuItem,itemId,vendorSlug,navigate,location.search,location.hash,location.state]);
   const selectedPersonCount = isStandalone ? standalonePersonCount : orderSummary?.personCount;
   const sidebarMinimumPersons = Math.max(isStandalone ? 1 : minimumPersons,
     ...(orderSummary?.items || []).filter((item) => !item.isAddOn && item.addOnType !== "INDEPENDENT")

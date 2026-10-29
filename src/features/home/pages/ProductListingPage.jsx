@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
@@ -21,8 +21,8 @@ import {
 export default function ProductListingPage() {
   const { t } = useTranslation();
   const { productType } = useParams();
-  const [searchParams] = useSearchParams();
-  const { deliveryDate, deliveryTime, locationValue, searchQuery } = useBrowseFilters();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { deliveryDate, deliveryTime, locationValue, searchQuery, setLocationValue } = useBrowseFilters();
   const normalizedLocationValue = `${locationValue ?? ""}`.trim();
   const compactLocationValue = normalizedLocationValue.replace(/\s+/g, "");
   const locationDigits = compactLocationValue.replace(/\D/g, "");
@@ -37,18 +37,14 @@ export default function ProductListingPage() {
 
     return {};
   }, [compactLocationValue, locationDigits, normalizedLocationValue]);
-  const { popularProducts } = useHomeData(listingSearchFilters);
-  const [visibleCount, setVisibleCount] = useState(HOME_LISTING_PAGE_SIZE);
+  const { popularProducts, status } = useHomeData(listingSearchFilters);
+  const [pagination, setPagination] = useState({key:"",count:HOME_LISTING_PAGE_SIZE});
   const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
-  const activeCategoryLabel = formatCategoryLabel(selectedCategory);
+  const activeCategoryLabel = formatCategoryLabel(selectedCategory)?.replace(/(^|[ ,])([a-z])/g, (_,prefix,letter)=>prefix+letter.toUpperCase());
 
-  useEffect(() => {
-    setVisibleCount(HOME_LISTING_PAGE_SIZE);
-  }, [productType, selectedCategory]);
+  const paginationKey = JSON.stringify([productType,selectedCategory,locationValue,deliveryDate,deliveryTime,searchQuery]);
+  const visibleCount = pagination.key === paginationKey ? pagination.count : HOME_LISTING_PAGE_SIZE;
 
-  if (productType !== "popular") {
-    return <Navigate to="/" replace />;
-  }
 
   const badge = t("products.badge", { defaultValue: "Products" });
   const title = t("products.popularTitle", { defaultValue: "Popular Products" });
@@ -57,22 +53,18 @@ export default function ProductListingPage() {
       "Browse the most-ordered meals and catering picks that teams keep coming back to.",
   });
   const normalizedSearchQuery = normalizeSearchQuery(searchQuery);
-  const filteredProducts = useMemo(
-    () =>
-      filterProductListingItems(popularProducts, {
-        category: selectedCategory,
-        deliveryDate,
-        deliveryTime,
-        locationValue: "",
-        searchQuery: normalizedSearchQuery,
-      }),
-    [deliveryDate, deliveryTime, normalizedSearchQuery, popularProducts, selectedCategory],
-  );
+  const filteredProducts = filterProductListingItems(popularProducts, {
+    category:selectedCategory, deliveryDate, deliveryTime, locationValue, searchQuery:normalizedSearchQuery,
+  });
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
 
+  if (productType !== "popular") return <Navigate to="/" replace />;
   return (
     <CatalogListingPageLayout
+      loading={status === "idle" || status === "loading"}
+      error={status === "failed" ? t("browse.loadErrorMessage") : ""}
+      emptyActions={<>{selectedCategory ? <button type="button" onClick={()=>{const next=new URLSearchParams(searchParams);next.delete("category");setSearchParams(next);}} className="rounded-full bg-[#c85f33] px-5 py-2.5 font-semibold text-white">{t("products.clearCategory")}</button>:null}{locationValue ? <button type="button" onClick={()=>setLocationValue("")} className="rounded-full border border-[#d7cec3] bg-white px-5 py-2.5 font-semibold text-[#46372b]">{t("products.clearLocation")}</button>:null}</>}
       badge={badge}
       title={title}
       description={description}
@@ -85,9 +77,7 @@ export default function ProductListingPage() {
       hasItems={filteredProducts.length > 0}
       hasMore={hasMore}
       onShowMore={() =>
-        setVisibleCount((current) =>
-          Math.min(current + HOME_LISTING_PAGE_SIZE, filteredProducts.length),
-        )
+        setPagination({key:paginationKey,count:Math.min(visibleCount+HOME_LISTING_PAGE_SIZE,filteredProducts.length)})
       }
     >
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

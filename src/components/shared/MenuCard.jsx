@@ -1,3 +1,4 @@
+import {menuPath as buildMenuPath} from "../../features/menu/utils/menuRoutes.js";
 import { FiStar } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,7 @@ export default function MenuCard({
   const { t } = useTranslation();
   const { requirePostalCodeForMenu } = usePostalCodePrompt();
   const menuPath = vendorSlug && id
-    ? `/vendor/${encodeURIComponent(vendorSlug)}/menu/${encodeURIComponent(id)}`
+    ? buildMenuPath(vendorSlug,{title})
     : vendorSlug
       ? `/vendor/${encodeURIComponent(vendorSlug)}`
       : "";

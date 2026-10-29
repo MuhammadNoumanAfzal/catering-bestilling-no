@@ -1,3 +1,4 @@
+import {menuPath} from "../../menu/utils/menuRoutes.js";
 import { FiStar } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -20,7 +21,7 @@ export function ProductItem({
   const { requirePostalCodeForMenu } = usePostalCodePrompt();
   const productPath =
     vendorSlug && id
-      ? "/vendor/" + encodeURIComponent(vendorSlug) + "/menu/" + encodeURIComponent(id)
+      ? menuPath(vendorSlug,{name})
       : vendorSlug
         ? "/vendor/" + encodeURIComponent(vendorSlug)
         : "";

@@ -2,6 +2,9 @@ import { useTranslation } from "react-i18next";
 import BackLinkButton from "../../../components/shared/BackLinkButton";
 
 export default function CatalogListingPageLayout({
+  loading = false,
+  error = "",
+  emptyActions = null,
   badge,
   title,
   description,
@@ -41,15 +44,16 @@ export default function CatalogListingPageLayout({
           </BackLinkButton>
         </div>
 
-        {children}
+        {loading ? <p role="status" className="rounded-2xl border border-[#eadfd7] bg-[#fffaf6] p-8 text-center text-[#77685e]">{t("browse.updatingResults")}</p> : error ? <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700">{error}</p> : children}
 
-        {!hasItems ? (
+        {!loading && !error && !hasItems ? (
           <div className="mt-6 rounded-[24px] border border-dashed border-[#ddd4cb] bg-[#fcfaf8] px-6 py-12 text-center text-sm text-[#6f675f]">
-            {emptyMessage}
+            <p>{emptyMessage}</p>
+            {emptyActions ? <div className="mt-5 flex flex-wrap justify-center gap-3">{emptyActions}</div> : null}
           </div>
         ) : null}
 
-        {hasMore ? (
+        {!loading && !error && hasMore ? (
           <div className="mt-8 flex justify-center">
             <button
               type="button"

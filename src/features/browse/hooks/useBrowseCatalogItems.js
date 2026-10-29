@@ -1,3 +1,4 @@
+import {BROWSE_PAGE_SIZE,fetchBrowseBatch} from "../utils/browsePagination.js";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,7 @@ import { filterItemsByVendorLocation } from "../../vendor";
 import { fetchVendorProfiles } from "../../vendor/api/vendorService";
 import { isVendorDeliverySlotAvailable } from "../../vendor/services/vendorAvailability";
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = BROWSE_PAGE_SIZE;
 
 function slugify(value) {
   return `${value ?? ""}`.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
@@ -79,9 +80,7 @@ function buildVendorLookup(vendors = []) {
 
 
 async function fetchBrowseProducts(variables, mode) {
-  return mode === "occasion"
-    ? browseProductsByOccasion(variables)
-    : browseProductsByFoodType(variables);
+  return fetchBrowseBatch(mode === "occasion" ? browseProductsByOccasion : browseProductsByFoodType, variables);
 }
 function mergeVendorCoverage(items, vendorLookup) {
   if (!vendorLookup.size) return items;

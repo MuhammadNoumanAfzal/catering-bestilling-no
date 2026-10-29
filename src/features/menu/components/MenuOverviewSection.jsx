@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { formatMoney } from "../../pricing/formatMoney.js";
 import {
   FiClock,
@@ -74,6 +75,8 @@ function normalizeTimingEntries(vendor, locale) {
 
       return {
         label: `${dayLabel} ${start}-${end}`,
+        day: dayLabel,
+        time: `${start}\u2013${end}`,
         order: DELIVERY_DAY_ORDER[dayKey] ?? Number.MAX_SAFE_INTEGER,
       };
     })
@@ -82,11 +85,11 @@ function normalizeTimingEntries(vendor, locale) {
   if (slotEntries.length > 0) {
     return [...new Map(slotEntries.map((entry) => [entry.label, entry])).values()]
       .sort((left, right) => left.order - right.order || left.label.localeCompare(right.label))
-      .map((entry) => entry.label);
+      .map((entry) => ({...entry, key: String(entry.order)}));
   }
 
   const fallbackLabel = `${vendor?.availability?.delivery?.label ?? ""}`.trim();
-  return fallbackLabel ? [fallbackLabel] : [];
+  return fallbackLabel ? [{key:"fallback",label:fallbackLabel,day:"",time:fallbackLabel}] : [];
 }
 
 function MetricCard({ icon, label, value, subvalue }) {
@@ -115,53 +118,25 @@ function MetricCard({ icon, label, value, subvalue }) {
 }
 
 function TimingPanel({ entries }) {
-  const { t, i18n } = useTranslation();
-
-  return (
-    <div className="rounded-[20px] border border-[#e8ddd3] bg-[linear-gradient(135deg,#fffaf6_0%,#fff4eb_100%)] p-3 shadow-[0_12px_26px_rgba(55,34,19,0.04)] sm:p-3.5">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="max-w-xl">
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-[14px] bg-white text-[15px] text-[#cf6e38] shadow-[0_8px_16px_rgba(55,34,19,0.06)]">
-              <FiClock />
-            </span>
-            <div>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#9b7a66]">
-                {t("menu.timing")}
-              </p>
-              <p className="text-[19px] font-semibold tracking-[-0.04em] text-[#17120f] sm:text-[22px]">
-                {t("menu.deliverySchedule")}
-              </p>
-            </div>
-          </div>
-          <p className="mt-2 text-[11px] leading-4 text-[#66584d] sm:text-[12px]">
-            {t("menu.deliveryScheduleDesc")}
-          </p>
-        </div>
-
-        <div className="w-full lg:max-w-[520px]">
-          {entries.length ? (
-            <div className="grid gap-1.5 sm:grid-cols-2">
-              {entries.map((entry) => (
-                <div
-                  key={entry}
-                  className="rounded-[14px] border border-[#ead8ca] bg-white px-3 py-2 shadow-[0_6px_14px_rgba(55,34,19,0.03)]"
-                >
-                  <p className="text-[12px] font-semibold leading-5 text-[#2a211b] break-words">
-                    {entry}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[20px] border border-dashed border-[#e1d4c7] bg-white/80 px-4 py-5 text-[14px] font-medium text-[#77685e]">
-              {t("menu.deliveryScheduleUnavailable")}
-            </div>
-          )}
-        </div>
-      </div>
+  const { t } = useTranslation();
+  const [focusedDay, setFocusedDay] = useState("");
+  const days = [...new Map(entries.map(entry => [entry.key, {key:entry.key,label:entry.day}])).values()];
+  const selectedDay = days.some(day=>day.key===focusedDay) ? focusedDay : days[0]?.key;
+  const slots = entries.filter(entry=>entry.key===selectedDay);
+  return <section className="rounded-[18px] border border-[#e8ddd3] bg-[#fffaf6] p-4 sm:p-5" aria-label={t("menu.deliverySchedule")}>
+    <div className="flex items-start gap-3">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff0e5] text-[#cf6e38]"><FiClock size={19}/></span>
+      <div><h3 className="text-[18px] font-semibold text-[#17120f]">{t("menu.deliverySchedule")}</h3><p className="mt-1 text-[12px] leading-5 text-[#77685e]">{t("menu.deliveryScheduleDesc")}</p></div>
     </div>
-  );
+    {entries.length ? <div className="mt-4">
+      {days[0]?.label ? <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label={t("menu.deliverySchedule")}>
+        {days.map(day=><button type="button" key={day.key} aria-pressed={selectedDay===day.key} onClick={()=>setFocusedDay(day.key)} className={"min-h-10 min-w-12 rounded-xl border px-3 py-2 text-[13px] font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#cf6e38] "+(selectedDay===day.key?"border-[#cf6e38] bg-[#cf6e38] text-white":"border-[#e7dcd2] bg-white text-[#66584d] hover:border-[#cf6e38]")}>{day.label}</button>)}
+      </div>:null}
+      <div className="grid max-h-[240px] grid-cols-2 gap-2 overflow-y-auto overscroll-contain p-1 sm:grid-cols-3" role="list">
+        {slots.map(entry=><div key={entry.label} role="listitem" className="rounded-[10px] border border-[#eadfd5] bg-white px-3 py-2.5 text-center text-[13px] font-medium tabular-nums text-[#46372b]">{entry.time}</div>)}
+      </div>
+    </div>:<p className="mt-4 rounded-xl border border-dashed border-[#e1d4c7] bg-white p-4 text-[13px] text-[#77685e]">{t("menu.deliveryScheduleUnavailable")}</p>}
+  </section>;
 }
 
 export default function MenuOverviewSection({ vendor, menuItem }) {
@@ -177,12 +152,10 @@ export default function MenuOverviewSection({ vendor, menuItem }) {
 const formattedUnitPrice = formatMoney(unitPrice);
   const priceText = formattedUnitPrice;
   const minimumPersons = Number(menuItem?.serves ?? 1);
-  const cuisineBadge =
-    menuItem?.modal?.badge || menuItem?.badge || menuItem?.category || "Chef's pick";
   const description =
     menuItem.description ||
     "A curated catering option prepared for dependable delivery and easy team ordering.";
-  const locale = i18n.language?.startsWith("no") ? "nb-NO" : "en-GB";
+  const locale = /^(nb|nn|no)/i.test(i18n.language || "") ? "nb-NO" : "en-GB";
   const timingEntries = normalizeTimingEntries(vendor, locale);
   const vendorLocationText = vendor.addressLine || vendor.city || t("menu.notAvailable");
 
