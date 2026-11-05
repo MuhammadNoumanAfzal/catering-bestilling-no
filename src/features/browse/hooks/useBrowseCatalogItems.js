@@ -1,3 +1,4 @@
+import { fetchCategoryUnion } from "../utils/categoryUnion.js";
 import {BROWSE_PAGE_SIZE,fetchBrowseBatch} from "../utils/browsePagination.js";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -63,7 +64,8 @@ function mapDeliveryFilter(value) {
 }
 
 function resolveSelectedSlug(selection, categories) {
-  const rawValue = Array.isArray(selection) ? selection[0] : selection;
+  if (Array.isArray(selection)) return [...new Set(selection.map(value => resolveSelectedSlug(value, categories)).filter(Boolean))].join(",");
+  const rawValue = selection;
   const normalizedValue = `${rawValue ?? ""}`.trim();
   if (!normalizedValue) return null;
   const match = categories.find((item) => item.value === normalizedValue || item.slug === normalizedValue || item.name.toLowerCase() === normalizedValue.toLowerCase() || slugify(item.name) === slugify(normalizedValue));
@@ -80,7 +82,8 @@ function buildVendorLookup(vendors = []) {
 
 
 async function fetchBrowseProducts(variables, mode) {
-  return fetchBrowseBatch(mode === "occasion" ? browseProductsByOccasion : browseProductsByFoodType, variables);
+  const field = mode === "occasion" ? "occasionSlug" : "foodTypeSlug";
+  return fetchCategoryUnion(input => fetchBrowseBatch(mode === "occasion" ? browseProductsByOccasion : browseProductsByFoodType, input), variables, String(variables[field] || "").split(","), field);
 }
 function mergeVendorCoverage(items, vendorLookup) {
   if (!vendorLookup.size) return items;
@@ -142,7 +145,7 @@ export function useBrowseCatalogItems(mode = "food-type") {
           return;
         }
         const resolvedSlug = resolveSelectedSlug(selected, nextCategories);
-        if (resolvedSlug && resolvedSlug !== selected) {
+        if (resolvedSlug && resolvedSlug !== (Array.isArray(selected) ? selected.join(",") : selected)) {
           const nextParams = new URLSearchParams(searchParams);
           nextParams.set("category", resolvedSlug);
           setSearchParams(nextParams, { replace: true });

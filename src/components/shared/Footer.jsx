@@ -1,12 +1,10 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FiArrowUpRight, FiMail, FiPhone } from "react-icons/fi";
+import { FiArrowUpRight, FiMail } from "react-icons/fi";
 import { MdFacebook } from "react-icons/md";
 import { PiInstagramLogoFill } from "react-icons/pi";
 import {
   COMPANY_EMAIL,
-  COMPANY_PHONE_DISPLAY,
-  COMPANY_PHONE_LINK,
   COMPANY_SOCIAL_LINKS,
 } from "../../constants/companyContact";
 
@@ -91,14 +89,6 @@ export default function Footer() {
                 >
                   <FiMail className="text-[14px]" />
                   <span>{COMPANY_EMAIL}</span>
-                </a>
-
-                <a
-                  href={`tel:${COMPANY_PHONE_LINK}`}
-                  className="inline-flex items-center gap-2 text-[13px] font-medium text-[#ffe9db] transition hover:text-white"
-                >
-                  <FiPhone className="text-[14px]" />
-                  <span>{COMPANY_PHONE_DISPLAY}</span>
                 </a>
               </div>
 

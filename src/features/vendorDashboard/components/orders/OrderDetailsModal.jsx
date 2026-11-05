@@ -1,3 +1,4 @@
+import OrderReviewSection from "../../../order/reviews/OrderReviewSection.jsx";
 import { formatMoney } from "../../../pricing/formatMoney.js";
 import { FiArrowRight, FiStar, FiX } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
@@ -188,6 +189,7 @@ function ItemDetailGroup({ label, items, accent = "default" }) {
 export default function OrderDetailsModal({
   order,
   isOpen,
+  autoOpenReview = false,
   onClose,
   onModify,
   onApproveVendorAdjustment,
@@ -247,6 +249,7 @@ export default function OrderDetailsModal({
             <h2 className="mt-2 type-h2 text-[#1f1f1f]">{t("vendorPanel.orderDetails.title")}</h2>
           </div>
 
+          <OrderReviewSection key={order.rawId || order.orderId || order.id} orderId={order.rawId || order.orderId || order.id} vendorId={order.vendorId} autoOpen={autoOpenReview} />
           <div className="px-6 pt-5">
             <div className="overflow-hidden rounded-[24px] border border-[#eee5dc] shadow-[0_18px_36px_rgba(40,26,15,0.10)]">
               <img

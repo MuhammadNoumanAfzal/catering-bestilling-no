@@ -1,3 +1,4 @@
+import { accountPostalCode } from "../../../utils/postalCode.js";
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import {
   CHANGE_PASSWORD_MUTATION,
@@ -126,7 +127,8 @@ export async function sendSignupOtp(input) {
 }
 
 export async function verifySignupOtp(input) {
-  const variables = normalizeVerifySignupOtpInput(input);
+  const normalized = normalizeVerifySignupOtpInput(input);
+  const variables = { ...normalized, input: { ...normalized.input, postCode: Number(normalized.input.postCode) } };
 
   return runAuthMutation({
     query: REGISTER_USER_MUTATION,
@@ -140,7 +142,7 @@ export async function verifySignupOtp(input) {
     },
     mapResult: (result) => ({
       ...result,
-      user: normalizeAuthenticatedUser(result.user),
+      user: normalizeAuthenticatedUser({ ...result.user, postCode: accountPostalCode(result.user, input.postCode) }),
     }),
   });
 }

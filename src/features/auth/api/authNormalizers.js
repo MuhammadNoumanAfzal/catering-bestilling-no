@@ -71,7 +71,7 @@ function normalizePostCode(value) {
     throw new Error("Post code must contain only digits.");
   }
 
-  return Number.parseInt(postCode, 10);
+  return postCode;
 }
 
 export function normalizeRegisterUserInput(input) {

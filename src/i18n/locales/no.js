@@ -1,4 +1,5 @@
 const no = {
+  orderReview: {"reviewTitle":"Tittel på vurderingen","title":"Din vurdering","loading":"Laster vurderingsinformasjon?","unavailable":"Vurderingsinformasjon er ikke tilgjengelig akkurat n?.","retry":"Pr?v igjen","submitFailed":"Kunne ikke sende vurderingen. Pr?v igjen.","submitted":"Vurderingen din er sendt inn.","notEligible":"Denne bestillingen kan ikke vurderes.","rating":"Vurdering (1?5)","comment":"Din tilbakemelding","saving":"Sender?","submit":"Send vurdering","cancel":"Avbryt","leave":"Skriv en vurdering","reason":{"NOT_AUTHENTICATED":"Logg inn for ? vurdere bestillingen din.","NOT_ORDER_OWNER":"Bare kunden som la inn bestillingen kan vurdere den.","ORDER_NOT_COMPLETED":"Du kan vurdere bestillingen etter at den er fullf?rt.","ALREADY_REVIEWED":"Du har allerede vurdert denne bestillingen."}},
   clientInvoice: {
     street: "Gateadresse", postalCode: "Postnummer", city: "By", suite: "Leilighet / etasje",
     amountMismatch: "Varebeløpene stemmer ikke med fakturabeløpet. Kontakt Go Catering for å få beløpet kontrollert.",
@@ -1598,6 +1599,7 @@ const no = {
       notification: "Varsling",
     },
     supportResponses: {
+      closedReplyNotice: "Et svar vil \u00e5pne denne saken igjen. Opprett en ny sak hvis det gjelder et annet problem.",
       title: "Innboks",
       description:
         "Se oppdateringer på saker og fortsett supportsamtaler fra en egen side.",
@@ -1942,8 +1944,8 @@ const no = {
       "Ingen leverandører er tilgjengelige for dette området ennå.",
     noProductsGeneric: "Ingen produkter er tilgjengelige akkurat nå.",
     clearAllFilters: "Fjern alle filtre",
-    categoryPickerTitle: "Velg en kategori",
-    categoryPickerHint: "Velg en kategori for å finne passende menyer.",
+    selectedCategories: "Valgte kategorier", removeCategory: "Fjern {{category}}", editCategories: "Endre kategorier", categoryPickerTitle: "Velg kategorier",
+    categoryPickerHint: "Velg ?n eller flere kategorier for ? finne passende menyer.",
     clearFilter: "Fjern filter",
     applyFilter: "Bruk filter",
     apply: "Bruk",

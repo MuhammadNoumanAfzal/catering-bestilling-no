@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { showAuthErrorAlert, showSuccessToast } from "../../../utils/alerts";
@@ -62,8 +62,10 @@ function OrdersErrorState({ message, onRetry }) {
 export default function VendorOrdersPage() {
   const { t } = useTranslation();
   const location = useLocation();
+  const { orderId: routeOrderId } = useParams();
+  const autoOpenReview = new URLSearchParams(location.search).get("action") === "review";
   const fromOrderConfirmation = Boolean(location.state?.fromOrderConfirmation);
-  const openOrderId = location.state?.openOrderId;
+  const openOrderId = routeOrderId || location.state?.openOrderId;
   const [activeView, setActiveView] = useState("active");
   const [selectedTabs, setSelectedTabs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
@@ -96,7 +98,7 @@ export default function VendorOrdersPage() {
   const normalizedOrders = Array.isArray(orders) ? orders : [];
 
   useEffect(() => {
-    if (!openOrderId || normalizedOrders.length === 0 || selectedOrder) {
+    if (!openOrderId || (!routeOrderId && normalizedOrders.length === 0) || selectedOrder) {
       return;
     }
 
@@ -109,15 +111,15 @@ export default function VendorOrdersPage() {
       (order) => normalizeRouteOrderId(order.rawId || order.id) === normalizedOpenOrderId,
     );
 
-    if (!matchingOrder) {
+    if (!matchingOrder && !routeOrderId) {
       return;
     }
 
     openedRouteOrderRef.current = normalizedOpenOrderId;
     setIsChangeRequestOpen(false);
-    setSelectedOrder(matchingOrder);
-    dispatch(fetchClientOrderDetail(matchingOrder.rawId || matchingOrder.id));
-  }, [dispatch, normalizedOrders, openOrderId, selectedOrder]);
+    setSelectedOrder(matchingOrder || { rawId: normalizedOpenOrderId, id: normalizedOpenOrderId });
+    dispatch(fetchClientOrderDetail(matchingOrder?.rawId || matchingOrder?.id || normalizedOpenOrderId));
+  }, [dispatch, normalizedOrders, openOrderId, routeOrderId, selectedOrder]);
 
   useEffect(() => {
     const requests = [];
@@ -672,6 +674,7 @@ export default function VendorOrdersPage() {
       </section>
 
       <OrderDetailsModal
+        autoOpenReview={autoOpenReview}
         order={selectedOrderDetail || selectedOrder}
         isLoading={selectedOrderDetailStatus === "loading"}
         isResolvingVendorAdjustment={isResolvingVendorAdjustment}

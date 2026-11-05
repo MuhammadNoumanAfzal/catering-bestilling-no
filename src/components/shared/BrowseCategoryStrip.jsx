@@ -1,3 +1,4 @@
+import { toggleCategorySelection } from "../../features/browse/utils/categoryFilters.js";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiCheck, FiGrid, FiMoreHorizontal, FiX } from "react-icons/fi";
@@ -139,19 +140,12 @@ export default function BrowseCategoryStrip({
     const itemValue = getItemValue(item);
 
     if (isMoreItem(item)) {
-      if (!showMorePanel) setSelectedMoreOptions(activeValues.filter(Boolean).slice(0, 1));
+      if (!showMorePanel) setSelectedMoreOptions(activeValues.filter(Boolean));
       setPanelOpen(!showMorePanel);
       return;
     }
 
-    const nextCategory =
-      Array.isArray(activeCategory)
-        ? activeCategory.includes(itemValue)
-          ? null
-          : itemValue
-        : activeCategory === itemValue
-          ? null
-          : itemValue;
+    const nextCategory = toggleCategorySelection(activeCategory, itemValue);
 
     onCategoryChange?.(nextCategory);
     setPanelOpen(false);
@@ -161,7 +155,7 @@ export default function BrowseCategoryStrip({
     const optionValue = getItemValue(option);
 
     setSelectedMoreOptions((current) =>
-      current.includes(optionValue) ? [] : [optionValue],
+      current.includes(optionValue) ? current.filter(value => value !== optionValue) : [...current, optionValue],
     );
   };
 
@@ -172,7 +166,7 @@ export default function BrowseCategoryStrip({
   };
 
   const applyFilters = () => {
-    onCategoryChange?.(selectedMoreOptions[0] ?? null);
+    onCategoryChange?.(selectedMoreOptions.length ? selectedMoreOptions : null);
     setPanelOpen(false);
   };
 

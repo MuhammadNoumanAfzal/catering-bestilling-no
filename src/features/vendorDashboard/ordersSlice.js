@@ -571,6 +571,7 @@ function mapListOrder(node) {
     id: formatId(node.id),
     rawId: node.id || "",
     invoiceRevision: node.invoiceRevision ?? null,
+    vendorId: node.vendor?.id || "",
     vendor: node.vendor?.name || "Catering partner",
     eventName: node.eventName || i18n.t("checkout.customerTypes.Corporate", { defaultValue: "Bedriftskunde" }),
     date: formatDate(draftOverride?.eventDate || node.eventDate),
@@ -780,6 +781,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
         detail: {
           id: formatId(orderNode.id),
           rawId: orderNode.id || "",
+          vendorId: orderNode.vendor?.id || "",
           vendor: orderNode.vendor?.name || "Catering partner",
           vendorSlug: orderNode.vendor?.slug || "",
           eventName: orderNode.eventName || i18n.t("checkout.customerTypes.Corporate", { defaultValue: "Bedriftskunde" }),

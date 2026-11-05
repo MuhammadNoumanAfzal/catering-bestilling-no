@@ -73,3 +73,10 @@ export function parseCategoryParamValue(value) {
 
   return categories.length === 1 ? categories[0] : categories;
 }
+
+export function toggleCategorySelection(selection, value) {
+  const normalized = normalizeCategorySelection(selection);
+  const values = [...new Set(Array.isArray(normalized) ? normalized : normalized ? [normalized] : [])];
+  const next = values.includes(value) ? values.filter(item => item !== value) : [...values, value];
+  return next.length ? next : null;
+}

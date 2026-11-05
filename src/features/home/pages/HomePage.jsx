@@ -1,3 +1,4 @@
+import { fetchCategoryUnion } from "../../browse/utils/categoryUnion.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -147,7 +148,7 @@ export default function HomePage() {
   const menuQuery = buildCategoryQuery(normalizedCategoryFilter);
   const hasValidPostalCode = isValidPostalCode(normalizedPostalCode);
   const activeCategorySlug = Array.isArray(normalizedCategoryFilter)
-    ? normalizedCategoryFilter[0] || ""
+    ? normalizedCategoryFilter.join(",") || ""
     : normalizedCategoryFilter || "";
 
   useEffect(() => {
@@ -276,13 +277,13 @@ export default function HomePage() {
       }
 
       try {
-        const result = await browseProductsByFoodType({
+        const result = await fetchCategoryUnion(browseProductsByFoodType, {
           foodTypeSlug: activeCategorySlug,
           postCode: appliedSearchFilters.postCode,
           areaName: appliedSearchFilters.areaName,
           search: undefined,
           first: 24,
-        });
+        }, activeCategorySlug.split(","), "foodTypeSlug");
         if (isMounted) {
           setCategoryBrowseProducts(result.items || []);
         }
@@ -310,22 +311,12 @@ export default function HomePage() {
       return null;
     }
 
-    const categoryValue = Array.isArray(normalizedCategoryFilter)
-      ? normalizedCategoryFilter[0]
-      : normalizedCategoryFilter;
-    const matchedCategory = foodTypeCategories.find(
-      (item) => item.value === categoryValue || item.slug === categoryValue,
-    );
-
-    return matchedCategory?.name ?? buildActiveCategoryLabel(normalizedCategoryFilter);
+    const values = Array.isArray(normalizedCategoryFilter) ? normalizedCategoryFilter : [normalizedCategoryFilter];
+    return values.map(value => foodTypeCategories.find(item => item.value === value || item.slug === value)?.name || buildActiveCategoryLabel(value)).join(", ");
   }, [foodTypeCategories, normalizedCategoryFilter]);
 
   const previewCategories = useMemo(() => {
-    if (foodTypeCategories.length <= 8) {
-      return foodTypeCategories;
-    }
-
-    return [
+return [
       ...foodTypeCategories.slice(0, 8),
       { name: t("home.more"), value: "__more__" },
     ];

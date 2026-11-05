@@ -1,3 +1,4 @@
+import { accountPostalCode } from "../../../../utils/postalCode.js";
 import { graphqlRequest } from "../../../../lib/api/graphqlClient";
 import { uploadMenuImage } from "../../../menu/api/menuUploadApi";
 import {
@@ -86,7 +87,7 @@ export async function updateSettingsProfile(formState) {
     message: result.message || "Profile updated successfully",
     formState: mergeSettingsFormState(
       formState,
-      mapSettingsProfileToFormState(result.user),
+      { ...mapSettingsProfileToFormState(result.user), postCode: accountPostalCode(result.user, formState.postCode) },
     ),
   };
 }

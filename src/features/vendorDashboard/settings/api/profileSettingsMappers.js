@@ -1,3 +1,4 @@
+import { accountPostalCode } from "../../../../utils/postalCode.js";
 import { vendorSettingsInitialState } from "../constants/settingsForm";
 
 function parseNotificationPreferences(rawValue) {
@@ -35,7 +36,7 @@ export function mapSettingsProfileToFormState(user) {
     secondaryEmail: user?.secondaryEmail || "",
     mobilePhone: user?.phone || "",
     workPhone: user?.workPhone || "",
-    postCode: user?.postCode || "",
+    postCode: accountPostalCode(user),
     company: user?.companyName || "",
     jobTitle: user?.jobTitle || "",
     industry: user?.industryUsage || "",

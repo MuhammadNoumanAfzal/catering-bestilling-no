@@ -1,3 +1,4 @@
+import { accountPostalCode } from "../../utils/postalCode.js";
 export const AUTH_SESSION_STORAGE_KEY = "auth-session";
 const CUSTOMER_FIRST_LOGIN_SEEN_KEY = "customer-first-login-seen";
 
@@ -15,6 +16,7 @@ export function normalizeAuthenticatedUser(user) {
 
   return {
     ...user,
+    postCode: accountPostalCode(user),
     email,
     name: fullName || email || "User",
     applicationStatus: `${user?.applicationStatus ?? ""}`.trim(),

@@ -185,6 +185,8 @@ export default function AppRouter() {
             <Route path="/checkout/:checkoutType" element={<CheckoutPage />} />
           </Route>
 
+          <Route path="/orders/:orderId" element={<VendorDashboardLayout />}><Route index element={<VendorOrdersPage />} /></Route>
+
           {/* Vendor dashboard routes */}
           <Route path="/client-dashboard" element={<VendorDashboardLayout />}>
             <Route index element={<VendorDashboardHomePage />} />
