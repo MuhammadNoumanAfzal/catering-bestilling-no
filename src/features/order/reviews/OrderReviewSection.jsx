@@ -1,3 +1,4 @@
+import { FiStar, FiArrowUpRight, FiCheck, FiMessageSquare } from "react-icons/fi";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,17 +36,39 @@ export default function OrderReviewSection({ orderId, vendorId, autoOpen = false
       } else setError("submitFailed");
     } finally { setSaving(false); }
   }
-  return <section ref={section} className="mx-6 my-5 rounded-2xl border border-[#eadfd6] bg-[#fffaf6] p-4 sm:p-5" aria-label={t("orderReview.title")}>
-    <h3 className="text-lg font-bold">{t("orderReview.title")}</h3>
-    {loading ? <p className="mt-2 text-sm" role="status">{t("orderReview.loading")}</p> : null}
-    {error ? <p className="mt-2 text-sm text-red-700" role="alert">{t("orderReview." + error)} {error === "unavailable" ? <button type="button" onClick={() => setRevision(value => value + 1)} className="underline">{t("orderReview.retry")}</button> : null}</p> : null}
-    {details?.review ? <div className="mt-3"><p className="font-semibold">{details.review.rating} / 5</p><p className="mt-2 whitespace-pre-wrap break-words text-sm">{details.review.comment}</p><p className="mt-2 text-xs text-[#74665c]">{t("orderReview.submitted")}</p></div> : null}
-    {!loading && details && !details.canReview && !details.review ? <p className="mt-2 text-sm text-[#74665c]">{t("orderReview.reason." + details.reviewIneligibilityReason, { defaultValue: t("orderReview.notEligible") })}</p> : null}
-    {details?.canReview && !details.review ? (open ? <form onSubmit={submit} className="mt-4 space-y-3">
-      <fieldset disabled={saving}><legend className="text-sm font-semibold">{t("orderReview.rating")}</legend><div className="mt-2 flex flex-wrap gap-2">{[1,2,3,4,5].map(value => <label key={value} className={"cursor-pointer rounded-lg border px-3 py-2 " + (rating === value ? "border-[#c65e30] bg-[#fff0e5]" : "border-[#dfd4cb] bg-white")}><input type="radio" name={"rating-" + orderId} value={value} required checked={rating === value} onChange={() => setRating(value)} className="mr-1" />{value} ?</label>)}</div></fieldset>
-      <label className="block text-sm font-semibold">{t("orderReview.reviewTitle")}<input required disabled={saving} value={title} onChange={event => setTitle(event.target.value)} className="mt-2 w-full rounded-xl border border-[#dfd4cb] bg-white p-3 font-normal" /></label>
-      <label className="block text-sm font-semibold">{t("orderReview.comment")}<textarea value={comment} onChange={event => setComment(event.target.value)} disabled={saving} rows={4} className="mt-2 w-full rounded-xl border border-[#dfd4cb] bg-white p-3 font-normal" /></label>
-      <div className="flex flex-wrap gap-2"><button type="submit" disabled={saving || !rating || !vendorId || !title.trim()} className="rounded-full bg-[#c65e30] px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">{t(saving ? "orderReview.saving" : "orderReview.submit")}</button><button type="button" disabled={saving} onClick={() => setOpen(false)} className="rounded-full border px-5 py-2 text-sm">{t("orderReview.cancel")}</button></div>
-    </form> : <button type="button" onClick={() => setOpen(true)} className="mt-3 rounded-full bg-[#c65e30] px-5 py-2 text-sm font-semibold text-white">{t("orderReview.leave")}</button>) : null}
-  </section>;
+  const fieldClass = "mt-2 w-full rounded-xl border border-[#e6ded7] bg-[#fcfbfa] px-4 py-3 text-sm font-normal text-[#322a25] outline-none transition placeholder:text-[#aa9c92] focus:border-[#c65e30] focus:bg-white focus:ring-4 focus:ring-[#c65e30]/10 disabled:opacity-60";
+  return (
+    <section ref={section} className="mx-4 my-5 overflow-hidden rounded-[24px] border border-[#eadfd7] bg-white shadow-[0_8px_32px_rgba(70,43,26,0.04)] sm:mx-6" aria-label={t("orderReview.title")}>
+      <header className="flex items-center gap-3 border-b border-[#f1ebe6] px-5 py-4 sm:px-6 sm:py-5">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#fff1e7] text-[#c65e30]"><FiMessageSquare size={20} aria-hidden="true" /></span>
+        <div><h3 className="text-base font-semibold tracking-tight text-[#2f261f]">{t("orderReview.title")}</h3><p className="mt-1 text-xs leading-5 text-[#96867a]">{t("orderReview.subtitle")}</p></div>
+      </header>
+      <div className="px-5 py-5 sm:px-6">
+        {loading ? <p className="text-sm text-[#8c7d72]" role="status">{t("orderReview.loading")}</p> : null}
+        {error ? <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{t("orderReview." + error)} {error === "unavailable" ? <button type="button" onClick={() => setRevision(value => value + 1)} className="font-semibold underline underline-offset-2">{t("orderReview.retry")}</button> : null}</p> : null}
+        {details?.review ? <div>
+          <div className="flex items-center gap-1 text-[#d87a36]" aria-label={t("orderReview.starRating", { count: details.review.rating })}>{[1,2,3,4,5].map(value => <FiStar key={value} size={20} fill={value <= details.review.rating ? "currentColor" : "none"} aria-hidden="true" />)}<span className="ml-2 text-sm font-semibold text-[#57473c]">{details.review.rating}/5</span></div>
+          {details.review.title ? <h4 className="mt-4 font-semibold text-[#352a23]">{details.review.title}</h4> : null}
+          <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-[#79695c]">{details.review.comment}</p>
+          <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1.5 text-xs font-medium text-green-800"><FiCheck aria-hidden="true" />{t("orderReview.submitted")}</p>
+        </div> : null}
+        {!loading && details && !details.canReview && !details.review ? <p className="text-sm leading-6 text-[#8c7c70]">{t("orderReview.reason." + details.reviewIneligibilityReason, { defaultValue: t("orderReview.notEligible") })}</p> : null}
+        {details?.canReview && !details.review ? (open ? <form onSubmit={submit} className="space-y-5">
+          <fieldset disabled={saving}>
+            <legend className="text-sm font-semibold text-[#514136]">{t("orderReview.rating")}</legend>
+            <div className="mt-3 flex items-center gap-1 sm:gap-2">{[1,2,3,4,5].map(value => <label key={value} className="cursor-pointer">
+              <input type="radio" name={"rating-" + orderId} value={value} required checked={rating === value} onChange={() => setRating(value)} className="peer sr-only" aria-label={t("orderReview.starRating", { count: value })} />
+              <span className={"flex h-11 w-11 items-center justify-center rounded-xl transition peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#c65e30] " + (value <= rating ? "bg-[#fff1e5] text-[#d77b35]" : "bg-[#faf7f4] text-[#d4c7bd] hover:bg-[#fff2e7] hover:text-[#d77b35]")}><FiStar size={25} fill={value <= rating ? "currentColor" : "none"} aria-hidden="true" /></span>
+            </label>)}<span className="ml-2 text-sm font-semibold text-[#8d7562]" aria-live="polite">{rating ? rating + "/5" : ""}</span></div>
+          </fieldset>
+          <label className="block text-sm font-semibold text-[#514136]">{t("orderReview.reviewTitle")}<input required disabled={saving} value={title} onChange={event => setTitle(event.target.value)} placeholder={t("orderReview.titlePlaceholder")} className={fieldClass} /></label>
+          <label className="block text-sm font-semibold text-[#514136]">{t("orderReview.comment")}<textarea value={comment} onChange={event => setComment(event.target.value)} disabled={saving} rows={4} placeholder={t("orderReview.commentPlaceholder")} className={fieldClass + " resize-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"} /></label>
+          <div className="flex flex-col-reverse gap-2 border-t border-[#f1ebe6] pt-4 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+            <button type="button" disabled={saving} onClick={() => setOpen(false)} className="min-h-11 rounded-xl px-5 py-2.5 text-sm font-medium text-[#8b7869] transition hover:bg-[#f8f4f0] disabled:opacity-50">{t("orderReview.cancel")}</button>
+            <button type="submit" disabled={saving || !rating || !vendorId || !title.trim()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#c65e30] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(198,94,48,0.15)] transition hover:bg-[#ad4f27] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none">{t(saving ? "orderReview.saving" : "orderReview.submit")}<FiArrowUpRight size={17} aria-hidden="true" /></button>
+          </div>
+        </form> : <button type="button" onClick={() => setOpen(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#c65e30] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#ad4f27]"><FiStar size={16} aria-hidden="true" />{t("orderReview.leave")}</button>) : null}
+      </div>
+    </section>
+  );
 }

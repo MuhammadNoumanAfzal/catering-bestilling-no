@@ -241,7 +241,7 @@ export default function OrderDetailsModal({
           <FiX className="text-[18px]" />
         </button>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <div className="relative border-b border-[#efe6de] px-6 py-6 text-center">
             <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-[#c67a4d]">
               {t("vendorPanel.orderDetails.overview")}

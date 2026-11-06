@@ -1,6 +1,7 @@
+import { createReturnState } from "../../../utils/returnNavigation.js";
 import { useEffect, useState } from "react";
 import { FiStar } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { usePostalCodePrompt } from "../../location/PostalCodePromptContext";
 
@@ -17,6 +18,7 @@ export default function VendorCard(props) {
     publicActiveMenuCount,
   } = props;
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { requirePostalCodeForMenu } = usePostalCodePrompt();
   const [displayImage, setDisplayImage] = useState(image || DEFAULT_VENDOR_IMAGE);
@@ -32,7 +34,7 @@ export default function VendorCard(props) {
 
     requirePostalCodeForMenu({
       vendor: props,
-      onAvailable: () => navigate(`/vendor/${slug}`),
+      onAvailable: () => navigate(`/vendor/${slug}`, {state: createReturnState(location)}),
     });
   };
 

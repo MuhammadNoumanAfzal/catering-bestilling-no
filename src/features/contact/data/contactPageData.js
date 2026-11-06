@@ -1,11 +1,9 @@
 import {
   FiMail,
   FiMapPin,
-  FiPhoneCall,
 } from "react-icons/fi";
 import {
   COMPANY_EMAIL,
-  COMPANY_PHONE_DISPLAY,
   COMPANY_SOCIAL_LINKS,
 } from "../../../constants/companyContact";
 
@@ -17,14 +15,6 @@ export const contactCards = [
       "Help with catering bookings, delivery details, account questions, and order updates.",
     icon: FiMail,
     accent: "from-[#fff1e7] to-[#fffaf5]",
-  },
-  {
-    title: "Call our team",
-    value: COMPANY_PHONE_DISPLAY,
-    description:
-      "Best for urgent event changes, delivery coordination, and kitchen timing questions.",
-    icon: FiPhoneCall,
-    accent: "from-[#fff6ec] to-[#fffdf8]",
   },
   {
     title: "Follow Go Catering",

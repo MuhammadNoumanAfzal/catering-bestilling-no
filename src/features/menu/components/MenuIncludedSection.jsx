@@ -11,7 +11,7 @@ function InfoRow({ label, value }) {
   return (
     <div className="mt-1.5 text-[12px] leading-5 text-[#6f655d]">
       <span className="font-semibold text-[#3b3029]">{label}:</span>{" "}
-      <span>{value}</span>
+      <span className="whitespace-pre-wrap break-words">{value}</span>
     </div>
   );
 }
@@ -102,7 +102,7 @@ function IncludedMenuDetailsModal({ includedMenuItems, isOpen, onClose }) {
                       </h4>
 
                       {includedItem.description ? (
-                        <p className="mt-2 text-[14px] leading-6 text-[#534740]">
+                        <p className="mt-2 whitespace-pre-wrap break-words text-[14px] leading-6 text-[#534740]">
                           {includedItem.description}
                         </p>
                       ) : null}

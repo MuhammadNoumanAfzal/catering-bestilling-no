@@ -1,7 +1,7 @@
 export default function ContactInfoCards({ cards }) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2">
         {cards.map((card) => {
           const Icon = card.icon;
 

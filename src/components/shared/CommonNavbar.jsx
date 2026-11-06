@@ -1,3 +1,4 @@
+import { createReturnState } from "../../utils/returnNavigation.js";
 import {menuPath} from "../../features/menu/utils/menuRoutes.js";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -487,7 +488,7 @@ export default function CommonNavbar({ hideLogo = false, className = "" }) {
                           key={result.id}
                           onClick={() => {
                             setIsDashboardSearchFocused(false);
-                            navigate(result.to);
+                            navigate(result.to, { state: createReturnState(location) });
                           }}
                           type="button"
                         >

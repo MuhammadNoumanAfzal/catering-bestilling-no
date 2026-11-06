@@ -1,3 +1,4 @@
+import { resolveReturnNavigation } from "../../../utils/returnNavigation.js";
 import {menuPath} from "../utils/menuRoutes.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import StandaloneItemControls from "../components/StandaloneItemControls";
@@ -700,14 +701,7 @@ export default function MenuDetailsPage() {
     }
   };
 
-  const storedBackTarget =
-    typeof window !== "undefined"
-      ? window.sessionStorage.getItem("gocatering-menu-back-target")
-      : "";
-  const backTarget =
-    typeof location.state?.from === "string" && location.state.from
-      ? location.state.from
-      : storedBackTarget || `/vendor/${vendor?.slug || vendorSlug}`;
+  const returnNavigation = resolveReturnNavigation(location.state, `/vendor/${vendor?.slug || vendorSlug}`);
   const handleScrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -721,7 +715,8 @@ export default function MenuDetailsPage() {
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[34px] border border-[#ddd3c8] bg-[#fffaf6] shadow-[0_24px_56px_rgba(55,34,19,0.09)] lg:overflow-visible">
         <MenuHeroBanner
           vendorSlug={vendor.slug}
-          backTo={backTarget}
+          backTo={returnNavigation.to}
+          backState={returnNavigation.state}
           image={menuItem.image}
           title={menuItem.modal.heading}
           isSaved={isSaved}
