@@ -188,7 +188,7 @@ const formattedUnitPrice = formatMoney(unitPrice);
               <span>{vendor.name}</span>
             </div>
 
-            <p className="mt-3 max-w-3xl text-[12px] leading-5 text-[#564b43] sm:text-[13px] sm:leading-6">
+            <p className="mt-4 max-w-3xl whitespace-pre-wrap break-words text-[14px] leading-6 text-[#564b43] sm:text-[15px] sm:leading-7">
               {description}
             </p>
           </div>

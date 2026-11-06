@@ -1,5 +1,5 @@
 const no = {
-  orderReview: {"reviewTitle":"Tittel på vurderingen","title":"Din vurdering","loading":"Laster vurderingsinformasjon?","unavailable":"Vurderingsinformasjon er ikke tilgjengelig akkurat n?.","retry":"Pr?v igjen","submitFailed":"Kunne ikke sende vurderingen. Pr?v igjen.","submitted":"Vurderingen din er sendt inn.","notEligible":"Denne bestillingen kan ikke vurderes.","rating":"Vurdering (1?5)","comment":"Din tilbakemelding","saving":"Sender?","submit":"Send vurdering","cancel":"Avbryt","leave":"Skriv en vurdering","reason":{"NOT_AUTHENTICATED":"Logg inn for ? vurdere bestillingen din.","NOT_ORDER_OWNER":"Bare kunden som la inn bestillingen kan vurdere den.","ORDER_NOT_COMPLETED":"Du kan vurdere bestillingen etter at den er fullf?rt.","ALREADY_REVIEWED":"Du har allerede vurdert denne bestillingen."}},
+  orderReview: {"subtitle":"Din tilbakemelding betyr mye.","titlePlaceholder":"Gi opplevelsen din en tittel","commentPlaceholder":"Hvordan var maten, leveringen og servicen?","starRating":"{{count}} av 5 stjerner","reviewTitle":"Tittel på vurderingen","title":"Din vurdering","loading":"Laster vurderingsinformasjon?","unavailable":"Vurderingsinformasjon er ikke tilgjengelig akkurat n?.","retry":"Pr?v igjen","submitFailed":"Kunne ikke sende vurderingen. Pr?v igjen.","submitted":"Vurderingen din er sendt inn.","notEligible":"Denne bestillingen kan ikke vurderes.","rating":"Vurdering (1?5)","comment":"Din tilbakemelding","saving":"Sender?","submit":"Send vurdering","cancel":"Avbryt","leave":"Skriv en vurdering","reason":{"NOT_AUTHENTICATED":"Logg inn for ? vurdere bestillingen din.","NOT_ORDER_OWNER":"Bare kunden som la inn bestillingen kan vurdere den.","ORDER_NOT_COMPLETED":"Du kan vurdere bestillingen etter at den er fullf?rt.","ALREADY_REVIEWED":"Du har allerede vurdert denne bestillingen."}},
   clientInvoice: {
     street: "Gateadresse", postalCode: "Postnummer", city: "By", suite: "Leilighet / etasje",
     amountMismatch: "Varebeløpene stemmer ikke med fakturabeløpet. Kontakt Go Catering for å få beløpet kontrollert.",
@@ -1599,7 +1599,8 @@ const no = {
       notification: "Varsling",
     },
     supportResponses: {
-      closedReplyNotice: "Et svar vil \u00e5pne denne saken igjen. Opprett en ny sak hvis det gjelder et annet problem.",
+      closedReplyNotice: "Denne saken er lukket og kan ikke besvares. Opprett en ny sak hvis du trenger mer hjelp.",
+      createNewTicket: "Opprett ny sak",
       title: "Innboks",
       description:
         "Se oppdateringer på saker og fortsett supportsamtaler fra en egen side.",

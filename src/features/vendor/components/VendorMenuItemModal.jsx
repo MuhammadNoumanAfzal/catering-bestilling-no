@@ -120,7 +120,7 @@ export default function VendorMenuItemModal({ item, onClose }) {
             <span className="mt-4 inline-flex rounded-[8px] bg-[#efefef] px-3 py-1 text-[14px] font-semibold text-[#1f1f1f]">
               {item.modal.badge}
             </span>
-            <p className="mt-3 max-w-2xl text-[15px] leading-6 text-[#565656]">
+            <p className="mt-3 max-w-2xl whitespace-pre-wrap break-words text-[15px] leading-7 text-[#565656]">
               {item.description}
             </p>
           </div>

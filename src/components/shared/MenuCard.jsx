@@ -1,3 +1,4 @@
+import { createReturnState } from "../../utils/returnNavigation.js";
 import {menuPath as buildMenuPath} from "../../features/menu/utils/menuRoutes.js";
 import { FiStar } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -32,10 +33,8 @@ export default function MenuCard({
     requirePostalCodeForMenu({
       vendor: vendorData,
       onAvailable: () => {
-        const returnPath = `${location.pathname}${location.search}${location.hash}`;
-        window.sessionStorage.setItem("gocatering-menu-back-target", returnPath);
         navigate(menuPath, {
-          state: { from: returnPath },
+          state: createReturnState(location),
         });
       },
     });

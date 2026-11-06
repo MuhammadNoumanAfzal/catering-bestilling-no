@@ -47,11 +47,6 @@ export default function ContactPage() {
     },
     {
       ...contactCards[1],
-      title: t("contact.callTeam"),
-      description: t("contact.callTeamDesc"),
-    },
-    {
-      ...contactCards[2],
       title: t("contact.kitchenDesk"),
       description: t("contact.kitchenDeskDesc"),
     },

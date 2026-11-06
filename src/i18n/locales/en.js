@@ -1,5 +1,5 @@
 const en = {
-  orderReview: {"reviewTitle":"Review title","title":"Your review","loading":"Loading review details?","unavailable":"Review details are currently unavailable.","retry":"Try again","submitFailed":"Unable to submit your review. Please try again.","submitted":"Your review has been submitted.","notEligible":"This order is not eligible for a review.","rating":"Rating (1?5)","comment":"Your review","saving":"Submitting?","submit":"Submit review","cancel":"Cancel","leave":"Leave a review","reason":{"NOT_AUTHENTICATED":"Sign in to review your order.","NOT_ORDER_OWNER":"Only the customer who placed this order can review it.","ORDER_NOT_COMPLETED":"You can leave a review after your order is completed.","ALREADY_REVIEWED":"You have already reviewed this order."}},
+  orderReview: {"subtitle":"A little feedback makes a big difference.","titlePlaceholder":"Give your experience a title","commentPlaceholder":"How was the food, delivery and service?","starRating":"{{count}} out of 5 stars","reviewTitle":"Review title","title":"Your review","loading":"Loading review details?","unavailable":"Review details are currently unavailable.","retry":"Try again","submitFailed":"Unable to submit your review. Please try again.","submitted":"Your review has been submitted.","notEligible":"This order is not eligible for a review.","rating":"Rating (1?5)","comment":"Your review","saving":"Submitting?","submit":"Submit review","cancel":"Cancel","leave":"Leave a review","reason":{"NOT_AUTHENTICATED":"Sign in to review your order.","NOT_ORDER_OWNER":"Only the customer who placed this order can review it.","ORDER_NOT_COMPLETED":"You can leave a review after your order is completed.","ALREADY_REVIEWED":"You have already reviewed this order."}},
   clientInvoice: {
     street: "Street address", postalCode: "Postal code", city: "City", suite: "Apartment / floor",
     amountMismatch: "The item amounts do not match the invoice total. Contact Go Catering to have the amount checked.",
@@ -1109,7 +1109,8 @@ const en = {
       notification: "Notification",
     },
     supportResponses: {
-      closedReplyNotice: "Replying will reopen this ticket. For a different issue, create a new ticket.",
+      closedReplyNotice: "This ticket is closed and cannot receive replies. Please create a new ticket if you need more help.",
+      createNewTicket: "Create new ticket",
       title: "Innboks",
       description:
         "Review ticket updates and continue support conversations from a separate page.",

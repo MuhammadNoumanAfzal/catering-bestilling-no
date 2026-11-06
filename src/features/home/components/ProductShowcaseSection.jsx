@@ -1,3 +1,4 @@
+import { createReturnState } from "../../../utils/returnNavigation.js";
 import {menuPath} from "../../menu/utils/menuRoutes.js";
 import { FiStar } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
@@ -34,10 +35,8 @@ export function ProductItem({
     requirePostalCodeForMenu({
       vendor: vendorData,
       onAvailable: () => {
-        const returnPath = `${location.pathname}${location.search}${location.hash}`;
-        window.sessionStorage.setItem("gocatering-menu-back-target", returnPath);
         navigate(productPath, {
-          state: { from: returnPath },
+          state: createReturnState(location),
         });
       },
     });

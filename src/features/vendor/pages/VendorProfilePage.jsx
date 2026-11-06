@@ -1,3 +1,4 @@
+import { createReturnState, resolveReturnNavigation } from "../../../utils/returnNavigation.js";
 import {menuPath} from "../../menu/utils/menuRoutes.js";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -80,6 +81,7 @@ export default function VendorProfilePage() {
   const { vendorSlug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const returnNavigation = resolveReturnNavigation(location.state, "/vendors/all");
   const { vendor, isLoading: loading, error } = useVendorProfile(vendorSlug);
 
   const [activeCategory, setActiveCategory] = useState("");
@@ -357,7 +359,7 @@ export default function VendorProfilePage() {
         <div>
           <div className="min-w-0">
             <div className="p-4 sm:p-5">
-              <BackLinkButton to="/">
+              <BackLinkButton to={returnNavigation.to} state={returnNavigation.state}>
                 {t("vendor.backToSearch")}
               </BackLinkButton>
 
@@ -433,6 +435,7 @@ export default function VendorProfilePage() {
                       onItemClick={(item) =>
                         navigate(
                           menuPath(vendor.slug,item),
+                          { state: createReturnState(location) },
                         )
                       }
                     />

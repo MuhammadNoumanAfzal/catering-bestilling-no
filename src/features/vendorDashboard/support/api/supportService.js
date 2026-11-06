@@ -1,3 +1,4 @@
+import { assertSupportReplyAllowed } from "../../../../utils/supportTicketPolicy.js";
 import { graphqlRequest } from "../../../../lib/api/graphqlClient";
 import {
   CREATE_SUPPORT_TICKET_MUTATION,
@@ -238,6 +239,9 @@ export async function replyToOwnSupportTicket(ticketId, message, attachmentIds =
   if (!trimmedMessage) {
     throw new Error("Please enter a reply before sending.");
   }
+
+  // Recheck the current server status before sending; a closed thread is read-only.
+  assertSupportReplyAllowed(await getMySupportTicket(ticketId));
 
   const payload = {
     ticketId,
