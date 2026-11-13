@@ -83,3 +83,7 @@ export function buildCreateOrderVariables(payload) {
 
   return { input };
 }
+
+export const PLACE_DINTERO_ORDER_MUTATION = `mutation PlaceCateringOrder($input: PlaceClientOrderInput!) { placeClientOrder(input:$input) { success message orderId paymentUrl sessionId availability { isValid errors { code message field meta } } } }`;
+
+export const PLACED_ORDER_DETAILS_QUERY = `query PlacedDinteroOrder($id:ID!) { clientOrder(id:$id) { id orderNumber status placedAt invoiceNumber issuedOn dueDate paymentMethod pdfUrl customer { id fullName email } pricing { subtotal taxAmount pricesIncludeVat deliveryFee addOnsTotal tipAmount grandTotal amountPaid amountDue } lineItems { id label description quantity personCount unitPrice totalPrice } } }`;

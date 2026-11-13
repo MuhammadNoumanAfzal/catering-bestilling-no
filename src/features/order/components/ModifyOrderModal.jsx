@@ -1,10 +1,13 @@
+import {FiX,FiCreditCard} from "react-icons/fi";
+import {graphqlRequest} from "../../../lib/api/graphqlClient";
+
+import {MODIFICATION_PRICING_CONTEXT,ORDER_MODIFICATION_PREVIEW,buildOrderModificationPreviewInput,orderModificationAmounts} from "../api/modificationPricing.js";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { normalizeModifyOrderTime } from "../utils/modifyOrderTime.js";
 import PreferredTimePicker from "../../../components/shared/PreferredTimePicker";
 import {
   formatCurrency,
-  getCheckoutTotals,
 } from "../../checkOut/components/summary/checkoutSummaryUtils";
 import {
   createInitialModifyOrderFormState,
@@ -82,7 +85,7 @@ function validateModifyForm(formState, t, vendorProfile = null) {
   const postalCode = `${formState.postalCode ?? ""}`.trim();
   const date = `${formState.date ?? ""}`.trim();
   const time = normalizeTime24h(formState.time);
-  const personCount = Math.max(1, Number(formState.personCount) || 1);
+  const personCount = Number(formState.personCount);
   const today = getTodayDateValue();
 
   if (!date) {
@@ -123,11 +126,11 @@ function validateModifyForm(formState, t, vendorProfile = null) {
     return t("modifyOrder.errors.enterPostalCode");
   }
 
-  if (!/^\d{4,5}$/.test(postalCode.replace(/\s+/g, ""))) {
+  if (!/^\d{4}$/.test(postalCode.replace(/\s+/g, ""))) {
     return t("modifyOrder.errors.postalCodeFormat");
   }
 
-  if (personCount < 1) {
+  if (!Number.isInteger(personCount) || personCount < 1) {
     return t("modifyOrder.errors.personCount");
   }
 
@@ -168,7 +171,6 @@ export default function ModifyOrderModal({
   initialValue,
   isLoading = false,
   isSaving = false,
-  pricingPreviewCarts = [],
   onCancel,
   onSave,
 }) {
@@ -176,6 +178,10 @@ export default function ModifyOrderModal({
   const [formState, setFormState] = useState(() =>
     createInitialModifyOrderFormState(initialValue),
   );
+  const [pricingContext, setPricingContext] = useState(null);
+  const [liveEstimate, setLiveEstimate] = useState(null);
+  const [estimateLoading, setEstimateLoading] = useState(false);
+  const [estimateError, setEstimateError] = useState(false);
   const [validationError, setValidationError] = useState("");
   const [vendorProfile, setVendorProfile] = useState(null);
   const [isVendorAvailabilityLoading, setIsVendorAvailabilityLoading] = useState(false);
@@ -190,7 +196,7 @@ export default function ModifyOrderModal({
   useEffect(() => {
     setFormState(createInitialModifyOrderFormState(initialValue));
     setValidationError("");
-  }, [initialValue]);
+  }, [initialValue?.orderId, initialValue?.address, initialValue?.addressLine2, initialValue?.city, initialValue?.postalCode, initialValue?.date, initialValue?.time, initialValue?.personCount, initialValue?.additionalDetails]);
 
   useEffect(() => {
     let isMounted = true;
@@ -285,7 +291,7 @@ export default function ModifyOrderModal({
       };
     }
 
-    if (!/^\d{4,5}$/.test(normalizedPostalCode)) {
+    if (!/^\d{4}$/.test(normalizedPostalCode)) {
       return {
         tone: "error",
         title: t("modifyOrder.unavailableTitle"),
@@ -352,42 +358,31 @@ export default function ModifyOrderModal({
         : "",
     };
   }, [formState.date, formState.postalCode, normalizedTime, t, vendorProfile]);
-  const estimatedTotal = useMemo(() => {
-    const carts = Array.isArray(pricingPreviewCarts) ? pricingPreviewCarts : [];
-
-    if (carts.length === 0) {
-      return "";
-    }
-
-    const updatedCarts = carts.map((cart) => ({
-      ...cart,
-      orderSummary: {
-        ...cart.orderSummary,
-        deliveryAddress: `${formState.address ?? ""}`.trim(),
-        deliveryDate: formState.date,
-        deliveryTime: normalizedTime,
-        personCount: Math.max(1, Number(formState.personCount) || 1),
-        pricing: null,
-        previewItems: [],
-        pricingCurrency: "NOK",
-        availability: null,
-      },
-    }));
-    const totals = getCheckoutTotals(updatedCarts);
-    const grandTotal = Number(totals?.grandTotal ?? 0);
-
-    if (!Number.isFinite(grandTotal) || grandTotal <= 0) {
-      return "";
-    }
-
-    return `${formatCurrency(grandTotal)}`;
-  }, [
-    formState.address,
-    formState.date,
-    formState.personCount,
-    normalizedTime,
-    pricingPreviewCarts,
-  ]);
+  useEffect(() => {
+    if (!initialValue?.orderId) return;
+    let active = true; setPricingContext(null);
+    graphqlRequest({query: MODIFICATION_PRICING_CONTEXT, variables:{id:initialValue.orderId}})
+      .then(data=>{if(active)setPricingContext(data?.clientOrder || null);})
+      .catch(()=>{if(active)setEstimateError(true);});
+    return ()=>{active=false;};
+  },[initialValue?.orderId]);
+  const estimateInput = useMemo(() => {
+    try { return buildOrderModificationPreviewInput(pricingContext,{...formState,time:normalizedTime}); }
+    catch { return null; }
+  },[pricingContext,formState.date,formState.time,formState.address,formState.city,formState.postalCode,formState.personCount,normalizedTime]);
+  useEffect(() => {
+    let active=true;setLiveEstimate(null);setEstimateError(false);
+    if(!estimateInput){setEstimateLoading(false);return;}
+    setEstimateLoading(true);
+    const timer=setTimeout(()=>{
+      graphqlRequest({query:ORDER_MODIFICATION_PREVIEW,variables:{orderId:initialValue.orderId,input:estimateInput}})
+        .then(data=>{if(active){if(data?.orderModificationPreview?.proposedTotal==null)throw new Error("Estimate unavailable");setLiveEstimate(data.orderModificationPreview);}})
+        .catch(()=>{if(active)setEstimateError(true);})
+        .finally(()=>{if(active)setEstimateLoading(false);});
+    },450);
+    return()=>{active=false;clearTimeout(timer);};
+  },[estimateInput,initialValue?.orderId]);
+  const amounts = orderModificationAmounts(liveEstimate, pricingContext?.grandTotal ?? initialValue?.currentTotal);
 
   const updateField = (key, value) => {
     setValidationError("");
@@ -434,15 +429,21 @@ export default function ModifyOrderModal({
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1a1410]/50 px-3 py-3 backdrop-blur-[2px] sm:px-4 sm:py-4">
-      <div role="dialog" aria-modal="true" aria-labelledby="modify-order-title" className="flex max-h-[calc(100dvh-24px)] w-full max-w-[620px] flex-col overflow-hidden rounded-[22px] border border-[#e7d9ce] bg-[#fffdfb] shadow-[0_24px_80px_rgba(20,15,10,0.22)] [&_button:enabled]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_input]:text-[13px] [&_textarea]:text-[13px] [&_.type-subpara]:mb-1 [&_.type-subpara]:text-[12px]">
-        <div className="border-b border-[#eee4da] bg-[linear-gradient(135deg,#fffdfb_0%,#fff6ef_100%)] px-5 py-4 sm:px-6">
-          <h2 id="modify-order-title" className="text-[22px] font-semibold tracking-tight text-[#17120f]">{t("modifyOrder.title")}</h2>
-          <p className="mt-1 text-[12px] text-[#7a7067]">
-            {t("modifyOrder.subtitle")}
-          </p>
-        </div>
-
-        <div className="min-h-0 space-y-3 overflow-y-auto px-4 py-3 sm:px-6">
+      <div role="dialog" aria-modal="true" aria-labelledby="modify-order-title" className="flex max-h-[calc(100dvh-24px)] w-full max-w-[760px] flex-col overflow-hidden rounded-[18px] border border-[#e7d9ce] bg-white shadow-[0_24px_80px_rgba(20,15,10,0.22)] [&_button:enabled]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_input]:text-[13px] [&_textarea]:text-[13px] [&_.type-subpara]:mb-1 [&_.type-subpara]:text-[12px]">
+        <header className="flex items-start justify-between gap-4 border-b border-[#ece5dd] bg-white px-5 py-4">
+          <div><h2 id="modify-order-title" className="text-[19px] font-semibold tracking-tight text-[#30251d]">{t("modifyEnhance.title")}</h2><p className="mt-1 text-xs text-[#9c8773]">{t("modifyEnhance.subtitle")}</p></div>
+          <button type="button" disabled={isSaving} onClick={onCancel} aria-label={t("alerts.cancel")} className="rounded-lg p-2 text-[#9b8776] hover:bg-[#f7f3ee]"><FiX size={18}/></button>
+        </header>
+        <div className="min-h-0 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <section className="rounded-xl border border-[#eadfce] bg-[#fbf8f3] p-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              <div><p className="text-[11px] text-[#9d8872]">{t("modifyEnhance.current")}</p><p className="mt-1 text-lg font-semibold tabular-nums text-[#382d24]">{amounts.current==null ? t("modifyEnhance.unavailable") : formatCurrency(amounts.current)}</p></div>
+              <div><p className="text-[11px] text-[#9d8872]">{t("modifyEnhance.estimate")}</p><p className="mt-1 text-lg font-semibold tabular-nums text-[#ba6537]">{estimateLoading?t("modifyEnhance.calculating"):amounts.proposed==null?t("modifyEnhance.unavailable"):formatCurrency(amounts.proposed)}</p></div>
+              <div className="col-span-2 border-t border-[#eaddcb] pt-2 sm:col-span-1 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0"><p className="text-[11px] text-[#9d8872]">{t("modifyEnhance.difference")}</p><p className="mt-1 text-lg font-semibold tabular-nums">{amounts.delta==null?t("modifyEnhance.unavailable"):(amounts.delta>0?"+":"")+formatCurrency(amounts.delta)}</p></div>
+            </div>
+            {liveEstimate?.isEligible === false && <p role="alert" className="mt-3 text-xs text-red-700">{liveEstimate.eligibilityReason || t("modifyEnhance.unavailable")}</p>}
+            <p className="mt-3 text-[11px] leading-5 text-[#9a826a]">{t(estimateError?"modifyEnhance.estimateError":"modifyEnhance.estimateHint")}</p>
+          </section>
           {error || validationError ? (
             <div className="rounded-[14px] border border-[#f1c8bb] bg-[#fff5f1] px-4 py-3 text-sm text-[#8a5642]">
               {validationError || error}
@@ -462,12 +463,12 @@ export default function ModifyOrderModal({
             <div className="mb-2 flex items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48673]">
-                  Delivery schedule
+                  {t("modifyEnhance.schedule")}
                 </p>
               </div>
               {formState.date && normalizedTime ? (
                 <span className="shrink-0 rounded-full bg-[#eaf5ee] px-2.5 py-1 text-[11px] font-semibold text-[#2f7a45]">
-                  Selected
+                  {t("modifyEnhance.selected")}
                 </span>
               ) : null}
             </div>
@@ -483,7 +484,7 @@ export default function ModifyOrderModal({
                   onClick={() => setIsCalendarOpen((current) => !current)}
                   className="flex h-10 w-full items-center justify-between rounded-[10px] border border-[#dad1c8] bg-white px-3 text-left text-sm text-[#26211d] outline-none transition hover:border-[#cf6e38] disabled:cursor-not-allowed disabled:bg-[#faf7f4] disabled:text-[#a2978c]"
                 >
-                  <span>{formattedDate || "Choose an available date"}</span>
+                  <span>{formattedDate || t("modifyEnhance.chooseDate")}</span>
                   <span className="text-[#cf6e38]">&#128197;</span>
                 </button>
                 {isCalendarOpen ? (
@@ -491,7 +492,7 @@ export default function ModifyOrderModal({
                     <div className="mb-3 flex items-center justify-between">
                       <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))} className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]">&#8249;</button>
                       <strong className="text-[14px] text-[#2b231e]">
-                        {calendarMonth.toLocaleString("en-GB", { month: "long", year: "numeric" })}
+                        {calendarMonth.toLocaleString(i18n.language.startsWith("no")?"nb-NO":"en-GB", { month: "long", year: "numeric" })}
                       </strong>
                       <button type="button" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))} className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]">&#8250;</button>
                     </div>
@@ -515,7 +516,7 @@ export default function ModifyOrderModal({
                       })}
                     </div>
                     <p className="mt-3 border-t border-[#efe4dc] pt-2 text-[11px] leading-4 text-[#8a7161]">
-                      Only highlighted dates have delivery availability.
+                      {t("modifyEnhance.availableDates")}
                     </p>
                   </div>
                 ) : null}
@@ -523,19 +524,19 @@ export default function ModifyOrderModal({
               {!vendorProfile ? (
                 <p className="mt-1 text-[11px] text-[#8b8177]">
                   {isVendorAvailabilityLoading
-                    ? "Loading vendor availability..."
-                    : "Vendor availability could not be loaded."}
+                    ? t("modifyOrder.checkingAvailability")
+                    : t("modifyOrder.loadFailed")}
                 </p>
               ) : null}
             </label>
 
-            <label className="block">
+            <div className="block">
               <span className="type-subpara mb-2 block text-[#2d2d2d]">
                 {t("menu.time")}
               </span>
               {!formState.date ? (
                 <div className="h-10 rounded-[10px] border border-[#dad1c8] bg-[#faf7f4] px-3 py-2.5 text-sm text-[#9b8f84]">
-                  Select an available date first
+                  {t("modifyEnhance.chooseDateFirst")}
                 </div>
               ) : isLoading || isVendorAvailabilityLoading || !vendorProfile ? (
                 <div className="rounded-[10px] border border-[#dad1c8] bg-[#faf7f4] px-3 py-2 text-sm text-[#8b8177]">
@@ -545,7 +546,7 @@ export default function ModifyOrderModal({
                 </div>
               ) : deliverySlots.length === 0 ? (
                 <div className="rounded-[10px] border border-[#f1c8bb] bg-[#fff5f1] px-3 py-2 text-sm text-[#8a5642]">
-                  This vendor has no delivery time available on the selected date.
+                  {t("modifyEnhance.noTimes")}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -557,32 +558,19 @@ export default function ModifyOrderModal({
                     maxTimeValue={editableDeliverySlot?.end || ""}
                     placeholder="HH:MM"
                   />
-                  <div className="flex flex-wrap gap-2">
-                    {deliverySlots.map((slot) => {
-                      const isSelected = selectedDeliverySlot?.start === slot.start && selectedDeliverySlot?.end === slot.end;
-                      return (
-                        <button
-                          key={`${slot.start}-${slot.end}`}
-                          type="button"
-                          disabled={isLoading || isSaving}
-                          onClick={() => updateField("time", slot.start)}
-                          className={`rounded-full border px-2 py-1 text-[11px] font-medium transition ${isSelected ? "border-[#cf6e38] bg-[#fff1e8] text-[#cf6e38]" : "border-[#e4d8ce] bg-white text-[#6f6258] hover:border-[#cf6e38]/45 hover:bg-[#fffaf6]"}`}
-                        >
-                          {slot.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <select aria-label={t("modifyEnhance.window")} disabled={isLoading||isSaving} value={selectedDeliverySlot?.start || ""} onChange={event=>updateField("time",event.target.value)} className="h-9 w-full rounded-lg border border-[#e3d8cc] bg-[#fcfaf7] px-2 text-xs text-[#8a725c]">
+                    <option value="">{t("modifyEnhance.window")}</option>{deliverySlots.map(slot=><option key={slot.start+slot.end} value={slot.start}>{slot.label}</option>)}
+                  </select>
                 </div>
               )}
-            </label>
+            </div>
             </div>
           </section>
 
           <section className="rounded-[14px] border border-[#eee4da] bg-white p-3">
             <div className="mb-2">
               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a48673]">
-                Delivery details
+                {t("modifyEnhance.delivery")}
               </p>
             </div>
           <label className="block">
@@ -617,9 +605,7 @@ export default function ModifyOrderModal({
                 >
                   -
                 </button>
-                <span className="flex-1 text-center text-[15px] font-semibold text-[#1f1a16]">
-                  {formState.personCount}
-                </span>
+                <input aria-label={t("orderConfirmed.personCount")} type="number" inputMode="numeric" min="1" step="1" value={formState.personCount} disabled={isLoading||isSaving} onChange={event=>updateField("personCount",event.target.value)} className="h-full min-w-0 flex-1 bg-white text-center text-sm font-semibold outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
                 <button
                   type="button"
                   onClick={() =>
@@ -708,17 +694,6 @@ export default function ModifyOrderModal({
             </div>
           ) : null}
 
-          {estimatedTotal ? (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-[12px] border border-[#efe4da] bg-[#fcf8f4] px-3 py-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#a48d79]">
-                {t("orderConfirmed.proposedTotal")}
-              </p>
-              <p className="text-[16px] font-semibold text-[#201b17]">
-                {estimatedTotal}
-              </p>
-            </div>
-          ) : null}
-
           <label className="block">
             <span className="type-subpara mb-2 block text-[#2d2d2d]">
               {t("modifyOrder.additionalDetails")}
@@ -742,12 +717,14 @@ export default function ModifyOrderModal({
               {validationError || error}
             </p>
           ) : null}
-          <div className="flex justify-end gap-2">
+          <p className="mb-3 flex items-start gap-2 text-[11px] leading-5 text-[#a18c76]"><FiCreditCard className="mt-0.5 shrink-0" size={14}/>{t("modifyEnhance.paymentHint")}</p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="mr-auto"><p className="text-[10px] text-[#a18c76]">{t("modifyEnhance.estimate")}</p><p className="text-base font-semibold tabular-nums text-[#9f5d36]">{estimateLoading?t("modifyEnhance.calculating"):amounts.proposed==null?t("modifyEnhance.unavailable"):formatCurrency(amounts.proposed)}</p></div>
           <button
             type="button"
             onClick={onCancel}
             disabled={isSaving}
-            className="w-full rounded-[10px] border border-[#d9cec4] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#2b2622] transition hover:bg-[#faf7f3] sm:w-auto"
+            className="rounded-[10px] border border-[#d9cec4] bg-white px-4 py-2.5 text-[14px] font-semibold text-[#2b2622] transition hover:bg-[#faf7f3] sm:w-auto"
           >
             {t("alerts.cancel")}
           </button>
@@ -755,7 +732,7 @@ export default function ModifyOrderModal({
             type="button"
             onClick={handleSubmit}
             disabled={isLoading || isSaving || isVendorAvailabilityLoading}
-            className="w-full cursor-pointer rounded-[10px] bg-[#cf6e38] px-5 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="cursor-pointer rounded-[10px] bg-[#cf6e38] px-4 py-2.5 text-[14px] font-semibold text-white transition hover:bg-[#bb602d] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             {isSaving ? t("modifyOrder.sending") : t("modifyOrder.sendRequest")}
           </button>

@@ -251,6 +251,7 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
   const payload = {
     vendorId,
     customerType: CHECKOUT_MODE_LABELS[checkoutType],
+    paymentMethod: "DINTERO",
     invoiceReference: formState.invoiceReference,
     email: formState.email,
     phone: formState.phone,

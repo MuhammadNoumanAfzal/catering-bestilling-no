@@ -36,14 +36,20 @@ export default function OrderReviewSection({ orderId, vendorId, autoOpen = false
       } else setError("submitFailed");
     } finally { setSaving(false); }
   }
-  const fieldClass = "mt-2 w-full rounded-xl border border-[#e6ded7] bg-[#fcfbfa] px-4 py-3 text-sm font-normal text-[#322a25] outline-none transition placeholder:text-[#aa9c92] focus:border-[#c65e30] focus:bg-white focus:ring-4 focus:ring-[#c65e30]/10 disabled:opacity-60";
+  const fieldClass = "mt-2 w-full rounded-xl border border-[#e6ded7] bg-[#fcfbfa] px-3 py-2.5 text-sm font-normal text-[#322a25] outline-none transition placeholder:text-[#aa9c92] focus:border-[#c65e30] focus:bg-white focus:ring-4 focus:ring-[#c65e30]/10 disabled:opacity-60";
+  if (!loading && !error && details && !details.canReview && !details.review) {
+    return <section ref={section} className="mx-4 my-3 flex items-start gap-2.5 rounded-xl bg-[#f7f6f3] px-4 py-3 sm:mx-5" aria-label={t("orderReview.title")}>
+      <FiMessageSquare className="mt-0.5 shrink-0 text-[#a08a76]" size={15} aria-hidden="true"/>
+      <p className="text-xs leading-5 text-[#8a7c6f]">{t("orderReview.reason." + details.reviewIneligibilityReason, {defaultValue:t("orderReview.notEligible")})}</p>
+    </section>;
+  }
   return (
-    <section ref={section} className="mx-4 my-5 overflow-hidden rounded-[24px] border border-[#eadfd7] bg-white shadow-[0_8px_32px_rgba(70,43,26,0.04)] sm:mx-6" aria-label={t("orderReview.title")}>
-      <header className="flex items-center gap-3 border-b border-[#f1ebe6] px-5 py-4 sm:px-6 sm:py-5">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#fff1e7] text-[#c65e30]"><FiMessageSquare size={20} aria-hidden="true" /></span>
-        <div><h3 className="text-base font-semibold tracking-tight text-[#2f261f]">{t("orderReview.title")}</h3><p className="mt-1 text-xs leading-5 text-[#96867a]">{t("orderReview.subtitle")}</p></div>
+    <section ref={section} className="mx-4 my-3 overflow-hidden rounded-xl border border-[#e8e2db] bg-white sm:mx-5" aria-label={t("orderReview.title")}>
+      <header className="flex items-center gap-2.5 border-b border-[#f1ebe6] px-4 py-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#fff1e7] text-[#c65e30]"><FiMessageSquare size={16} aria-hidden="true" /></span>
+        <div><h3 className="text-sm font-semibold tracking-tight text-[#2f261f]">{t("orderReview.title")}</h3></div>
       </header>
-      <div className="px-5 py-5 sm:px-6">
+      <div className="px-4 py-3.5">
         {loading ? <p className="text-sm text-[#8c7d72]" role="status">{t("orderReview.loading")}</p> : null}
         {error ? <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{t("orderReview." + error)} {error === "unavailable" ? <button type="button" onClick={() => setRevision(value => value + 1)} className="font-semibold underline underline-offset-2">{t("orderReview.retry")}</button> : null}</p> : null}
         {details?.review ? <div>
@@ -53,7 +59,7 @@ export default function OrderReviewSection({ orderId, vendorId, autoOpen = false
           <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1.5 text-xs font-medium text-green-800"><FiCheck aria-hidden="true" />{t("orderReview.submitted")}</p>
         </div> : null}
         {!loading && details && !details.canReview && !details.review ? <p className="text-sm leading-6 text-[#8c7c70]">{t("orderReview.reason." + details.reviewIneligibilityReason, { defaultValue: t("orderReview.notEligible") })}</p> : null}
-        {details?.canReview && !details.review ? (open ? <form onSubmit={submit} className="space-y-5">
+        {details?.canReview && !details.review ? (open ? <form onSubmit={submit} className="space-y-3">
           <fieldset disabled={saving}>
             <legend className="text-sm font-semibold text-[#514136]">{t("orderReview.rating")}</legend>
             <div className="mt-3 flex items-center gap-1 sm:gap-2">{[1,2,3,4,5].map(value => <label key={value} className="cursor-pointer">
@@ -62,7 +68,7 @@ export default function OrderReviewSection({ orderId, vendorId, autoOpen = false
             </label>)}<span className="ml-2 text-sm font-semibold text-[#8d7562]" aria-live="polite">{rating ? rating + "/5" : ""}</span></div>
           </fieldset>
           <label className="block text-sm font-semibold text-[#514136]">{t("orderReview.reviewTitle")}<input required disabled={saving} value={title} onChange={event => setTitle(event.target.value)} placeholder={t("orderReview.titlePlaceholder")} className={fieldClass} /></label>
-          <label className="block text-sm font-semibold text-[#514136]">{t("orderReview.comment")}<textarea value={comment} onChange={event => setComment(event.target.value)} disabled={saving} rows={4} placeholder={t("orderReview.commentPlaceholder")} className={fieldClass + " resize-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"} /></label>
+          <label className="block text-sm font-semibold text-[#514136]">{t("orderReview.comment")}<textarea value={comment} onChange={event => setComment(event.target.value)} disabled={saving} rows={3} placeholder={t("orderReview.commentPlaceholder")} className={fieldClass + " resize-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"} /></label>
           <div className="flex flex-col-reverse gap-2 border-t border-[#f1ebe6] pt-4 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             <button type="button" disabled={saving} onClick={() => setOpen(false)} className="min-h-11 rounded-xl px-5 py-2.5 text-sm font-medium text-[#8b7869] transition hover:bg-[#f8f4f0] disabled:opacity-50">{t("orderReview.cancel")}</button>
             <button type="submit" disabled={saving || !rating || !vendorId || !title.trim()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#c65e30] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(198,94,48,0.15)] transition hover:bg-[#ad4f27] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none">{t(saving ? "orderReview.saving" : "orderReview.submit")}<FiArrowUpRight size={17} aria-hidden="true" /></button>

@@ -10,6 +10,8 @@ import VendorDashboardLayout from "../../features/vendorDashboard/layouts/Vendor
 import { BrowseFiltersProvider } from "../context/BrowseFiltersContext";
 import { PostalCodePromptProvider } from "../../features/location/PostalCodePromptContext";
 
+const PaymentCheckoutPage = lazy(() => import("../../features/payments/PaymentCheckoutPage.jsx"));
+
 const SignUpPage = lazy(() =>
   import("../../features/auth").then((module) => ({
     default: module.SignUpPage,
@@ -138,6 +140,7 @@ export default function AppRouter() {
 
         <Suspense fallback={<RouteLoader />}>
         <Routes>
+          <Route path="/payment/:orderId" element={<PaymentCheckoutPage />} />
           {/* Authentication routes */}
           <Route element={<AuthLayout />}>
             <Route path="/signup" element={<SignUpPage />} />

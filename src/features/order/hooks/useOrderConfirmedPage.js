@@ -1,3 +1,4 @@
+import {notifyOrderChanged} from "../api/modificationPricing.js";
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import i18n from "../../../i18n";
@@ -199,6 +200,7 @@ export function useOrderConfirmedPage() {
           latestModificationRequest: result.request,
         };
       });
+      if (rawPrimaryOrderId) notifyOrderChanged(rawPrimaryOrderId);
       await showSuccessToast(result.message);
       setIsModifyModalOpen(false);
     } catch (error) {
@@ -263,6 +265,7 @@ export function useOrderConfirmedPage() {
       setPlacedOrderDraft(nextPlacedOrderDraft);
       setOrderWorkflow(nextWorkflow);
       setOrderWorkflow(await fetchOrderModificationDetails(rawPrimaryOrderId));
+      if (rawPrimaryOrderId) notifyOrderChanged(rawPrimaryOrderId);
       await showSuccessToast(result.message);
     } catch (error) {
       await showAuthErrorAlert(
@@ -337,6 +340,7 @@ export function useOrderConfirmedPage() {
             }
           : current,
       );
+      if (rawPrimaryOrderId) notifyOrderChanged(rawPrimaryOrderId);
       await showSuccessToast(result.message);
     } catch (error) {
       await showAuthErrorAlert(

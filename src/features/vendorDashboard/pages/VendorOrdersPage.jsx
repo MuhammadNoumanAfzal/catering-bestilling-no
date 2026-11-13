@@ -1,3 +1,4 @@
+import {notifyOrderChanged} from "../../order/api/modificationPricing.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
@@ -426,6 +427,7 @@ export default function VendorOrdersPage() {
         dispatch(fetchClientOrderDetail(orderId)),
         dispatch(fetchInvoices()),
       ]);
+      notifyOrderChanged(orderId);
       await showSuccessToast(result.message);
       setIsModifyModalOpen(false);
     } catch (error) {
@@ -444,6 +446,7 @@ export default function VendorOrdersPage() {
       dispatch(fetchClientOrders()),
       dispatch(fetchClientOrderDetail(orderId)),
     ]);
+    notifyOrderChanged(orderId);
   }
 
   async function handleApproveVendorChanges() {
@@ -679,7 +682,7 @@ export default function VendorOrdersPage() {
         isLoading={selectedOrderDetailStatus === "loading"}
         isResolvingVendorAdjustment={isResolvingVendorAdjustment}
         error={selectedOrderDetailError}
-        isOpen={Boolean(selectedOrder) && !isChangeRequestOpen}
+        isOpen={Boolean(selectedOrder) && !isChangeRequestOpen && !isModifyModalOpen}
         onApproveVendorAdjustment={handleApproveVendorChanges}
         onClose={handleCloseDetails}
         onModify={() => {

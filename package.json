@@ -12,8 +12,10 @@
     "test:security": "node --test src/utils/safeInternalPath.test.mjs src/utils/escapeHtml.test.mjs"
   },
   "dependencies": {
+    "@dintero/checkout-web-sdk": "0.14.2",
     "@reduxjs/toolkit": "2.11.2",
     "@tailwindcss/vite": "4.2.2",
+    "dompurify": "3.4.17",
     "firebase": "12.18.0",
     "framer-motion": "12.38.0",
     "i18next": "26.3.6",

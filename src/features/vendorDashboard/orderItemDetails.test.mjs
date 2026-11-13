@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { getIncludedOrderDishes, getOrderDisplayGuestCount } from "./orderItemDetails.js";
+import { getIncludedOrderDishes, getOrderDisplayGuestCount, uniqueIncludedDishNames } from "./orderItemDetails.js";
 
 test("order detail accepts included dishes as connections or legacy lists", () => {
   const dish = { id: "1", title: "Tapas" };
@@ -13,4 +13,10 @@ test("standalone order header uses line guests instead of unrelated order-level 
   const order = { personCount: 1, items: [{ addOnType: "INDEPENDENT", personCount: 21 }] };
   assert.equal(getOrderDisplayGuestCount(order), 21);
   assert.equal(getOrderDisplayGuestCount({ personCount: 30, items: [...order.items, { addOnType: "DEPENDENT" }] }), 30);
+});
+
+test("included dish labels collapse repeated menu rows without inventing quantities", () => {
+ assert.deepEqual(uniqueIncludedDishNames(['Patatas bravas','Patatas bravas',' patatas   bravas ','Kyllingklubber','Kyllingklubber','Kjøttboller i rødvinsaus']), ['Patatas bravas','Kyllingklubber','Kjøttboller i rødvinsaus']);
+ assert.deepEqual(uniqueIncludedDishNames([null,'', '  ']), []);
+ assert.deepEqual(uniqueIncludedDishNames(undefined), []);
 });

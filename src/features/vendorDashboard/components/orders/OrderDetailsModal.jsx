@@ -1,6 +1,9 @@
+import CancellationPolicy from "../../../payments/CancellationPolicy.jsx";
+import { uniqueIncludedDishNames } from "../../orderItemDetails.js";
+import OrderPaymentSection from "../../../payments/OrderPaymentSection.jsx";
 import OrderReviewSection from "../../../order/reviews/OrderReviewSection.jsx";
 import { formatMoney } from "../../../pricing/formatMoney.js";
-import { FiArrowRight, FiStar, FiX } from "react-icons/fi";
+import { FiArrowRight, FiCheck, FiStar, FiX } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { getOrderStatusClasses } from "./orderUtils";
 
@@ -179,10 +182,29 @@ function ItemDetailGroup({ label, items, accent = "default" }) {
       <p className="text-[11px] font-semibold uppercase tracking-[0.12em]">{label}</p>
       <div className="mt-2 space-y-2 text-sm leading-6">
         {items.map((item) => (
-          <p key={`${label}-${item}`}>{item}</p>
+          <p className="whitespace-pre-wrap break-words" key={`${label}-${item}`}>{item}</p>
         ))}
       </div>
     </div>
+  );
+}
+
+function IncludedDishList({items, label}) {
+  const dishes = uniqueIncludedDishNames(items);
+  if (!dishes.length) return null;
+  return (
+    <section className="overflow-hidden rounded-2xl border border-[#ebe4dc] bg-white">
+      <div className="flex items-center justify-between gap-3 border-b border-[#f0e9e2] bg-[#faf8f5] px-4 py-3">
+        <h4 className="text-sm font-semibold tracking-normal text-[#332b25]">{label}</h4>
+        <span className="inline-flex min-w-7 items-center justify-center rounded-full border border-[#e7ded4] bg-white px-2 py-0.5 text-xs font-semibold tabular-nums text-[#807163]">{dishes.length}</span>
+      </div>
+      <ul className="grid gap-x-5 px-4 py-2 sm:grid-cols-2">
+        {dishes.map(dish => <li key={dish} className="flex min-w-0 items-start gap-2.5 py-2.5 text-[13px] leading-5 text-[#594d42]">
+          <span className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#f0f5ee] text-[#668153]" aria-hidden="true"><FiCheck size={11} /></span>
+          <span className="min-w-0 break-words">{dish}</span>
+        </li>)}
+      </ul>
+    </section>
   );
 }
 
@@ -228,41 +250,41 @@ export default function OrderDetailsModal({
     .join(", ");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(31,22,15,0.45)] px-4 py-6 backdrop-blur-[6px]">
-      <div className="relative flex max-h-[92vh] w-full max-w-[760px] flex-col overflow-hidden rounded-[30px] border border-white/60 bg-[linear-gradient(180deg,#fffdfa_0%,#ffffff_100%)] shadow-[0_30px_80px_rgba(24,18,14,0.24)]">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_top,#ffd8bf_0%,rgba(255,216,191,0)_72%)]" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(31,22,15,0.42)] px-3 py-4 backdrop-blur-[4px]">
+      <div className="relative flex max-h-[90dvh] w-full max-w-[720px] flex-col overflow-hidden rounded-[20px] border border-[#e9e2da] bg-white shadow-[0_24px_70px_rgba(24,18,14,0.20)]">
+
 
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-5 top-5 z-10 cursor-pointer rounded-full border border-white/70 bg-white/90 p-2.5 text-[#1f1f1f] shadow-[0_8px_24px_rgba(0,0,0,0.10)] transition hover:bg-white"
+          className="absolute right-4 top-4 z-10 cursor-pointer rounded-lg p-2 text-[#807166] transition hover:bg-[#f5f2ed] hover:text-[#30251e]"
           aria-label={t("vendorPanel.orderDetails.closeAria")}
         >
           <FiX className="text-[18px]" />
         </button>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="relative border-b border-[#efe6de] px-6 py-6 text-center">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-[#c67a4d]">
-              {t("vendorPanel.orderDetails.overview")}
-            </p>
-            <h2 className="mt-2 type-h2 text-[#1f1f1f]">{t("vendorPanel.orderDetails.title")}</h2>
-          </div>
+          <header className="border-b border-[#ece6df] px-4 py-4 pr-14 sm:px-5">
+            <h2 className="text-xl font-semibold tracking-tight text-[#29221c]">{t("vendorPanel.orderDetails.title")}</h2>
+            <p className="mt-0.5 text-xs text-[#9a8b7d]">{order.invoiceId || order.id}</p>
+          </header>
 
+          <OrderPaymentSection key={`payment-${order.rawId || order.orderId || order.id}`} orderId={order.rawId || order.orderId || order.id} />
+          <CancellationPolicy />
           <OrderReviewSection key={order.rawId || order.orderId || order.id} orderId={order.rawId || order.orderId || order.id} vendorId={order.vendorId} autoOpen={autoOpenReview} />
-          <div className="px-6 pt-5">
-            <div className="overflow-hidden rounded-[24px] border border-[#eee5dc] shadow-[0_18px_36px_rgba(40,26,15,0.10)]">
+          <div className="px-4 pt-3 sm:px-5">
+            <div className="overflow-hidden rounded-2xl border border-[#eee5dc] shadow-[0_18px_36px_rgba(40,26,15,0.10)]">
               <img
                 src={meta.image}
                 alt={order.eventName}
-                className="h-[250px] w-full object-cover"
+                className="h-[140px] w-full sm:h-[180px] object-cover"
               />
             </div>
           </div>
 
-          <div className="space-y-6 px-6 py-6">
+          <div className="space-y-4 px-4 py-4 sm:px-5">
             {isLoading ? (
-              <div className="rounded-[22px] border border-[#efe5db] bg-[#fcf8f4] p-6 text-center">
+              <div className="rounded-2xl border border-[#efe5db] bg-[#fcf8f4] p-6 text-center">
                 <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#cf6e38] border-t-transparent"></div>
                 <p className="mt-4 text-sm text-[#6f665d]">
                   {t("vendorPanel.orderDetails.loading")}
@@ -271,7 +293,7 @@ export default function OrderDetailsModal({
             ) : null}
 
             {error && !isLoading && !hasUsableFallbackData ? (
-              <div className="rounded-[22px] border border-[#f1c8bb] bg-[#fff5f1] p-5 text-center">
+              <div className="rounded-2xl border border-[#f1c8bb] bg-[#fff5f1] p-5 text-center">
                 <p className="text-sm font-semibold text-[#7a3f2e]">
                   {t("vendorPanel.orderDetails.loadErrorTitle")}
                 </p>
@@ -279,7 +301,7 @@ export default function OrderDetailsModal({
               </div>
             ) : null}
 
-            <div className="rounded-[22px] border border-[#efe5db] bg-[#fcf8f4] p-4">
+            <div className="rounded-2xl border border-[#efe5db] bg-[#fcf8f4] p-4">
               <div className="flex flex-wrap items-center gap-3 text-sm text-[#5d554d]">
                 <span
                   className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold shadow-[inset_0_-1px_0_rgba(255,255,255,0.35)] ${getOrderStatusClasses(order.status)}`}
@@ -331,7 +353,7 @@ export default function OrderDetailsModal({
                   {t("vendorPanel.orderDetails.itemCount", { count: items.length })}
                 </span>
               </div>
-              <div className="mt-4 space-y-4">
+              <div className="mt-3 space-y-3">
                 {items.length > 0 ? (
                   items.map((item, index) => {
                     const detailGroups = splitItemDetails(item.details);
@@ -339,7 +361,7 @@ export default function OrderDetailsModal({
                     return (
                       <div
                         key={item.id || `${item.name}-${index}`}
-                        className="rounded-[22px] border border-[#efe5db] bg-white p-4 shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
+                        className="rounded-2xl border border-[#efe5db] bg-white p-4 shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
@@ -370,7 +392,7 @@ export default function OrderDetailsModal({
                             items={detailGroups.addOns}
                             accent="highlight"
                           />
-                          <ItemDetailGroup
+                          <IncludedDishList
                             label={t("vendorPanel.orderDetails.includedItems")}
                             items={detailGroups.included}
                           />
@@ -379,7 +401,7 @@ export default function OrderDetailsModal({
                     );
                   })
                 ) : (
-                  <div className="rounded-[22px] border border-dashed border-[#ddd4cb] bg-white p-6 text-center text-sm text-[#776d64]">
+                  <div className="rounded-2xl border border-dashed border-[#ddd4cb] bg-white p-6 text-center text-sm text-[#776d64]">
                     {t("vendorPanel.orderDetails.noItems")}
                   </div>
                 )}
@@ -387,7 +409,7 @@ export default function OrderDetailsModal({
             </section>
 
             {modifiedItems.length > 0 ? (
-              <section className="rounded-[24px] border border-[#efe5db] bg-[linear-gradient(180deg,#fff9f5_0%,#ffffff_100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
+              <section className="rounded-2xl border border-[#efe5db] bg-[linear-gradient(180deg,#fff9f5_0%,#ffffff_100%)] p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <h3 className="type-h3 text-[#1f1f1f]">{t("vendorPanel.orderDetails.modifiedItems")}</h3>
@@ -405,7 +427,7 @@ export default function OrderDetailsModal({
                   {modifiedItems.map((item) => (
                     <article
                       key={item.id}
-                      className="overflow-hidden rounded-[22px] border border-[#efe3d7] bg-white shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
+                      className="overflow-hidden rounded-2xl border border-[#efe3d7] bg-white shadow-[0_10px_24px_rgba(31,22,15,0.05)]"
                     >
                       <img
                         src={item.image}
@@ -458,7 +480,7 @@ export default function OrderDetailsModal({
             ) : null}
 
             {visibleVendorAdjustment ? (
-              <section className="rounded-[24px] border border-[#f0d8c9] bg-[linear-gradient(180deg,#fff8f3_0%,#ffffff_100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
+              <section className="rounded-2xl border border-[#f0d8c9] bg-[linear-gradient(180deg,#fff8f3_0%,#ffffff_100%)] p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#c67a4d]">
@@ -675,7 +697,7 @@ export default function OrderDetailsModal({
               </section>
             ) : null}
 
-            <section className="rounded-[24px] border border-[#efe5db] bg-[linear-gradient(180deg,#fffaf6_0%,#fff 100%)] p-5 shadow-[0_12px_24px_rgba(31,22,15,0.05)]">
+            <section className="rounded-2xl border border-[#efe5db] bg-[linear-gradient(180deg,#fffaf6_0%,#fff 100%)] p-4">
               <h3 className="type-h3 text-[#1f1f1f]">{t("vendorPanel.orderDetails.orderInformation")}</h3>
               <div className="mt-4 grid gap-4 text-sm text-[#5d554d] sm:grid-cols-2">
                 <div>
@@ -744,31 +766,15 @@ export default function OrderDetailsModal({
             </section>
           </div>
 
-          <div className="sticky bottom-0 flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-[#ece4dc] bg-white/95 px-6 py-4 backdrop-blur-sm">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9a8572]">
-                {t("vendorPanel.orderDetails.grandTotal")}
-              </p>
-              <p className="mt-1 type-subpara text-[#6e645a]">
-                {t("vendorPanel.orderDetails.grandTotalHint")}
-              </p>
+          <footer className="sticky bottom-0 flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-[#ece5de] bg-white px-4 py-3 sm:px-5">
+            <div className="flex min-w-0 items-baseline gap-3">
+              <p className="text-xs font-medium text-[#8d7d70]">{t("vendorPanel.orderDetails.grandTotal")}</p>
+              <p className="text-2xl font-semibold tracking-tight tabular-nums text-[#2d251e]">{order.total}</p>
             </div>
-            <div className="flex items-center gap-3">
-              {onModify ? (
-                <button
-                  type="button"
-                  onClick={onModify}
-                  disabled={isLoading || order.canModify === false}
-                  className="rounded-full border border-[#d9cec4] bg-white px-4 py-2 text-sm font-semibold text-[#2b2622] transition hover:border-[#cf6e38] hover:text-[#cf6e38] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {order.canModify === false
-                    ? t("vendorPanel.orderDetails.modificationClosed")
-                    : t("vendorPanel.orderDetails.modifyOrder")}
-                </button>
-              ) : null}
-              <p className="type-h2 text-[#1f1f1f]">{order.total}</p>
-            </div>
-          </div>
+            {onModify ? <button type="button" onClick={onModify} disabled={isLoading || order.canModify === false} className="rounded-lg border border-[#e0d6cb] bg-white px-3.5 py-2 text-xs font-semibold text-[#6a5545] transition hover:border-[#c86a37] hover:bg-[#fff8f1] disabled:cursor-not-allowed disabled:opacity-50">
+              {order.canModify === false ? t("vendorPanel.orderDetails.modificationClosed") : t("vendorPanel.orderDetails.modifyOrder")}
+            </button> : null}
+          </footer>
         </div>
       </div>
     </div>

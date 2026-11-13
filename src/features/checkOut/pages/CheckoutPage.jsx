@@ -82,6 +82,7 @@ export default function CheckoutPage() {
               />
 
               <div className="mt-4 space-y-4">
+                <div className="rounded-xl border border-[#eadfd5] bg-[#fffaf6] p-4"><h3 className="font-semibold">{t("dintero.title")}</h3><p className="mt-1 text-sm text-[#77685d]">{t("dintero.checkoutHint")}</p></div>
                 {checkoutErrorMessage ? (
                   <div className="rounded-[12px] border border-[#f2d8cb] bg-[#fff7f2] px-3 py-3 text-[13px] text-[#9a5838]">
                     {checkoutErrorMessage}

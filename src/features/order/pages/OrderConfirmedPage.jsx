@@ -1,3 +1,4 @@
+import OrderPaymentSection from "../../payments/OrderPaymentSection.jsx";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -65,6 +66,7 @@ export default function OrderConfirmedPage() {
 
           <div className="px-5 py-5 text-center sm:px-6">
             <OrderConfirmationHero />
+            {(placedOrderDraft?.placedOrders || []).map(order => <div key={order.orderId}><p className="mt-4 text-sm font-semibold">{order.vendorName}</p><OrderPaymentSection orderId={order.orderId} /></div>)}
             <OrderStatusSummary
               primaryOrderId={primaryOrderId}
               invoiceNumber={orderPreview.invoiceNumber}

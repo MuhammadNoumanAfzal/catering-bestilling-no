@@ -1,3 +1,4 @@
+import {paymentPagePath} from "../../payments/checkoutModel.js";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import i18n from "../../../i18n";
@@ -1032,6 +1033,10 @@ export function useCheckoutPage() {
         .map((cart) => cart.vendor?.name)
         .filter(Boolean)
         .join(", ");
+      if (placedOrders.length === 1) {
+        navigate(paymentPagePath(placedOrders[0].orderId));
+        return;
+      }
       await showOrderPlacedSuccess(successVendorName);
       navigate("/order-confirmed");
     } catch (error) {

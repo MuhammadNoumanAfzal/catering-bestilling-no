@@ -1,3 +1,4 @@
+import RichDescription from "../../../components/shared/RichDescription";
 import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { X } from "lucide-react";
@@ -11,7 +12,7 @@ function InfoRow({ label, value }) {
   return (
     <div className="mt-1.5 text-[12px] leading-5 text-[#6f655d]">
       <span className="font-semibold text-[#3b3029]">{label}:</span>{" "}
-      <span className="whitespace-pre-wrap break-words">{value}</span>
+      <RichDescription value={value} />
     </div>
   );
 }
@@ -102,9 +103,7 @@ function IncludedMenuDetailsModal({ includedMenuItems, isOpen, onClose }) {
                       </h4>
 
                       {includedItem.description ? (
-                        <p className="mt-2 whitespace-pre-wrap break-words text-[14px] leading-6 text-[#534740]">
-                          {includedItem.description}
-                        </p>
+                        <RichDescription className="mt-2 break-words text-[14px] leading-6 text-[#534740]" value={includedItem.description} />
                       ) : null}
 
                       {includedItem.allergens ? (

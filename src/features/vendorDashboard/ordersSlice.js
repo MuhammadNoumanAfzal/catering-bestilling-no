@@ -789,6 +789,7 @@ export const fetchClientOrderDetail = createAsyncThunk(
           eventDateRaw: draftOverride?.eventDate || orderNode.eventDate || "",
           createdOnRaw: orderNode.createdOn || "",
           person: formatNumber(getOrderDisplayGuestCount(orderNode, draftOverride?.personCount), 1),
+          currentTotal: resolvedGrandTotal,
           total: formatAmount(resolvedGrandTotal),
           subtotal: formatAmount(orderNode.pricing?.subtotal || orderNode.totalAmount),
           taxAmount: formatAmount(orderNode.pricing?.taxAmount || orderNode.taxAmount),

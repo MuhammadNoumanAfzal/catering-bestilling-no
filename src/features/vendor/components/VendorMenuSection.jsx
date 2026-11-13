@@ -1,3 +1,4 @@
+import RichDescription from "../../../components/shared/RichDescription";
 import VendorMenuItemCard from "./VendorMenuItemCard";
 import { useTranslation } from "react-i18next";
 
@@ -14,9 +15,7 @@ export default function VendorMenuSection({ section, onItemClick }) {
         </p>
         <h3 className="mt-2 type-h4 text-[#111]">{section.title}</h3>
         {sectionDescription ? (
-          <p className="mt-2 text-[15px] leading-6 text-[#756b61]">
-            {sectionDescription}
-          </p>
+          <RichDescription className="mt-2 text-[15px] leading-6 text-[#756b61]" value={sectionDescription} />
         ) : null}
       </div>
 

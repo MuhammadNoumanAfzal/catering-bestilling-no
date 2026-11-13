@@ -1,3 +1,4 @@
+import RichDescription from "../../../components/shared/RichDescription";
 import { useState } from "react";
 import { formatMoney } from "../../pricing/formatMoney.js";
 import {
@@ -188,9 +189,7 @@ const formattedUnitPrice = formatMoney(unitPrice);
               <span>{vendor.name}</span>
             </div>
 
-            <p className="mt-4 max-w-3xl whitespace-pre-wrap break-words text-[14px] leading-6 text-[#564b43] sm:text-[15px] sm:leading-7">
-              {description}
-            </p>
+            <RichDescription className="mt-4 max-w-3xl break-words text-[14px] leading-6 text-[#564b43] sm:text-[15px] sm:leading-7" value={description} />
           </div>
 
           <div className="w-full max-w-[280px] rounded-[18px] border border-[#f0ddd1] bg-white p-3 shadow-[0_12px_22px_rgba(39,24,13,0.05)]">

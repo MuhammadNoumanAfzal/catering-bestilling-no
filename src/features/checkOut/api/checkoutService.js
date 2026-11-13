@@ -1,3 +1,4 @@
+import {buildDinteroOrderInput} from "../../payments/dinteroClient.js";
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import i18n from "../../../i18n";
 import { parseDeliverySlotResponse } from "./deliverySlotResponse";
@@ -14,7 +15,8 @@ import {
 } from "./checkoutMappers";
 import {
   buildCreateOrderVariables,
-  CREATE_ORDER_MUTATION,
+  PLACE_DINTERO_ORDER_MUTATION,
+  PLACED_ORDER_DETAILS_QUERY,
 } from "./checkoutMutations";
 import {
   GET_CHECKOUT_PREVIEW_QUERY,
@@ -103,12 +105,12 @@ export async function fetchCheckoutPreview({ cart, checkoutType, formState }) {
 
 async function placeSingleOrder({ cart, checkoutType, formState }) {
   const payload = buildPlaceOrderPayload({ cart, checkoutType, formState });
-  const variables = buildCreateOrderVariables(payload);
+  const variables = buildCreateOrderVariables(buildDinteroOrderInput(payload, window.location.origin));
   const response = await graphqlRequest({
-    query: CREATE_ORDER_MUTATION,
+    query: PLACE_DINTERO_ORDER_MUTATION,
     variables,
   });
-  const result = response?.createOrder;
+  const result = response?.placeClientOrder;
 
   if (!result?.success || result?.availability?.isValid === false) {
     throw createCheckoutValidationError(result?.availability,
@@ -116,14 +118,22 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
     );
   }
 
-  const order = result.order || {};
-  const invoice = result.invoice || {};
+  if (!result.orderId) throw new Error("The order service did not return an order ID.");
+  let order = {id: result.orderId};
+  // A read failure must never turn an already-created order into a placement retry.
+  try {
+    const details = await graphqlRequest({query: PLACED_ORDER_DETAILS_QUERY, variables: {id: result.orderId}});
+    if (details?.clientOrder?.id) order = details.clientOrder;
+  } catch { /* Order details can be refreshed from the customer's Orders page. */ }
+  const invoice = {...order, id: order.id, issueDate: order.issuedOn, lineItems: order.lineItems || []};
   const bankDetails = invoice.bankDetails || {};
 
   return {
     vendorSlug: cart.vendor.slug,
     vendorName: cart.vendor.name,
     orderId: order.id || "",
+    paymentUrl: result.paymentUrl || "",
+    sessionId: result.sessionId || "",
     orderNumber: order.orderNumber || "",
     orderStatus: order.status || "",
     message: result.message || "Order placed successfully.",
@@ -133,7 +143,7 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
     invoiceStatus: invoice.status || "",
     invoiceIssueDate: invoice.issueDate || "",
     invoiceDueDate: invoice.dueDate || "",
-    paymentMethod: invoice.paymentMethod || "",
+    paymentMethod: "DINTERO",
     paymentReference: invoice.paymentReference || "",
     invoicePdfUrl: invoice.pdfUrl || "",
     bankDetails: {

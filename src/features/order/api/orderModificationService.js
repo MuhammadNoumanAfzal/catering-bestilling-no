@@ -276,6 +276,7 @@ export function mapOrderToModifyForm(order) {
 
   return {
     orderId: order.rawId || order.orderId || order.id || "",
+    currentTotal: order.currentTotal ?? order.pricing?.grandTotal ?? order.finalPrice ?? null,
     address: order.deliveryAddress || "",
     addressLine2: order.deliverySuite || "",
     city: order.deliveryCity || "",
@@ -312,6 +313,7 @@ export async function fetchOrderModificationDetails(orderId) {
     date: order.eventDate || "",
     time: order.eventTime || "",
     personCount: Math.max(1, Number(order.personCount ?? 1) || 1),
+    currentTotal: order.pricing?.grandTotal ?? order.finalPrice ?? null,
     finalPrice: order.finalPrice ?? null,
     invoiceRevision: order.invoiceRevision ?? null,
     pricing: order.pricing || null,
