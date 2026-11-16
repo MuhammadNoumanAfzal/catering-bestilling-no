@@ -204,8 +204,8 @@ export default function EventDetailsSection({
               <span className="text-[13px] text-[#9b8f84]">{t("menu.checkingSlots")}</span>
             </div>
           ) : hasSlots ? (
-            <div className="grid gap-2.5 md:grid-cols-2">
-              <div className="rounded-[12px] bg-[#fffaf6] p-2.5">
+            <div className="checkout-delivery-time">
+              <div className="checkout-window-panel">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9a6a4d]">
@@ -222,7 +222,7 @@ export default function EventDetailsSection({
                   ) : null}
                 </div>
 
-                <div className="mt-2 grid max-h-[280px] grid-cols-2 gap-2 overflow-y-auto overscroll-contain p-1">
+                <div className="checkout-window-grid">
                   {deliverySlots.map((slot) => {
                     const isSelected = isTimeInSlot(selectedTime, slot);
                     const isBooked = slot.isFullyBooked;
@@ -233,7 +233,7 @@ export default function EventDetailsSection({
                         type="button"
                         disabled={isBooked}
                         onClick={() => handleSelectSlot(slot)}
-                        className={`rounded-[10px] border p-2.5 text-left transition ${
+                        className={`checkout-window-option rounded-[10px] border p-2.5 text-left transition ${
                           isBooked
                             ? "cursor-not-allowed border-[#e4ddd7] bg-[#f5f2ef] text-[#b0a49a]"
                             : isSelected
@@ -246,7 +246,7 @@ export default function EventDetailsSection({
                             <p className="text-[13px] font-semibold leading-5 break-words">
                               {slot.label}
                             </p>
-                            <p className="mt-0.5 text-[11px] leading-4 text-[#8a7b70]">
+                            <p className="sr-only">
                               {t("menu.tapWindow")}
                             </p>
                           </div>
@@ -263,7 +263,7 @@ export default function EventDetailsSection({
               </div>
 
               {editableSlot ? (
-                <div className="rounded-[12px] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f1_100%)] p-3">
+                <div className="checkout-exact-time-panel">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#9a6a4d]">
@@ -279,7 +279,7 @@ export default function EventDetailsSection({
                         })}
                       </p>
                     </div>
-                    <div className="rounded-[10px] bg-white px-2.5 py-1.5 text-right">
+                    <div className="checkout-current-time">
                       <p className="text-[11px] uppercase tracking-[0.1em] text-[#a19084]">
                         {t("menu.currentTime")}
                       </p>

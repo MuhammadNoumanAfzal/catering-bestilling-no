@@ -189,7 +189,7 @@ export default function MenuDeliveryForm({
       <div className="p-3 sm:p-4">
 
       <div className="rounded-[18px] border border-[#efe5dc] bg-[linear-gradient(180deg,#fffdfa_0%,#fff8f2_100%)] p-2.5 sm:p-3">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="menu-booking-fields">
         <label className="block min-w-0">
           <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8f6850]">{t("menu.date")}</span>
           <div className="relative mt-1">
@@ -207,7 +207,7 @@ export default function MenuDeliveryForm({
               </span>
             </button>
             {isCalendarOpen ? (
-              <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[320px] rounded-[16px] border border-[#dfd4cb] bg-white p-3 shadow-[0_18px_38px_rgba(55,34,19,0.18)]">
+              <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[320px] max-w-[calc(100vw-64px)] rounded-[16px] border border-[#dfd4cb] bg-white p-3 shadow-[0_18px_38px_rgba(55,34,19,0.18)]">
                 <div className="mb-3 flex items-center justify-between">
                   <button className="rounded-full px-2 py-1 text-[18px] text-[#6f6056] hover:bg-[#faf4ef]" onClick={() => setCalendarMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))} type="button">&#8249;</button>
                   <strong className="text-[14px] text-[#2b231e]">{calendarMonth.toLocaleString(locale, { month: "long", year: "numeric" })}</strong>
@@ -250,8 +250,8 @@ export default function MenuDeliveryForm({
                 {slotAccessMessage || t("menu.signInForSlots")}
               </p>
             ) : hasSlots ? (
-              <div className="flex flex-col gap-3">
-                <div className="rounded-[20px] border border-[#eadfd6] bg-[#fffaf6] p-3.5 sm:p-4">
+              <div className="menu-delivery-time">
+                <div className="checkout-window-panel">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9a6a4d]">
@@ -268,7 +268,7 @@ export default function MenuDeliveryForm({
                     ) : null}
                   </div>
 
-                  <div className="mt-3 grid max-h-[280px] grid-cols-2 gap-2 overflow-y-auto overscroll-contain p-1 sm:grid-cols-3">
+                  <div className="checkout-window-grid menu-window-grid">
                     {deliverySlots.map((slot) => {
                       const isSelected = isTimeInSlot(selectedTime, slot);
 
@@ -279,7 +279,7 @@ export default function MenuDeliveryForm({
                           type="button"
                           disabled={slot.isFullyBooked}
                           onClick={() => handleSelectSlot(slot)}
-                          className={`rounded-[10px] border p-2.5 text-left transition ${
+                          className={`checkout-window-option rounded-[10px] border p-2.5 text-left transition ${
                             slot.isFullyBooked
                               ? "cursor-not-allowed border-[#e4ddd7] bg-[#f5f2ef] text-[#b0a49a]"
                               : isSelected
@@ -292,7 +292,7 @@ export default function MenuDeliveryForm({
                               <p className="text-[15px] font-semibold leading-6 break-words">
                                 {slot.label}
                               </p>
-                              <p className="mt-1 text-[12px] leading-5 text-[#8a7b70]">
+                              <p className="sr-only">
                                 {t("menu.tapWindow")}
                               </p>
                             </div>
@@ -311,7 +311,7 @@ export default function MenuDeliveryForm({
                 </div>
 
                 {editableSlot ? (
-                  <div className="rounded-[20px] border border-[#ead8ca] bg-[linear-gradient(180deg,#fffdfb_0%,#fff7f1_100%)] p-4">
+                  <div className="checkout-exact-time-panel">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#9a6a4d]">
@@ -321,7 +321,7 @@ export default function MenuDeliveryForm({
                           {t("menu.fineTuneTime")}
                         </p>
                       </div>
-                      <div className="rounded-[14px] border border-[#efd8ca] bg-white px-3 py-2 text-right shadow-[0_8px_16px_rgba(55,34,19,0.04)]">
+                      <div className="checkout-current-time">
                         <p className="text-[11px] uppercase tracking-[0.1em] text-[#a19084]">
                           {t("menu.currentTime")}
                         </p>

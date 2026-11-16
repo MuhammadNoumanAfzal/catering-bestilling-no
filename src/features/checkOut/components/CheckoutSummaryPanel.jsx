@@ -26,7 +26,7 @@ export default function CheckoutSummaryPanel({
   const includedVat = totals.salesTax;
 
   return (
-    <aside className="min-w-0 bg-[#fcfaf7] lg:border-l lg:border-[#eee7e0]">
+    <aside className="order-summary-typography min-w-0 bg-[#fcfaf7] lg:border-l lg:border-[#eee7e0]">
       <div className="sticky top-4 p-3 sm:p-4">
         <div className="rounded-[18px] bg-white p-3 shadow-[0_12px_28px_rgba(31,21,13,0.06)]">
           <div className="mb-3 rounded-[14px] bg-[#cf6e38] px-3 py-2.5 text-white">
@@ -34,10 +34,10 @@ export default function CheckoutSummaryPanel({
               {t("checkout.summary")}
             </p>
             <div className="mt-2 flex items-center justify-between gap-3">
-              <span className="text-[12px] font-medium text-[#5b6f58]">
+              <span className="text-[14px] font-semibold text-white">
                 {t("checkout.currentTotal")}
               </span>
-              <span className="text-[21px] font-semibold leading-none text-white">
+              <span className="text-[25px] font-bold leading-none text-white">
                 {formatCurrency(grandTotal)}
               </span>
             </div>
@@ -67,7 +67,7 @@ export default function CheckoutSummaryPanel({
               </div>
 
               <div className="text-right">
-                <span className="text-[22px] font-semibold leading-none">
+                <span className="summary-grand-total text-[26px] font-bold leading-none">
                   {formatCurrency(grandTotal)}
                 </span>
                 <p className="mt-1 text-[10px] font-semibold leading-4 text-[#2f7a3e]">

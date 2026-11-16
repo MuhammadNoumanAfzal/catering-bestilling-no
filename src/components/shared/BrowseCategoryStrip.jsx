@@ -20,7 +20,7 @@ const CATEGORY_STRIP_VARIANTS = {
       </span>
     ),
     label:
-      "text-[10px] font-medium leading-tight text-[#5f5f5f] sm:text-xs md:text-sm",
+      "text-[12px] font-semibold leading-snug text-[#332b25] sm:text-[13px] md:text-[14px]",
     panel:
       "absolute left-1/2 top-[calc(100%+10px)] z-50 w-[calc(100%-8px)] max-w-[820px] -translate-x-1/2 rounded-xl border border-[#dcdcdc] bg-white p-3 shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[92%] sm:p-4",
     panelPointer:
@@ -48,7 +48,7 @@ const CATEGORY_STRIP_VARIANTS = {
         <FiMoreHorizontal className="text-[14px] sm:text-[15px]" />
       </span>
     ),
-    label: "text-[10px] font-medium text-[#5f5f5f] sm:text-xs md:text-sm",
+    label: "text-[12px] font-semibold leading-snug text-[#332b25] sm:text-[13px] md:text-[14px]",
     panel:
       "absolute left-1/2 top-[calc(100%+12px)] z-50 w-[calc(100%-8px)] max-w-[920px] -translate-x-1/2 rounded-xl border border-[#dcdcdc] bg-white p-3 shadow-[0_14px_30px_rgba(0,0,0,0.18)] sm:w-[92%] sm:p-4",
     panelPointer:

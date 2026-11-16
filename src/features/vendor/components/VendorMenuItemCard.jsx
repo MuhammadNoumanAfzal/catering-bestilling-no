@@ -34,7 +34,7 @@ export default function VendorMenuItemCard({ item, onClick }) {
           ) : null}
         </div>
 
-        <h4 className="line-clamp-2 text-[1.28rem] font-semibold leading-tight text-[#1a1a1a] sm:text-[1.42rem]">
+        <h4 className="whitespace-normal break-words text-[1.28rem] font-semibold leading-tight text-[#1a1a1a] sm:text-[1.42rem]">
           {item.title}
         </h4>
         {item.serves ? (

@@ -56,7 +56,7 @@ export function ProductItem({
       </div>
 
       <div className="mt-3 flex items-start justify-between gap-4">
-        <h3 className="type-h4 min-w-0 flex-1 truncate text-[#191919]">{name}</h3>
+        <h3 className="type-h4 min-w-0 flex-1 whitespace-normal break-words leading-snug text-[#191919]">{name}</h3>
 
         <div className="type-h6 flex shrink-0 items-center gap-1 pt-0.5 text-[#2c2c2c]">
           <FiStar className="text-[12px] fill-[#f4b400] text-[#f4b400]" />
@@ -65,7 +65,7 @@ export function ProductItem({
       </div>
 
       {price ? (
-        <p className="mt-1.5 text-[14px] font-medium leading-5 text-[#555]">
+        <p className="mt-1.5 text-[16px] font-semibold leading-6 text-[#302923]">
           {price}{pricingType === "per-person" ? ` ${t("products.pricePerPerson")}` : ""}
         </p>
       ) : null}

@@ -47,7 +47,7 @@ export default function BrowseFilterChipButton({
           />
         </span>
 
-        <span className="min-w-0 flex-1 truncate text-left">
+        <span className="min-w-0 flex-1 truncate text-left text-[14px] font-semibold sm:text-[15px]">
           {translateBrowseChipLabel(t, chip.key)}
         </span>
 

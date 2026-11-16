@@ -69,7 +69,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f5]">
+    <div className="checkout-page min-h-screen bg-[#faf8f5]">
       <CheckoutHeader />
 
       <main className="mx-auto max-w-9xl px-4 py-4 sm:px-6 lg:px-8">

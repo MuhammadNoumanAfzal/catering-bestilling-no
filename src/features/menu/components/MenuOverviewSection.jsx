@@ -164,7 +164,7 @@ const formattedUnitPrice = formatMoney(unitPrice);
     <>
       <div id="menu-item-overview" className="scroll-mt-6 rounded-[24px] border border-[#eaded3] bg-[linear-gradient(135deg,#fffdfb_0%,#fff6ef_52%,#fffdf9_100%)] p-3 shadow-[0_12px_28px_rgba(55,34,19,0.04)] sm:p-4">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-          <div className="max-w-3xl">
+          <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <a
                 href="#menu-item-overview"
@@ -189,10 +189,10 @@ const formattedUnitPrice = formatMoney(unitPrice);
               <span>{vendor.name}</span>
             </div>
 
-            <RichDescription className="mt-4 max-w-3xl break-words text-[14px] leading-6 text-[#564b43] sm:text-[15px] sm:leading-7" value={description} />
+            
           </div>
 
-          <div className="w-full max-w-[280px] rounded-[18px] border border-[#f0ddd1] bg-white p-3 shadow-[0_12px_22px_rgba(39,24,13,0.05)]">
+          <div className="w-full shrink-0 xl:max-w-[240px] rounded-[18px] border border-[#f0ddd1] bg-white p-3 shadow-[0_12px_22px_rgba(39,24,13,0.05)]">
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#b48062]">
               {t("menu.startingFrom")}
             </p>
@@ -215,6 +215,9 @@ const formattedUnitPrice = formatMoney(unitPrice);
               </div>
             </div>
           </div>
+        </div>
+        <div className="product-description-panel">
+          <RichDescription menuLayout className="product-description-copy" value={description} />
         </div>
       </div>
 

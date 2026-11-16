@@ -1,5 +1,5 @@
 import {BROWSE_PAGE_SIZE} from "../utils/browsePagination.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
@@ -73,7 +73,6 @@ export default function BrowseCatalogView({
   disableLocationFiltering = false,
   dietaryOptions = [],
   moreOptions,
-  totalItems,
 }) {
   const { t } = useTranslation();
   const {
@@ -90,18 +89,25 @@ export default function BrowseCatalogView({
     selectedSort,
   } = useBrowseFilters();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedCategory, setSelectedCategory] = useState(() =>
-    parseCategoryParamValue(searchParams.get("category")),
-  );
-  const [currentPage, setCurrentPage] = useState(1);
+  const selectedCategory = parseCategoryParamValue(searchParams.get("category"));
+  const pageValue = Number(searchParams.get('page'));
+  const currentPage = Number.isSafeInteger(pageValue) && pageValue > 0 ? pageValue : 1;
+  function setCurrentPage(value) {
+    const page = typeof value === 'function' ? value(currentPage) : value;
+    setSearchParams(previous => {
+      const next = new URLSearchParams(previous);
+      if (page > 1) next.set('page',String(page)); else next.delete('page');
+      return next;
+    }, {replace:true});
+  }
+  const filterKey = JSON.stringify([attendeeCount,deliveryDate,deliveryTime,locationValue,searchQuery]);
+  const previousFilters = useRef(filterKey);
   const hasMounted = useRef(false);
 
-  useEffect(() => {
-    setSelectedCategory(parseCategoryParamValue(searchParams.get("category")));
-  }, [searchParams]);
+
 
   const handleCategoryChange = (nextCategory) => {
-    setSelectedCategory(nextCategory);
+
 
     const nextParams = new URLSearchParams(searchParams);
     const categoryValue = getCategoryParamValue(nextCategory);
@@ -172,8 +178,10 @@ export default function BrowseCatalogView({
   );
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [attendeeCount, deliveryDate, deliveryTime, locationValue, searchQuery, selectedCategory]);
+    if(previousFilters.current === filterKey) return;
+    previousFilters.current = filterKey;
+    setSearchParams(previous => {const next=new URLSearchParams(previous);next.delete('page');return next;},{replace:true});
+  }, [filterKey,setSearchParams]);
 
   useEffect(() => {
     if (!hasMounted.current) {

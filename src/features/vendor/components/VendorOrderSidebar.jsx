@@ -133,7 +133,7 @@ export default function VendorOrderSidebar({
     vendor?.name ?? items[0]?.vendorName ?? "Selected restaurant";
 
   return (
-    <aside className="rounded-none border-l border-[#e7dfd6] bg-[#fdfbf8]">
+    <aside className="order-summary-typography rounded-none border-l border-[#e7dfd6] bg-[#fdfbf8]">
       <div className="sticky top-[84px] p-2 sm:p-3">
         {!hasItems ? (
           <div className="flex min-h-[720px] flex-col items-center justify-center text-center">

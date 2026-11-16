@@ -1,12 +1,12 @@
 import { fetchCategoryUnion } from "../../browse/utils/categoryUnion.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { showNoVendorsAlert } from "../../../utils/alerts";
 import { readSavedSettings } from "../../../utils/customerProfileStorage";
 import { useBrowseFilters } from "../../../app/context/BrowseFiltersContext";
 import { useAuth } from "../../auth";
-import { normalizeCategorySelection } from "../../browse/utils/categoryFilters";
+import { normalizeCategorySelection, parseCategoryParamValue, getCategoryParamValue } from "../../browse/utils/categoryFilters";
 import { foodTypeCategories as fallbackFoodTypeCategories, getBrowseFallbackIcon } from "../../browse/data/browseData";
 import {
   browseProductsByFoodType,
@@ -107,7 +107,14 @@ export default function HomePage() {
   const [postalCode, setPostalCode] = useState("");
   const [draftDeliveryAddress, setDraftDeliveryAddress] = useState(deliveryAddress);
   const [appliedSearchFilters, setAppliedSearchFilters] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryParams, setCategoryParams] = useSearchParams();
+  const selectedCategory = parseCategoryParamValue(categoryParams.get('category'));
+  function setSelectedCategory(value) {
+    const next = new URLSearchParams(categoryParams);
+    const category = getCategoryParamValue(value);
+    if (category) next.set('category',category); else next.delete('category');
+    setCategoryParams(next,{replace:true,state:{__restoreScrollY:window.scrollY}});
+  }
   const [foodTypeCategories, setFoodTypeCategories] = useState([]);
   const [dietaryOptions, setDietaryOptions] = useState([]);
   const [categoryBrowseProducts, setCategoryBrowseProducts] = useState([]);

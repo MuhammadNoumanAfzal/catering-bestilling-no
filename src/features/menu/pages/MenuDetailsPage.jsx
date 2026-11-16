@@ -710,7 +710,7 @@ export default function MenuDetailsPage() {
   };
 
   return (
-    <section className="relative overflow-hidden px-4 py-5 md:px-6 lg:overflow-visible lg:px-8">
+    <section className="menu-detail-page relative overflow-hidden px-4 py-5 md:px-6 lg:overflow-visible lg:px-8">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(255,236,224,0.9),transparent_28%),radial-gradient(circle_at_top_right,rgba(244,229,215,0.82),transparent_32%),linear-gradient(180deg,#fff9f4_0%,#fffdfb_38%,#f8f1ea_100%)]" />
       <div className="mx-auto max-w-7xl overflow-hidden rounded-[34px] border border-[#ddd3c8] bg-[#fffaf6] shadow-[0_24px_56px_rgba(55,34,19,0.09)] lg:overflow-visible">
         <MenuHeroBanner

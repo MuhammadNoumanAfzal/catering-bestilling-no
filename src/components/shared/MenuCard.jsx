@@ -54,7 +54,7 @@ export default function MenuCard({
       </div>
 
       <div className="mt-3 flex items-start justify-between gap-3">
-        <h3 className="type-h4 line-clamp-2 text-[#191919]">{title}</h3>
+        <h3 className="type-h4 min-w-0 flex-1 whitespace-normal break-words leading-snug text-[#191919]">{title}</h3>
 
         <div className="type-h6 flex shrink-0 items-center gap-1 text-[#2c2c2c]">
           <FiStar className="text-[12px] fill-[#f4b400] text-[#f4b400]" />
@@ -65,7 +65,7 @@ export default function MenuCard({
       <div className="type-subpara mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[#666]">
         <span className="min-w-0 truncate">{vendor}</span>
       </div>
-      <p className="mt-1.5 text-[14px] font-medium leading-5 text-[#555]">{price}</p>
+      <p className="mt-1.5 text-[16px] font-semibold leading-6 text-[#302923]">{price}</p>
 
       <div className="type-subpara mt-2 inline-flex items-center rounded-full bg-[#fff1eb] px-2.5 py-1 text-[#ff6a3d]">
         {t("browse.availableNow")}

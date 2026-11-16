@@ -1,0 +1,93 @@
+/* Shared readability: stronger body copy and light-surface secondary text.
+   Keep white text, brand/status colors, disabled controls and dark surfaces intact. */
+body { color: #302923; font-size: 16px; font-weight: 500; }
+#root :where(h1,h2,h3) { font-weight: 700; }
+#root :where(label,th) { font-weight: 600; }
+#root :where(input,select,textarea) { font-weight: 500; }
+#root :where(input,textarea)::placeholder { color: #77685d; opacity: 1; }
+#root :is(
+  [class~="text-[#9a8572]" i],
+  [class~="text-[#a48d79]" i],
+  [class~="text-[#8b8177]" i],
+  [class~="text-[#8b8580]" i],
+  [class~="text-[#746b63]" i],
+  [class~="text-[#6f6258]" i],
+  [class~="text-[#62676e]" i],
+  [class~="text-[#8a7a6d]" i],
+  [class~="text-[#7a6d63]" i],
+  [class~="text-[#746a62]" i],
+  [class~="text-[#8c7f73]" i],
+  [class~="text-[#8a7c70]" i],
+  [class~="text-[#8d7f73]" i],
+  [class~="text-[#6f6358]" i],
+  [class~="text-[#9b8f86]" i],
+  [class~="text-[#6f645d]" i],
+  [class~="text-[#8c8077]" i],
+  [class~="text-[#6f655e]" i],
+  [class~="text-[#7a6d66]" i],
+  [class~="text-[#9a8f86]" i],
+  [class~="text-[#8d8077]" i],
+  [class~="text-[#aa8f81]" i],
+  [class~="text-[#94867a]" i],
+  [class~="text-[#7b8793]" i],
+  [class~="text-[#8a7d72]" i],
+  [class~="text-[#7f7369]" i],
+  [class~="text-[#a59689]" i],
+  [class~="text-[#9a8b7e]" i],
+  [class~="text-[#8c7b6b]" i],
+  [class~="text-[#9c8c7b]" i],
+  [class~="text-[#8d7969]" i],
+  [class~="text-[#8d7764]" i],
+  [class~="text-[#947d69]" i],
+  [class~="text-[#9a8d7e]" i],
+  [class~="text-[#a18e7b]" i],
+  [class~="text-[#9b8876]" i],
+  [class~="text-[#9c8c7d]" i],
+  [class~="text-[#737f8b]" i],
+  [class~="text-[#8c7c6b]" i],
+  [class~="text-[#8b7d70]" i],
+  [class~="text-[#94877b]" i],
+  [class~="text-[#9e8f80]" i],
+  .text-gray-400,
+  .text-gray-500,
+  .text-slate-400,
+  .text-slate-500,
+  .text-stone-400,
+  .text-stone-500,
+  .text-neutral-400,
+  .text-neutral-500,
+  .text-gray-600,
+  .text-slate-600
+):not(:where(
+  [class*="bg-[#1"],
+  [class*="bg-[#1"] *,
+  [class*="bg-[#2"],
+  [class*="bg-[#2"] *,
+  [class*="bg-[#3"],
+  [class*="bg-[#3"] *,
+  [class*="bg-[#4"],
+  [class*="bg-[#4"] *,
+  [class*="bg-black"],
+  [class*="bg-black"] *,
+  [class*="bg-gray-8"],
+  [class*="bg-gray-8"] *,
+  [class*="bg-gray-9"],
+  [class*="bg-gray-9"] *,
+  [class*="bg-slate-8"],
+  [class*="bg-slate-8"] *,
+  [class*="bg-slate-9"],
+  [class*="bg-slate-9"] *,
+  .legal-page,
+  .legal-page *,
+  :disabled,
+  [aria-disabled="true"],
+  fieldset:disabled *
+)) { color: #514438; }
+/* Modest increases keep compact controls usable without scaling icons or badges. */
+#root .text-xs { font-size: 13px; line-height: 1.55; }
+#root .text-sm { font-size: 15px; line-height: 1.65; }
+#root [class~="text-[11px]"] { font-size: 12px; }
+#root [class~="text-[12px]"] { font-size: 13px; }
+#root [class~="text-[13px]"] { font-size: 14px; }
+#root [class~="text-[14px]"] { font-size: 15px; }
+@media print { body { color: #111; } }

@@ -18,3 +18,5 @@ test('direct links use deterministic fallback and reject unsafe targets',()=>{
 test('legacy location-object return state stays supported',()=>{
  assert.equal(resolveReturnNavigation({from:{pathname:'/products/popular',search:'?page=3'}},'/').to,'/products/popular?page=3');
 });
+
+test('return links restore listing scroll without losing nested return state',()=>{const result=resolveReturnNavigation({from:'/?category=selskapsmat',fromScrollY:1260,fromState:{from:'/browse/occasion?category=wedding'}},'/');assert.equal(result.to,'/?category=selskapsmat');assert.deepEqual(result.state,{from:'/browse/occasion?category=wedding',__restoreScrollY:1260});assert.equal(resolveReturnNavigation({from:'/',fromScrollY:-1},'/').state,null);assert.equal(resolveReturnNavigation({from:'/',fromScrollY:Infinity},'/').state,null);});

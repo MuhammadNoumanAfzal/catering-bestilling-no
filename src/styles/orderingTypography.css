@@ -1,0 +1,153 @@
+/* Product booking and checkout: readable copy, explicit field labels and clear totals. */
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) {color:#302923;font-weight:500;line-height:1.65}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(p,li):not(.font-semibold,.font-bold,.font-extrabold) {font-weight:500}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(h1,h2,h3,h4) {color:#251e18;font-weight:700;line-height:1.35}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(label,legend,th) {color:#3c3027;font-weight:650;font-size:14px}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(input,select,textarea):not(:disabled) {font-size:16px;font-weight:550;color:#302923}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) input::placeholder,#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) textarea::placeholder {color:#766758;font-weight:500}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(.text-sm,[class~="text-[14px]"],[class~="text-[15px]"]) {font-size:16px;line-height:1.7}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) [class~="text-[13px]"] {font-size:15px;line-height:1.6}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(.text-xs,[class~="text-[12px]"]) {font-size:14px;line-height:1.6}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) [class~="text-[11px]"] {font-size:13px;line-height:1.55}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is([class~="text-[9px]"],[class~="text-[10px]"]) {font-size:11px;font-weight:650;line-height:1.5}
+#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(
+[class~="text-[#7d736b]" i],
+[class~="text-[#8a7364]" i],
+[class~="text-[#a39286]" i],
+[class~="text-[#6b5d53]" i],
+[class~="text-[#8a7e74]" i],
+[class~="text-[#b08a7a]" i],
+[class~="text-[#8f6850]" i],
+[class~="text-[#6f6056]" i],
+[class~="text-[#8c7a6e]" i],
+[class~="text-[#c9beb5]" i],
+[class~="text-[#8a7161]" i],
+[class~="text-[#9b8f84]" i],
+[class~="text-[#b0a49a]" i],
+[class~="text-[#8a7b70]" i],
+[class~="text-[#a19084]" i],
+[class~="text-[#7e7469]" i],
+[class~="text-[#6f655d]" i],
+[class~="text-[#8d7768]" i],
+[class~="text-[#9b7a66]" i],
+[class~="text-[#66584d]" i],
+[class~="text-[#77685e]" i],
+[class~="text-[#79675c]" i],
+[class~="text-[#796b61]" i],
+[class~="text-[#a48370]" i],
+[class~="text-[#a49b92]" i],
+[class~="text-[#8b8177]" i],
+[class~="text-[#6b655f]" i],
+[class~="text-[#5f554e]" i],
+[class~="text-[#5b6f58]" i],
+[class~="text-[#8b8580]" i],
+[class~="text-[#9a8f83]" i],
+[class~="text-[#9d9d9d]" i],
+[class~="text-[#76706a]" i],
+[class~="text-[#66605b]" i]
+):not(:where(:disabled,:disabled *,[aria-disabled="true"],[aria-disabled="true"] *)) {color:#514033}
+#root .order-summary-typography {font-variant-numeric:tabular-nums}
+#root .order-summary-typography :is(.type-h4,.type-h3,[class~="text-[25px]"]) {font-weight:750;color:#251e18}
+#root .order-summary-typography :is(.type-para,.type-subpara):not(:where(button,[role="button"],[class~="text-white"],[class~="text-white"] *)) {font-size:15px;line-height:1.65;color:#403329}
+#root .order-summary-typography :is(.font-semibold,.font-bold) {font-weight:700}
+@media(max-width:640px){#root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(.text-sm,[class~="text-[14px]"],[class~="text-[15px]"]) {font-size:15px} #root :is(.menu-detail-page,.checkout-page,.order-summary-typography) :is(input,select,textarea){font-size:16px}}
+
+/* Checkout delivery selection: compact slots and a separate, focused time control. */
+.checkout-delivery-time {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+.checkout-window-panel, .checkout-exact-time-panel {
+  min-width: 0;
+  border: 1px solid #e8ddd4;
+  border-radius: 16px;
+  background: #fff;
+  padding: 20px;
+}
+.checkout-window-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #d4b6a2 #faf6f2;
+  margin-top: 18px;
+  padding: 2px 6px 2px 2px;
+}
+.checkout-window-option { min-height: 86px; padding: 12px; }
+.checkout-window-option > div { gap: 8px; }
+.checkout-window-option[aria-pressed="true"] {
+  background: #fff2e8;
+  border-color: #bb5127;
+  box-shadow: 0 0 0 1px #bb5127;
+}
+.checkout-window-option:focus-visible {
+  outline: 3px solid #cf6e38;
+  outline-offset: 3px;
+}
+.checkout-exact-time-panel {
+  background: #fcf8f4;
+  border-top: 3px solid #c65e2e;
+}
+.checkout-current-time {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 14px 0 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #eaded4;
+}
+.checkout-current-time p:last-child { font-size: 22px; font-weight: 700; }
+.checkout-exact-time-panel > div:nth-child(2) { max-width: none; margin-top: 16px; }
+.checkout-exact-time-panel > p:last-child { margin-top: 14px; line-height: 1.6; }
+@media (max-width: 767px) {
+  .checkout-delivery-time { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .checkout-window-panel, .checkout-exact-time-panel { padding: 16px; }
+  .checkout-window-grid { max-height: 290px; }
+}
+
+/* The detail page has a narrower content column beside the cart. */
+.menu-booking-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+.menu-booking-fields > label:first-child { width: 100%; max-width: 340px; }
+.menu-delivery-time { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.menu-window-grid { grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); max-height: 310px; }
+.menu-window-grid .checkout-window-option p { white-space: nowrap; font-size: 15px; }
+.menu-delivery-time .checkout-exact-time-panel { max-width: none; }
+.menu-delivery-time .checkout-exact-time-panel > div:nth-child(2) { max-width: 420px; }
+@media (max-width: 400px) {
+  .menu-window-grid { grid-template-columns: minmax(0, 1fr); max-height: 300px; }
+  .menu-window-grid .checkout-window-option > div { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+}
+
+/* Stronger hierarchy in the menu and checkout order summaries. */
+#root .order-summary-typography :is(.type-para,.type-subpara) {
+  font-size: 16px;
+  font-weight: 600;
+  color: #211d19;
+  line-height: 1.6;
+}
+#root .order-summary-typography :is(h2,h3,h4,.type-h3,.type-h4) {
+  color: #171411;
+  font-weight: 750;
+}
+#root .order-summary-typography :is([class~="text-[13px]"],[class~="text-[14px]"],[class~="text-[15px]"]) {
+  font-size: 16px;
+  line-height: 1.6;
+}
+#root .order-summary-typography :is([class~="text-[11px]"],[class~="text-[12px]"]) {
+  font-size: 14px;
+  line-height: 1.6;
+}
+#root .order-summary-typography :is([class~="text-[#8b8580]"],[class~="text-[#555555]"],[class~="text-[#555]"],[class~="text-[#2c2c2c]"],[class~="text-[#5b6f58]"],[class~="text-[#777777]"]) {
+  color: #29231e;
+}
+#root .order-summary-typography :is(.font-semibold,.font-bold) { font-weight: 700; }
+#root .order-summary-typography .summary-grand-total { font-size: 26px; font-weight: 750; color: #151310; }
