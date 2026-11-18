@@ -181,12 +181,16 @@ async function executeGraphqlRequest({ query, variables = {}, signal, publicRequ
   }
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       sanitizeServerErrorMessage(
         payload?.message ?? rawBody?.trim(),
         "Server error. Please try again shortly.",
       ),
     );
+    error.status = response.status;
+    error.code = payload?.errors?.[0]?.extensions?.code;
+    error.graphqlErrors = payload?.errors;
+    throw error;
   }
 
   if (payload?.errors?.length) {
@@ -195,6 +199,7 @@ async function executeGraphqlRequest({ query, variables = {}, signal, publicRequ
     );
     error.fieldErrors = extractGraphqlFieldErrors(payload.errors);
     error.code = payload.errors[0]?.extensions?.code;
+    error.graphqlErrors = payload.errors;
     throw error;
   }
 
@@ -219,6 +224,8 @@ export async function graphqlRequest(options) {
     const friendlyError = new Error(customerErrorMessage(error), { cause: error });
     friendlyError.technicalMessage = error?.message || "";
     friendlyError.code = error?.code;
+    friendlyError.status = error?.status;
+    friendlyError.graphqlErrors = error?.graphqlErrors;
     friendlyError.fieldErrors = error?.fieldErrors
       ? Object.fromEntries(Object.entries(error.fieldErrors).map(([field, messages]) => [
           field, messages.map((message) => customerErrorMessage(message)),

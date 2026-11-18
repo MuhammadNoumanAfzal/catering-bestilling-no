@@ -1,3 +1,4 @@
+import OffersPage from '../../features/offers/OffersPage';
 import { Suspense, lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
@@ -163,7 +164,7 @@ export default function AppRouter() {
             <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
             <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/settings" element={<ClientSettingsPage />} />
+            <Route path="/settings" element={<ClientSettingsPage />} /><Route path="/account/my-offers" element={<OffersPage />} /><Route path="/account/my-offers/:requestId" element={<OffersPage />} />
             <Route path="/terms-and-conditions" element={<TermsPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
@@ -193,7 +194,7 @@ export default function AppRouter() {
           {/* Vendor dashboard routes */}
           <Route path="/client-dashboard" element={<VendorDashboardLayout />}>
             <Route index element={<VendorDashboardHomePage />} />
-            <Route path="orders" element={<VendorOrdersPage />} />
+            <Route path="orders" element={<VendorOrdersPage />} /><Route path="offers" element={<Navigate to="/account/my-offers" replace />} />
             <Route path="restaurants" element={<VendorRestaurantsPage />} />
             <Route path="invoices" element={<VendorInvoicesPage />} />
             <Route path="invoices/:invoiceId" element={<VendorInvoiceDetailsPage />} />

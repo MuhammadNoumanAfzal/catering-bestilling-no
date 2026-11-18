@@ -1,3 +1,4 @@
+import { useOfferText } from '../../../offers/offerText';
 import { FiTruck } from "react-icons/fi";
 import { formatCurrency } from "./checkoutSummaryUtils";
 import { useTranslation } from "react-i18next";
@@ -11,8 +12,10 @@ export default function PriceDetailsCard({
   tipValue,
   discountAmount,
   serviceFee,
+  minimumOrderShortfall,
 }) {
   const { t } = useTranslation();
+  const offerText=useOfferText();
   return (
     <div className="mt-3 border-t border-[#eee7e0] pt-3">
       <div className="flex items-center gap-2 text-[#2c2c2c]">
@@ -41,7 +44,7 @@ export default function PriceDetailsCard({
         </div>
         {serviceFee > 0 ? (
           <div className="flex items-center justify-between gap-3">
-            <span>{t("checkout.serviceFee")}</span>
+            <span>{Number(minimumOrderShortfall)>0 ? offerText("Minimum order supplement","Tillegg for minstebestilling") : t("checkout.serviceFee")}</span>
             <span className="font-semibold">{formatCurrency(serviceFee)}</span>
           </div>
         ) : null}

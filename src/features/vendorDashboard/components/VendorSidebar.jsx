@@ -1,3 +1,4 @@
+import { useOfferText } from '../../offers/offerText';
 import { NavLink } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
@@ -17,6 +18,7 @@ function getLinkClasses({ isActive }) {
 
 export default function VendorSidebar() {
   const { t } = useTranslation();
+ const offerText=useOfferText();
   const { user, signOut } = useAuth();
   const { unreadNotificationCount } = useUserNotifications();
 
@@ -50,6 +52,7 @@ export default function VendorSidebar() {
       </div>
 
       <nav className="hide-scrollbar mt-4 flex flex-1 gap-2 overflow-x-auto pb-1 lg:mt-6 lg:flex-col lg:overflow-visible lg:px-3 lg:py-0">
+        <NavLink to="/account/my-offers" className={getLinkClasses}>{offerText("My offers","Mine tilbud")}</NavLink>
         {vendorNavigationItems.map(({ labelKey, to, icon: Icon, end }) => (
           <NavLink
             key={to}

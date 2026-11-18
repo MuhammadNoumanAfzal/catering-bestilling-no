@@ -1,3 +1,4 @@
+import { offerMatchesCheckout, restoreCatalogueSummary } from '../../offers/offerModel';
 import {paymentPagePath} from "../../payments/checkoutModel.js";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -301,9 +302,11 @@ export function useCheckoutPage() {
   };
 
   useEffect(() => {
-    const storedCarts = readAllStoredOrderSummaries();
+    const requestedOffer=new URLSearchParams(location.search).get("offerRequest");
+    const storedCarts = readAllStoredOrderSummaries().filter(cart=>!requestedOffer || cart.orderSummary.offer?.requestId===requestedOffer);
     const prefilledFormState = location.state?.prefillCheckoutForm;
     const savedDraft = readCheckoutFormDraft(normalizedType);
+    const offerCart=storedCarts.find(cart=>cart.orderSummary.offer);
 
     setCarts(storedCarts);
     setFormState((current) => applyDeliveryLocation({
@@ -311,8 +314,9 @@ export function useCheckoutPage() {
       ...createInitialCheckoutFormState(storedCarts[0]),
       ...(savedDraft ?? {}),
       ...(prefilledFormState ?? {}),
-    }, locationValue));
-  }, [location.state, locationValue, normalizedType]);
+      ...(offerCart ? {date:offerCart.orderSummary.deliveryDate,time:offerCart.orderSummary.deliveryTime,personCount:offerCart.orderSummary.personCount,deliveryPostalCode:offerCart.orderSummary.offer.postalCode} : {}),
+    }, offerCart?.orderSummary.offer.postalCode || locationValue));
+  }, [location.state, location.search, locationValue, normalizedType]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -344,7 +348,8 @@ export function useCheckoutPage() {
           setFormState((current) => applyDeliveryLocation({
             ...current,
             ...profile.formState,
-          }, locationValue));
+            ...(readAllStoredOrderSummaries().some(cart=>cart.orderSummary.offer) ? {date:current.date,time:current.time,personCount:current.personCount,deliveryPostalCode:current.deliveryPostalCode} : {}),
+          }, readAllStoredOrderSummaries().some(cart=>cart.orderSummary.offer) ? current.deliveryPostalCode : locationValue));
         }
       } catch {
         // Keep existing locally saved checkout defaults if autofill fails.
@@ -460,6 +465,7 @@ export function useCheckoutPage() {
         deliveryPostalCode: formState.deliveryPostalCode,
         deliveryCity: formState.deliveryCity,
         carts: carts.map((cart) => ({
+          offer: cart.orderSummary.offer,
           vendorId: cart.vendor.id,
           vendorSlug: cart.vendor.slug,
           personCount: cart.orderSummary.personCount,
@@ -494,6 +500,20 @@ export function useCheckoutPage() {
       normalizedType,
     ],
   );
+
+  useEffect(() => {
+    if (!formState.date || !formState.time) return;
+    setCarts(current => {
+      let changed=false;
+      const next=current.map(cart=>{
+        const binding=cart.orderSummary.offer;
+        if(!binding || offerMatchesCheckout(binding,cart,{...formState,deliveryPostalCode:formState.deliveryPostalCode || binding.postalCode}))return cart;
+        changed=true;
+        return {...cart,orderSummary:restoreCatalogueSummary(cart.orderSummary)};
+      });
+      return changed?next:current;
+    });
+  },[formState.date,formState.time,formState.deliveryPostalCode,pricingRequestKey]);
 
   const hasItems = carts.some((cart) => cart.orderSummary.items.length > 0);
   const hasLivePricing = carts.length > 0 && carts.every((cart) => {
@@ -1028,7 +1048,8 @@ export function useCheckoutPage() {
         placedOrders,
       });
       clearCheckoutFormDraft(normalizedType);
-      clearAllStoredOrderSummaries();
+      if(new URLSearchParams(location.search).has("offerRequest")) carts.forEach(cart=>clearStoredOrderSummary(cart.vendor.slug));
+      else clearAllStoredOrderSummaries();
       const successVendorName = carts
         .map((cart) => cart.vendor?.name)
         .filter(Boolean)

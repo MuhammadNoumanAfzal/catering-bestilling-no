@@ -1,3 +1,5 @@
+import PageErrorBoundary from './components/shared/PageErrorBoundary.jsx';
+import { recoverModuleLoad } from './utils/moduleLoadRecovery.js';
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -11,30 +13,12 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <App />
+        <PageErrorBoundary><App /></PageErrorBoundary>
       </Provider>
     </BrowserRouter>
   </StrictMode>,
 );
 
-// Auto-recover from chunk load errors caused by new deployments
-window.addEventListener("error", (event) => {
-  const message = event.message || "";
-  if (
-    message.includes("Failed to fetch dynamically imported module") ||
-    message.includes("error loading dynamically imported module")
-  ) {
-    window.location.reload();
-  }
-}, true);
-
-window.addEventListener("unhandledrejection", (event) => {
-  const message = event.reason?.message || "";
-  if (
-    message.includes("Failed to fetch dynamically imported module") ||
-    message.includes("error loading dynamically imported module")
-  ) {
-    window.location.reload();
-  }
-});
-
+// Recover once per minute; repeated failures show a usable retry screen.
+window.addEventListener('error',event=>recoverModuleLoad(event.message||''),true);
+window.addEventListener('unhandledrejection',event=>recoverModuleLoad(event.reason));

@@ -1,3 +1,4 @@
+import OfferCheckoutNotice from '../../offers/OfferCheckoutNotice';
 import { Navigate } from "react-router-dom";
 import {
   AdditionalInfoSection,
@@ -70,7 +71,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="checkout-page min-h-screen bg-[#faf8f5]">
-      <CheckoutHeader />
+      <CheckoutHeader /><div className="mx-auto max-w-7xl px-4"><OfferCheckoutNotice carts={carts}/></div>
 
       <main className="mx-auto max-w-9xl px-4 py-4 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-[24px] border border-[#e8e1da] bg-white shadow-[0_16px_38px_rgba(55,34,19,0.05)]">

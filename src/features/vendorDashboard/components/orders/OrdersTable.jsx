@@ -1,3 +1,4 @@
+import OrderOfferBadge from '../../../offers/OrderOfferBadge';
 import { useEffect, useRef, useState } from "react";
 import { FiMoreHorizontal, FiStar } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
@@ -79,7 +80,7 @@ export default function OrdersTable({ orders, onOpenDetails, onViewChangeRequest
               <td className="rounded-l-2xl px-3 py-3 text-[#8d857d]">{index + 1}</td>
               <td className="px-3 py-3 font-semibold">
                 <div className="flex items-center gap-2">
-                  <span>{order.id}</span>
+                  <span>{order.id}</span><OrderOfferBadge orderId={order.rawId || order.orderId || order.id}/>
                   {order.isModified ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#fff2e9] px-2.5 py-1 text-[11px] font-semibold text-[#cf6e38]">
                       <FiStar className="fill-current text-[11px]" />

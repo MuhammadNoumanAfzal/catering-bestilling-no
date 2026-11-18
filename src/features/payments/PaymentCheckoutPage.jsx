@@ -1,3 +1,5 @@
+import { validateOfferPayment } from '../offers/offerPayment';
+import { useOfferText } from '../offers/offerText';
 import {useCallback,useEffect,useRef,useState} from "react";
 import {Link,useLocation,useNavigate,useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
@@ -9,22 +11,25 @@ import {PAYMENT_CHECKOUT_QUERY,normalizePaymentOrder,hostedSessionUrl,validDinte
 import {mountCheckout} from "./mountCheckout.js";
 const client=createDinteroClient(graphqlRequest);
 export default function PaymentCheckoutPage(){
- const {orderId}=useParams(),{isLoggedIn}=useAuth(),{t,i18n}=useTranslation();
+ const {orderId}=useParams(),{isLoggedIn,user}=useAuth(),{t,i18n}=useTranslation();
  const location=useLocation(),navigate=useNavigate();
  const [order,setOrder]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(false),[sessionId,setSessionId]=useState(null),[starting,setStarting]=useState(false),[revision,setRevision]=useState(0);
  const [sdkState,setSdkState]=useState("loading"); const container=useRef(null),startingRef=useRef(false);
+ const offerText=useOfferText();
+ const [offerBlocked,setOfferBlocked]=useState(false);
  const language=/^(no|nb)/i.test(i18n.resolvedLanguage||i18n.language)?"no":"en";
  const returnToOrder=useCallback(()=>navigate("/orders/"+encodeURIComponent(orderId)+"?payment=dintero",{replace:true}),[navigate,orderId]);
  useEffect(()=>{
   if(!isLoggedIn)return;let active=true;setLoading(true);setError(false);setOrder(null);setSessionId(null);
-  graphqlRequest({query:PAYMENT_CHECKOUT_QUERY,variables:{id:orderId}}).then(data=>{
+  graphqlRequest({query:PAYMENT_CHECKOUT_QUERY,variables:{id:orderId}}).then(async data=>{
    const value=normalizePaymentOrder(data?.clientOrder);
+   if(["pending","retry"].includes(paymentState(value)))await validateOfferPayment(orderId,user?.id);
    if(active){setOrder(value);if(["pending","retry"].includes(paymentState(value)))setSessionId(value.sessionId);}
-  }).catch(()=>{if(active)setError(true);}).finally(()=>{if(active)setLoading(false);});
+  }).catch(err=>{if(active){setError(true);setOfferBlocked(err?.code==="OFFER_PAYMENT_BLOCKED");}}).finally(()=>{if(active)setLoading(false);});
   return()=>{active=false;};
- },[orderId,isLoggedIn,revision]);
+ },[orderId,isLoggedIn,user?.id,revision]);
  useEffect(()=>{
-  if(!isLoggedIn || loading || error || !sessionId || !container.current)return;let active=true,cleanup;setSdkState("loading");
+  if(!isLoggedIn || loading || error || offerBlocked || !sessionId || !container.current)return;let active=true,cleanup;setSdkState("loading");
   const timeout=setTimeout(()=>{if(active)setSdkState("error");},20000);
   import("@dintero/checkout-web-sdk").then(({embed})=>{
    if(!active)return;
@@ -34,10 +39,17 @@ export default function PaymentCheckoutPage(){
    });
   }).catch(()=>{if(active){clearTimeout(timeout);setSdkState("error");}});
   return()=>{active=false;clearTimeout(timeout);cleanup?.();};
- },[sessionId,language,returnToOrder,isLoggedIn,loading,error]);
+ },[sessionId,language,returnToOrder,isLoggedIn,loading,error,offerBlocked]);
+ useEffect(()=>{
+  if(!isLoggedIn||!orderId||!order||!["pending","retry"].includes(paymentState(order)))return;let active=true;
+  const check=()=>validateOfferPayment(orderId,user?.id).then(()=>{if(active)setOfferBlocked(false);}).catch(()=>{if(active){setOfferBlocked(true);setSessionId(null);}});
+  void check();const timer=setInterval(check,5000);window.addEventListener('focus',check);
+  return()=>{active=false;clearInterval(timer);window.removeEventListener('focus',check);};
+ },[orderId,isLoggedIn,user?.id,order]);
  async function startPayment(){
   if(startingRef.current)return;startingRef.current=true;setStarting(true);setError(false);
   try{
+   await validateOfferPayment(orderId,user?.id);
    const current=await client.status(orderId);
    if(!["pending","retry"].includes(paymentState(current))){setRevision(value=>value+1);return;}
    const session=await client.session(orderId,window.location.origin);
@@ -55,7 +67,7 @@ export default function PaymentCheckoutPage(){
  <Link to="/" aria-label="Go Catering"><img src="/home/logo (2).png" alt="Go Catering" className="h-11 w-28 object-contain"/></Link>
  <span className="flex items-center gap-2 text-xs font-medium text-[#82786e]"><FiLock size={14}/>{t("checkoutPage.secure")}</span>
  </div></header>
- <main className="mx-auto max-w-[1080px] px-4 py-6 sm:px-8 sm:py-9">
+ <main className="mx-auto max-w-[1080px] px-4 py-6 sm:px-8 sm:py-9">{offerBlocked?<div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{offerText("This offer changed, expired or could not be verified. Payment has stopped. Return to My offers to review it.","Tilbudet er endret, utløpt eller kunne ikke verifiseres. Betalingen er stoppet. Gå til Mine tilbud for å se gjennom det.")} <Link to="/account/my-offers" className="underline">{offerText("My offers","Mine tilbud")}</Link></div>:null}
  <Link to={orderLink} className="mb-6 inline-flex items-center gap-2 text-xs font-medium text-[#8c7a69] hover:text-[#c96432]"><FiArrowLeft/>{t("checkoutPage.back")}</Link>
  <div className="mb-6"><p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#bb734e]">{t("checkoutPage.step")}</p><h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t("checkoutPage.title")}</h1><p className="mt-2 max-w-lg text-sm leading-6 text-[#8a7c6e]">{t("checkoutPage.subtitle")}</p></div>
  {!isLoggedIn ? <section className="rounded-2xl border border-[#e8e0d5] bg-white p-6"><p className="mb-4 text-sm">{t("checkoutPage.signInHint")}</p><Link to="/signin" state={{from:location}} className={buttonClass}>{t("checkoutPage.signIn")}</Link></section> :
@@ -68,7 +80,7 @@ export default function PaymentCheckoutPage(){
  {sessionId ? <>
  {sdkState==="loading" ? <p role="status" className="mb-3 text-xs text-[#988777]">{t("checkoutPage.opening")}</p>:null}
  <div ref={container} className="min-w-0 [&_iframe]:w-full"/>
- {sdkState==="error" ? <div role="alert" className="mt-3 rounded-xl bg-[#fff7f1] p-4"><p className="mb-3 text-xs leading-5 text-[#976443]">{t("checkoutPage.sdkError")}</p><a href={hostedSessionUrl(sessionId)} className={buttonClass}>{t("checkoutPage.hosted")}<FiArrowUpRight/></a><button type="button" disabled={starting} onClick={startPayment} className="mt-3 block text-xs font-semibold text-[#9b6d4e] underline underline-offset-4">{t("dintero.retryButton")}</button></div>:null}
+ {sdkState==="error" ? <div role="alert" className="mt-3 rounded-xl bg-[#fff7f1] p-4"><p className="mb-3 text-xs leading-5 text-[#976443]">{t("checkoutPage.sdkError")}</p><a href={hostedSessionUrl(sessionId)} className={buttonClass}>{t("checkoutPage.hosted")}<FiArrowUpRight/></a><button type="button" disabled={starting||offerBlocked} onClick={startPayment} className="mt-3 block text-xs font-semibold text-[#9b6d4e] underline underline-offset-4">{t("dintero.retryButton")}</button></div>:null}
  </> : <div className="py-4"><p className="mb-4 text-sm leading-6 text-[#8b7b6b]">{t("checkoutPage.startHint")}</p><button type="button" disabled={starting} onClick={startPayment} className={buttonClass}>{t(starting?"dintero.opening":"checkoutPage.start")}<FiArrowUpRight/></button></div>}
  </>}
  </div>

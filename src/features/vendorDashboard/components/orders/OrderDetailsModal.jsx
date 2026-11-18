@@ -1,3 +1,4 @@
+import OrderOfferBadge from '../../../offers/OrderOfferBadge';
 import CancellationPolicy from "../../../payments/CancellationPolicy.jsx";
 import { uniqueIncludedDishNames } from "../../orderItemDetails.js";
 import OrderPaymentSection from "../../../payments/OrderPaymentSection.jsx";
@@ -269,7 +270,7 @@ export default function OrderDetailsModal({
             <p className="mt-0.5 text-xs text-[#9a8b7d]">{order.invoiceId || order.id}</p>
           </header>
 
-          <OrderPaymentSection key={`payment-${order.rawId || order.orderId || order.id}`} orderId={order.rawId || order.orderId || order.id} />
+          <OrderOfferBadge orderId={order.rawId || order.orderId || order.id}/><OrderPaymentSection key={`payment-${order.rawId || order.orderId || order.id}`} orderId={order.rawId || order.orderId || order.id} />
           <CancellationPolicy />
           <OrderReviewSection key={order.rawId || order.orderId || order.id} orderId={order.rawId || order.orderId || order.id} vendorId={order.vendorId} autoOpen={autoOpenReview} />
           <div className="px-4 pt-3 sm:px-5">

@@ -41,6 +41,7 @@ function formatDateLabel(dateValue, locale, emptyLabel) {
 }
 
 export default function MenuDeliveryForm({
+  offerAction,
   minimumPersons = 1,
   vendor,
   isVendorAvailable = true,
@@ -458,6 +459,8 @@ export default function MenuDeliveryForm({
         >
           {t(isInCart ? "menu.inCart" : isAddingToCart ? "menu.addingToCart" : "menu.addToCart")}
         </button>
+        {offerAction}
+
       </div>
     </div>
   );

@@ -178,8 +178,9 @@ export function getVendorTotals(cart) {
       tipValue,
       discountAmount,
       serviceFee,
+      minimumOrderShortfall: parseBackendAmount(backendPricing.minimumOrderShortfall),
       grandTotal,
-      pricingMismatch: pricesIncludeVat && Math.abs(catalogueTotal - grandTotal) > 0.02,
+      pricingMismatch: cart.orderSummary.offer ? !(backendPricing.offerValidated?.requestId === cart.orderSummary.offer.requestId && backendPricing.offerValidated?.quoteRevision === cart.orderSummary.offer.quoteRevision) : pricesIncludeVat && Math.abs(catalogueTotal - grandTotal) > 0.02,
     };
   }
 

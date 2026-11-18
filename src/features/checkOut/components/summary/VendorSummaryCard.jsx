@@ -93,6 +93,7 @@ export default function VendorSummaryCard({
           tipValue={tipValue}
           discountAmount={discountAmount}
           serviceFee={serviceFee}
+          minimumOrderShortfall={cart.orderSummary.pricing?.minimumOrderShortfall}
         />
 
         <TipSelector

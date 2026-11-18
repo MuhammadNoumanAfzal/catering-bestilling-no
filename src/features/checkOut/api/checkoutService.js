@@ -1,3 +1,5 @@
+import { rememberOfferOrder } from '../../offers/offerPayment';
+import { assertOfferCheckout, fetchOfferCheckoutPreview } from '../../offers/offerCheckout';
 import {buildDinteroOrderInput} from "../../payments/dinteroClient.js";
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import i18n from "../../../i18n";
@@ -90,6 +92,7 @@ export async function fetchAvailableDeliverySlots({ vendorId, date }) {
 
 export async function fetchCheckoutPreview({ cart, checkoutType, formState }) {
   const payload = buildCheckoutPreviewPayload({ cart, checkoutType, formState });
+  if(cart.orderSummary.offer) return fetchOfferCheckoutPreview(cart,formState,payload);
   const response = await graphqlRequest({
     query: GET_CHECKOUT_PREVIEW_QUERY,
     variables: { input: payload },
@@ -105,7 +108,7 @@ export async function fetchCheckoutPreview({ cart, checkoutType, formState }) {
 
 async function placeSingleOrder({ cart, checkoutType, formState }) {
   const payload = buildPlaceOrderPayload({ cart, checkoutType, formState });
-  const variables = buildCreateOrderVariables(buildDinteroOrderInput(payload, window.location.origin));
+  const variables = buildCreateOrderVariables(buildDinteroOrderInput({...payload,...assertOfferCheckout(cart,formState)}, window.location.origin));
   const response = await graphqlRequest({
     query: PLACE_DINTERO_ORDER_MUTATION,
     variables,
@@ -119,6 +122,7 @@ async function placeSingleOrder({ cart, checkoutType, formState }) {
   }
 
   if (!result.orderId) throw new Error("The order service did not return an order ID.");
+  rememberOfferOrder(result.orderId,cart.orderSummary.offer,cart.orderSummary.offer?.customerId);
   let order = {id: result.orderId};
   // A read failure must never turn an already-created order into a placement retry.
   try {

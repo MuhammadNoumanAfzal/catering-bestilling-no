@@ -1,3 +1,4 @@
+import RequestOfferButton from '../../offers/RequestOfferButton';
 import { resolveReturnNavigation } from "../../../utils/returnNavigation.js";
 import {menuPath} from "../utils/menuRoutes.js";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -736,6 +737,15 @@ export default function MenuDetailsPage() {
                 item={{ pricingType: baseItemPricingType, personCount: standalonePersonCount, minimumGuests: minimumPersons, quantity: Number.parseInt(selectedQuantity, 10) || 1 }}
                 showGuests={false} onChange={changeStandaloneSelection} disabled={isAddingToCart} /></div>}
               <MenuDeliveryForm
+                offerAction={<RequestOfferButton vendor={vendor} menu={menuItem}
+                  summary={{...orderSummary,personCount:Number(selectedPersonCount)||minimumPersons}}
+                  eligible={baseItemPricingType !== "fixed" && isOrderableForSelection && !isLoadingSlots && !slotAccessState.requiresAuth && (Number.parseInt(selectedQuantity,10)||1)===1}
+                  items={[{productId:String(menuItem.id),quantity:1,
+                    selectedOptions:selectedRequired?{[menuItem.modal?.requiredSelection?.title||"Selection"]:selectedRequired}:{},
+                    selectedAddons:Object.entries(selectedOptional).filter(([,count])=>count>0).map(([key,quantity])=>{
+                      const option=addOnItems.find(entry=>`${entry.groupTitle}:${entry.label}`===key);
+                      return {productId:String(option?.productId || option?.id || ""),quantity};
+                    })}]} />}
                 isInCart={hasMainDishInCart}
                 isAddingToCart={isAddingToCart}
                 isVendorAvailable={isOrderableForSelection}

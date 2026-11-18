@@ -1,3 +1,4 @@
+import { useOfferText } from '../../../features/offers/offerText';
 import { Link, useLocation } from "react-router-dom";
 import {
   FiHelpCircle,
@@ -32,11 +33,12 @@ export default function CommonNavbarActions({
   menuItems,
 }) {
   const location = useLocation();
+  const offerText = useOfferText();
   const { t } = useTranslation();
 
   return (
     <div className="ml-auto shrink-0 lg:border-l lg:border-[#ebe4de] lg:pl-3" ref={actionMenuRef}>
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2"><Link to="/account/my-offers" className="rounded-lg px-2 py-2 text-xs font-semibold text-[#aa5e35]">{offerText("My offers","Mine tilbud")}</Link>
         <div className="relative" ref={notificationRef}>
           <button
             type="button"
