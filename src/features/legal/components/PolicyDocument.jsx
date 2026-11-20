@@ -83,17 +83,18 @@ function PolicyBlock({ block }) {
   }
   if (block.type === "table") {
     return (
-      <div className="overflow-hidden rounded-xl border border-[#e8e3dd]">
+      <div className="legal-table-frame overflow-hidden rounded-xl border border-[#e8e3dd]">
         <div
-          className="overflow-x-auto overscroll-x-contain focus-visible:outline-2 focus-visible:outline-[#c96432]"
+          className="legal-table-scroll overflow-x-auto overscroll-x-contain focus-visible:outline-2 focus-visible:outline-[#c96432]"
           tabIndex={0}
         >
-          <table className="w-full min-w-[420px] border-collapse text-left text-[13px] leading-6 sm:text-sm">
-            <thead className="bg-[#f5f3ef] text-[#44382d]">
-              <tr>
+          <table role="table" className="legal-data-table w-full border-collapse text-left text-[13px] leading-6 sm:text-sm">
+            <thead role="rowgroup" className="bg-[#f5f3ef] text-[#44382d]">
+              <tr role="row">
                 {block.headers.map((header, index) => (
                   <th
                     key={index}
+                    role="columnheader"
                     scope="col"
                     className="px-4 py-3.5 align-top font-semibold sm:px-5"
                   >
@@ -102,7 +103,7 @@ function PolicyBlock({ block }) {
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup">
               {block.rows.map((row, index) => (
                 <tr
                   key={index}
@@ -118,7 +119,8 @@ function PolicyBlock({ block }) {
                           : "text-[#73675b]")
                       }
                     >
-                      <PolicyText>{cell}</PolicyText>
+                      <span className="legal-cell-label" aria-hidden="true">{block.headers[cellIndex]}</span>
+                      <span className="legal-cell-value"><PolicyText>{cell}</PolicyText></span>
                     </td>
                   ))}
                 </tr>
