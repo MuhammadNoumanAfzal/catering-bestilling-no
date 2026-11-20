@@ -1,4 +1,4 @@
-import { standaloneProductFields } from "../../menu/utils/addOnTypes.js";
+import { standaloneProductFields, orderableProductFilter } from "../../menu/utils/addOnTypes.js";
 
 export const FETCH_VENDORS_QUERY = `
   query FetchVendors {
@@ -325,3 +325,45 @@ export const REMOVE_SAVED_VENDOR_MUTATION = `
     }
   }
 `;
+
+export const FETCH_VENDOR_CATALOGUE_QUERY = `
+ query VendorCatalogue($vendor: String!, $after: String) {
+ products(vendor:$vendor, after:$after, first:100, ${orderableProductFilter}) {
+ pageInfo { hasNextPage endCursor }
+ edges { node {
+          id
+          slug
+          name
+          menuStatus
+          productType
+          ${standaloneProductFields}
+          description
+          priceWithTax
+          averageRating
+          ordersCount
+          badge
+          isPopular
+          isFeatured
+          categoryTags
+          contains
+          dietaryTags {
+            id
+            name
+            slug
+          }
+          allergens
+          minLeadTimeDays
+          minLeadTimeHours
+          minimumGuests
+          pricingType
+          isAvailabilityWindowEnabled
+          availableFrom
+          availableUntil
+          coverImage {
+            id
+            fileUrl
+          }
+
+} }
+}
+}`;

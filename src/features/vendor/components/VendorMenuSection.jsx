@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 export default function VendorMenuSection({ section, onItemClick }) {
   const { t } = useTranslation();
   const sectionDescription =
-    section.description || section.items[0]?.description || "";
+    section.description || "";
 
   return (
     <section className="scroll-mt-36 rounded-[20px] border border-[#efe4da] bg-[#fffdfa] p-4 sm:p-5">

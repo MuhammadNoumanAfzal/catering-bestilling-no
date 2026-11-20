@@ -1,7 +1,9 @@
+import { readVendorCatalogue, mergeVendorCatalogue } from './vendorCatalogue.js';
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 import { getStoredAccessToken } from "../../../lib/auth/authSession";
 import { adaptApiVendorReview, adaptApiVendorToProfile } from "./vendorMappers";
 import {
+  FETCH_VENDOR_CATALOGUE_QUERY,
   FETCH_SAVED_VENDORS_QUERY,
   FETCH_VENDOR_BY_SLUG_QUERY,
   FETCH_VENDOR_REVIEWS_QUERY,
@@ -88,33 +90,19 @@ export async function fetchVendorProfiles() {
 }
 
 export async function fetchVendorProfileBySlug(vendorSlug) {
-  try {
-    const response = await graphqlRequest({
-      query: FETCH_VENDOR_BY_SLUG_QUERY,
-      variables: { slug: vendorSlug, includeReviewPermissions: Boolean(getStoredAccessToken()) },
-    });
-    const matchedVendor = await hydrateVendorRatingFromReviews(
-      adaptApiVendorToProfile(response.vendor),
-      vendorSlug,
-    );
-
-    if (!matchedVendor?.id) {
-      throw new Error("Vendor profile not found in API.");
-    }
-
-    return matchedVendor;
-  } catch {
-    const vendorProfiles = await fetchVendorProfiles();
-    const matchedVendor = vendorProfiles.find(
-      (vendor) => slugify(vendor.slug || vendor.name) === vendorSlug,
-    );
-
-    if (!matchedVendor) {
-      throw new Error("Vendor profile not found in API.");
-    }
-
-    return matchedVendor;
-  }
+ let apiVendor;
+ try {
+  const response=await graphqlRequest({query:FETCH_VENDOR_BY_SLUG_QUERY,variables:{slug:vendorSlug,includeReviewPermissions:Boolean(getStoredAccessToken())}});
+  apiVendor=response.vendor;
+ } catch {
+  apiVendor=(await fetchVendors()).find(v=>slugify(v.slug||v.name)===vendorSlug);
+ }
+ if(!apiVendor?.id)throw new Error('Vendor profile not found in API.');
+ const products=await readVendorCatalogue(async after=>{
+  const response=await graphqlRequest({query:FETCH_VENDOR_CATALOGUE_QUERY,variables:{vendor:String(apiVendor.id),after},publicRequest:true});
+  return response.products;
+ });
+ return hydrateVendorRatingFromReviews(adaptApiVendorToProfile(mergeVendorCatalogue(apiVendor,products)),vendorSlug);
 }
 
 export async function fetchVendorReviews(vendorSlug, { first = 10, after = null } = {}) {
