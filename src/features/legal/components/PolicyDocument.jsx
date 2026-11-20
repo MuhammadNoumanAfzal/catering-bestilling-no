@@ -63,6 +63,7 @@ function PolicyText({ children }) {
 }
 
 function PolicyBlock({ block }) {
+  if (block.type === "heading") return <h3 className="mt-6 text-base font-semibold text-[#302923]">{block.text}</h3>;
   if (block.type === "list") {
     return (
       <ul className="space-y-3">
@@ -129,7 +130,7 @@ function PolicyBlock({ block }) {
     );
   }
   return (
-    <p>
+    <p className="whitespace-pre-line">
       <PolicyText>{block.text}</PolicyText>
     </p>
   );

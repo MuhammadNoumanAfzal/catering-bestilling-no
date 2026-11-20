@@ -1,152 +1,446 @@
 {
   "en": {
     "terms": {
-      "title": "Terms & Conditions",
-      "updated": "GoCatering.no · Go Catering AS · Last updated: 11 November 2026",
+      "title": "Terms and Conditions – GoCatering.no",
+      "updated": "Go Catering AS · Last updated: 11 November 2026",
       "sections": [
         {
           "id": "section-1",
-          "title": "1. About these terms",
+          "title": "1. About These Terms",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "These terms apply when you use the GoCatering platform (gocatering.no) to browse catering vendors, place orders and pay. The platform is operated by Go Catering AS, organisation no. 938291632, Pilestredet 75C, 0354 OSLO, Norway. Contact details are at the end of these terms."
+              "text": "These Terms and Conditions apply to all orders placed through GoCatering.no, a digital marketplace for catering and related services."
             },
             {
               "type": "paragraph",
-              "text": "By placing an order, you accept these terms. If you do not accept them, please do not place an order."
+              "text": "The platform is owned and operated by:"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS\nCompany registration number: 938 291 632\nAddress: Pilestredet 75C, 0354 Oslo, Norway\nEmail: support@gocatering.no\nPhone: +47 41 28 07 24"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS is the seller of record and your legal contracting party for all purchases made through the platform."
+            },
+            {
+              "type": "paragraph",
+              "text": "Before completing an order, you must actively confirm that you have read and accepted these Terms and Conditions."
+            },
+            {
+              "type": "paragraph",
+              "text": "These Terms apply to both individual consumers and business customers. Consumers retain all mandatory rights provided under Norwegian consumer protection legislation."
             }
           ]
         },
         {
           "id": "section-2",
-          "title": "2. Who does what",
+          "title": "2. Contractual Relationship and Responsibilities",
           "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS is the seller of record and your contractual counterparty for all orders placed through GoCatering.no."
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no operates as a marketplace where customers can discover, compare and order catering services from various independent catering suppliers."
+            },
+            {
+              "type": "paragraph",
+              "text": "The suppliers are independent catering businesses that prepare, package and deliver food on behalf of Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "When you place an order:"
+            },
             {
               "type": "list",
               "items": [
-                "Vendors are independent catering businesses listed on GoCatering.no. They prepare, package and deliver (or make available for collection) the food and related services they sell. The vendor is the seller of the food.",
-                "Go Catering AS operates the platform, receives and sends your order, collects payment on the vendor’s behalf, sends you confirmations, and handles your complaints and refunds. Go Catering AS is your first point of contact for any problem with your order, payment or refund."
+                "You enter into a purchase agreement with Go Catering AS.",
+                "You pay for your order through the payment solution provided on the platform.",
+                "The selected catering supplier prepares and delivers the order on behalf of Go Catering AS.",
+                "Go Catering AS remains responsible to you for the order, including delivery, complaints, cancellations and refunds."
               ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS is your primary point of contact for any questions or issues relating to orders, payments, deliveries or refunds."
+            },
+            {
+              "type": "paragraph",
+              "text": "Any agreements between Go Catering AS and its catering suppliers do not affect your rights as a customer."
             }
           ]
         },
         {
           "id": "section-3",
-          "title": "3. Creating an account and giving information",
+          "title": "3. Accounts and Customer Information",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "You may use the platform to browse menus, compare vendors, place orders and manage your account. When you place an order, you must give correct contact details, a delivery address or collection point, the date and time you want, and any allergy or dietary information."
+              "text": "You may use GoCatering.no to browse menus, compare suppliers, place orders and manage your purchases."
             },
             {
               "type": "paragraph",
-              "text": "You are responsible for keeping your login details confidential and for all activity on your account. We may suspend or restrict access if the platform is used for fraud, abuse or unlawful activity."
+              "text": "When placing an order, you must provide accurate and complete information, including:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Name and contact information.",
+                "Delivery address or collection location.",
+                "Requested delivery or collection date and time.",
+                "Any allergies, dietary requirements or special instructions.",
+                "Business information if the order is placed on behalf of a company."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "You are responsible for ensuring that the information you provide is accurate."
+            },
+            {
+              "type": "paragraph",
+              "text": "If you create an account, you are responsible for maintaining the confidentiality of your login credentials."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS may restrict or suspend accounts in cases of suspected fraud, misuse or unlawful activity."
             }
           ]
         },
         {
           "id": "section-4",
-          "title": "4. Orders and availability",
+          "title": "4. Orders and Availability",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Menus, prices, lead times and delivery areas vary by vendor, location and date. A vendor must accept your order before it is confirmed. A vendor may only decline an order for a valid reason, such as it cannot deliver on time or lacks the products you ordered. If the vendor cannot fulfil your order, we will tell you as soon as possible and help you find an alternative or refund you in full."
+              "text": "Menus, prices, availability, delivery times and delivery areas may vary between catering suppliers."
             },
             {
               "type": "paragraph",
-              "text": "Scheduled orders can be changed as described in your order confirmation. Changes are confirmed only when the vendor accepts them."
+              "text": "When you place an order, you will receive confirmation that your order has been registered."
+            },
+            {
+              "type": "paragraph",
+              "text": "An order becomes finally confirmed once the relevant catering supplier has accepted the assignment on behalf of Go Catering AS and Go Catering AS has confirmed the order to you."
+            },
+            {
+              "type": "paragraph",
+              "text": "If an order cannot be fulfilled, Go Catering AS will notify you as soon as reasonably possible and offer a suitable alternative or a full refund of any amount already paid."
+            },
+            {
+              "type": "paragraph",
+              "text": "Changes to confirmed orders may be requested through the platform or by contacting Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "Any requested changes become effective only once confirmed by Go Catering AS."
             }
           ]
         },
         {
           "id": "section-5",
-          "title": "5. Prices and payment",
+          "title": "5. Prices and Payments",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Prices shown on GoCatering.no include VAT. Any delivery fee, service fee or minimum order amount is shown before you place the order. You pay through the portal using the payment methods offered at checkout."
+              "text": "All prices displayed on GoCatering.no are stated in Norwegian kroner (NOK) and include value-added tax (VAT) where applicable."
             },
             {
               "type": "paragraph",
-              "text": "Payment is taken 24 hours after the scheduled delivery time, unless the order is cancelled earlier. The vendor is paid after this period, once any complaint has been settled."
+              "text": "Any delivery charges, service fees, minimum order amounts or other additional costs will be clearly displayed before the order is completed."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS is the seller of record and the customer's contractual counterparty for all orders placed through the platform."
+            },
+            {
+              "type": "heading",
+              "text": "5.1 Available Payment Methods"
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no offers the following payment methods:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Card payments: Visa and Mastercard.",
+                "Mobile payments: Vipps.",
+                "Business payments (B2B): Two, Kravia and Billie, including invoicing and any other payment options offered through these providers."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Available payment methods are displayed at checkout and may vary depending on customer type, credit approval and the applicable payment provider's terms."
+            },
+            {
+              "type": "heading",
+              "text": "5.2 Payment Timing"
+            },
+            {
+              "type": "paragraph",
+              "text": "No payment is taken when you place an order."
+            },
+            {
+              "type": "paragraph",
+              "text": "Card payments (Visa and Mastercard): When you place the order, you confirm your card in the payment solution provided by Dintero, and the card is saved securely by Dintero. Go Catering AS does not store your card details. By placing the order, you agree that we may use the saved card to reserve the order amount before delivery, no earlier than 7 days before the scheduled delivery (normally 5 days before). If you place the order less than 5 days before delivery, the amount is reserved when you place the order."
+            },
+            {
+              "type": "paragraph",
+              "text": "Vipps: Vipps cannot be saved for later payment. You will receive a payment link before delivery and must complete the payment by the deadline stated in the link. If you place the order less than 5 days before delivery, you pay when you place the order."
+            },
+            {
+              "type": "paragraph",
+              "text": "If the reservation fails: If the amount cannot be reserved (for example because the card has expired or there are insufficient funds), we will notify you and send you a payment link. If no valid payment is in place 72 hours before the scheduled delivery, we may cancel the order at no cost to you."
+            },
+            {
+              "type": "paragraph",
+              "text": "The amount is charged 24 hours after the scheduled delivery time."
+            },
+            {
+              "type": "paragraph",
+              "text": "If an order is cancelled before payment has been captured, any applicable charge will be handled in accordance with the cancellation terms set out in Section 6."
+            },
+            {
+              "type": "paragraph",
+              "text": "For business payments through Two, Kravia or Billie, the order is approved by the payment provider when you place it, and the invoice is sent to you after delivery. The applicable payment deadlines and conditions will be presented at checkout and in the payment agreement with the relevant provider."
+            },
+            {
+              "type": "paragraph",
+              "text": "Invoice and credit-based payment options are subject to approval by the relevant payment provider."
+            },
+            {
+              "type": "heading",
+              "text": "5.3 Payment Processing and Refunds"
+            },
+            {
+              "type": "paragraph",
+              "text": "Payments are processed through Dintero's payment solution and its relevant payment partners."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS is the seller of record and remains responsible to the customer for orders, deliveries, complaints, cancellations and refunds, regardless of the selected payment method."
+            },
+            {
+              "type": "paragraph",
+              "text": "When invoice or financing solutions are used, the payment claim may be administered by or assigned to the relevant payment provider in accordance with the terms disclosed at the time of purchase."
+            },
+            {
+              "type": "paragraph",
+              "text": "This does not change Go Catering AS's role as the seller of the catering services or its responsibility for fulfilling the order."
+            },
+            {
+              "type": "paragraph",
+              "text": "Any refunds will be issued to the original payment method or processed through the relevant payment provider's established refund procedures."
+            },
+            {
+              "type": "paragraph",
+              "text": "Financial settlements between Go Catering AS and its catering suppliers are handled separately and do not affect customer rights."
             }
           ]
         },
         {
           "id": "section-6",
-          "title": "6. Cancellations",
+          "title": "6. Cancellations and Refunds",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "You may cancel a scheduled order in your account or by contacting us. The refund depends on how close to the delivery time the cancellation is made:"
+              "text": "You may cancel a scheduled order through your account or by contacting Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "The following conditions apply to standard cancellations initiated by the customer:"
             },
             {
               "type": "table",
               "headers": [
-                "When you cancel before the scheduled time",
+                "Time Before Scheduled Delivery",
                 "Refund"
               ],
               "rows": [
                 [
-                  "More than 72 hours before",
+                  "More than 72 hours",
                   "100%"
                 ],
                 [
-                  "72 to 24 hours before",
+                  "From 72 hours to more than 24 hours",
                   "50%"
                 ],
                 [
-                  "Less than 24 hours before, or no-show",
+                  "24 hours or less",
+                  "No refund"
+                ],
+                [
+                  "Failure to receive or collect the order",
                   "No refund"
                 ]
               ]
             },
             {
               "type": "paragraph",
-              "text": "Orders made to your specific requirements, or containing perishable food ordered in advance, may be subject to a higher charge where the vendor has documented its costs. The amounts shown at checkout are the ones that apply."
+              "text": "Special cancellation conditions may apply to customised orders or perishable products, provided that such conditions are clearly disclosed and accepted before purchase and comply with applicable law."
             },
             {
               "type": "paragraph",
-              "text": "If the vendor cancels your order, you receive a full refund, and we will help you find an alternative where possible."
+              "text": "If Go Catering AS is unable to fulfil a confirmed order, the customer is entitled to a full refund of any amount paid for that order."
+            },
+            {
+              "type": "paragraph",
+              "text": "Where possible, Go Catering AS will attempt to offer an alternative solution."
+            },
+            {
+              "type": "paragraph",
+              "text": "If payment has not yet been captured, any payment authorisation or scheduled charge will be cancelled or adjusted in accordance with the applicable cancellation conditions."
+            },
+            {
+              "type": "paragraph",
+              "text": "Refunds will be issued to the original payment method or processed through the relevant payment provider's refund procedures."
+            },
+            {
+              "type": "paragraph",
+              "text": "These cancellation terms do not limit any statutory customer rights relating to defective products, delayed deliveries or other breaches of contract."
             }
           ]
         },
         {
           "id": "section-7",
-          "title": "7. Delivery, food quality and allergies",
+          "title": "7. Delivery, Food Quality and Allergens",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "The vendor is responsible for the quality, safety, hygiene and labelling of the food, and for delivering it on time, as set out in its menu and your order. Allergen information is provided by the vendor on each product. If you have a serious allergy, please contact the vendor before ordering. Do not rely only on a general statement."
+              "text": "Go Catering AS is responsible to the customer for ensuring that orders are delivered at the agreed time and in accordance with the description and conditions provided at the time of purchase."
+            },
+            {
+              "type": "paragraph",
+              "text": "The relevant catering supplier prepares, packages and delivers the food on behalf of Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "Suppliers are responsible for complying with applicable requirements relating to food hygiene, food safety, storage and labelling when performing their services."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS remains the customer's contractual counterparty and handles any delivery issues, complaints or claims relating to the order."
+            },
+            {
+              "type": "paragraph",
+              "text": "Information about ingredients and allergens is provided for the relevant products based on information supplied by the catering providers."
+            },
+            {
+              "type": "paragraph",
+              "text": "Customers with severe allergies or specific dietary requirements are encouraged to disclose these when placing an order and contact Go Catering AS if further clarification is required."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS will obtain additional information from the relevant supplier when necessary."
             }
           ]
         },
         {
           "id": "section-8",
-          "title": "8. Problems, complaints and refunds",
+          "title": "8. Complaints, Claims and Refunds",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "If something is wrong with your order (for example missing, damaged or wrong products, late delivery, or a food safety concern), please report it to Go Catering AS through the platform within 24 hours of delivery. Please include your order number and, where possible, photos."
+              "text": "If there is a problem with an order, the customer should contact Go Catering AS as soon as reasonably possible."
             },
             {
               "type": "paragraph",
-              "text": "Go Catering AS will handle your complaint. We will contact the vendor, decide on a solution in good faith and tell you what happens next. Possible solutions include a refund, a credit, or a replacement. Refunds are paid back to the original payment method."
+              "text": "This may include:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Missing or incorrect products.",
+                "Delayed or failed deliveries.",
+                "Damaged or defective food.",
+                "Incorrect allergen information.",
+                "Other discrepancies between the confirmed order and the delivered products or services."
+              ]
             },
             {
               "type": "paragraph",
-              "text": "If you have a food safety concern, please also contact the vendor directly, and if you are ill, seek medical advice. Serious food safety incidents can also be reported to the Norwegian Food Safety Authority (Mattilsynet)."
+              "text": "We recommend reporting any issues within 24 hours of delivery so that the matter can be investigated and resolved promptly."
+            },
+            {
+              "type": "paragraph",
+              "text": "This recommendation does not constitute an absolute deadline for submitting complaints. Customers retain their statutory rights to make claims regardless of the 24-hour recommendation."
+            },
+            {
+              "type": "paragraph",
+              "text": "When submitting a complaint, customers should provide their order number, describe the issue and, where possible, include photographs or other relevant documentation."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS is responsible for handling complaints and determining an appropriate resolution in accordance with applicable law."
+            },
+            {
+              "type": "paragraph",
+              "text": "Depending on the circumstances, available remedies may include:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Replacement or correction.",
+                "Price reduction.",
+                "Partial or full refund.",
+                "Other remedies available under applicable legislation."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Refunds will be issued to the original payment method or processed through the relevant payment provider's refund procedures."
+            },
+            {
+              "type": "paragraph",
+              "text": "Any discussions or arrangements between Go Catering AS and its catering suppliers are handled internally and do not affect customer rights."
+            },
+            {
+              "type": "paragraph",
+              "text": "If a serious food safety issue is suspected, customers should contact Go Catering AS immediately. Such incidents may also be reported to the Norwegian Food Safety Authority (Mattilsynet)."
             }
           ]
         },
         {
           "id": "section-9",
-          "title": "9. Your statutory rights",
+          "title": "9. Right of Withdrawal and Statutory Rights",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Nothing in these terms limits your rights under Norwegian consumer law, including the Consumer Purchase Act (forbrukerkjøpsloven) and the Marketing Control Act (markedsføringsloven). Under the Cancellation Act (angrerettloven), the right of withdrawal generally does not apply to perishable food or catering services for a specific date. This does not affect your rights if products are defective, or delivered late or not as described."
+              "text": "Under Norwegian law, consumers generally have a statutory right of withdrawal when purchasing goods or services online."
+            },
+            {
+              "type": "paragraph",
+              "text": "However, certain statutory exceptions may apply to catering orders."
+            },
+            {
+              "type": "paragraph",
+              "text": "The right of withdrawal generally does not apply to:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Goods that are liable to deteriorate or expire rapidly, pursuant to Section 22(b) of the Norwegian Right of Withdrawal Act (angrerettloven).",
+                "Catering services provided on a specific date or within a specified period, pursuant to Section 22(m) of the Norwegian Right of Withdrawal Act."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Whether an exception applies depends on the specific order and applicable legislation."
+            },
+            {
+              "type": "paragraph",
+              "text": "Where the right of withdrawal does not apply, customers will be informed before completing their purchase."
+            },
+            {
+              "type": "paragraph",
+              "text": "Exceptions to the right of withdrawal do not affect statutory rights relating to defective products, delayed deliveries or other breaches of contract."
+            },
+            {
+              "type": "paragraph",
+              "text": "Nothing in these Terms and Conditions limits mandatory rights under Norwegian consumer protection legislation."
             }
           ]
         },
@@ -156,47 +450,147 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "To the extent permitted by law, Go Catering AS is not liable for indirect loss such as lost profit or lost event value. This does not apply to loss caused by gross negligence or intent, or to any liability that cannot be excluded under Norwegian law, including liability to consumers."
+              "text": "Go Catering AS is responsible to the customer for fulfilling the purchase agreement entered into through GoCatering.no."
+            },
+            {
+              "type": "paragraph",
+              "text": "This includes the proper handling of orders, payments, deliveries, complaints and refunds."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS engages independent catering suppliers to prepare and deliver food, but this does not limit its contractual responsibility towards the customer."
+            },
+            {
+              "type": "paragraph",
+              "text": "To the extent permitted by Norwegian law, Go Catering AS shall not be liable for indirect losses that could not reasonably have been foreseen at the time the agreement was entered into."
+            },
+            {
+              "type": "paragraph",
+              "text": "This limitation does not apply in cases of wilful misconduct, gross negligence or where liability cannot be excluded or limited under mandatory applicable law."
             }
           ]
         },
         {
           "id": "section-11",
-          "title": "11. Personal data",
+          "title": "11. Privacy and Processing of Personal Data",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "We process personal data as described in our privacy policy (https://gocatering.no/privacy-policy). Your order details are shared with the vendor only as needed to deliver your order. We do not use your data for marketing unless you have agreed to it."
+              "text": "Go Catering AS acts as the data controller for personal data processed in connection with the operation of GoCatering.no and the fulfilment of orders, to the extent that the company determines the purposes and means of such processing."
+            },
+            {
+              "type": "paragraph",
+              "text": "We process personal data including names, contact details, delivery information, order history and payment-related information."
+            },
+            {
+              "type": "paragraph",
+              "text": "Personal data is processed for purposes including managing orders, fulfilling contractual obligations, providing customer support, complying with legal obligations and pursuing other lawful purposes."
+            },
+            {
+              "type": "paragraph",
+              "text": "Processing is based on applicable legal grounds under Article 6 of the General Data Protection Regulation (GDPR), including contractual necessity, legal obligations, legitimate interests and consent where required."
+            },
+            {
+              "type": "paragraph",
+              "text": "Personal data may be shared with catering suppliers and relevant service providers to the extent necessary to process and fulfil orders and provide the services."
+            },
+            {
+              "type": "paragraph",
+              "text": "Personal data is retained only for as long as necessary for the purposes for which it was collected, unless a longer retention period is required by law."
+            },
+            {
+              "type": "paragraph",
+              "text": "Subject to applicable data protection legislation, you may have the right to access, rectify or erase your personal data, restrict processing, request data portability and object to certain processing activities."
+            },
+            {
+              "type": "paragraph",
+              "text": "You also have the right to lodge a complaint with the Norwegian Data Protection Authority (Datatilsynet) if you believe your personal data has been processed unlawfully."
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no may use cookies and similar technologies. Essential cookies are used to ensure the functionality of the platform. Other cookies are used only where a valid legal basis exists, including consent where required."
+            },
+            {
+              "type": "paragraph",
+              "text": "Further information about processing purposes, legal bases, retention periods, recipients, cookies and your privacy rights is available in our Privacy Policy:"
+            },
+            {
+              "type": "paragraph",
+              "text": "https://gocatering.no/privacy-policy"
+            },
+            {
+              "type": "paragraph",
+              "text": "For privacy-related questions, please contact support@gocatering.no."
             }
           ]
         },
         {
           "id": "section-12",
-          "title": "12. Changes to these terms",
+          "title": "12. Changes to These Terms",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "We may update these terms. We will publish the new version on the platform and, where the change affects existing orders or accounts, tell you in advance. Changes do not affect orders you have already placed."
+              "text": "Go Catering AS may update these Terms and Conditions when necessary."
+            },
+            {
+              "type": "paragraph",
+              "text": "Updated Terms will be published on GoCatering.no together with the date of the latest revision."
+            },
+            {
+              "type": "paragraph",
+              "text": "As a general rule, the Terms in effect when an order was placed will apply to that order."
+            },
+            {
+              "type": "paragraph",
+              "text": "Changes will not affect existing agreements without a valid legal basis."
             }
           ]
         },
         {
           "id": "section-13",
-          "title": "13. Governing law and disputes",
+          "title": "13. Governing Law and Dispute Resolution",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "These terms are governed by Norwegian law. If you have a dispute, please contact us first so we can try to resolve it. You may also contact the Consumer Authority (Forbrukertilsynet) or the Consumer Council (Forbrukerrådet) for guidance. Disputes that cannot be resolved may be brought before the Oslo District Court (Oslo tingrett), unless mandatory consumer law gives you a different venue."
+              "text": "These Terms and Conditions are governed by Norwegian law."
+            },
+            {
+              "type": "paragraph",
+              "text": "In the event of a dispute between a customer and Go Catering AS, customers are encouraged to contact the company first so that the matter can be resolved amicably."
+            },
+            {
+              "type": "paragraph",
+              "text": "If the parties cannot reach an agreement, consumers may contact the Norwegian Consumer Council (Forbrukerrådet) or other relevant public consumer complaint and mediation bodies for guidance and assistance."
+            },
+            {
+              "type": "paragraph",
+              "text": "Disputes may be brought before a competent Norwegian court in accordance with applicable jurisdiction and venue rules."
+            },
+            {
+              "type": "paragraph",
+              "text": "Nothing in these Terms limits consumers' rights under mandatory applicable legislation."
             }
           ]
         },
         {
           "id": "section-14",
-          "title": "14. Contact",
+          "title": "14. Contact Information",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Go Catering AS Email: support@gocatering.no"
+              "text": "For questions regarding orders, payments, deliveries, complaints, cancellations or refunds, please contact:"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS"
+            },
+            {
+              "type": "paragraph",
+              "text": "Company registration number: 938 291 632\nPostal address: Pilestredet 75C, 0354 Oslo, Norway\nPhone: +47 41 28 07 24\nEmail: support@gocatering.no\nWebsite: https://gocatering.no"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS is the responsible contractual party and primary point of contact for all purchases made through GoCatering.no."
             }
           ]
         }
@@ -204,7 +598,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
-      "updated": "GoCatering.no · Go Catering AS · Last updated: 11 November 2026",
+      "updated": "GoCatering.no · Go Catering AS · Last updated: 19 November 2026",
       "sections": [
         {
           "id": "section-1",
@@ -216,20 +610,20 @@
             },
             {
               "type": "paragraph",
-              "text": "The vendors on the platform are independent catering businesses. When you place an order, the vendor receives the information it needs to deliver your order, and the vendor is itself a data controller for its own use of that information (see section 5)."
+              "text": "The vendors on the platform are independent catering businesses that prepare and deliver orders on behalf of Go Catering AS. When you place an order, the vendor receives the information it needs to deliver your order, and the vendor is itself a data controller for its own use of that information (see section 5)."
             }
           ]
         },
         {
           "id": "section-2",
-          "title": "2. Personal data we process",
+          "title": "2. What personal data we process",
           "blocks": [
             {
               "type": "list",
               "items": [
                 "Account data: name, email address, phone number and login details. For business customers, also company name and invoicing details.",
                 "Order data: what you order, delivery address or collection point, the date and time you want, notes and instructions for the vendor, and any allergy or dietary information you provide.",
-                "Payment data: amount, payment method, payment status, refunds and invoicing details. Your card details are handled by the payment provider and are not stored by us.",
+                "Payment data: amount, payment method, payment status, refunds and invoicing details. If you pay by card, your card is saved by our payment provider Dintero when you book, so that the amount can be reserved before delivery and charged after delivery. We do not store your card number. We only keep a reference (token) from Dintero and, where provided, the card type and the last four digits.",
                 "Enquiries and complaints: messages to us, order numbers, photos you send, and how the matter was resolved.",
                 "Ratings and reviews you write about vendors.",
                 "Technical data: IP address, device and browser information, and log data from your use of the platform."
@@ -239,7 +633,7 @@
         },
         {
           "id": "section-3",
-          "title": "3. Purposes and legal bases",
+          "title": "3. Why we use your data",
           "blocks": [
             {
               "type": "table",
@@ -251,7 +645,7 @@
               "rows": [
                 [
                   "Providing the service",
-                  "Creating and managing your account, sending your order to the vendor, sending confirmations and reminders, processing payment and refunds",
+                  "Creating and managing your account, sending your order to the vendor, sending confirmations and reminders, saving your card with our payment provider, reserving and charging payment, sending payment links and processing refunds",
                   "Contract with you (Art. 6(1)(b))"
                 ],
                 [
@@ -268,6 +662,11 @@
                   "Accounting and legal requirements",
                   "Bookkeeping, tax and other legal obligations",
                   "Legal obligation (Art. 6(1)(c))"
+                ],
+                [
+                  "Unpaid amounts",
+                  "Sending reminders and invoices for unpaid amounts and, if necessary, passing the claim to debt collection",
+                  "Contract (Art. 6(1)(b)) and legitimate interest in recovering our claims (Art. 6(1)(f))"
                 ],
                 [
                   "Ratings and reviews",
@@ -295,11 +694,11 @@
         },
         {
           "id": "section-4",
-          "title": "4. Allergies and diet",
+          "title": "4. Allergy and dietary information",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Information about allergies and diet can reveal something about your health and is treated as particularly sensitive. Providing it is voluntary. When you enter such information in an order, you consent to us using it and sharing it with the vendor, only so that your order can be prepared and delivered correctly and safely. We keep it no longer than necessary to complete the order and handle any complaints."
+              "text": "Information about allergies and diet can reveal something about your health and is treated as particularly sensitive. Providing it is voluntary. When you enter such information in an order and tick the consent box, you give your explicit consent to us using it and sharing it with the vendor, only so that your order can be prepared and delivered correctly and safely. We delete it no later than 3 months after delivery, unless it is needed for an ongoing complaint or food safety case."
             },
             {
               "type": "paragraph",
@@ -309,13 +708,14 @@
         },
         {
           "id": "section-5",
-          "title": "5. Who we share data with",
+          "title": "5. Who we share your data with",
           "blocks": [
             {
               "type": "list",
               "items": [
                 "The vendor you order from. The vendor receives your name, contact details, delivery address, instructions, the order and any allergy or dietary information, only what is needed to deliver your order. The vendor is an independent data controller for its own use of this data. Vendors are required to use it only to fulfil the order, handle complaints and meet legal obligations, and not for their own marketing or resale.",
-                "Payment providers. Dintero is the payment solution on the platform. In addition, the provider of the payment method you choose (for example Vipps, Klarna, Apple Pay, Google Pay or, for business customers, Two) processes data to complete the payment. They have their own terms and privacy policies, and for invoice or instalment purchases they may carry out their own assessments, such as credit checks, as independent controllers.",
+                "Payment providers. Dintero is the payment solution on the platform and stores your card if you pay by card. In addition, the provider of the payment method you choose (for example Vipps, your card issuer or, for business customers, Two, Billie or Kravia) processes data to complete the payment. They have their own terms and privacy policies, and for invoice or instalment purchases they may carry out their own assessments, such as credit checks, as independent controllers.",
+                "Debt collection. If an amount remains unpaid, we may pass the claim to a debt collection agency, which processes your data under the Norwegian Debt Collection Act (inkassoloven).",
                 "Service providers. Companies that help us run the platform, for example with hosting and storage, email and messaging, and customer support. They process data only on our instructions and under a data processing agreement.",
                 "Authorities and others where the law requires. For example tax authorities, the Norwegian Food Safety Authority (Mattilsynet) in serious food safety incidents, the police or the courts.",
                 "Advisers and in a business transfer. Auditors and lawyers, and any buyer if the business is sold or reorganised."
@@ -339,15 +739,16 @@
         },
         {
           "id": "section-7",
-          "title": "7. How long we keep data",
+          "title": "7. How long we keep your data",
           "blocks": [
             {
               "type": "list",
               "items": [
                 "Account: for as long as you have an account with us. When you delete your account, we delete or anonymise your data, except for what we must keep by law or to defend legal claims.",
-                "Orders, payments and invoices: for as long as the Norwegian Bookkeeping Act and other legislation require.",
+                "Orders, payments and invoices: for as long as the Norwegian Bookkeeping Act and other legislation require, normally 5 years after the end of the financial year.",
+                "Saved card (token): until the payment for your order is completed or the order is cancelled, unless you choose to keep the card saved in your account.",
                 "Complaints and enquiries: for as long as needed to handle the matter and to defend ourselves against legal claims.",
-                "Technical logs: for as long as needed for security and troubleshooting.",
+                "Technical logs: for as long as needed for security and troubleshooting, normally no longer than 90 days.",
                 "Marketing: until you withdraw your consent."
               ]
             }
@@ -405,11 +806,11 @@
         },
         {
           "id": "section-11",
-          "title": "11. Vendors and their representatives",
+          "title": "11. Vendors and their staff",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "If you register a vendor with us, or represent a vendor, we process data about contact persons, signatories, owners and staff that the vendor provides: name, role, contact details, payout account details and data from identity checks (for example BankID). We use it to operate the platform, verify the vendor, prevent fraud, meet legal requirements (including anti-money-laundering and sanctions rules) and administer the vendor agreement. The basis is contract, legal obligation and legitimate interest. The vendor must inform its staff and owners about this."
+              "text": "If you register a vendor with us, or represent a vendor, we process data about contact persons, signatories, owners and staff that the vendor provides: name, role, contact details, payout account details and data from identity checks (for example BankID). We use it to operate the platform, verify the vendor, prevent fraud, meet legal requirements (including sanctions rules) and administer the vendor agreement. The basis is contract, legal obligation and legitimate interest. The vendor must inform its staff and owners about this."
             }
           ]
         },
@@ -419,7 +820,7 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "The platform is meant for adults. We do not knowingly collect personal data from children."
+              "text": "You must be at least 18 years old to create an account or place an order. We do not knowingly collect personal data from children."
             }
           ]
         },
@@ -439,19 +840,7 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Go Catering AS"
-            },
-            {
-              "type": "paragraph",
-              "text": "Organisation no. 938291632"
-            },
-            {
-              "type": "paragraph",
-              "text": "Pilestredet 75C, 0354 OSLO, Norway"
-            },
-            {
-              "type": "paragraph",
-              "text": "Email: support@gocatering.no"
+              "text": "Go Catering AS\nOrganisation no. 938291632\nPilestredet 75C, 0354 OSLO, Norway\nEmail: support@gocatering.no"
             }
           ]
         }
@@ -460,8 +849,8 @@
   },
   "no": {
     "terms": {
-      "title": "Vilkår for bruk",
-      "updated": "GoCatering.no · Go Catering AS · Sist oppdatert: 11. november 2026",
+      "title": "Kjøpsvilkår for GoCatering.no",
+      "updated": "Go Catering AS · Sist oppdatert: 20. november 2026",
       "sections": [
         {
           "id": "section-1",
@@ -469,38 +858,102 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Disse vilkårene gjelder når du bruker GoCatering-plattformen (gocatering.no) for å se på cateringleverandører, legge inn bestillinger og betale. Plattformen drives av Go Catering AS, organisasjonsnummer 938291632, Pilestredet 75C, 0354 OSLO, Norge. Kontaktopplysninger står nederst i vilkårene."
+              "text": "Disse kjøpsvilkårene gjelder for alle bestillinger som gjennomføres på GoCatering.no, en digital markedsplass for catering og tilhørende tjenester."
             },
             {
               "type": "paragraph",
-              "text": "Ved å legge inn en bestilling godtar du disse vilkårene. Godtar du dem ikke, skal du ikke legge inn bestilling."
+              "text": "Plattformen eies og drives av:"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS\nOrganisasjonsnummer: 938 291 632\nAdresse: Pilestredet 75C, 0354 Oslo, Norge\nE-post: support@gocatering.no\nTelefon: +47 41 28 07 24"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er selger og din juridiske avtalepart ved alle kjøp gjennom plattformen."
+            },
+            {
+              "type": "paragraph",
+              "text": "Før du fullfører en bestilling, må du aktivt bekrefte at du har lest og akseptert disse kjøpsvilkårene."
+            },
+            {
+              "type": "paragraph",
+              "text": "Vilkårene gjelder for både privatpersoner og bedriftskunder. For forbrukere gjelder ufravikelige rettigheter etter norsk forbrukerlovgivning."
             }
           ]
         },
         {
           "id": "section-2",
-          "title": "2. Hvem gjør hva",
+          "title": "2. Avtaleforhold og ansvarsfordeling",
           "blocks": [
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er selger og din avtalepart for alle bestillinger som gjennomføres på GoCatering.no."
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no fungerer som en markedsplass hvor du kan finne, sammenligne og bestille catering fra ulike uavhengige cateringleverandører."
+            },
+            {
+              "type": "paragraph",
+              "text": "Leverandørene er selvstendige cateringvirksomheter som tilbereder, pakker og leverer maten på vegne av Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "Når du gjennomfører en bestilling:"
+            },
             {
               "type": "list",
               "items": [
-                "Leverandører er uavhengige cateringvirksomheter som er registrert på GoCatering.no. De tilbereder, pakker og leverer (eller gjør tilgjengelig for henting) maten og tilhørende tjenester de selger. Leverandøren er selger av maten.",
-                "Go Catering AS driver plattformen, mottar og videresender bestillingen din, innkrever betaling på leverandørens vegne, sender deg bekreftelser, og håndterer klager og refusjoner. Go Catering AS er ditt første kontaktpunkt ved problemer med bestilling, betaling eller refusjon."
+                "Inngår du en kjøpsavtale med Go Catering AS.",
+                "Betaler du for bestillingen gjennom betalingsløsningen på plattformen.",
+                "Utfører den valgte cateringleverandøren tilberedning og levering på vegne av Go Catering AS.",
+                "Er Go Catering AS ansvarlig overfor deg for bestillingen, herunder levering, reklamasjoner, avbestillinger og refusjoner."
               ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er ditt primære kontaktpunkt ved spørsmål eller problemer knyttet til bestillinger, betaling, levering og refusjon."
+            },
+            {
+              "type": "paragraph",
+              "text": "Eventuelle avtaler mellom Go Catering AS og cateringleverandørene påvirker ikke dine rettigheter som kunde."
             }
           ]
         },
         {
           "id": "section-3",
-          "title": "3. Konto og opplysninger",
+          "title": "3. Konto og kundeopplysninger",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Du kan bruke plattformen til å se på menyer, sammenligne leverandører, legge inn bestillinger og administrere kontoen din. Ved bestilling må du oppgi riktige kontaktopplysninger, leveringsadresse eller hentested, ønsket dato og tidspunkt, og eventuelle allergi- eller kostholdsopplysninger."
+              "text": "Du kan bruke GoCatering.no til å utforske menyer, sammenligne leverandører, gjennomføre bestillinger og administrere dine kjøp."
             },
             {
               "type": "paragraph",
-              "text": "Du er ansvarlig for å holde innloggingsopplysningene dine hemmelige og for all aktivitet på kontoen din. Vi kan suspendere eller begrense tilgangen dersom plattformen brukes til svindel, misbruk eller ulovlig virksomhet."
+              "text": "Ved bestilling må du oppgi korrekte og fullstendige opplysninger, herunder:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Navn og kontaktinformasjon.",
+                "Leveringsadresse eller hentested.",
+                "Ønsket dato og tidspunkt.",
+                "Eventuelle allergier, kostholdsbehov eller spesielle instruksjoner.",
+                "Bedriftsopplysninger dersom bestillingen gjennomføres på vegne av en virksomhet."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Du er ansvarlig for at opplysningene du oppgir er riktige."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dersom du oppretter en brukerkonto, er du ansvarlig for å beskytte innloggingsopplysningene dine."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS kan begrense eller suspendere kontoer ved mistanke om svindel, misbruk eller ulovlig aktivitet."
             }
           ]
         },
@@ -510,11 +963,27 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Menyer, priser, leveringstid og leveringsområder varierer etter leverandør, sted og dato. En leverandør må akseptere bestillingen din før den er bekreftet. En leverandør kan bare avslå en bestilling av en gyldig grunn, for eksempel at den ikke kan levere i tide eller mangler produktene du bestilte. Dersom leverandøren ikke kan utføre bestillingen din, sier vi fra så snart som mulig og hjelper deg med et alternativ eller full refusjon."
+              "text": "Menyer, priser, tilgjengelighet, leveringstider og leveringsområder kan variere mellom leverandører."
             },
             {
               "type": "paragraph",
-              "text": "Planlagte bestillinger kan endres slik det er beskrevet i bestillingsbekreftelsen din. Endringer er først bekreftet når leverandøren har akseptert dem."
+              "text": "Når du legger inn en bestilling, mottar du en bekreftelse på at bestillingen er registrert."
+            },
+            {
+              "type": "paragraph",
+              "text": "Bestillingen er endelig bekreftet når den aktuelle cateringleverandøren har akseptert å utføre oppdraget på vegne av Go Catering AS, og Go Catering AS har bekreftet bestillingen overfor deg."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dersom bestillingen ikke kan gjennomføres, vil Go Catering AS informere deg så raskt som mulig og tilby et passende alternativ eller full refusjon av eventuelt innbetalt beløp."
+            },
+            {
+              "type": "paragraph",
+              "text": "Endringer i bekreftede bestillinger kan forespørres gjennom plattformen eller ved å kontakte Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "En endring er først gyldig når den er bekreftet av Go Catering AS."
             }
           ]
         },
@@ -524,50 +993,162 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Priser på GoCatering.no er inkludert mva. Eventuelle leveringsgebyr, serviceavgift eller minstebeløp vises før du legger inn bestillingen. Du betaler gjennom portalen med betalingsmetodene som tilbys i kassen."
+              "text": "Alle priser på GoCatering.no oppgis i norske kroner (NOK) og inkluderer merverdiavgift der dette er relevant."
             },
             {
               "type": "paragraph",
-              "text": "Betalingen trekkes 24 timer etter planlagt leveringstidspunkt, med mindre bestillingen avbestilles tidligere. Leverandøren utbetales etter denne perioden, når eventuelle klager er avklart."
+              "text": "Eventuelle leveringskostnader, serviceavgifter, minstebeløp og andre tillegg vises tydelig før bestillingen fullføres."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er selger og kundens avtalepart for alle bestillinger som gjennomføres på plattformen."
+            },
+            {
+              "type": "heading",
+              "text": "5.1 Tilgjengelige betalingsmetoder"
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no tilbyr følgende betalingsmetoder:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Kortbetaling: Visa og Mastercard.",
+                "Mobilbetaling: Vipps.",
+                "Bedriftsbetaling (B2B): Two, Kravia og Billie, herunder faktura og eventuelle andre betalingsalternativer som tilbys gjennom disse leverandørene."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Tilgjengelige betalingsmetoder vises i kassen og kan variere avhengig av kundetype, kredittgodkjenning og den enkelte betalingsleverandørens vilkår."
+            },
+            {
+              "type": "heading",
+              "text": "5.2 Betalingstidspunkt"
+            },
+            {
+              "type": "paragraph",
+              "text": "Det trekkes ingen betaling når du legger inn bestillingen."
+            },
+            {
+              "type": "paragraph",
+              "text": "Kortbetaling (Visa og Mastercard): Når du legger inn bestillingen, bekrefter du kortet ditt i betalingsløsningen fra Dintero, og kortet lagres sikkert hos Dintero. Go Catering AS lagrer ikke kortopplysningene dine. Ved å legge inn bestillingen godtar du at vi kan bruke det lagrede kortet til å reservere beløpet før levering, tidligst 7 dager før planlagt levering (normalt 5 dager før). Legger du inn bestillingen mindre enn 5 dager før levering, reserveres beløpet når du bestiller."
+            },
+            {
+              "type": "paragraph",
+              "text": "Vipps: Vipps kan ikke lagres for senere betaling. Du får en betalingslenke før levering og må gjennomføre betalingen innen fristen som står i lenken. Legger du inn bestillingen mindre enn 5 dager før levering, betaler du når du bestiller."
+            },
+            {
+              "type": "paragraph",
+              "text": "Hvis reservasjonen ikke går gjennom: Dersom beløpet ikke kan reserveres (for eksempel fordi kortet er utløpt eller det ikke er dekning), varsler vi deg og sender deg en betalingslenke. Er det ikke registrert en gyldig betaling senest 72 timer før planlagt levering, kan vi kansellere bestillingen uten kostnad for deg."
+            },
+            {
+              "type": "paragraph",
+              "text": "Beløpet trekkes 24 timer etter planlagt leveringstidspunkt."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dersom en bestilling avbestilles før betaling er gjennomført, håndteres eventuell belastning i samsvar med avbestillingsvilkårene i punkt 6."
+            },
+            {
+              "type": "paragraph",
+              "text": "Ved bedriftsbetaling gjennom Two, Kravia eller Billie godkjennes bestillingen av betalingsleverandøren når du bestiller, og fakturaen sendes etter levering. Betalingsfristene og betingelsene opplyses i kassen og i betalingsavtalen med den aktuelle betalingsleverandøren."
+            },
+            {
+              "type": "paragraph",
+              "text": "Eventuell kreditt eller fakturabetaling forutsetter godkjenning fra den aktuelle betalingsleverandøren."
+            },
+            {
+              "type": "heading",
+              "text": "5.3 Betalingshåndtering og refusjoner"
+            },
+            {
+              "type": "paragraph",
+              "text": "Betalingene behandles gjennom Dinteros betalingsløsning og relevante betalingspartnere."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er selger og ansvarlig overfor kunden for bestillinger, leveranser, reklamasjoner, avbestillinger og refusjoner, uavhengig av valgt betalingsmetode."
+            },
+            {
+              "type": "paragraph",
+              "text": "Ved bruk av faktura eller finansieringsløsninger kan betalingskravet administreres eller overdras til den aktuelle betalingsleverandøren i samsvar med vilkårene som opplyses ved kjøpet."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dette endrer ikke Go Catering AS sin rolle som selger av cateringtjenesten eller selskapets ansvar for oppfyllelse av bestillingen."
+            },
+            {
+              "type": "paragraph",
+              "text": "Eventuelle refusjoner gjennomføres til den opprinnelige betalingsmetoden eller gjennom den aktuelle betalingsleverandørens etablerte refusjonsprosess."
+            },
+            {
+              "type": "paragraph",
+              "text": "Økonomiske oppgjør mellom Go Catering AS og cateringleverandørene håndteres separat og påvirker ikke kundens rettigheter."
             }
           ]
         },
         {
           "id": "section-6",
-          "title": "6. Avbestilling",
+          "title": "6. Avbestilling og refusjon",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Du kan avbestille en planlagt bestilling i kontoen din eller ved å kontakte oss. Refusjonen avhenger av hvor nær leveringstidspunktet avbestillingen skjer:"
+              "text": "Du kan avbestille en planlagt bestilling gjennom kontoen din eller ved å kontakte Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "Ved ordinær avbestilling fra kundens side gjelder følgende betingelser:"
             },
             {
               "type": "table",
               "headers": [
-                "Når du avbestiller, før planlagt tidspunkt",
+                "Tid før avtalt levering",
                 "Refusjon"
               ],
               "rows": [
                 [
-                  "Mer enn 72 timer før",
+                  "Mer enn 72 timer",
                   "100 %"
                 ],
                 [
-                  "72 til 24 timer før",
+                  "Fra 72 timer til mer enn 24 timer",
                   "50 %"
                 ],
                 [
-                  "Mindre enn 24 timer før, eller uteblitt",
+                  "24 timer eller mindre",
+                  "Ingen refusjon"
+                ],
+                [
+                  "Uteblivelse eller manglende mottak",
                   "Ingen refusjon"
                 ]
               ]
             },
             {
               "type": "paragraph",
-              "text": "Bestillinger laget etter dine spesifikasjoner, eller som inneholder lettfordervelig mat bestilt på forhånd, kan belastes mer dersom leverandøren dokumenterer kostnadene. Beløpene som vises i kassen er de som gjelder."
+              "text": "For spesialtilpassede bestillinger eller lettfordervelige produkter kan særskilte avbestillingsvilkår gjelde dersom disse er tydelig opplyst og akseptert før kjøpet, og er i samsvar med gjeldende lovgivning."
             },
             {
               "type": "paragraph",
-              "text": "Dersom leverandøren avbestiller bestillingen din, får du full refusjon, og vi hjelper deg med et alternativ der det er mulig."
+              "text": "Dersom Go Catering AS ikke kan oppfylle en bekreftet bestilling, har kunden rett til full refusjon av beløpet som er betalt for den aktuelle bestillingen."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS vil, der det er mulig, forsøke å tilby en alternativ løsning."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dersom betalingen ennå ikke er gjennomført, vil eventuell betalingsreservasjon eller planlagt belastning bli kansellert eller justert i samsvar med gjeldende avbestillingsvilkår."
+            },
+            {
+              "type": "paragraph",
+              "text": "Refusjoner gjennomføres til den opprinnelige betalingsmetoden eller gjennom den aktuelle betalingsleverandørens refusjonsprosess."
+            },
+            {
+              "type": "paragraph",
+              "text": "Disse avbestillingsvilkårene begrenser ikke kundens lovfestede rettigheter ved mangler, forsinkelser eller andre forhold som gir rett til refusjon eller andre misligholdsbeføyelser."
             }
           ]
         },
@@ -577,35 +1158,137 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Leverandøren er ansvarlig for maten sin kvalitet, sikkerhet, hygiene og merking, og for å levere til avtalt tid, slik det er beskrevet i menyen og bestillingen din. Allergeninformasjon gis av leverandøren for hvert produkt. Har du en alvorlig allergi, må du kontakte leverandøren før du bestiller. Ikke stol bare på en generell opplysning."
+              "text": "Go Catering AS er ansvarlig overfor kunden for at bestillingen leveres til avtalt tid og i samsvar med beskrivelsen og vilkårene som ble oppgitt ved kjøpet."
+            },
+            {
+              "type": "paragraph",
+              "text": "Den aktuelle cateringleverandøren utfører tilberedning, pakking og levering på vegne av Go Catering AS."
+            },
+            {
+              "type": "paragraph",
+              "text": "Leverandørene er ansvarlige for å oppfylle relevante krav til næringsmiddelhygiene, mattrygghet, oppbevaring og merking i forbindelse med utførelsen av tjenesten."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er kundens avtalepart og håndterer eventuelle avvik, reklamasjoner og krav knyttet til leveransen."
+            },
+            {
+              "type": "paragraph",
+              "text": "Informasjon om allergener og ingredienser oppgis for de aktuelle produktene basert på informasjon fra cateringleverandørene."
+            },
+            {
+              "type": "paragraph",
+              "text": "Kunder med alvorlige allergier eller spesielle kostholdsbehov oppfordres til å informere om dette ved bestilling og kontakte Go Catering AS dersom det er behov for ytterligere avklaringer."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS vil ved behov innhente informasjon fra den aktuelle leverandøren."
             }
           ]
         },
         {
           "id": "section-8",
-          "title": "8. Problemer, klager og refusjon",
+          "title": "8. Reklamasjoner, klager og refusjoner",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Dersom noe er galt med bestillingen din (for eksempel manglende, skadde eller feil produkter, forsinket levering, eller bekymring for matsikkerheten), meld fra til Go Catering AS gjennom plattformen innen 24 timer etter levering. Oppgi bestillingsnummer og gjerne bilder."
+              "text": "Dersom det oppstår problemer med en bestilling, skal kunden kontakte Go Catering AS så snart som mulig."
             },
             {
               "type": "paragraph",
-              "text": "Go Catering AS behandler klagen din. Vi tar kontakt med leverandøren, avgjør en løsning i god tro og forteller deg hva som skjer videre. Mulige løsninger er refusjon, kreditering eller omlevering. Refusjoner utbetales til den opprinnelige betalingsmetoden."
+              "text": "Dette kan blant annet gjelde:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Manglende eller feil produkter.",
+                "Forsinket eller uteblitt levering.",
+                "Skadet eller mangelfull mat.",
+                "Feil allergeninformasjon.",
+                "Andre avvik mellom den bekreftede bestillingen og produktene eller tjenestene som ble levert."
+              ]
             },
             {
               "type": "paragraph",
-              "text": "Ved bekymring for matsikkerheten, kontakt også leverandøren direkte, og søk medisinsk hjelp dersom du blir syk. Alvorlige matsikkerhetshendelser kan også meldes til Mattilsynet."
+              "text": "Vi anbefaler at du melder fra om problemer innen 24 timer etter levering, slik at saken kan undersøkes og løses raskt."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dette er en anbefaling og ikke en absolutt frist for å reklamere. Kunden beholder sine lovfestede rettigheter til å fremme krav uavhengig av anbefalingen om 24 timer."
+            },
+            {
+              "type": "paragraph",
+              "text": "Når du klager, bør du oppgi bestillingsnummer, beskrive problemet og, der det er mulig, legge ved bilder eller annen relevant dokumentasjon."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er ansvarlig for å behandle reklamasjoner og avgjøre en passende løsning i samsvar med gjeldende lovgivning."
+            },
+            {
+              "type": "paragraph",
+              "text": "Avhengig av situasjonen kan aktuelle løsninger være:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Omlevering eller retting.",
+                "Prisavslag.",
+                "Delvis eller full refusjon.",
+                "Andre misligholdsbeføyelser etter gjeldende lovgivning."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Refusjoner gjennomføres til den opprinnelige betalingsmetoden eller gjennom den aktuelle betalingsleverandørens refusjonsprosess."
+            },
+            {
+              "type": "paragraph",
+              "text": "Eventuelle avklaringer eller avtaler mellom Go Catering AS og cateringleverandørene håndteres internt og påvirker ikke kundens rettigheter."
+            },
+            {
+              "type": "paragraph",
+              "text": "Ved mistanke om et alvorlig matsikkerhetsproblem bør kunden kontakte Go Catering AS umiddelbart. Slike hendelser kan også meldes til Mattilsynet."
             }
           ]
         },
         {
           "id": "section-9",
-          "title": "9. Dine lovfestede rettigheter",
+          "title": "9. Angrerett og lovfestede rettigheter",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Ingenting i disse vilkårene begrenser rettighetene dine etter norsk forbrukerlovgivning, herunder forbrukerkjøpsloven og markedsføringsloven. Etter angrerettloven gjelder angreretten som hovedregel ikke for lettfordervelig mat eller cateringtjenester til en bestemt dato. Dette påvirker ikke rettighetene dine dersom produktene er mangelfulle, leveres for sent eller ikke er som beskrevet."
+              "text": "Etter norsk lov har forbrukere som hovedregel angrerett ved kjøp av varer og tjenester på nett."
+            },
+            {
+              "type": "paragraph",
+              "text": "Det finnes likevel lovfestede unntak som kan gjelde for cateringbestillinger."
+            },
+            {
+              "type": "paragraph",
+              "text": "Angreretten gjelder som hovedregel ikke for:"
+            },
+            {
+              "type": "list",
+              "items": [
+                "Varer som raskt kan bli dårlige eller gå ut på dato, jf. angrerettloven § 22 bokstav b.",
+                "Cateringtjenester som skal leveres på en bestemt dato eller innenfor en bestemt periode, jf. angrerettloven § 22 bokstav m."
+              ]
+            },
+            {
+              "type": "paragraph",
+              "text": "Om et unntak gjelder, avhenger av den konkrete bestillingen og gjeldende lovgivning."
+            },
+            {
+              "type": "paragraph",
+              "text": "Der angreretten ikke gjelder, får kunden informasjon om dette før kjøpet fullføres."
+            },
+            {
+              "type": "paragraph",
+              "text": "Unntak fra angreretten påvirker ikke lovfestede rettigheter ved mangler, forsinkelser eller andre kontraktsbrudd."
+            },
+            {
+              "type": "paragraph",
+              "text": "Ingenting i disse kjøpsvilkårene begrenser ufravikelige rettigheter etter norsk forbrukerlovgivning."
             }
           ]
         },
@@ -615,47 +1298,143 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "I den utstrekning loven tillater det, er Go Catering AS ikke ansvarlig for indirekte tap, som tapt fortjeneste eller tapt verdi av arrangement. Dette gjelder ikke tap som skyldes grov uaktsomhet eller forsett, eller ansvar som ikke kan fraskrives etter norsk rett, herunder ansvar overfor forbrukere."
+              "text": "Go Catering AS er ansvarlig overfor kunden for å oppfylle kjøpsavtalen som inngås gjennom GoCatering.no."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dette omfatter korrekt behandling av bestillinger, betalinger, leveranser, reklamasjoner og refusjoner."
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS bruker selvstendige cateringleverandører til å tilberede og levere maten, men dette begrenser ikke selskapets kontraktsmessige ansvar overfor kunden."
+            },
+            {
+              "type": "paragraph",
+              "text": "I den utstrekning norsk lov tillater det, er Go Catering AS ikke ansvarlig for indirekte tap som ikke med rimelighet kunne forutses da avtalen ble inngått."
+            },
+            {
+              "type": "paragraph",
+              "text": "Denne begrensningen gjelder ikke ved forsett, grov uaktsomhet eller der ansvaret ikke kan fraskrives eller begrenses etter ufravikelig lovgivning."
             }
           ]
         },
         {
           "id": "section-11",
-          "title": "11. Personopplysninger",
+          "title": "11. Personvern og behandling av personopplysninger",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Vi behandler personopplysninger slik det er beskrevet i personvernerklæringen vår (https://gocatering.no/privacy-policy). Bestillingsopplysningene dine deles med leverandøren bare i den grad det trengs for å levere bestillingen. Vi bruker ikke opplysningene dine til markedsføring uten at du har samtykket."
+              "text": "Go Catering AS er behandlingsansvarlig for personopplysninger som behandles i forbindelse med driften av GoCatering.no og gjennomføringen av bestillinger, i den grad selskapet bestemmer formålet med og midlene for behandlingen."
+            },
+            {
+              "type": "paragraph",
+              "text": "Vi behandler personopplysninger som navn, kontaktopplysninger, leveringsinformasjon, ordrehistorikk og betalingsrelaterte opplysninger."
+            },
+            {
+              "type": "paragraph",
+              "text": "Personopplysningene behandles blant annet for å administrere bestillinger, oppfylle avtaleforpliktelser, yte kundeservice, oppfylle rettslige forpliktelser og ivareta andre lovlige formål."
+            },
+            {
+              "type": "paragraph",
+              "text": "Behandlingen bygger på rettslige grunnlag i artikkel 6 i personvernforordningen (GDPR), herunder avtale, rettslig forpliktelse, berettiget interesse og samtykke der det kreves."
+            },
+            {
+              "type": "paragraph",
+              "text": "Personopplysninger kan deles med cateringleverandører og relevante tjenesteleverandører i den grad det er nødvendig for å behandle og gjennomføre bestillinger og levere tjenestene."
+            },
+            {
+              "type": "paragraph",
+              "text": "Personopplysninger lagres ikke lenger enn nødvendig for formålene de ble samlet inn for, med mindre lengre lagring kreves etter lov."
+            },
+            {
+              "type": "paragraph",
+              "text": "Innenfor rammene av personvernlovgivningen kan du ha rett til innsyn, retting og sletting av personopplysningene dine, begrensning av behandlingen, dataportabilitet og å protestere mot visse former for behandling."
+            },
+            {
+              "type": "paragraph",
+              "text": "Du har også rett til å klage til Datatilsynet dersom du mener at personopplysningene dine er behandlet i strid med regelverket."
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no kan bruke informasjonskapsler (cookies) og lignende teknologi. Nødvendige informasjonskapsler brukes for at plattformen skal fungere. Andre informasjonskapsler brukes bare når det finnes et gyldig rettslig grunnlag, herunder samtykke der det kreves."
+            },
+            {
+              "type": "paragraph",
+              "text": "Mer informasjon om formål, rettslig grunnlag, lagringstid, mottakere, informasjonskapsler og dine personvernrettigheter finner du i personvernerklæringen vår:"
+            },
+            {
+              "type": "paragraph",
+              "text": "https://gocatering.no/privacy-policy"
+            },
+            {
+              "type": "paragraph",
+              "text": "Spørsmål om personvern kan rettes til support@gocatering.no."
             }
           ]
         },
         {
           "id": "section-12",
-          "title": "12. Endringer i vilkårene",
+          "title": "12. Endringer i kjøpsvilkårene",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Vi kan oppdatere vilkårene. Ny versjon publiseres på plattformen, og dersom endringen gjelder eksisterende bestillinger eller kontoer, varsler vi deg på forhånd. Endringer påvirker ikke bestillinger du allerede har lagt inn."
+              "text": "Go Catering AS kan oppdatere disse kjøpsvilkårene ved behov."
+            },
+            {
+              "type": "paragraph",
+              "text": "Oppdaterte vilkår publiseres på GoCatering.no sammen med datoen for siste endring."
+            },
+            {
+              "type": "paragraph",
+              "text": "Som hovedregel gjelder vilkårene som gjaldt da bestillingen ble lagt inn, for den aktuelle bestillingen."
+            },
+            {
+              "type": "paragraph",
+              "text": "Endringer påvirker ikke inngåtte avtaler uten gyldig rettslig grunnlag."
             }
           ]
         },
         {
           "id": "section-13",
-          "title": "13. Lovvalg og tvister",
+          "title": "13. Lovvalg og tvisteløsning",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Disse vilkårene er underlagt norsk rett. Dersom du har en tvist, kontakt oss først slik at vi kan forsøke å løse den. Du kan også kontakte Forbrukertilsynet eller Forbrukerrådet for veiledning. Tvister som ikke kan løses, kan bringes inn for Oslo tingrett, med mindre ufravikelige forbrukerregler gir deg et annet verneting."
+              "text": "Disse kjøpsvilkårene er underlagt norsk rett."
+            },
+            {
+              "type": "paragraph",
+              "text": "Ved en tvist mellom en kunde og Go Catering AS oppfordres kunden til først å kontakte selskapet, slik at saken kan løses i minnelighet."
+            },
+            {
+              "type": "paragraph",
+              "text": "Dersom partene ikke kommer til enighet, kan forbrukere kontakte Forbrukerrådet eller andre relevante offentlige klage- og meklingsorganer for veiledning og bistand."
+            },
+            {
+              "type": "paragraph",
+              "text": "Tvister kan bringes inn for en kompetent norsk domstol i samsvar med gjeldende regler om jurisdiksjon og verneting."
+            },
+            {
+              "type": "paragraph",
+              "text": "Ingenting i disse kjøpsvilkårene begrenser forbrukeres rettigheter etter ufravikelig lovgivning."
             }
           ]
         },
         {
           "id": "section-14",
-          "title": "14. Kontakt",
+          "title": "14. Kontaktinformasjon",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Go Catering AS E-post: support@gocatering.no"
+              "text": "Ved spørsmål om bestillinger, betaling, levering, reklamasjoner, avbestillinger eller refusjoner, kontakt:"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS\nOrganisasjonsnummer: 938 291 632\nMVA-nummer: 938 291 632 MVA\nPostadresse: Pilestredet 75C, 0354 Oslo, Norge\nTelefon: +47 41 28 07 24\nE-post: support@gocatering.no\nNettside: https://gocatering.no"
+            },
+            {
+              "type": "paragraph",
+              "text": "Go Catering AS er ansvarlig avtalepart og primært kontaktpunkt for alle kjøp gjennom GoCatering.no."
             }
           ]
         }
@@ -663,11 +1442,11 @@
     },
     "privacy": {
       "title": "Personvernerklæring",
-      "updated": "GoCatering.no · Go Catering AS · Sist oppdatert: 11. november 2026",
+      "updated": "GoCatering.no · Go Catering AS · Sist oppdatert: 19. november 2026",
       "sections": [
         {
           "id": "section-1",
-          "title": "1. Hvem vi er",
+          "title": "1. Hvem er vi",
           "blocks": [
             {
               "type": "paragraph",
@@ -675,7 +1454,7 @@
             },
             {
               "type": "paragraph",
-              "text": "Leverandørene på plattformen er selvstendige cateringvirksomheter. Når du legger inn en bestilling, får leverandøren de opplysningene den trenger for å levere bestillingen, og leverandøren er selv behandlingsansvarlig for sin bruk av dem (se punkt 5)."
+              "text": "Leverandørene på plattformen er selvstendige cateringvirksomheter som tilbereder og leverer bestillinger på vegne av Go Catering AS. Når du legger inn en bestilling, får leverandøren de opplysningene den trenger for å levere bestillingen, og leverandøren er selv behandlingsansvarlig for sin bruk av dem (se punkt 5)."
             }
           ]
         },
@@ -688,7 +1467,7 @@
               "items": [
                 "Kontoopplysninger: navn, e-postadresse, telefonnummer og innloggingsopplysninger. For bedriftskunder også firmanavn og fakturaopplysninger.",
                 "Bestillingsopplysninger: hva du bestiller, leveringsadresse eller hentested, ønsket dato og tidspunkt, merknader og instruksjoner til leverandøren, og eventuelle allergi- eller kostholdsopplysninger du oppgir.",
-                "Betalingsopplysninger: beløp, betalingsmetode, betalingsstatus, refusjoner og fakturaopplysninger. Kortopplysningene dine behandles av betalingsleverandøren og lagres ikke av oss.",
+                "Betalingsopplysninger: beløp, betalingsmetode, betalingsstatus, refusjoner og fakturaopplysninger. Betaler du med kort, lagres kortet ditt hos betalingsleverandøren vår Dintero når du bestiller, slik at beløpet kan reserveres før levering og trekkes etter levering. Vi lagrer ikke kortnummeret ditt. Vi oppbevarer bare en referanse (token) fra Dintero og, der den oppgis, korttype og de fire siste sifrene.",
                 "Henvendelser og klager: meldinger til oss, bestillingsnummer, bilder du sender inn, og hvordan saken ble løst.",
                 "Vurderinger og anmeldelser du skriver om leverandører.",
                 "Tekniske opplysninger: IP-adresse, enhets- og nettleserinformasjon og loggdata fra bruken av plattformen."
@@ -698,7 +1477,7 @@
         },
         {
           "id": "section-3",
-          "title": "3. Formål og rettslig grunnlag",
+          "title": "3. Hvorfor vi bruker opplysningene",
           "blocks": [
             {
               "type": "table",
@@ -710,7 +1489,7 @@
               "rows": [
                 [
                   "Levere tjenesten",
-                  "Opprette og administrere kontoen din, sende bestillingen til leverandøren, sende bekreftelser og påminnelser, gjennomføre betaling og refusjon",
+                  "Opprette og administrere kontoen din, sende bestillingen til leverandøren, sende bekreftelser og påminnelser, lagre kortet ditt hos betalingsleverandøren, reservere og trekke betaling, sende betalingslenker og gjennomføre refusjon",
                   "Avtale med deg (art. 6 nr. 1 bokstav b)"
                 ],
                 [
@@ -727,6 +1506,11 @@
                   "Regnskap og lovkrav",
                   "Bokføring, skatt og andre rettslige forpliktelser",
                   "Rettslig forpliktelse (art. 6 nr. 1 bokstav c)"
+                ],
+                [
+                  "Ubetalte beløp",
+                  "Sende påminnelser og fakturaer for ubetalte beløp og, om nødvendig, overlate kravet til inkasso",
+                  "Avtale (art. 6 nr. 1 bokstav b) og berettiget interesse i å kreve inn våre krav (art. 6 nr. 1 bokstav f)"
                 ],
                 [
                   "Vurderinger og anmeldelser",
@@ -754,11 +1538,11 @@
         },
         {
           "id": "section-4",
-          "title": "4. Allergi og kosthold",
+          "title": "4. Allergi- og kostholdsopplysninger",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Opplysninger om allergier og kosthold kan si noe om helsen din og regnes som særlig sensitive. Det er frivillig å oppgi dem. Når du oppgir slike opplysninger i en bestilling, samtykker du til at vi bruker dem og deler dem med leverandøren, bare for at bestillingen skal kunne tilberedes og leveres riktig og trygt. Vi lagrer dem ikke lenger enn nødvendig for å gjennomføre bestillingen og håndtere eventuelle klager."
+              "text": "Opplysninger om allergier og kosthold kan si noe om helsen din og regnes som særlig sensitive. Det er frivillig å oppgi dem. Når du oppgir slike opplysninger i en bestilling og krysser av i samtykkeboksen, gir du ditt uttrykkelige samtykke til at vi bruker dem og deler dem med leverandøren, bare for at bestillingen skal kunne tilberedes og leveres riktig og trygt. Vi sletter dem senest 3 måneder etter levering, med mindre de trengs i en pågående klage- eller matsikkerhetssak."
             },
             {
               "type": "paragraph",
@@ -768,13 +1552,14 @@
         },
         {
           "id": "section-5",
-          "title": "5. Hvem vi deler opplysninger med",
+          "title": "5. Hvem vi deler opplysningene med",
           "blocks": [
             {
               "type": "list",
               "items": [
                 "Leverandøren du bestiller fra. Leverandøren får navn, kontaktopplysninger, leveringsadresse, instruksjoner, bestillingen og eventuelle allergi- eller kostholdsopplysninger, bare det som trengs for å levere bestillingen. Leverandøren er selvstendig behandlingsansvarlig for sin bruk av opplysningene. Leverandøren har forpliktet seg til å bruke dem bare til å utføre bestillingen, håndtere klager og oppfylle lovkrav, og ikke til egen markedsføring eller videresalg.",
-                "Betalingsleverandører. Dintero er betalingsløsningen på plattformen. I tillegg behandler leverandøren av betalingsmetoden du velger (for eksempel Vipps, Klarna, Apple Pay, Google Pay eller, for bedriftskunder, Two) opplysninger for å gjennomføre betalingen. De har egne vilkår og personvernerklæringer, og kan ved kjøp på faktura eller delbetaling gjøre egne vurderinger, som kredittvurdering, som selvstendig behandlingsansvarlig.",
+                "Betalingsleverandører. Dintero er betalingsløsningen på plattformen og lagrer kortet ditt dersom du betaler med kort. I tillegg behandler leverandøren av betalingsmetoden du velger (for eksempel Vipps, kortutstederen din eller, for bedriftskunder, Two, Billie eller Kravia) opplysninger for å gjennomføre betalingen. De har egne vilkår og personvernerklæringer, og kan ved kjøp på faktura eller delbetaling gjøre egne vurderinger, som kredittvurdering, som selvstendig behandlingsansvarlig.",
+                "Inkasso. Dersom et beløp ikke blir betalt, kan vi overlate kravet til et inkassoselskap, som behandler opplysningene dine etter inkassoloven.",
                 "Tjenesteleverandører. Selskaper som hjelper oss å drive plattformen, for eksempel med drift og lagring, e-post og meldinger og kundestøtte. De behandler opplysninger bare etter våre instrukser og i henhold til databehandleravtale.",
                 "Myndigheter og andre når loven krever det. For eksempel skattemyndighetene, Mattilsynet ved alvorlige matsikkerhetshendelser, politiet eller domstolene.",
                 "Rådgivere og ved virksomhetsoverdragelse. Revisor og advokater, og en eventuell kjøper ved salg eller omorganisering av virksomheten."
@@ -798,15 +1583,16 @@
         },
         {
           "id": "section-7",
-          "title": "7. Hvor lenge vi lagrer opplysninger",
+          "title": "7. Hvor lenge vi lagrer opplysningene",
           "blocks": [
             {
               "type": "list",
               "items": [
                 "Konto: så lenge du har konto hos oss. Når du sletter kontoen, sletter eller anonymiserer vi opplysningene, bortsett fra det vi må beholde etter loven eller for å forsvare rettskrav.",
-                "Bestillinger, betalinger og fakturaer: så lenge bokføringsloven og annen lovgivning krever det.",
+                "Bestillinger, betalinger og fakturaer: så lenge bokføringsloven og annen lovgivning krever det, normalt 5 år etter regnskapsårets slutt.",
+                "Lagret kort (token): til betalingen for bestillingen er gjennomført eller bestillingen er kansellert, med mindre du velger å beholde kortet lagret i kontoen din.",
                 "Klager og henvendelser: så lenge det trengs for å håndtere saken og for å kunne forsvare oss mot rettskrav.",
-                "Tekniske logger: så lenge det trengs for sikkerhet og feilsøking.",
+                "Tekniske logger: så lenge det trengs for sikkerhet og feilsøking, normalt ikke lenger enn 90 dager.",
                 "Markedsføring: til du trekker samtykket tilbake."
               ]
             }
@@ -864,11 +1650,11 @@
         },
         {
           "id": "section-11",
-          "title": "11. Leverandører og deres representanter",
+          "title": "11. Leverandører og deres ansatte",
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Hvis du registrerer en leverandør hos oss, eller representerer en leverandør, behandler vi opplysninger om kontaktpersoner, signatarer, eiere og ansatte som leverandøren oppgir: navn, rolle, kontaktopplysninger, kontoopplysninger for utbetaling og opplysninger fra identitetskontroll (for eksempel BankID). Vi bruker dem for å drifte plattformen, verifisere leverandøren, forebygge svindel, oppfylle lovkrav (blant annet regler mot hvitvasking og sanksjoner) og administrere leverandøravtalen. Grunnlaget er avtale, rettslig forpliktelse og berettiget interesse. Leverandøren må informere sine ansatte og eiere om dette."
+              "text": "Hvis du registrerer en leverandør hos oss, eller representerer en leverandør, behandler vi opplysninger om kontaktpersoner, signatarer, eiere og ansatte som leverandøren oppgir: navn, rolle, kontaktopplysninger, kontoopplysninger for utbetaling og opplysninger fra identitetskontroll (for eksempel BankID). Vi bruker dem for å drifte plattformen, verifisere leverandøren, forebygge svindel, oppfylle lovkrav (blant annet sanksjonsregler) og administrere leverandøravtalen. Grunnlaget er avtale, rettslig forpliktelse og berettiget interesse. Leverandøren må informere sine ansatte og eiere om dette."
             }
           ]
         },
@@ -878,7 +1664,7 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Plattformen er ment for voksne. Vi samler ikke bevisst inn personopplysninger fra barn."
+              "text": "Du må være minst 18 år for å opprette konto eller legge inn en bestilling. Vi samler ikke bevisst inn personopplysninger fra barn."
             }
           ]
         },
@@ -898,19 +1684,7 @@
           "blocks": [
             {
               "type": "paragraph",
-              "text": "Go Catering AS"
-            },
-            {
-              "type": "paragraph",
-              "text": "Organisasjonsnummer 938291632"
-            },
-            {
-              "type": "paragraph",
-              "text": "Pilestredet 75C, 0354 OSLO, Norge"
-            },
-            {
-              "type": "paragraph",
-              "text": "E-post: support@gocatering.no"
+              "text": "Go Catering AS\nOrganisasjonsnummer 938291632\nPilestredet 75C, 0354 OSLO, Norge\nE-post: support@gocatering.no"
             }
           ]
         }
