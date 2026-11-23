@@ -2,6 +2,6 @@ import { useOfferText } from './offerText';
 import './Offers.css';
 export default function OfferCheckoutNotice({carts}) {
  const text=useOfferText();const offers=carts.filter(cart=>cart.orderSummary.offer);
- if(!offers.length)return carts.some(cart=>cart.orderSummary.offerRemoved)?<div className="offer-notice warning">{text('The offer was removed because your order details changed. Normal prices will be recalculated.','Tilbudet ble fjernet fordi bestillingsdetaljene ble endret. Ordinære priser beregnes på nytt.')}</div>:null;
+ if(!offers.length)return carts.some(cart=>cart.orderSummary.offerRemoved)?<div className="offer-notice warning">{text('Order details changed, so normal prices apply. Returning to the original details will recheck and restore the offer if it is still valid.','Tilbudet ble fjernet fordi bestillingsdetaljene ble endret. Ordinære priser beregnes på nytt.')}</div>:null;
  return <div className="offer-notice warning"><strong>{text('Agreed offer price applied','Avtalt tilbudspris er brukt')}</strong>{offers.map(cart=><span key={cart.vendor.id}>{cart.vendor.name} · {text('Valid until','Gyldig til')} {new Date(cart.orderSummary.offer.expiresAt).toLocaleString(text('en-GB','nb-NO'))}</span>)}<span>{text('Changing date, time, guests, postcode or menu items removes the offer and restores normal pricing. The price is checked again before payment.','Endring av dato, tid, gjester, postnummer eller menyvarer fjerner tilbudet og gjenoppretter ordinær pris. Prisen kontrolleres igjen før betaling.')}</span></div>;
 }

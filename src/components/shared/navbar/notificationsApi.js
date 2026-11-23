@@ -1,3 +1,4 @@
+import { CLIENT_OFFER_NOTIFICATIONS_QUERY, OFFER_NOTIFICATION_PREFIX, mapOfferNotification } from '../../../features/offers/offerNotifications.js';
 import { graphqlRequest } from "../../../lib/api/graphqlClient";
 
 const CLIENT_FINANCE_NOTIFICATION_FIELDS = `
@@ -483,13 +484,14 @@ function mapNotificationNode(node) {
 }
 
 export async function fetchUserNotifications() {
-  const [financeResult, ordersResult, supportResult] = await Promise.allSettled([
+  const [financeResult, ordersResult, supportResult, offersResult] = await Promise.allSettled([
     graphqlRequest({
       query: NOTIFICATION_BELL_QUERY,
       variables: { first: 200, status: null },
     }),
     graphqlRequest({ query: CLIENT_ORDER_NOTIFICATIONS_QUERY, variables: { first: 100 } }),
     graphqlRequest({ query: CLIENT_SUPPORT_NOTIFICATIONS_QUERY }),
+    graphqlRequest({ query: CLIENT_OFFER_NOTIFICATIONS_QUERY }),
   ]);
 
   const financeResponse = financeResult.status === "fulfilled" ? financeResult.value : null;
@@ -499,8 +501,11 @@ export async function fetchUserNotifications() {
   const financeNotifications = Array.isArray(bell?.edges)
     ? bell.edges.map((edge) => mapNotificationNode(edge?.node))
     : [];
+  const offerEdges = offersResult.status === 'fulfilled' ? offersResult.value?.myNotifications?.edges : [];
+  const offerNotifications = Array.isArray(offerEdges) ? offerEdges.map(edge=>mapOfferNotification(edge?.node)).filter(Boolean).map(notification=>({...notification,timeLabel:formatNotificationTime(notification.createdOn),dayLabel:formatDayLabel(notification.createdOn)})) : [];
   const localState = readLocalNotificationState();
   const notifications = [
+    ...offerNotifications,
     ...financeNotifications,
     ...mapOrderNotifications(ordersResponse?.clientOrders?.edges, localState),
     ...mapSupportNotifications(supportResponse?.mySupportTickets?.items, localState),
@@ -508,14 +513,21 @@ export async function fetchUserNotifications() {
 
   return {
     notifications,
-    unreadCount: Number(bell?.unreadCount ?? 0) || notifications.filter((item) => item.unread).length,
-    totalCount: Number(bell?.totalCount ?? notifications.length) || notifications.length,
+    unreadCount: notifications.filter((item) => item.unread).length,
+    totalCount: notifications.length,
     hasNextPage: false,
     endCursor: null,
   };
 }
 
 export async function markUserNotificationAsRead(id) {
+  if (String(id).startsWith(OFFER_NOTIFICATION_PREFIX)) {
+    const rawId=String(id).slice(OFFER_NOTIFICATION_PREFIX.length);
+    const data=await graphqlRequest({query:`mutation ReadClientOfferNotification($id:ID!){markNotificationRead(id:$id){success message notification{id isRead}}}`,variables:{id:rawId}});
+    const result=data?.markNotificationRead;
+    if(!result?.success || !result.notification?.isRead || String(result.notification.id)!==rawId)throw new Error('Unable to mark offer notification as read.');
+    return {message:result.message,unreadCount:null,notification:{id,isRead:true}};
+  }
   if (`${id}`.startsWith(LOCAL_NOTIFICATION_PREFIX)) {
     markLocalNotificationRead(id);
     return { message: "Notification marked as read.", unreadCount: null, notification: { id, isRead: true } };
@@ -541,6 +553,8 @@ export async function markUserNotificationAsRead(id) {
 
 export async function markAllUserNotificationsAsRead() {
   markAllLocalNotificationsRead();
+  const unified=await graphqlRequest({query: `mutation ReadAllClientOfferNotifications { markAllMyNotificationsRead { success message updatedCount } }`});
+  if(!unified?.markAllMyNotificationsRead?.success)throw new Error("Unable to mark offer notifications as read.");
 
   const response = await graphqlRequest({
     query: MARK_ALL_NOTIFICATIONS_READ_MUTATION,

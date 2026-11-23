@@ -1,0 +1,134 @@
+﻿BACKEND HANDOFF: OFFER EMAILS AND IN-APP NOTIFICATIONS
+
+Scope
+The frontend already reads myNotifications on both client and vendor accounts.
+Implement durable backend events; do not send email from browser code or add a
+separate frontend mutation to trigger notifications. Backend source is not in
+this workspace. The event type names below are proposed additions; keep existing
+GraphQL query and mutation contracts unchanged.
+
+Events and recipients
+1. requestMenuOffer commits: OFFER_REQUESTED -> vendor, in-app + email.
+2. sendMenuOffer commits: OFFER_RECEIVED -> customer, in-app + email.
+3. acceptMenuOffer commits: OFFER_ACCEPTED -> vendor, in-app + email.
+   Customer receives a confirmation email as well. Acceptance is not payment:
+   say accepted / awaiting checkout; never say paid or order confirmed here.
+4. declineMenuOffer commits: OFFER_DECLINED -> opposite participant, in-app + email.
+   Notify vendor when customer declines; notify customer when vendor declines.
+   Actor may receive a confirmation email, but no unread self-notification.
+5. sendOfferMessage commits: OFFER_MESSAGE_RECEIVED -> opposite participant,
+   in-app notification. A message email is optional and may be grouped to avoid spam.
+   Never expose the other customer's or vendor's private conversations.
+
+Notification payload
+id: durable unique notification ID
+recipient: resolve from authenticated actor and request participants server-side
+entity.entityType: OFFER_REQUEST
+entity.entityId: offer request ID as a string (not menu ID, quote ID, or order ID)
+type: the appropriate OFFER_* type above
+isRead: false; isArchived: false; createdAt: ISO timestamp
+title/message: localized English/Norwegian safe text; message preview uses the
+same moderated/contact-redacted text as the conversation, not raw user input.
+entity.actionUrl: client /account/my-offers/{requestId}; vendor /offers/{requestId}
+Persist each recipient's read state separately. Return these events through the
+existing myNotifications query. Frontend routes by entity ID and polls the feed.
+
+Reliability and security
+- Save state change, message, notification and durable email-outbox event in the
+  same database transaction. Dispatch email from a worker after commit.
+- Reuse existing idempotencyKey and expectedRevision checks. Retrying the same
+  action must return its saved result without another notification or email.
+- Deduplicate by event ID, recipient and channel. Tie message events to message
+  IDs; quote events to quote revisions; accept/decline to actual transitions.
+- An expired quote, denied permission, stale revision, rollback or validation
+  failure must not create notifications or send mail.
+- Email provider failure must not turn a committed offer action into a GraphQL
+  error. Retry outbox deliveries with backoff; record provider message ID,
+  attempts and final failure for admin inspection. Do not swallow state failures.
+- Authenticate notification reads/read-all and restrict to current recipient.
+  Require request participation and role permission for offer mutations.
+- Use configured application origins for email links, never request-supplied URLs.
+- Email templates include menu, counterpart, guests, delivery date/time, request
+  ID, relevant quoted price and a role-correct link. No tokens or payment data.
+- Configure verified sender/domain, provider credentials on server, SPF/DKIM,
+  appropriate DMARC, worker/queue, production app origins and delivery logs.
+  Do not send production credentials or private recipient data in this handoff.
+
+EXISTING GRAPHQL CONTRACTS (send with the relevant authenticated account)
+
+query OfferNotifications {
+  myNotifications(first: 200, filter: {status: ALL}) {
+    edges {
+      node {
+        id type title message isRead isArchived createdAt
+        entity { entityType entityId actionUrl }
+      }
+    }
+  }
+}
+
+mutation ReadOfferNotification($id: ID!) {
+  markNotificationRead(id: $id) {
+    success message notification { id isRead }
+  }
+}
+Variables: {"id":"<backend notification ID, without frontend prefix>"}
+
+mutation ReadAllOfferNotifications {
+  markAllMyNotificationsRead { success message updatedCount }
+}
+Note: this existing mutation marks all unified notifications read, not only offers.
+
+mutation AcceptOffer($input: AcceptMenuOfferInput!) {
+  acceptMenuOffer(input: $input) { request { id } }
+}
+Variables:
+{"input":{"requestId":"6","expectedRevision":"<current request revision>",
+"quoteRevision":"<current quote revision>","idempotencyKey":"<UUID>"}}
+
+mutation DeclineOffer($input: DeclineMenuOfferInput!) {
+  declineMenuOffer(input: $input) { request { id } }
+}
+Variables:
+{"input":{"requestId":"6","expectedRevision":"<current request revision>",
+"idempotencyKey":"<UUID>"}}
+
+mutation MessageOffer($input: SendOfferMessageInput!) {
+  sendOfferMessage(input: $input) { request { id } }
+}
+Variables:
+{"input":{"requestId":"6","expectedRevision":"<current request revision>",
+"message":"Example message","idempotencyKey":"<UUID>"}}
+
+query ClientOfferState($id: ID!) {
+  myOfferRequest(id: $id) {
+    id revision status quote { revision pricePerPerson expiresAt }
+    permissions { canMessage canAccept canDecline }
+    messages { id side text createdAt moderated }
+  }
+}
+
+query VendorOfferState($id: ID!) {
+  vendorOfferRequest(id: $id) {
+    id revision status quote { revision pricePerPerson expiresAt }
+    permissions { canMessage canQuote canDecline }
+    messages { id side text createdAt moderated }
+  }
+}
+Variables for state queries: {"id":"6"}; use actual own test request.
+Read fresh state after writes. Do not invent a second accept endpoint for vendor:
+vendor accepts a customer's target by sending a quote at that price; customer
+accepts that quote before checkout.
+
+Acceptance tests (use dedicated test accounts and test email sink)
+- Create request -> one vendor event; send quote -> one customer event.
+- Customer accepts -> vendor event/email and customer confirmation; no paid claim.
+- Customer declines -> vendor event/email; vendor declines -> customer event/email.
+- Customer message -> vendor unread event; vendor reply -> customer unread event.
+- Retry identical mutation key -> same saved result, no duplicate delivery.
+- Denied/stale/expired action -> no state change or outbound event.
+- Simulate email provider timeout -> action succeeds, outbox retries independently.
+- Bell count changes, offer link opens correct role page, read/read-all persists.
+- Unrelated users cannot fetch or mark another user's notifications.
+- Verify actual worker delivery logs and test inbox; frontend rendering alone is
+  not evidence that email was sent.

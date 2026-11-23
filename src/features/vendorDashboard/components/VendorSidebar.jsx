@@ -1,6 +1,6 @@
 import { useOfferText } from '../../offers/offerText';
 import { NavLink } from "react-router-dom";
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut, FiTag } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import { vendorNavigationItems } from "../data/vendorDashboardConfig";
@@ -52,7 +52,10 @@ export default function VendorSidebar() {
       </div>
 
       <nav className="hide-scrollbar mt-4 flex flex-1 gap-2 overflow-x-auto pb-1 lg:mt-6 lg:flex-col lg:overflow-visible lg:px-3 lg:py-0">
-        <NavLink to="/account/my-offers" className={getLinkClasses}>{offerText("My offers","Mine tilbud")}</NavLink>
+        <NavLink to="/account/my-offers" className={state => `${getLinkClasses(state)} shrink-0 whitespace-nowrap lg:shrink`}>
+          <div className="inline-flex h-5 w-5 items-center justify-center rounded-[6px]"><FiTag size={14} strokeWidth={2} /></div>
+          <span className="flex-1">{offerText("My offers", "Mine tilbud")}</span>
+        </NavLink>
         {vendorNavigationItems.map(({ labelKey, to, icon: Icon, end }) => (
           <NavLink
             key={to}

@@ -164,7 +164,7 @@ export default function AppRouter() {
             <Route path="/browse/food-type" element={<BrowseFoodTypePage />} />
             <Route path="/browse/occasion" element={<BrowseOccasionPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/settings" element={<ClientSettingsPage />} /><Route path="/account/my-offers" element={<OffersPage />} /><Route path="/account/my-offers/:requestId" element={<OffersPage />} />
+            <Route path="/settings" element={<ClientSettingsPage />} />
             <Route path="/terms-and-conditions" element={<TermsPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/vendor/:vendorSlug" element={<VendorProfilePage />} />
@@ -190,6 +190,11 @@ export default function AppRouter() {
           </Route>
 
           <Route path="/orders/:orderId" element={<VendorDashboardLayout />}><Route index element={<VendorOrdersPage />} /></Route>
+
+          <Route path="/account/my-offers" element={<VendorDashboardLayout />}>
+            <Route index element={<OffersPage />} />
+            <Route path=":requestId" element={<OffersPage />} />
+          </Route>
 
           {/* Vendor dashboard routes */}
           <Route path="/client-dashboard" element={<VendorDashboardLayout />}>

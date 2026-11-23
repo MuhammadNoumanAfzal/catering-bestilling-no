@@ -37,7 +37,7 @@ export default function CheckoutSummaryPanel({
               <span className="text-[14px] font-semibold text-white">
                 {t("checkout.currentTotal")}
               </span>
-              <span className="text-[25px] font-bold leading-none text-white">
+              <span className="shrink-0 whitespace-nowrap text-[25px] font-bold leading-none text-white tabular-nums">
                 {formatCurrency(grandTotal)}
               </span>
             </div>
@@ -56,7 +56,7 @@ export default function CheckoutSummaryPanel({
             ))}
           </div>
           <div className="mt-3 rounded-[10px] border border-[#d9ead7] bg-[#f6fff5] px-3 py-2.5 text-[#1d1d1d]">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-3">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2f7a3e]">
                   {t("checkout.totalToPay")}
@@ -66,12 +66,13 @@ export default function CheckoutSummaryPanel({
                 </p>
               </div>
 
-              <div className="text-right">
-                <span className="summary-grand-total text-[26px] font-bold leading-none">
+              <div className="w-full text-right">
+                <span className="summary-grand-total block whitespace-nowrap text-[26px] font-bold leading-none tabular-nums">
                   {formatCurrency(grandTotal)}
                 </span>
                 <p className="mt-1 text-[10px] font-semibold leading-4 text-[#2f7a3e]">
-                  {t("checkout.vatIncluded", { defaultValue: "VAT included" })}: {formatCurrency(includedVat)}
+                  {t("checkout.vatIncluded", { defaultValue: "VAT included" })}:{" "}
+                  <span className="inline-block whitespace-nowrap tabular-nums">{formatCurrency(includedVat)}</span>
                 </p>
               </div>
             </div>

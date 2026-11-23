@@ -12,15 +12,16 @@ function emitOrderSummaryUpdated() {
 }
 
 export function createInitialOrderSummary(vendor) {
+  const defaults = vendor.orderSummary || {};
   return {
-    ...vendor.orderSummary,
+    ...defaults,
     items: [],
-    deliveryDate: vendor.orderSummary.deliveryDate || "",
-    deliveryTime: vendor.orderSummary.deliveryTime || "",
-    personCount: vendor.orderSummary.personCount,
-    deliveryAddress: vendor.orderSummary.deliveryAddress,
-    invoiceAddress: vendor.orderSummary.invoiceAddress,
-    vendorNote: vendor.orderSummary.vendorNote || "",
+    deliveryDate: defaults.deliveryDate || "",
+    deliveryTime: defaults.deliveryTime || "",
+    personCount: defaults.personCount ?? 1,
+    deliveryAddress: defaults.deliveryAddress || "",
+    invoiceAddress: defaults.invoiceAddress || "",
+    vendorNote: defaults.vendorNote || "",
     tipRate: 0,
   };
 }

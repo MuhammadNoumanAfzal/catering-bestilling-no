@@ -9,6 +9,7 @@ import { fetchVendors } from '../vendor/api/vendorService';
 import { adaptApiVendorToProfile } from '../vendor/api/vendorMappers';
 import { isVendorAvailableForPostalCode } from '../vendor/services/vendorAvailability';
 import DeliveryAreas from './DeliveryAreas';
+import { showOfferSuccessToast } from './offerFeedback';
 import './Offers.css';
 export default function RequestOfferButton({vendor,menu,summary,items,eligible=true}) {
  const text=useOfferText(),{isLoggedIn}=useAuth(),navigate=useNavigate(),location=useLocation();
@@ -44,7 +45,10 @@ export default function RequestOfferButton({vendor,menu,summary,items,eligible=t
    if(!isVendorAvailableForPostalCode(freshCoverage,postcode)){
     setError(text('This vendor does not deliver to this postcode. Choose a postcode in their delivery area.','Leverand\u00f8ren leverer ikke til dette postnummeret. Velg et postnummer i leveringsomr\u00e5det.'));return;
    }
-   await offerRequest('create',{input:{...input,idempotencyKey:keys.current.get(signature)}});setOpen(false);navigate('/account/my-offers',{state:{requestSent:true}});}
+   await offerRequest('create',{input:{...input,idempotencyKey:keys.current.get(signature)}});
+   dialog.current?.close();setOpen(false);setMessage('');setTarget('');setError('');button.current?.focus();
+   void showOfferSuccessToast(text('Your offer request was sent successfully.','Tilbudsforesp\u00f8rselen er sendt.'));
+  }
   catch(err){setError(offerError(err,text));}finally{pending.current=false;setBusy(false);}
  }
  function close(){if(!pending.current){setOpen(false);button.current?.focus();}}

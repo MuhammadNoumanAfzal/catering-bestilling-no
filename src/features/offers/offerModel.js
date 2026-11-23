@@ -33,7 +33,7 @@ export function offerMatchesCheckout(binding, cart, form) {
     binding.itemsSignature === cartSignature(cart.orderSummary));
 }
 export function restoreCatalogueSummary(summary) {
-  return { ...summary, offer: null, offerRemoved:true, pricing: null, availability: null, previewItems: [],
+  return { ...summary, suspendedOffer: summary.offer || summary.suspendedOffer || null, offer: null, offerRemoved:true, pricing: null, availability: null, previewItems: [],
     items: summary.items.map(item => item.catalogueUnitPrice == null ? item : { ...item, unitPrice: item.catalogueUnitPrice, price: 0 }) };
 }
 export function acceptedOfferCart(request) {

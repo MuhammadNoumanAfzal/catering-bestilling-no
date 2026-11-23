@@ -1,3 +1,4 @@
+import useOfferRestoration from '../../offers/useOfferRestoration';
 import { offerMatchesCheckout, restoreCatalogueSummary } from '../../offers/offerModel';
 import {paymentPagePath} from "../../payments/checkoutModel.js";
 import { useEffect, useMemo, useState } from "react";
@@ -209,7 +210,7 @@ export function useCheckoutPage() {
   const normalizedType = VALID_CHECKOUT_TYPES.includes(checkoutType)
     ? checkoutType
     : null;
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const { locationValue } = useBrowseFilters();
   const [carts, setCarts] = useState([]);
   const [formState, setFormState] = useState(() => createInitialCheckoutFormState());
@@ -303,7 +304,7 @@ export function useCheckoutPage() {
 
   useEffect(() => {
     const requestedOffer=new URLSearchParams(location.search).get("offerRequest");
-    const storedCarts = readAllStoredOrderSummaries().filter(cart=>!requestedOffer || cart.orderSummary.offer?.requestId===requestedOffer);
+    const storedCarts = readAllStoredOrderSummaries().filter(cart=>!requestedOffer || (cart.orderSummary.offer?.requestId || cart.orderSummary.suspendedOffer?.requestId)===requestedOffer);
     const prefilledFormState = location.state?.prefillCheckoutForm;
     const savedDraft = readCheckoutFormDraft(normalizedType);
     const offerCart=storedCarts.find(cart=>cart.orderSummary.offer);
@@ -514,6 +515,8 @@ export function useCheckoutPage() {
       return changed?next:current;
     });
   },[formState.date,formState.time,formState.deliveryPostalCode,pricingRequestKey]);
+
+  useOfferRestoration({carts,setCarts,form:formState,customerId:isLoggedIn?user?.id:null,requestedOfferId:new URLSearchParams(location.search).get('offerRequest')});
 
   const hasItems = carts.some((cart) => cart.orderSummary.items.length > 0);
   const hasLivePricing = carts.length > 0 && carts.every((cart) => {
