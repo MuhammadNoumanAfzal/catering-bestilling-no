@@ -11,3 +11,9 @@ test('missing backend translations retain a safe localized fallback',()=>{
  assert.equal(offerError(error,en=>en),'This offer has expired.');
  assert.ok(offerError(error,(_en,nb)=>nb).length>0);
 });
+
+test('offer errors explain expired sessions and network failures without exposing technical details',()=>{
+ assert.equal(offerError({technicalMessage:'Signature has expired',status:401},en=>en),'Please sign in again before sending your request.');
+ assert.equal(offerError({technicalMessage:'Failed to fetch'},en=>en),'Could not connect. Check your internet connection and try again.');
+ assert.equal(offerError({technicalMessage:'database exception secret'},en=>en),'Unable to complete this action. Please try again.');
+});

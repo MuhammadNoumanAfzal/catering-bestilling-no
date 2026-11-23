@@ -6,6 +6,7 @@ import {
   FiMenu,
   FiShoppingCart,
   FiUser,
+  FiTag,
 } from "react-icons/fi";
 import { Bell } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -35,10 +36,17 @@ export default function CommonNavbarActions({
   const location = useLocation();
   const offerText = useOfferText();
   const { t } = useTranslation();
+  const accountMenuItems = [...menuItems];
+  if (isLoggedIn && !accountMenuItems.some(item => item.to === "/account/my-offers")) {
+    const ordersIndex = accountMenuItems.findIndex(item => /\/orders$/.test(item.to));
+    accountMenuItems.splice(ordersIndex >= 0 ? ordersIndex + 1 : accountMenuItems.length, 0, {
+      to: "/account/my-offers", icon: FiTag, label: offerText("My offers", "Mine tilbud"),
+    });
+  }
 
   return (
     <div className="ml-auto shrink-0 lg:border-l lg:border-[#ebe4de] lg:pl-3" ref={actionMenuRef}>
-      <div className="flex items-center gap-1.5 sm:gap-2"><Link to="/account/my-offers" className="rounded-lg px-2 py-2 text-xs font-semibold text-[#aa5e35]">{offerText("My offers","Mine tilbud")}</Link>
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <div className="relative" ref={notificationRef}>
           <button
             type="button"
@@ -113,7 +121,7 @@ export default function CommonNavbarActions({
           {isActionMenuOpen ? (
             <div className="absolute right-0 top-[calc(100%+10px)] z-50 max-h-[min(70vh,calc(100vh-96px))] min-w-[220px] overflow-y-auto rounded-3xl border border-[#ece2d9] bg-white p-3 shadow-[0_18px_40px_rgba(20,20,20,0.12)] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <div className="space-y-1">
-                {menuItems.map((item) => {
+                {accountMenuItems.map((item) => {
                   const Icon = item.icon;
 
                   return (
