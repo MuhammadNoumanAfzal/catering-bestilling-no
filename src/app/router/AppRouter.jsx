@@ -191,15 +191,19 @@ export default function AppRouter() {
 
           <Route path="/orders/:orderId" element={<VendorDashboardLayout />}><Route index element={<VendorOrdersPage />} /></Route>
 
+          <Route path="/my-offers" element={<VendorDashboardLayout />}>
+            <Route index element={<OffersPage />} />
+            <Route path=":requestId/:menuSlug?" element={<OffersPage />} />
+          </Route>
           <Route path="/account/my-offers" element={<VendorDashboardLayout />}>
             <Route index element={<OffersPage />} />
-            <Route path=":requestId" element={<OffersPage />} />
+            <Route path=":requestId/:menuSlug?" element={<OffersPage />} />
           </Route>
 
           {/* Vendor dashboard routes */}
           <Route path="/client-dashboard" element={<VendorDashboardLayout />}>
             <Route index element={<VendorDashboardHomePage />} />
-            <Route path="orders" element={<VendorOrdersPage />} /><Route path="offers" element={<Navigate to="/account/my-offers" replace />} />
+            <Route path="orders" element={<VendorOrdersPage />} /><Route path="offers" element={<Navigate to="/my-offers" replace />} />
             <Route path="restaurants" element={<VendorRestaurantsPage />} />
             <Route path="invoices" element={<VendorInvoicesPage />} />
             <Route path="invoices/:invoiceId" element={<VendorInvoiceDetailsPage />} />

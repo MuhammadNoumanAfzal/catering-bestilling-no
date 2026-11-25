@@ -1,3 +1,6 @@
+import { offerSavings } from '../../../offers/offerSavings';
+import { formatMoney } from '../../../offers/offerFormat';
+import { useOfferText } from '../../../offers/offerText';
 import { FiShoppingBag } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -18,6 +21,8 @@ export default function VendorSummaryCard({
   onStandaloneItemChange,
 }) {
   const { t } = useTranslation();
+  const offerText=useOfferText();
+  const saving=offerSavings(cart.orderSummary);
   const personCount = cart.orderSummary.personCount;
   const items = sortSummaryItems(cart.orderSummary.items).map((item) => ({
     ...item,
@@ -96,6 +101,12 @@ export default function VendorSummaryCard({
           minimumOrderShortfall={cart.orderSummary.pricing?.minimumOrderShortfall}
         />
 
+        {saving&&<div data-offer-savings className="mt-3 rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-[14px]">
+          <p className="font-semibold">{offerText('Agreed offer price applied','Avtalt tilbudspris er brukt')}</p>
+          <div className="mt-2 flex flex-wrap justify-between gap-2"><span>{offerText('Original menu total','Opprinnelig menypris totalt')}</span><span className="line-through">{formatMoney(saving.original,offerText)}</span></div>
+          <div className="mt-1 flex flex-wrap justify-between gap-2"><span>{offerText('Agreed menu total','Avtalt menypris totalt')}</span><strong>{formatMoney(saving.agreed,offerText)}</strong></div>
+          <div className="mt-2 flex flex-wrap justify-between gap-2 border-t border-emerald-200 pt-2 font-semibold text-emerald-900"><span>{offerText('Offer savings (already included)','Tilbudsrabatt (allerede inkludert)')}</span><span>{formatMoney(saving.savings,offerText)}</span></div>
+        </div>}
         <TipSelector
           selectedTipRate={cart.orderSummary.tipRate}
           customTipAmount={cart.orderSummary.customTipAmount}

@@ -37,10 +37,10 @@ export default function CommonNavbarActions({
   const offerText = useOfferText();
   const { t } = useTranslation();
   const accountMenuItems = [...menuItems];
-  if (isLoggedIn && !accountMenuItems.some(item => item.to === "/account/my-offers")) {
+  if (isLoggedIn && !accountMenuItems.some(item => item.to === "/my-offers")) {
     const ordersIndex = accountMenuItems.findIndex(item => /\/orders$/.test(item.to));
     accountMenuItems.splice(ordersIndex >= 0 ? ordersIndex + 1 : accountMenuItems.length, 0, {
-      to: "/account/my-offers", icon: FiTag, label: offerText("My offers", "Mine tilbud"),
+      to: "/my-offers", icon: FiTag, label: offerText("My offers", "Mine tilbud"),
     });
   }
 

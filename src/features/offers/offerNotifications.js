@@ -16,6 +16,6 @@ export function mapOfferNotification(node) {
     type: 'offer', notificationType: node.type, createdOn: node.createdAt,
     createdAt: String(node.createdAt || '').split('T')[0],
     entityType, entityId: id || '',
-    actionUrl: id ? '/account/my-offers/' + encodeURIComponent(id) : '/account/my-offers',
+    actionUrl: id ? '/my-offers/' + encodeURIComponent(id) : '/my-offers',
   };
 }

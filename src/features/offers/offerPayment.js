@@ -1,3 +1,4 @@
+import { getOfferCapabilities } from './offerCapabilities.js';
 import { graphqlRequest } from '../../lib/api/graphqlClient';
 import { validatePaymentGuard, validatePayableRequest } from './offerBackendModel';
 export const OFFER_PAYMENT_GUARD_QUERY=`query OfferPaymentGuard($orderId: ID!) { offerPaymentGuard(orderId:$orderId) { allowed code message offerRequestId quoteRevision } }`;
@@ -12,7 +13,9 @@ export async function validateOfferPayment(orderId,customerId){
  const data=await graphqlRequest({query:OFFER_PAYMENT_GUARD_QUERY,variables:{orderId}});
  const guard=validatePaymentGuard(data?.offerPaymentGuard,known);
  if(!guard.requiresOfferValidation)return guard;
- const current=await graphqlRequest({query:PAYABLE_OFFER_QUERY,variables:{id:guard.requestId}});
+ const capabilities=await getOfferCapabilities((query,variables)=>graphqlRequest({query,variables}));
+ const query=capabilities.quoteTiming ? PAYABLE_OFFER_QUERY.replace('revision expiresAt','revision expiresAt startsAt isActive isScheduled') : PAYABLE_OFFER_QUERY;
+ const current=await graphqlRequest({query,variables:{id:guard.requestId}});
  return validatePayableRequest(current?.myOfferRequest,guard);
  } catch(cause) {const error=new Error("Offer payment could not be verified",{cause});error.code="OFFER_PAYMENT_BLOCKED";throw error;}
 }

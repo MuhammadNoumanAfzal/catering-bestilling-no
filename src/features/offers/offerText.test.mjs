@@ -17,3 +17,8 @@ test('offer errors explain expired sessions and network failures without exposin
  assert.equal(offerError({technicalMessage:'Failed to fetch'},en=>en),'Could not connect. Check your internet connection and try again.');
  assert.equal(offerError({technicalMessage:'database exception secret'},en=>en),'Unable to complete this action. Please try again.');
 });
+test('accepted offer checkout preparation problems never say the acceptance failed',()=>{
+ const message=offerError({code:'OFFER_CHECKOUT_PREPARATION_FAILED'},en=>en);
+ assert.match(message,/offer is accepted/i);
+ assert.match(message,/continue to checkout/i);
+});

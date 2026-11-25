@@ -1,4 +1,5 @@
-﻿// Adapt the deployed offer schema to the existing checkout view model.
+import { quoteTiming } from './offerTiming.js';
+// Adapt the deployed offer schema to the existing checkout view model.
 function amount(value, field) {
   if (value == null || value === '' || !Number.isFinite(Number(value)) || Number(value) < 0) {
     throw new Error(`Invalid offer pricing: ${field}`);
@@ -31,6 +32,6 @@ export function validatePaymentGuard(guard, known) {
 }
 export function validatePayableRequest(request, guard, now=Date.now()) {
   const deadline=Date.parse(request?.quote?.expiresAt);
-  if (!request?.id || String(request.id)!==String(guard.requestId) || request.quote?.revision!==guard.quoteRevision || !['ACCEPTED','ORDERED'].includes(request.status) || !Number.isFinite(deadline) || deadline<=now) throw new Error('Offer expired or changed');
+  if (!request?.id || String(request.id)!==String(guard.requestId) || request.quote?.revision!==guard.quoteRevision || !['ACCEPTED','ORDERED'].includes(request.status) || !Number.isFinite(deadline) || deadline<=now || quoteTiming(request.quote,now)!=='active') throw new Error('Offer expired or changed');
   return {...guard,expiresAt:request.quote.expiresAt};
 }

@@ -1,3 +1,5 @@
+import { mergeOfferUpdate, isConversationClosed } from './offerLiveState';
+import { offerDetailPath, offerIdFromSlug } from './offerNavigation';
 import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Check, LoaderCircle, MessageSquare, RefreshCw, Tag } from 'lucide-react';
@@ -15,31 +17,48 @@ import OfferDetailHeader from './OfferDetailHeader';
 import Swal from 'sweetalert2';
 
 
-export default function OffersPage(){ const {user}=useOfferAuth(); const {requestId}=useParams(); return <OfferWorkspace key={`${user?.id || "signed-out"}:${requestId || "list"}`}/>; }
+export default function OffersPage(){ const {user}=useOfferAuth(); const {requestId:routeKey}=useParams(); const requestId=offerIdFromSlug(routeKey); return <OfferWorkspace key={`${user?.id || "signed-out"}:${requestId || "list"}`}/>; }
 function OfferWorkspace() {
- const text=useOfferText(), {user,isLoggedIn,isAuthenticated}=useOfferAuth(), {requestId}=useParams(), location=useLocation(), navigate=useNavigate();
+ const text=useOfferText(), {user,isLoggedIn,isAuthenticated}=useOfferAuth(), {requestId:requestSlug}=useParams(), location=useLocation(), navigate=useNavigate();
+ const requestId=offerIdFromSlug(requestSlug);
  const signedIn=isLoggedIn ?? isAuthenticated;
- const [page,setPage]=useState(1),[filter,setFilter]=useState(''),[data,setData]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[refresh,setRefresh]=useState(0),[busy,setBusy]=useState(false),[activeAction,setActiveAction]=useState(''),[message,setMessage]=useState(''),[now,setNow]=useState(()=>Date.now());
+ const [page,setPage]=useState(1),[filter,setFilter]=useState(''),[data,setData]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[actionSaved,setActionSaved]=useState(false),[refresh,setRefresh]=useState(0),[busy,setBusy]=useState(false),[activeAction,setActiveAction]=useState(''),[message,setMessage]=useState(''),[now,setNow]=useState(()=>Date.now());
  const pending=useRef(false), actionKeys=useRef(new Map()), generation=useRef(0), alive=useRef(true);
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);
  useEffect(()=>{const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[]);
  useEffect(()=>{
   if(!signedIn)return;let active=true;
-  queueMicrotask(()=>{if(active){setLoading(true);setError('');setData(null);}});
-  offerRequest(requestId?'detail':'list',requestId?{id:requestId}:{page,status:filter||null}).then(value=>{if(active)setData(value);}).catch(err=>{if(active)setError(offerError(err,text));}).finally(()=>{if(active)setLoading(false);});
+  queueMicrotask(()=>{if(active){setLoading(true);setError('');setActionSaved(false);setData(null);}});
+  offerRequest(requestId?'detail':'list',requestId?{id:requestId}:{page,status:filter||null}).then(value=>{if(active)setData(previous=>mergeOfferUpdate(previous,value));}).catch(err=>{if(active)setError(offerError(err,text));}).finally(()=>{if(active)setLoading(false);});
   return()=>{active=false;};
  // Locale changes render existing data without resetting the draft.
  // eslint-disable-next-line react-hooks/exhaustive-deps
  },[requestId,page,filter,refresh,signedIn,user?.id]);
  useEffect(()=>{
-  if(!signedIn || !requestId)return;
-  const update=()=>{if(document.visibilityState!=='visible'||pending.current)return;const token=generation.current;offerRequest('detail',{id:requestId}).then(value=>{if(alive.current&&token===generation.current)setData(value);}).catch(()=>{if(alive.current&&token===generation.current)setError(text('Unable to refresh this offer. Refresh before continuing.','Tilbudet kunne ikke oppdateres. Oppdater før du fortsetter.'));});};
-  const timer=setInterval(update,15000);window.addEventListener('focus',update);return()=>{clearInterval(timer);window.removeEventListener('focus',update);};
- },[signedIn,requestId,user?.id,text]);
+  if(!signedIn)return;
+  let active=true,inFlight=false;
+  const update=async()=>{
+   if(!active||document.visibilityState!=='visible'||pending.current||inFlight)return;
+   inFlight=true;const token=generation.current;
+   try{
+    const value=await offerRequest(requestId?'detail':'list',requestId?{id:requestId}:{page,status:filter||null});
+    if(active&&alive.current&&token===generation.current)setData(previous=>mergeOfferUpdate(previous,value));
+   }catch{/* Retain the saved view during a temporary background refresh failure. */}
+   finally{inFlight=false;}
+  };
+  const timer=setInterval(update,requestId?2000:5000);
+  window.addEventListener('focus',update);window.addEventListener('online',update);document.addEventListener('visibilitychange',update);
+  return()=>{active=false;clearInterval(timer);window.removeEventListener('focus',update);window.removeEventListener('online',update);document.removeEventListener('visibilitychange',update);};
+ },[signedIn,requestId,user?.id,page,filter]);
+ useEffect(()=>{
+  if(!signedIn||!requestId||!data?.id||String(data.id)!==String(requestId))return;
+  const path=offerDetailPath(offersBasePath,data);
+  if(location.pathname!==path)navigate({pathname:path,search:location.search,hash:location.hash},{replace:true,state:location.state});
+ },[signedIn,requestId,data,location.pathname,location.search,location.hash,location.state,navigate]);
  if(!signedIn)return <Navigate to={isVendorApp?'/auth/login':'/signin'} state={{from:location}} replace/>;
  const request=requestId?data:null;
  async function act(operation,extra={}) {
-  if(pending.current||!request||error)return;pending.current=true;generation.current+=1;setBusy(true);setActiveAction(operation);setError('');
+  if(pending.current||!request||error||isConversationClosed(request))return;pending.current=true;generation.current+=1;setBusy(true);setActiveAction(operation);setError('');setActionSaved(false);
   const payload={requestId:request.id,expectedRevision:request.revision,...extra};
   const signature=JSON.stringify([operation,payload]);
   if(!actionKeys.current.has(signature))actionKeys.current.set(signature,newIdempotencyKey());
@@ -47,24 +66,30 @@ function OfferWorkspace() {
    const send=()=>offerRequest(operation,{input:{...payload,idempotencyKey:actionKeys.current.get(signature)}});
    const result=operation==='accept'&&request.status==='ACCEPTED'
     ?await offerRequest('detail',{id:request.id})
-    :await performOfferAction({operation,before:request,expectedQuoteRevision:extra.quoteRevision,send,load:()=>offerRequest('detail',{id:request.id})});
+    :await performOfferAction({operation,before:request,expected:extra,side:isVendorApp?'VENDOR':'CUSTOMER',expectedQuoteRevision:extra.quoteRevision,send,onConfirmed:()=>{if(operation==='decline'&&alive.current){setMessage('');setData(previous=>previous?.id===request.id?{...previous,status:'DECLINED',permissions:{canMessage:false,canQuote:false,canAccept:false,canDecline:false}}:previous);}},load:()=>offerRequest('detail',{id:request.id})});
    if(operation==='accept' && String(result.quote?.revision)!==String(extra.quoteRevision)) {
     const conflict=new Error('Offer quote changed');conflict.code='OFFER_REVISION_CONFLICT';throw conflict;
    }
    if(!alive.current)return;
-   setData(result);
+   setData(previous=>mergeOfferUpdate(previous,result));
    if(operation==='message')setMessage('');
 
    if(operation!=='accept')void showOfferSuccessToast(operation==='quote'?text('Offer sent','Tilbud sendt'):operation==='decline'?text('Request declined','Foresp\u00f8rsel avsl\u00e5tt'):text('Message sent','Melding sendt'));
    if(operation==='accept') {
     if(result.orderId){navigate((result.status==='ORDERED'?'/orders/':'/payment/')+encodeURIComponent(result.orderId));return;}
-    const cart=acceptedOfferCart(result);
-    if(!await storeAcceptedOffer(cart,user.id,text))return;
+    try {
+     const cart=acceptedOfferCart(result);
+     if(!await storeAcceptedOffer(cart,user.id,text))return;
+    } catch(cause) {
+     const checkoutError=new Error('Offer accepted, but checkout could not be prepared.',{cause});
+     checkoutError.code='OFFER_CHECKOUT_PREPARATION_FAILED';checkoutError.actionConfirmed=true;throw checkoutError;
+    }
     navigate('/checkout/private?offerRequest='+encodeURIComponent(result.id));
    }
    } catch(err) {
    if(!alive.current)return;
    if(err.actionConfirmed){
+    setActionSaved(true);
     if(operation==='message')setMessage('');
 
     setError(offerError(err,text));
@@ -73,7 +98,7 @@ function OfferWorkspace() {
    }
    const feedback=offerError(err,text);setError(feedback);
    void Swal.fire({toast:true,position:'top-end',icon:'error',titleText:feedback,showConfirmButton:false,showCloseButton:true,timer:6000,timerProgressBar:true,background:'#fffaf6',color:'#49382e'});
-   try{const latest=await offerRequest('detail',{id:request.id});if(alive.current)setData(latest);}catch{/* Keep the error and draft visible. */}
+   try{const latest=await offerRequest('detail',{id:request.id});if(alive.current)setData(previous=>mergeOfferUpdate(previous,latest));}catch{/* Keep the error and draft visible. */}
   }
   finally{pending.current=false;if(alive.current){setBusy(false);setActiveAction('');}}
  }
@@ -82,15 +107,15 @@ function OfferWorkspace() {
   const decision=await confirmOfferAction({title:text('Decline this request?','Avsl\u00e5 foresp\u00f8rselen?'),text:text('The vendor will see that you declined this offer request.','Leverand\u00f8ren vil se at du har avsl\u00e5tt foresp\u00f8rselen.'),confirmButtonText:text('Decline request','Avsl\u00e5 foresp\u00f8rsel'),cancelButtonText:text('Keep request','Behold foresp\u00f8rsel'),icon:'warning'});
   if(decision.isConfirmed&&alive.current)void act('decline');
  }
- const current=isOfferCurrent(request,now),permissions=request?.permissions||{};
+ const current=isOfferCurrent(request,now),permissions=request&&['DECLINED','EXPIRED','CLOSED','ORDERED'].includes(request.status)?{}:request?.permissions||{};
  const closed=Boolean(request&&['DECLINED','EXPIRED','CLOSED','ORDERED'].includes(request.status));
  return <div className="@container mx-auto max-w-[1160px] pb-4 text-[#1a1410] [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-3 [&_a:focus-visible]:outline-[#cf6e38]">
   {requestId?<div className="mb-3 flex items-center justify-between gap-3"><Link data-offer-back to={offersBasePath} className="inline-flex items-center gap-2 rounded-lg py-2 text-[14px]! text-[#a64d23] no-underline"><ArrowLeft size={16}/>{text('All requests','Alle foresp\u00f8rsler')}</Link><button type="button" disabled={loading||busy} onClick={()=>setRefresh(value=>value+1)} className="inline-flex items-center gap-2 rounded-lg border border-[#e3d9cf] bg-white px-3 py-2 text-[14px]! disabled:opacity-50"><RefreshCw size={15} className={loading?'animate-spin motion-reduce:animate-none':''}/>{text('Refresh','Oppdater')}</button></div>:(<header className="mb-6 flex items-start justify-between gap-4"><div><h1 className="m-0 text-[34px] font-bold leading-tight tracking-tight text-[#1a1410] max-[500px]:text-[28px]">{request ? (isVendorApp?request.customerDisplayName:request.vendor?.name) : text(isVendorApp?'Offer requests':'My offers',isVendorApp?'Tilbudsforespørsler':'Mine tilbud')}</h1><p className="mt-2 text-[16px] leading-7 text-[#1a1410]">{request?request.menuName:text(isVendorApp?'Review requests, discuss the details and send a personal offer.':'Keep your requests, conversations and agreed prices in one place.',isVendorApp?'Se forespørsler, avklar detaljene og send et personlig tilbud.':'Samle forespørsler, samtaler og avtalte priser på ett sted.')}</p></div><button className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border px-[13px] py-[9px] text-[14px]! font-semibold leading-[1.35] no-underline transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#cf6e38] border-[#dce0e3] bg-white text-[#1a1410] shadow-[0_1px_2px_#18212a05] enabled:hover:bg-[#f7f8f9]" onClick={()=>setRefresh(value=>value+1)} disabled={loading||busy}><RefreshCw size={15} className={loading?"shrink-0 animate-spin motion-reduce:animate-none":""}/>{text('Refresh','Oppdater')}</button></header>)}
 
   {!requestId?<OfferStats key={refresh} text={text} filter={filter} onFilter={status=>{setFilter(status);setPage(1);}}/>:null}
   {location.state?.requestSent && !requestId?<div className="my-3 flex items-start gap-2 rounded-[9px] bg-[#e8f6ec] px-3.5 py-3 text-[14px]! leading-[1.6] text-[#347447]"><Check size={18}/>{text('Your request has been sent. You will receive an email when the vendor replies.','Forespørselen er sendt. Du får en e-post når leverandøren svarer.')}</div>:null}
-  {requestId?null:<div className="flex items-center justify-between gap-4 rounded-t-[9px] border border-b-0 border-[#e6dfd8] bg-[#fffaf6] px-[18px] py-4 text-[15px]! font-[650] text-[#1a1410] max-[650px]:gap-3 max-[650px]:p-3 max-[380px]:flex-wrap [&_select]:w-[190px] [&_select]:max-w-full [&_select]:rounded-md [&_select]:border [&_select]:border-[#dce0e3] [&_select]:bg-white [&_select]:px-2.5 [&_select]:py-2 [&_select]:text-[14px]! [&_select]:text-[#1a1410] max-[650px]:[&_select]:w-[155px] max-[380px]:[&_select]:w-full [&_select:focus-visible]:outline-2 [&_select:focus-visible]:outline-offset-2 [&_select:focus-visible]:outline-[#cf6e38]"><span>{text('Your requests','Dine forespørsler')} {data?`(${data.totalCount})`:''}</span><select aria-label={text('Filter by status','Filtrer etter status')} value={filter} onChange={e=>{setFilter(e.target.value);setPage(1);}}><option value="">{text('All statuses','Alle statuser')}</option>{['WAITING_FOR_VENDOR','OFFERED','ACCEPTED','DECLINED','EXPIRED','CLOSED','ORDERED'].map(status=><option value={status} key={status}>{offerStatus(status,text)}</option>)}</select></div>}
-  {error?<div className="my-3 flex items-start gap-2 rounded-[7px] border border-[#f3d5cd] bg-[#fff2ef] px-3.5 py-3 text-[14px]! leading-[1.6] text-[#a43a26]" role="alert">{error}</div>:null}
+  {requestId?null:<div className="flex items-center justify-between gap-4 rounded-t-[9px] border border-b-0 border-[#e6dfd8] bg-[#fffaf6] px-[18px] py-4 text-[15px]! font-[650] text-[#1a1410] max-[650px]:gap-3 max-[650px]:p-3 max-[380px]:flex-wrap [&_select]:w-[190px] [&_select]:max-w-full [&_select]:rounded-md [&_select]:border [&_select]:border-[#dce0e3] [&_select]:bg-white [&_select]:px-2.5 [&_select]:py-2 [&_select]:text-[14px]! [&_select]:text-[#1a1410] max-[650px]:[&_select]:w-[155px] max-[380px]:[&_select]:w-full [&_select:focus-visible]:outline-2 [&_select:focus-visible]:outline-offset-2 [&_select:focus-visible]:outline-[#cf6e38]"><span>{text('Your requests','Dine forespørsler')} {data?`(${data.totalCount})`:''}</span><select aria-label={text('Filter by status','Filtrer etter status')} value={filter} onChange={e=>{setFilter(e.target.value);setPage(1);}}><option value="">{text('All statuses','Alle statuser')}</option>{['WAITING_FOR_VENDOR','OFFERED','ACCEPTED','DECLINED','EXPIRED','CLOSED','ORDERED'].concat(data?._capabilities?.withdraw?['WITHDRAWN']:[]).map(status=><option value={status} key={status}>{offerStatus(status,text)}</option>)}</select></div>}
+  {error?<div className={`my-3 flex items-start gap-2 rounded-[7px] border px-3.5 py-3 text-[14px]! leading-[1.6] ${actionSaved?"border-amber-300 bg-amber-50 text-amber-950":"border-[#f3d5cd] bg-[#fff2ef] text-[#a43a26]"}`} role={actionSaved?"status":"alert"}>{error}</div>:null}
   {loading?<div className="flex flex-col items-center gap-3 rounded-b-[9px] border border-[#e0e3e5] bg-white px-5 py-12 text-center text-[#1a1410] [&_h2]:text-[20px]! [&_h2]:font-semibold! [&_h2]:text-[#554232] [&_p]:text-[15px]!" role="status"><LoaderCircle className="shrink-0 animate-spin motion-reduce:animate-none" size={22}/>{text('Loading requests…','Laster forespørsler…')}</div>:!data?<div className="flex flex-col items-center gap-3 rounded-b-[9px] border border-[#e0e3e5] bg-white px-5 py-12 text-center text-[#1a1410] [&_h2]:text-[20px]! [&_h2]:font-semibold! [&_h2]:text-[#554232] [&_p]:text-[15px]!"><MessageSquare size={30}/><h2>{text('Unable to load offer requests','Kunne ikke laste tilbudsforesp\u00f8rsler')}</h2><p>{text('Please try again later. No request has been sent.','Prøv igjen senere. Ingen forespørsel er sendt.')}</p><button type="button" className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border px-[13px] py-[9px] text-[14px]! font-semibold leading-[1.35] no-underline transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#cf6e38] border-[#dce0e3] bg-white text-[#1a1410] shadow-[0_1px_2px_#18212a05] enabled:hover:bg-[#f7f8f9]" onClick={()=>setRefresh(value=>value+1)}><RefreshCw size={16}/>{text('Retry','Pr\u00f8v igjen')}</button></div>:!requestId?<>
    {!data.items?.length?<div className="flex flex-col items-center gap-3 rounded-b-[9px] border border-[#e0e3e5] bg-white px-5 py-12 text-center text-[#1a1410] [&_h2]:text-[20px]! [&_h2]:font-semibold! [&_h2]:text-[#554232] [&_p]:text-[15px]!"><Tag size={30}/><h2>{text('No requests yet','Ingen forespørsler ennå')}</h2><p>{text(isVendorApp?'Incoming menu requests will appear here.':'Choose a menu, date, time and guest count to request an offer.',isVendorApp?'Innkommende menyforespørsler vises her.':'Velg meny, dato, tid og antall gjester for å be om et tilbud.')}</p></div>:<OfferRequestList items={data.items} text={text}/>}
    <footer className="mt-4 flex items-center justify-between gap-4 [&>p]:max-w-[520px] [&>p]:text-[13px]! [&>p]:leading-[1.6] [&>p]:text-[#1a1410] [&>div]:flex [&>div]:items-center [&>div]:gap-3 [&>div]:text-[14px]! max-[800px]:flex-col max-[800px]:items-start max-[650px]:[&>div]:w-full max-[650px]:[&>div]:justify-between"><p>{text('Vendors have 72 hours to respond. Offers have their own payment deadline.','Leverandøren har 72 timer til å svare. Tilbud har en egen betalingsfrist.')}</p><div><button className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border px-[13px] py-[9px] text-[14px]! font-semibold leading-[1.35] no-underline transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#cf6e38] border-[#dce0e3] bg-white text-[#1a1410] shadow-[0_1px_2px_#18212a05] enabled:hover:bg-[#f7f8f9]" disabled={page<=1} onClick={()=>setPage(p=>p-1)}>{text('Previous','Forrige')}</button><span>{page} / {Math.max(1,data.pageCount||1)}</span><button className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border px-[13px] py-[9px] text-[14px]! font-semibold leading-[1.35] no-underline transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#cf6e38] border-[#dce0e3] bg-white text-[#1a1410] shadow-[0_1px_2px_#18212a05] enabled:hover:bg-[#f7f8f9]" disabled={page>=data.pageCount} onClick={()=>setPage(p=>p+1)}>{text('Next','Neste')}</button></div></footer>

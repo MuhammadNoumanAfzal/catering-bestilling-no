@@ -7,3 +7,11 @@ test('binding-only food total remains valid when line totals include addons',()=
 test('unknown charges, double discount, missing values and wrong currency fail closed',()=>{for(const patch of [{grossTotal:'8200'},{catalogueDiscount:'10'},{taxTotal:null},{deliveryFee:null},{currency:'EUR'}])assert.throws(()=>normalizeOfferPreview({...preview(),pricing:{...preview().pricing,...patch}}));assert.throws(()=>normalizeOfferPreview({...preview(),items:[]}));});
 test('payment authorization must be explicitly true and preserve known quote binding',()=>{const known={requestId:'r',quoteRevision:'q'};assert.equal(validatePaymentGuard({allowed:true,offerRequestId:'r',quoteRevision:'q'},known).valid,true);for(const guard of [null,{allowed:false},{allowed:'true'},{allowed:true,offerRequestId:'other',quoteRevision:'q'},{allowed:true,offerRequestId:'r',quoteRevision:'new'}])assert.throws(()=>validatePaymentGuard(guard,known));assert.equal(validatePaymentGuard({allowed:true,offerRequestId:null},null).requiresOfferValidation,false);});
 test('cross-device payment requires an unexpired current request even without a storage marker',()=>{const guard=validatePaymentGuard({allowed:true,offerRequestId:'r',quoteRevision:'q'});const request={id:'r',status:'ACCEPTED',quote:{revision:'q',expiresAt:'2099-01-01T00:00:00Z'}};assert.equal(validatePayableRequest(request,guard).valid,true);for(const patch of [{id:'other'},{status:'CLOSED'},{quote:{revision:'new',expiresAt:'2099-01-01'}},{quote:{revision:'q',expiresAt:'2000-01-01'}},{quote:{revision:'q',expiresAt:'bad'}}])assert.throws(()=>validatePayableRequest({...request,...patch},guard));});
+
+test('inactive and scheduled quotes cannot authorize accepted or ordered payment',()=>{
+ const guard={requestId:'r',quoteRevision:'q'};
+ const now=Date.parse('2026-11-25T10:00:00Z');
+ for(const status of ['ACCEPTED','ORDERED']) for(const timing of [{isActive:false},{isScheduled:true},{startsAt:'2026-11-25T10:01:00Z'},{startsAt:'invalid'}]) {
+  assert.throws(()=>validatePayableRequest({id:'r',status,quote:{revision:'q',expiresAt:'2026-11-30T10:00:00Z',...timing}},guard,now));
+ }
+});
