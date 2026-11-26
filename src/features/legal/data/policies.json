@@ -2,7 +2,7 @@
   "en": {
     "terms": {
       "title": "Terms and Conditions – GoCatering.no",
-      "updated": "Go Catering AS · Last updated: 11 November 2026",
+      "updated": "Go Catering AS · Last updated: 26 November 2026",
       "sections": [
         {
           "id": "section-1",
@@ -11,6 +11,10 @@
             {
               "type": "paragraph",
               "text": "These Terms and Conditions apply to all orders placed through GoCatering.no, a digital marketplace for catering and related services."
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no delivers only within Norway. We only accept orders with a delivery address in Norway."
             },
             {
               "type": "paragraph",
@@ -308,6 +312,10 @@
           "id": "section-7",
           "title": "7. Delivery, Food Quality and Allergens",
           "blocks": [
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no delivers only within Norway. We only accept orders with a delivery address in Norway."
+            },
             {
               "type": "paragraph",
               "text": "Go Catering AS is responsible to the customer for ensuring that orders are delivered at the agreed time and in accordance with the description and conditions provided at the time of purchase."
@@ -850,7 +858,7 @@
   "no": {
     "terms": {
       "title": "Kjøpsvilkår for GoCatering.no",
-      "updated": "Go Catering AS · Sist oppdatert: 20. november 2026",
+      "updated": "Go Catering AS · Sist oppdatert: 26. november 2026",
       "sections": [
         {
           "id": "section-1",
@@ -859,6 +867,10 @@
             {
               "type": "paragraph",
               "text": "Disse kjøpsvilkårene gjelder for alle bestillinger som gjennomføres på GoCatering.no, en digital markedsplass for catering og tilhørende tjenester."
+            },
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no leverer kun innenfor Norge. Vi tar bare imot bestillinger med leveringsadresse i Norge."
             },
             {
               "type": "paragraph",
@@ -1156,6 +1168,10 @@
           "id": "section-7",
           "title": "7. Levering, matkvalitet og allergener",
           "blocks": [
+            {
+              "type": "paragraph",
+              "text": "GoCatering.no leverer kun innenfor Norge. Vi tar bare imot bestillinger med leveringsadresse i Norge."
+            },
             {
               "type": "paragraph",
               "text": "Go Catering AS er ansvarlig overfor kunden for at bestillingen leveres til avtalt tid og i samsvar med beskrivelsen og vilkårene som ble oppgitt ved kjøpet."
