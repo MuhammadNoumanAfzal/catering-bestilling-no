@@ -1,5 +1,5 @@
 import { buildCheckoutAddressFields } from "../../../utils/customerProfileStorage";
-import { normalizeStandaloneItem } from "../../menu/utils/standaloneCart.js";
+import { buildOrderItems, buildCheckoutPreviewItems } from "./checkoutItems.js";
 import {
   getLocalMerchandiseTotal,
   getTipValue,
@@ -113,90 +113,12 @@ function resolveVendorId(cart) {
   return cart.vendor.id || "";
 }
 
-function resolveProductId(item) {
-  if (item.productId) {
-    return `${item.productId}`;
-  }
-
-  const matched = `${item.id ?? ""}`.match(/^(\d+)/);
-  return matched ? matched[1] : "";
-}
-
-function normalizeSelectedOptions(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(value)
-      .map(([key, optionValue]) => [`${key ?? ""}`.trim(), `${optionValue ?? ""}`.trim()])
-      .filter(([key, optionValue]) => key && optionValue),
-  );
-}
-
-function normalizeSelectedAddons(items, parentProductId) {
-  return items
-    .filter(
-      (item) =>
-        item?.isAddOn &&
-        `${item.parentMenuItemId ?? ""}` === `${parentProductId ?? ""}`,
-    )
-    .map((item) => {
-      const quantity = Math.max(1, Number(item.quantity ?? 1));
-
-      return {
-        name: item.name || "Add-on",
-        quantity,
-      };
-    })
-    .filter((item) => item.name && Number.isFinite(item.quantity));
-}
-
 function validateRequiredFields(payload, requiredKeys) {
   const missingKeys = requiredKeys.filter((key) => !`${payload[key] ?? ""}`.trim());
 
   if (missingKeys.length > 0) {
     throw new Error(`Missing required checkout fields: ${missingKeys.join(", ")}.`);
   }
-}
-
-function buildOrderItems(items) {
-  return items
-    .map(normalizeStandaloneItem)
-    .filter((item) => !item?.isAddOn)
-    .map((item) => {
-      const productId = resolveProductId(item);
-
-      if (!productId) {
-        throw new Error(
-          `Cart item "${item.name || item.id}" is missing a valid product id.`,
-        );
-      }
-
-      const selectedOptions = normalizeSelectedOptions(item.selectedOptions);
-      const selectedAddons = normalizeSelectedAddons(items, productId);
-      const specialInstructions = `${item.specialInstructions ?? ""}`.trim();
-
-      return {
-        product: productId,
-        quantity: Math.max(1, Number(item.quantity ?? 1)),
-        ...(item.addOnType === "INDEPENDENT" ? { personCount: Math.max(1, Number(item.personCount) || 1) } : {}),
-        ...(Object.keys(selectedOptions).length > 0
-          ? { selectedOptions }
-          : {}),
-        ...(selectedAddons.length > 0 ? { selectedAddons } : {}),
-        ...(specialInstructions ? { specialInstructions } : {}),
-      };
-    });
-}
-
-function buildCheckoutPreviewItems(items) {
-  return buildOrderItems(items).map((item) => ({
-    productId: item.product,
-    quantity: item.quantity,
-    ...(item.personCount ? { personCount: item.personCount } : {}),
-    ...(item.selectedAddons ? { selectedAddons: item.selectedAddons } : {}),
-  }));
 }
 
 function resolveTipBaseAmount(cart) {
@@ -210,7 +132,7 @@ export function buildCheckoutPreviewPayload({ cart, checkoutType, formState }) {
     throw new Error(`Unable to resolve vendor id for ${cart.vendor.name}.`);
   }
 
-  const items = buildCheckoutPreviewItems(cart.orderSummary.items);
+  const items = buildCheckoutPreviewItems(cart.orderSummary.items, cart.orderSummary.personCount ?? formState.personCount, Boolean(cart.orderSummary.offer));
 
   if (items.length === 0) {
     throw new Error(`No valid order items found for ${cart.vendor.name}.`);
@@ -240,7 +162,7 @@ export function buildPlaceOrderPayload({ cart, checkoutType, formState }) {
     throw new Error(`Unable to resolve vendor id for ${cart.vendor.name}.`);
   }
 
-  const items = buildOrderItems(cart.orderSummary.items);
+  const items = buildOrderItems(cart.orderSummary.items, cart.orderSummary.personCount ?? formState.personCount, Boolean(cart.orderSummary.offer));
 
   if (items.length === 0) {
     throw new Error(`No valid order items found for ${cart.vendor.name}.`);

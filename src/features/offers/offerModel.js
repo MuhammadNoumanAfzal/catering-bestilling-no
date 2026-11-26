@@ -42,7 +42,8 @@ export function acceptedOfferCart(request) {
   const snapshot = request.checkoutSnapshot;
   const main=snapshot.items.filter(item=>!item.isAddOn);
   if(main.length!==1 || Number(main[0].quantity)!==1 || main[0].pricingType!=="per-person" || Number(main[0].unitPrice)!==Number(request.quote.pricePerPerson) || snapshot.items.some(item=>!Number.isFinite(Number(item.catalogueUnitPrice)) || Number(item.catalogueUnitPrice)<=0)) throw new Error("Invalid negotiated cart prices.");
-  const items = snapshot.items.map(item => ({ ...item, id: item.id || item.productId, price: 0, details: [], isAddOn: Boolean(item.isAddOn) }));
+  if (!Number.isSafeInteger(Number(request.personCount)) || Number(request.personCount) <= 0) throw new Error('Invalid agreed guest count.');
+  const items = snapshot.items.map(item => ({ ...item, ...(!item.isAddOn ? {personCount:Number(request.personCount)} : {}), id: item.id || item.productId, price: 0, details: [], isAddOn: Boolean(item.isAddOn) }));
   const summary = { items, deliveryDate: request.deliveryDate, deliveryTime: request.deliveryTime, personCount: request.personCount, deliveryAddress: request.postalCode, tipRate:0, vendorNote:'', pricing:null, previewItems:[], availability:null };
   summary.offer = { requestId:request.id, requestRevision:request.revision, quoteRevision:request.quote.revision, expiresAt:request.quote.expiresAt, startsAt:request.quote.startsAt, vendorId:String(snapshot.vendor.id), deliveryDate:request.deliveryDate, deliveryTime:request.deliveryTime, personCount:request.personCount, postalCode:request.postalCode, itemsSignature:cartSignature(summary), pricePerPerson:request.quote.pricePerPerson };
   return { vendor:snapshot.vendor, orderSummary:summary };
