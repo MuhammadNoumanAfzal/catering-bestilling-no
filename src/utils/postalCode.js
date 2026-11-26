@@ -3,6 +3,13 @@ export function postalCodeText(value) {
   return String(value ?? "").trim();
 }
 
+// Norway postcodes use four digits; the legacy profile API returns Int and loses
+// leading zeros. Restore positive short numeric codes without browser storage.
+export function accountPostalCodeText(value) {
+ const code = postalCodeText(value);
+ return /^\d{1,3}$/.test(code) && Number(code) > 0 ? code.padStart(4, '0') : code;
+}
+
 // The current signup/profile GraphQL inputs still require Int.
 // Restore only the submitted representation when the server returns its numeric equivalent.
 export function preservePostalCode(value, submitted) {
@@ -15,12 +22,12 @@ export function preservePostalCode(value, submitted) {
 // Scope the entered representation to its account, including across reloads.
 export function accountPostalCode(user, submitted) {
   const identity = String(user?.id || user?.email || "").trim();
-  if (!identity || typeof window === "undefined") return preservePostalCode(user?.postCode, submitted);
+  if (!identity || typeof window === "undefined") return accountPostalCodeText(preservePostalCode(user?.postCode ?? user?.postalCode, submitted));
   const key = "customer-postal-code:" + encodeURIComponent(identity);
   try {
     const original = submitted === undefined ? window.localStorage.getItem(key) : submitted;
-    const code = preservePostalCode(user?.postCode, original);
+    const code = accountPostalCodeText(preservePostalCode(user?.postCode ?? user?.postalCode, original));
     if (submitted !== undefined && code === postalCodeText(submitted) && /^\d{4,5}$/.test(code)) window.localStorage.setItem(key, code);
     return code;
-  } catch { return preservePostalCode(user?.postCode, submitted); }
+  } catch { return accountPostalCodeText(preservePostalCode(user?.postCode ?? user?.postalCode, submitted)); }
 }

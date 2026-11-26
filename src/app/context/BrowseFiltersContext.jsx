@@ -1,3 +1,4 @@
+import { accountPostalCodeText } from '../../utils/postalCode.js';
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   createDefaultOtherFilters,
@@ -72,7 +73,7 @@ export function BrowseFiltersProvider({ children }) {
   useEffect(() => {
     const account = isLoggedIn ? {
       id: user?.id || user?.email,
-      postalCode: normalizePostalCode(user?.postCode ?? user?.postalCode ?? ""),
+      postalCode: normalizePostalCode(accountPostalCodeText(user?.postCode ?? user?.postalCode ?? "")),
     } : null;
     const previous = previousAccount.current;
     if (account && (!previous || account.id !== previous.id)) {

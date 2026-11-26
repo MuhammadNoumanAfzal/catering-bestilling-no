@@ -19,7 +19,9 @@ const DEFAULT_SEARCH_ROUTE = "/vendors/all";
 const DEFAULT_FILTER_ROUTE = "/";
 
 function isVendorDashboardRoute(pathname) {
-  return pathname === "/client-dashboard" || pathname.startsWith("/client-dashboard/");
+  return pathname === "/client-dashboard" || pathname.startsWith("/client-dashboard/") ||
+    pathname === "/my-offers" || pathname.startsWith("/my-offers/") ||
+    pathname === "/account/my-offers" || pathname.startsWith("/account/my-offers/");
 }
 
 function resolveNavbarSearchRoute(pathname) {
